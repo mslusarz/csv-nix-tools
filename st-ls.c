@@ -25,11 +25,11 @@ struct inode {
 void print_stat(const char *dirpath, const char *path, struct stat *st)
 {
 #if 1
-	fprintf(stdout, "mode 0%06o nlink %ld uid %d gid %d size %6ld mtime %ld  name ",
+	fprintf(stdout, "mode 0%06o nlink %ld uid %d gid %d size %6ld mtime %ld ",
 		st->st_mode, st->st_nlink, st->st_uid, st->st_gid, st->st_size,
 		st->st_mtime);
 #else
-	fprintf(stdout, "dev 0x%lx ino %ld mode 0%06o nlink %ld uid %d gid %d rdev 0x%lx size %6ld blksize %ld blocks %3ld atime %ld mtime %ld ctime %ld name ",
+	fprintf(stdout, "dev 0x%lx ino %ld mode 0%06o nlink %ld uid %d gid %d rdev 0x%lx size %6ld blksize %ld blocks %3ld atime %ld mtime %ld ctime %ld ",
 		st->st_dev, st->st_ino, st->st_mode, st->st_nlink,
 		st->st_uid, st->st_gid, st->st_rdev, st->st_size,
 		st->st_blksize, st->st_blocks, st->st_atime, st->st_mtime,
@@ -37,12 +37,9 @@ void print_stat(const char *dirpath, const char *path, struct stat *st)
 #endif
 
 	if (dirpath)
-		if (strlen(dirpath) > 0 && dirpath[strlen(dirpath) - 1] == '/')
-			printf("%s%s\n", dirpath, path);
-		else
-			printf("%s/%s\n", dirpath, path);
-	else
-		printf("%s\n", path);
+		printf("parent %s ", dirpath);
+
+	printf("name %s\n", path);
 	// TODO: nsec
 	// TODO: user, group
 	// TODO: translate mode
