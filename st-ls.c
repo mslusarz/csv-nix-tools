@@ -10,6 +10,9 @@
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <grp.h>
+#include <pwd.h>
+#include <search.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,11 +21,160 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-void print_stat(const char *dirpath, const char *path, struct stat *st,
+struct ht {
+	size_t keys_max;
+	struct hsearch_data ht;
+
+	ENTRY *table;
+	size_t table_size;
+	size_t inserted;
+};
+
+static struct ht users_ht;
+static struct ht groups_ht;
+
+static int
+ht_init(struct ht *ht)
+{
+	memset(ht, 0, sizeof(*ht));
+	ht->keys_max = 4;
+	ht->table_size = 4;
+
+	if (hcreate_r(ht->keys_max, &ht->ht) == 0) {
+		perror("hcreate_r");
+		return 2;
+	}
+
+	ht->table = malloc(ht->table_size * sizeof(ht->table[0]));
+	if (!ht->table) {
+		perror("malloc");
+		return 2;
+	}
+
+	return 0;
+}
+
+static void
+ht_destroy(struct ht *ht)
+{
+	hdestroy_r(&ht->ht);
+	for (size_t u = 0; u < ht->inserted; ++u) {
+		free(ht->table[u].key);
+		free(ht->table[u].data);
+	}
+	free(ht->table);
+}
+
+static const char *
+get_value(struct ht *ht, char *key, void *(*cb)(void *), void *cb_data)
+{
+	ENTRY e;
+	ENTRY *entry = NULL;
+
+	e.key = key;
+	e.data = NULL;
+
+	if (hsearch_r(e, ENTER, &entry, &ht->ht) == 0) {
+		/* hash map too small, recreate it */
+		hdestroy_r(&ht->ht);
+		memset(&ht->ht, 0, sizeof(ht->ht));
+		ht->keys_max *= 2;
+
+		if (hcreate_r(ht->keys_max, &ht->ht) == 0) {
+			perror("hcreate_r");
+			exit(2);
+		}
+
+		for (size_t u = 0; u < ht->inserted; ++u) {
+			e.key = ht->table[u].key;
+			e.data = NULL;
+
+			if (hsearch_r(e, ENTER, &entry, &ht->ht) == 0)
+				exit(1);
+
+			entry->key = ht->table[u].key;
+			entry->data = ht->table[u].data;
+		}
+
+		return get_value(ht, key, cb, cb_data);
+	}
+
+	if (entry->data != NULL)
+		return entry->data;
+
+	if (ht->inserted == ht->table_size) {
+		ht->table_size *= 2;
+		ht->table = realloc(ht->table,
+				ht->table_size * sizeof(ht->table[0]));
+		if (!ht->table)
+			abort();
+	}
+
+	entry->key = strdup(key);
+	if (!entry->key)
+		abort();
+
+	entry->data = cb(cb_data);
+	if (!entry->data)
+		abort();
+
+	ht->table[ht->inserted].key = entry->key;
+	ht->table[ht->inserted].data = entry->data;
+	ht->inserted++;
+
+	return entry->data;
+}
+
+static void *
+get_user_slow(void *uidp)
+{
+	uid_t uid = *(uid_t *)uidp;
+	struct passwd *passwd = getpwuid(uid);
+	if (passwd)
+		return strdup(passwd->pw_name);
+
+	char *ret;
+	asprintf(&ret, "%d", uid);
+	return ret;
+}
+
+static const char *
+get_user(uid_t uid)
+{
+	char key[10];
+	sprintf(key, "%d", uid);
+
+	return get_value(&users_ht, key, get_user_slow, &uid);
+}
+
+static void *
+get_group_slow(void *gidp)
+{
+	gid_t gid = *(uid_t *)gidp;
+	struct group *gr = getgrgid(gid);
+	if (gr)
+		return strdup(gr->gr_name);
+
+	char *ret;
+	asprintf(&ret, "%d", gid);
+	return ret;
+}
+
+static const char *
+get_group(gid_t gid)
+{
+	char key[10];
+	sprintf(key, "%d", gid);
+
+	return get_value(&groups_ht, key, get_group_slow, &gid);
+}
+
+static void
+print_stat(const char *dirpath, const char *path, struct stat *st,
 		const char *symlink)
 {
 #if 1
-	fprintf(stdout, "mode 0%06o nlink %2ld uid %d gid %d size %8ld mtime %ld ",
+	fprintf(stdout, "mode 0%06o nlink %2ld uid %5d gid %5d size %8ld mtime %ld ",
 		st->st_mode, st->st_nlink, st->st_uid, st->st_gid, st->st_size,
 		st->st_mtime);
 #else
@@ -32,6 +184,8 @@ void print_stat(const char *dirpath, const char *path, struct stat *st,
 		st->st_blksize, st->st_blocks, st->st_atime, st->st_mtime,
 		st->st_ctime);
 #endif
+	printf("owner %8s ", get_user(st->st_uid));
+	printf("group %8s ", get_group(st->st_gid));
 
 	if (dirpath)
 		printf("parent %s ", dirpath);
@@ -41,16 +195,17 @@ void print_stat(const char *dirpath, const char *path, struct stat *st,
 	else
 		printf("name %s\n", path);
 	// TODO: nsec
-	// TODO: user, group
 	// TODO: translate mode
 }
 
-int alphasort_caseinsensitive(const struct dirent **a, const struct dirent **b)
+static int
+alphasort_caseinsensitive(const struct dirent **a, const struct dirent **b)
 {
 	return strcasecmp((*a)->d_name, (*b)->d_name);
 }
 
-int list(const char *dirpath, int dirfd, int recursive, int all, int sort)
+static int
+list(const char *dirpath, int dirfd, int recursive, int all, int sort)
 {
 	int ret = 0;
 	struct dirent **namelist;
@@ -170,7 +325,8 @@ dirs_alloc_fail:
 	return ret;
 }
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
 	int opt, ret = 0;
 	int dir = 0, recursive = 0, all = 0, sort = 1;
@@ -196,6 +352,12 @@ int main(int argc, char *argv[])
 				break;
 		}
 	}
+
+	if (ht_init(&users_ht))
+		return 2;
+
+	if (ht_init(&groups_ht))
+		return 2;
 
 	for (int i = optind; i < argc; ++i) {
 		int fd = openat(AT_FDCWD, argv[i], O_PATH | O_NOFOLLOW);
@@ -242,6 +404,9 @@ restart_stat:
 
 		close(fd);
 	}
+
+	ht_destroy(&users_ht);
+	ht_destroy(&groups_ht);
 
 	return ret;
 }
