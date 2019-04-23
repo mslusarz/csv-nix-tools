@@ -18,10 +18,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-void print_stat(const char *dirpath, const char *path, struct stat *st)
+void print_stat(const char *dirpath, const char *path, struct stat *st,
+		const char *symlink)
 {
 #if 1
-	fprintf(stdout, "mode 0%06o nlink %ld uid %d gid %d size %6ld mtime %ld ",
+	fprintf(stdout, "mode 0%06o nlink %2ld uid %d gid %d size %8ld mtime %ld ",
 		st->st_mode, st->st_nlink, st->st_uid, st->st_gid, st->st_size,
 		st->st_mtime);
 #else
@@ -35,7 +36,10 @@ void print_stat(const char *dirpath, const char *path, struct stat *st)
 	if (dirpath)
 		printf("parent %s ", dirpath);
 
-	printf("name %s\n", path);
+	if (S_ISLNK(st->st_mode) && symlink)
+		printf("name %s -> %s\n", path, symlink);
+	else
+		printf("name %s\n", path);
 	// TODO: nsec
 	// TODO: user, group
 	// TODO: translate mode
@@ -91,13 +95,37 @@ int list(const char *dirpath, int dirfd, int recursive, int all)
 		if (!all && namelist[i]->d_name[0] == '.')
 			continue;
 
+restart_stat:
 		if (fstatat(dirfd, namelist[i]->d_name, &statbuf,
 				AT_SYMLINK_NOFOLLOW)) {
 			ret = 1;
 			continue;
 		}
 
-		print_stat(dirpath, namelist[i]->d_name, &statbuf);
+		char *symlink = NULL;
+		if (S_ISLNK(statbuf.st_mode)) {
+			size_t bufsiz = statbuf.st_size + 1;
+			symlink = malloc(bufsiz);
+			ssize_t symlink_len = readlinkat(dirfd,
+					namelist[i]->d_name, symlink,
+					bufsiz);
+			if (symlink_len < 0) {
+				perror("readlinkat");
+				free(symlink);
+				symlink = NULL;
+				ret = 1;
+			} else if (symlink_len == bufsiz) {
+				free(symlink);
+				goto restart_stat;
+			} else {
+				symlink[symlink_len] = 0;
+			}
+		}
+
+		print_stat(dirpath, namelist[i]->d_name, &statbuf, symlink);
+
+		if (S_ISLNK(statbuf.st_mode))
+			free(symlink);
 
 		if (!recursive)
 			continue;
@@ -164,15 +192,16 @@ int main(int argc, char *argv[])
 	}
 
 	for (int i = optind; i < argc; ++i) {
-		/* TODO: O_NOFOLLOW */
-		int fd = openat(AT_FDCWD, argv[i], O_PATH);
+		int fd = openat(AT_FDCWD, argv[i], O_PATH | O_NOFOLLOW);
 		if (fd < 0) {
 			perror("open");
 			continue;
 		}
 
 		struct stat buf;
-		int r = fstat(fd, &buf);
+		int r;
+restart_stat:
+		r = fstat(fd, &buf);
 		if (r < 0) {
 			perror("fstat");
 			close(fd);
@@ -183,7 +212,26 @@ int main(int argc, char *argv[])
 			if (list(argv[i], fd, recursive, all))
 				ret = 1;
 		} else {
-			print_stat(NULL, argv[i], &buf);
+			char *symlink = NULL;
+			if (S_ISLNK(buf.st_mode)) {
+				size_t bufsiz = buf.st_size + 1;
+				symlink = malloc(bufsiz);
+				ssize_t symlink_len = readlinkat(fd,
+						"", symlink, bufsiz);
+				if (symlink_len < 0) {
+					perror("readlinkat");
+					free(symlink);
+					symlink = NULL;
+					ret = 1;
+				} else if (symlink_len == bufsiz) {
+					free(symlink);
+					goto restart_stat;
+				} else {
+					symlink[symlink_len] = 0;
+				}
+			}
+
+			print_stat(NULL, argv[i], &buf, symlink);
 		}
 
 		close(fd);
