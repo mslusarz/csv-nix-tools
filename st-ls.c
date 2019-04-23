@@ -8,6 +8,7 @@
 #define _GNU_SOURCE
 
 #include <dirent.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -61,7 +62,8 @@ int list(const char *dirpath, int dirfd, int recursive, int all)
 	int entries = scandirat(dirfd, ".", &namelist, NULL,
 			alphasort_caseinsensitive);
 	if (entries < 0) {
-		perror("scandirat");
+		fprintf(stderr, "reading %s failed: %s\n", dirpath,
+				strerror(errno));
 		return -1;
 	}
 
