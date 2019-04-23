@@ -131,6 +131,8 @@ int list(const char *dirpath, int dirfd, int recursive, int all)
 path_alloc_fail:
 	free(dirs);
 dirs_alloc_fail:
+	for (int i = 0; i < entries; ++i)
+		free(namelist[i]);
 	free(namelist);
 
 	return ret;
