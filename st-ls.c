@@ -19,6 +19,7 @@
 #include <strings.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <time.h>
 #include <unistd.h>
 
 struct ht {
@@ -169,33 +170,93 @@ get_group(gid_t gid)
 	return get_value(&groups_ht, key, get_group_slow, &gid);
 }
 
+static char
+get_file_type(mode_t m)
+{
+	if (S_ISREG(m))
+		return '-';
+	if (S_ISDIR(m))
+		return 'd';
+	if (S_ISLNK(m))
+		return 'l';
+	if (S_ISFIFO(m))
+		return 'p';
+	if (S_ISSOCK(m))
+		return 's';
+	if (S_ISCHR(m))
+		return 'c';
+	if (S_ISBLK(m))
+		return 'b';
+
+	return '?';
+}
+
+static void
+print_timespec(struct timespec *ts)
+{
+	int ret;
+	struct tm t;
+
+	if (localtime_r(&ts->tv_sec, &t) == NULL)
+		goto fallback;
+
+	char buf[50];
+	ret = strftime(buf, 30, "%F %T", &t);
+	if (ret == 0)
+		goto fallback;
+
+	printf("%s.%09ld ", buf, ts->tv_nsec);
+	return;
+fallback:
+	printf("%lu.%lu ", ts->tv_sec, ts->tv_nsec);
+}
+
+
 static void
 print_stat(const char *dirpath, const char *path, struct stat *st,
-		const char *symlink)
+		const char *symlink, int long_format)
 {
-#if 1
-	fprintf(stdout, "mode 0%06o nlink %2ld uid %5d gid %5d size %8ld mtime %ld ",
-		st->st_mode, st->st_nlink, st->st_uid, st->st_gid, st->st_size,
-		st->st_mtime);
-#else
-	fprintf(stdout, "dev 0x%lx ino %ld mode 0%06o nlink %ld uid %d gid %d rdev 0x%lx size %6ld blksize %ld blocks %3ld atime %ld mtime %ld ctime %ld ",
-		st->st_dev, st->st_ino, st->st_mode, st->st_nlink,
-		st->st_uid, st->st_gid, st->st_rdev, st->st_size,
-		st->st_blksize, st->st_blocks, st->st_atime, st->st_mtime,
-		st->st_ctime);
-#endif
-	printf("owner %8s ", get_user(st->st_uid));
-	printf("group %8s ", get_group(st->st_gid));
+	printf("%c%c%c%c%c%c%c%c%c%c %3ld %8s %8s %8ld ",
+		get_file_type(st->st_mode),
+		st->st_mode & S_IRUSR ? 'r' : '-',
+		st->st_mode & S_IWUSR ? 'w' : '-',
+		st->st_mode & S_ISUID ? 's' : (st->st_mode & S_IXUSR ? 'x' : '-'),
+		st->st_mode & S_IRGRP ? 'r' : '-',
+		st->st_mode & S_IWGRP ? 'w' : '-',
+		st->st_mode & S_ISGID ? 's' : (st->st_mode & S_IXGRP ? 'x' : '-'),
+		st->st_mode & S_IROTH ? 'r' : '-',
+		st->st_mode & S_IWOTH ? 'w' : '-',
+		st->st_mode & S_ISVTX ? 't' : (st->st_mode & S_IXOTH ? 'x' : '-'),
+		st->st_nlink,
+		get_user(st->st_uid),
+		get_group(st->st_gid),
+		st->st_size);
+	print_timespec(&st->st_mtim);
 
-	if (dirpath)
-		printf("parent %s ", dirpath);
+	if (long_format) {
+		printf("0x%03lx:%08ld 0%06o %5d %5d 0x%lx %ld %4ld ",
+			st->st_dev,
+			st->st_ino,
+			st->st_mode,
+			st->st_uid,
+			st->st_gid,
+			st->st_rdev,
+			st->st_blksize,
+			st->st_blocks);
+		print_timespec(&st->st_atim);
+		print_timespec(&st->st_ctim);
+	}
+
+	if (dirpath) {
+		fputs(dirpath, stdout);
+		if (dirpath[strlen(dirpath) - 1] != '/')
+			fputs("/", stdout);
+	}
 
 	if (S_ISLNK(st->st_mode) && symlink)
-		printf("name %s -> %s\n", path, symlink);
+		printf("%s -> %s\n", path, symlink);
 	else
-		printf("name %s\n", path);
-	// TODO: nsec
-	// TODO: translate mode
+		printf("%s\n", path);
 }
 
 static int
@@ -205,7 +266,8 @@ alphasort_caseinsensitive(const struct dirent **a, const struct dirent **b)
 }
 
 static int
-list(const char *dirpath, int dirfd, int recursive, int all, int sort)
+list(const char *dirpath, int dirfd, int recursive, int all, int sort,
+		int long_format)
 {
 	int ret = 0;
 	struct dirent **namelist;
@@ -286,7 +348,8 @@ restart_readlink:
 			}
 		}
 
-		print_stat(dirpath, namelist[i]->d_name, &statbuf, symlink);
+		print_stat(dirpath, namelist[i]->d_name, &statbuf, symlink,
+				long_format);
 
 		if (S_ISLNK(statbuf.st_mode))
 			free(symlink);
@@ -313,7 +376,7 @@ restart_readlink:
 
 		strcpy(path + pos, dirs[j]);
 
-		if (list(path, fd, recursive, all, sort))
+		if (list(path, fd, recursive, all, sort, long_format))
 			ret = 1;
 
 		close(fd);
@@ -334,15 +397,18 @@ int
 main(int argc, char *argv[])
 {
 	int opt, ret = 0;
-	int dir = 0, recursive = 0, all = 0, sort = 1;
+	int dir = 0, long_format = 0, recursive = 0, all = 0, sort = 1;
 
-	while ((opt = getopt(argc, argv, "adRU")) != -1) {
+	while ((opt = getopt(argc, argv, "adlRU")) != -1) {
 		switch (opt) {
 			case 'a':
 				all = 1;
 				break;
 			case 'd':
 				dir = 1;
+				break;
+			case 'l':
+				long_format = 1;
 				break;
 			case 'R':
 				recursive = 1;
@@ -358,11 +424,18 @@ main(int argc, char *argv[])
 		}
 	}
 
+	tzset();
+
 	if (ht_init(&users_ht))
 		return 2;
 
 	if (ht_init(&groups_ht))
 		return 2;
+
+	if (optind == argc) {
+		argv[optind] = ".";
+		argc++;
+	}
 
 	for (int i = optind; i < argc; ++i) {
 		int fd = openat(AT_FDCWD, argv[i], O_PATH | O_NOFOLLOW);
@@ -380,7 +453,7 @@ main(int argc, char *argv[])
 		}
 
 		if (S_ISDIR(buf.st_mode) && !dir) {
-			if (list(argv[i], fd, recursive, all, sort))
+			if (list(argv[i], fd, recursive, all, sort, long_format))
 				ret = 1;
 		} else {
 			char *symlink = NULL;
@@ -409,7 +482,7 @@ restart_readlink:
 				}
 			}
 
-			print_stat(NULL, argv[i], &buf, symlink);
+			print_stat(NULL, argv[i], &buf, symlink, long_format);
 		}
 
 		close(fd);
