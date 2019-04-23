@@ -51,7 +51,7 @@ int alphasort_caseinsensitive(const struct dirent **a, const struct dirent **b)
 	return strcasecmp((*a)->d_name, (*b)->d_name);
 }
 
-int list(const char *dirpath, int dirfd, int recursive, int all)
+int list(const char *dirpath, int dirfd, int recursive, int all, int sort)
 {
 	int ret = 0;
 	struct dirent **namelist;
@@ -63,8 +63,13 @@ int list(const char *dirpath, int dirfd, int recursive, int all)
 	if (pos < 1)
 		return -1;
 
-	int entries = scandirat(dirfd, ".", &namelist, NULL,
-			alphasort_caseinsensitive);
+	int (*compar)(const struct dirent **, const struct dirent **);
+	if (sort)
+		compar = alphasort_caseinsensitive;
+	else
+		compar = NULL;
+
+	int entries = scandirat(dirfd, ".", &namelist, NULL, compar);
 	if (entries < 0) {
 		fprintf(stderr, "reading %s failed: %s\n", dirpath,
 				strerror(errno));
@@ -149,7 +154,7 @@ restart_stat:
 
 		strcpy(path + pos, dirs[j]);
 
-		if (list(path, fd, recursive, all))
+		if (list(path, fd, recursive, all, sort))
 			ret = 1;
 
 		close(fd);
@@ -169,10 +174,9 @@ dirs_alloc_fail:
 int main(int argc, char *argv[])
 {
 	int opt, ret = 0;
-	int dir = 0, recursive = 0, all = 0;
+	int dir = 0, recursive = 0, all = 0, sort = 1;
 
-	while ((opt = getopt(argc, argv, "adR")) != -1) {
-		// TODO: -U
+	while ((opt = getopt(argc, argv, "adRU")) != -1) {
 		switch (opt) {
 			case 'a':
 				all = 1;
@@ -183,9 +187,12 @@ int main(int argc, char *argv[])
 			case 'R':
 				recursive = 1;
 				break;
+			case 'U':
+				sort = 0;
+				break;
 			default:
 				fprintf(stderr,
-					"Usage: %s [-a] [-d] [-R] [paths ...]\n",
+					"Usage: %s [-a] [-d] [-R] [-U] [paths ...]\n",
 					argv[0]);
 				break;
 		}
@@ -209,7 +216,7 @@ restart_stat:
 		}
 
 		if (S_ISDIR(buf.st_mode) && !dir) {
-			if (list(argv[i], fd, recursive, all))
+			if (list(argv[i], fd, recursive, all, sort))
 				ret = 1;
 		} else {
 			char *symlink = NULL;
