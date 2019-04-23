@@ -43,7 +43,6 @@ void print_stat(const char *dirpath, const char *path, struct stat *st,
 	// TODO: nsec
 	// TODO: user, group
 	// TODO: translate mode
-	// TODO: separarate parent & name
 }
 
 int alphasort_caseinsensitive(const struct dirent **a, const struct dirent **b)
@@ -146,7 +145,7 @@ restart_stat:
 
 
 	for (int j = 0; j < numdirs; ++j) {
-		int fd = openat(dirfd, dirs[j], O_PATH);
+		int fd = openat(dirfd, dirs[j], O_PATH | O_DIRECTORY);
 		if (fd < 0) {
 			perror("openat");
 			continue;
