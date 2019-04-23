@@ -57,6 +57,9 @@ int list(const char *dirpath, int dirfd, int recursive, int all)
 	struct dirent **namelist;
 	const char **dirs = NULL;
 	int numdirs = 0;
+	size_t pos = strlen(dirpath);
+	if (pos < 1)
+		return -1;
 
 	int entries = scandirat(dirfd, ".", &namelist, NULL,
 			alphasort_caseinsensitive);
@@ -99,6 +102,11 @@ int list(const char *dirpath, int dirfd, int recursive, int all)
 		dirs[numdirs++] = namelist[i]->d_name;
 	}
 
+	char *path = malloc(pos + 1 + sizeof(namelist[0]->d_name));
+	strcpy(path, dirpath);
+	if (path[pos - 1] != '/')
+		path[pos++] = '/';
+
 	for (int j = 0; j < numdirs; ++j) {
 		int fd = openat(dirfd, dirs[j], O_PATH);
 		if (fd < 0) {
@@ -106,20 +114,15 @@ int list(const char *dirpath, int dirfd, int recursive, int all)
 			continue;
 		}
 
-		size_t dirpath_len = strlen(dirpath);
-		char *path = malloc(dirpath_len + 1 + strlen(dirs[j]) + 1);
-		if (dirpath_len > 0 && dirpath[dirpath_len - 1] == '/')
-			sprintf(path, "%s%s", dirpath, dirs[j]);
-		else
-			sprintf(path, "%s/%s", dirpath, dirs[j]);
+		strcpy(path + pos, dirs[j]);
 
 		if (list(path, fd, recursive, all))
 			ret = 1;
 
-		free(path);
 		close(fd);
 	}
 
+	free(path);
 	free(namelist);
 	free(dirs);
 
