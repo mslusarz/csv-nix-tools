@@ -106,9 +106,9 @@ int list(const char *dirpath, int dirfd, int recursive, int all)
 			continue;
 		}
 
-		char *path = malloc(strlen(dirpath) + 1 +
-				strlen(dirs[j]) + 1);
-		if (strlen(dirpath) > 0 && dirpath[strlen(dirpath) - 1] == '/')
+		size_t dirpath_len = strlen(dirpath);
+		char *path = malloc(dirpath_len + 1 + strlen(dirs[j]) + 1);
+		if (dirpath_len > 0 && dirpath[dirpath_len - 1] == '/')
 			sprintf(path, "%s%s", dirpath, dirs[j]);
 		else
 			sprintf(path, "%s/%s", dirpath, dirs[j]);
