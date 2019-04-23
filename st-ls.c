@@ -17,11 +17,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-struct inode {
-	dev_t dev;
-	ino_t ino;
-};
-
 void print_stat(const char *dirpath, const char *path, struct stat *st)
 {
 #if 1
