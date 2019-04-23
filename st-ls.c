@@ -52,8 +52,7 @@ int alphasort_caseinsensitive(const struct dirent **a, const struct dirent **b)
 	return strcasecmp((*a)->d_name, (*b)->d_name);
 }
 
-int list(const char *dirpath, int dirfd, int recursive, int all,
-		struct inode **dir_inodes, int *seen_dir_inodes)
+int list(const char *dirpath, int dirfd, int recursive, int all)
 {
 	int ret = 0;
 	struct dirent **namelist;
@@ -94,29 +93,6 @@ int list(const char *dirpath, int dirfd, int recursive, int all,
 		if (strcmp(namelist[i]->d_name, "..") == 0)
 			continue;
 
-		int seen = 0;
-		// TODO: log(N) lookup
-		for (int k = 0; k < *seen_dir_inodes; ++k) {
-			// TODO: use dirent->d_type & dirent->d_ino
-			if ((*dir_inodes)[k].ino == statbuf.st_ino &&
-				(*dir_inodes)[k].dev == statbuf.st_dev) {
-				seen = 1;
-				break;
-			}
-		}
-		if (seen)
-			continue;
-
-		struct inode *new_dir_inodes = realloc(*dir_inodes,
-				((*seen_dir_inodes) + 1) *
-				sizeof(new_dir_inodes[0]));
-		if (!new_dir_inodes) {
-			perror("realloc");
-			continue;
-		}
-
-		*dir_inodes = new_dir_inodes;
-
 		struct dir *newdirs = realloc(dirs,
 				(numdirs + 1) * sizeof(dirs[0]));
 		if (!newdirs) {
@@ -143,10 +119,6 @@ int list(const char *dirpath, int dirfd, int recursive, int all,
 //				namelist[i]->d_name);
 		dirs[numdirs].path = strdup(namelist[i]->d_name);
 		numdirs++;
-
-		new_dir_inodes[*seen_dir_inodes].dev = statbuf.st_dev;
-		new_dir_inodes[*seen_dir_inodes].ino = statbuf.st_ino;
-		(*seen_dir_inodes)++;
 	}
 
 	free(namelist);
@@ -171,8 +143,7 @@ int list(const char *dirpath, int dirfd, int recursive, int all,
 
 //		if (list(dirs[j].path, dirs[j].fd, recursive, all, dir_inodes,
 //				seen_dir_inodes))
-		if (list(path, fd, recursive, all, dir_inodes,
-				seen_dir_inodes))
+		if (list(path, fd, recursive, all))
 			ret = 1;
 		free(dirs[j].path);
 		free(path);
@@ -188,8 +159,6 @@ int main(int argc, char *argv[])
 {
 	int opt, ret = 0;
 	int dir = 0, recursive = 0, all = 0;
-	struct inode *dir_inodes = NULL;
-	int seen_dir_inodes = 0;
 
 	while ((opt = getopt(argc, argv, "adR")) != -1) {
 		// TODO: -U
@@ -231,8 +200,7 @@ int main(int argc, char *argv[])
 			if (dir) {
 				print_stat(NULL, argv[i], &buf);
 			} else {
-				if (list(argv[i], fd, recursive, all,
-						&dir_inodes, &seen_dir_inodes))
+				if (list(argv[i], fd, recursive, all))
 					ret = 1;
 			}
 		} else {
