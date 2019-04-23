@@ -34,6 +34,7 @@ void print_stat(const char *dirpath, const char *path, struct stat *st)
 		st->st_uid, st->st_gid, st->st_rdev, st->st_size,
 		st->st_blksize, st->st_blocks, st->st_atime, st->st_mtime,
 		st->st_ctime);
+
 	if (dirpath)
 		if (strlen(dirpath) > 0 && dirpath[strlen(dirpath) - 1] == '/')
 			printf("%s%s\n", dirpath, path);
@@ -76,7 +77,8 @@ int list(const char *dirpath, int dirfd, int recursive, int all)
 			continue;
 		}
 
-		if (fstatat(dirfd, namelist[i]->d_name, &statbuf, 0)) {
+		if (fstatat(dirfd, namelist[i]->d_name, &statbuf,
+				AT_SYMLINK_NOFOLLOW)) {
 			ret = 1;
 			continue;
 		}
