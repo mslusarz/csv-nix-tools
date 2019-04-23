@@ -179,13 +179,9 @@ int main(int argc, char *argv[])
 			continue;
 		}
 
-		if (S_ISDIR(buf.st_mode)) {
-			if (dir) {
-				print_stat(NULL, argv[i], &buf);
-			} else {
-				if (list(argv[i], fd, recursive, all))
-					ret = 1;
-			}
+		if (S_ISDIR(buf.st_mode) && !dir) {
+			if (list(argv[i], fd, recursive, all))
+				ret = 1;
 		} else {
 			print_stat(NULL, argv[i], &buf);
 		}
