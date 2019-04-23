@@ -22,11 +22,6 @@ struct inode {
 	ino_t ino;
 };
 
-struct dir {
-	int fd;
-	char *path;
-};
-
 void print_stat(const char *dirpath, const char *path, struct stat *st)
 {
 #if 1
@@ -63,7 +58,7 @@ int list(const char *dirpath, int dirfd, int recursive, int all)
 {
 	int ret = 0;
 	struct dirent **namelist;
-	struct dir *dirs = NULL;
+	const char **dirs = NULL;
 	int numdirs = 0;
 
 	int entries = scandirat(dirfd, ".", &namelist, NULL,
@@ -75,13 +70,9 @@ int list(const char *dirpath, int dirfd, int recursive, int all)
 
 	for (int i = 0; i < entries; ++i) {
 		struct stat statbuf;
-		if (!all && namelist[i]->d_name[0] == '.') {
-			/*
-			 * there's no point in fstating if we are going to skip
-			 * it anyway
-			 */
+		/* skip hidden files */
+		if (!all && namelist[i]->d_name[0] == '.')
 			continue;
-		}
 
 		if (fstatat(dirfd, namelist[i]->d_name, &statbuf,
 				AT_SYMLINK_NOFOLLOW)) {
@@ -89,8 +80,7 @@ int list(const char *dirpath, int dirfd, int recursive, int all)
 			continue;
 		}
 
-		if (all || namelist[i]->d_name[0] != '.')
-			print_stat(dirpath, namelist[i]->d_name, &statbuf);
+		print_stat(dirpath, namelist[i]->d_name, &statbuf);
 
 		if (!recursive)
 			continue;
@@ -101,7 +91,7 @@ int list(const char *dirpath, int dirfd, int recursive, int all)
 		if (strcmp(namelist[i]->d_name, "..") == 0)
 			continue;
 
-		struct dir *newdirs = realloc(dirs,
+		const char **newdirs = realloc(dirs,
 				(numdirs + 1) * sizeof(dirs[0]));
 		if (!newdirs) {
 			perror("malloc");
@@ -109,55 +99,31 @@ int list(const char *dirpath, int dirfd, int recursive, int all)
 		}
 
 		dirs = newdirs;
-
-//		int fd = openat(dirfd, namelist[i]->d_name, O_PATH);
-//		if (fd < 0) {
-//			perror("openat");
-//			continue;
-//		}
-
-//		dirs[numdirs].fd = fd;
-//		dirs[numdirs].path = malloc(strlen(dirpath) + 1 +
-//				strlen(namelist[i]->d_name) + 1);
-//		if (strlen(dirpath) > 0 && dirpath[strlen(dirpath) - 1] == '/')
-//			sprintf(dirs[numdirs].path, "%s%s", dirpath,
-//				namelist[i]->d_name);
-//		else
-//			sprintf(dirs[numdirs].path, "%s/%s", dirpath,
-//				namelist[i]->d_name);
-		dirs[numdirs].path = strdup(namelist[i]->d_name);
-		numdirs++;
+		dirs[numdirs++] = namelist[i]->d_name;
 	}
 
-	free(namelist);
-
 	for (int j = 0; j < numdirs; ++j) {
-		int fd = openat(dirfd, dirs[j].path, O_PATH);
+		int fd = openat(dirfd, dirs[j], O_PATH);
 		if (fd < 0) {
 			perror("openat");
 			continue;
 		}
 
-		/**/
 		char *path = malloc(strlen(dirpath) + 1 +
-				strlen(dirs[j].path) + 1);
+				strlen(dirs[j]) + 1);
 		if (strlen(dirpath) > 0 && dirpath[strlen(dirpath) - 1] == '/')
-			sprintf(path, "%s%s", dirpath,
-					dirs[j].path);
+			sprintf(path, "%s%s", dirpath, dirs[j]);
 		else
-			sprintf(path, "%s/%s", dirpath,
-					dirs[j].path);
-		/**/
+			sprintf(path, "%s/%s", dirpath, dirs[j]);
 
-//		if (list(dirs[j].path, dirs[j].fd, recursive, all, dir_inodes,
-//				seen_dir_inodes))
 		if (list(path, fd, recursive, all))
 			ret = 1;
-		free(dirs[j].path);
+
 		free(path);
 		close(fd);
-//		close(dirs[j].fd);
 	}
+
+	free(namelist);
 	free(dirs);
 
 	return ret;
