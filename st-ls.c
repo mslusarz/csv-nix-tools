@@ -55,9 +55,11 @@ int list(const char *dirpath, int dirfd, int recursive, int all)
 {
 	int ret = 0;
 	struct dirent **namelist;
-	const char **dirs = NULL;
+	const char **dirs;
 	int numdirs = 0;
+	char *path;
 	size_t pos = strlen(dirpath);
+
 	if (pos < 1)
 		return -1;
 
@@ -67,6 +69,24 @@ int list(const char *dirpath, int dirfd, int recursive, int all)
 		perror("scandirat");
 		return -1;
 	}
+
+	dirs = malloc(entries * sizeof(dirs[0]));
+	if (!dirs) {
+		perror("malloc");
+		ret = -1;
+		goto dirs_alloc_fail;
+	}
+
+	path = malloc(pos + 1 + sizeof(namelist[0]->d_name));
+	if (!path) {
+		perror("malloc");
+		ret = -1;
+		goto path_alloc_fail;
+	}
+
+	strcpy(path, dirpath);
+	if (path[pos - 1] != '/')
+		path[pos++] = '/';
 
 	for (int i = 0; i < entries; ++i) {
 		struct stat statbuf;
@@ -91,21 +111,9 @@ int list(const char *dirpath, int dirfd, int recursive, int all)
 		if (strcmp(namelist[i]->d_name, "..") == 0)
 			continue;
 
-		const char **newdirs = realloc(dirs,
-				(numdirs + 1) * sizeof(dirs[0]));
-		if (!newdirs) {
-			perror("malloc");
-			continue;
-		}
-
-		dirs = newdirs;
 		dirs[numdirs++] = namelist[i]->d_name;
 	}
 
-	char *path = malloc(pos + 1 + sizeof(namelist[0]->d_name));
-	strcpy(path, dirpath);
-	if (path[pos - 1] != '/')
-		path[pos++] = '/';
 
 	for (int j = 0; j < numdirs; ++j) {
 		int fd = openat(dirfd, dirs[j], O_PATH);
@@ -123,8 +131,10 @@ int list(const char *dirpath, int dirfd, int recursive, int all)
 	}
 
 	free(path);
-	free(namelist);
+path_alloc_fail:
 	free(dirs);
+dirs_alloc_fail:
+	free(namelist);
 
 	return ret;
 }
