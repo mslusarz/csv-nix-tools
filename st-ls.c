@@ -254,7 +254,6 @@ list(const char *dirpath, int dirfd, int recursive, int all, int sort)
 		if (!all && namelist[i]->d_name[0] == '.')
 			continue;
 
-restart_stat:
 		if (fstatat(dirfd, namelist[i]->d_name, &statbuf,
 				AT_SYMLINK_NOFOLLOW)) {
 			ret = 1;
@@ -263,7 +262,12 @@ restart_stat:
 
 		char *symlink = NULL;
 		if (S_ISLNK(statbuf.st_mode)) {
-			size_t bufsiz = statbuf.st_size + 1;
+			size_t bufsiz;
+			if (statbuf.st_size)
+				bufsiz = statbuf.st_size + 1;
+			else
+				bufsiz = PATH_MAX;
+restart_readlink:
 			symlink = malloc(bufsiz);
 			ssize_t symlink_len = readlinkat(dirfd,
 					namelist[i]->d_name, symlink,
@@ -275,7 +279,8 @@ restart_stat:
 				ret = 1;
 			} else if (symlink_len == bufsiz) {
 				free(symlink);
-				goto restart_stat;
+				bufsiz *= 2;
+				goto restart_readlink;
 			} else {
 				symlink[symlink_len] = 0;
 			}
@@ -367,9 +372,7 @@ main(int argc, char *argv[])
 		}
 
 		struct stat buf;
-		int r;
-restart_stat:
-		r = fstat(fd, &buf);
+		int r = fstat(fd, &buf);
 		if (r < 0) {
 			perror("fstat");
 			close(fd);
@@ -382,7 +385,13 @@ restart_stat:
 		} else {
 			char *symlink = NULL;
 			if (S_ISLNK(buf.st_mode)) {
-				size_t bufsiz = buf.st_size + 1;
+				size_t bufsiz;
+				if (buf.st_size)
+					bufsiz = buf.st_size + 1;
+				else
+					bufsiz = PATH_MAX;
+
+restart_readlink:
 				symlink = malloc(bufsiz);
 				ssize_t symlink_len = readlinkat(fd,
 						"", symlink, bufsiz);
@@ -393,7 +402,8 @@ restart_stat:
 					ret = 1;
 				} else if (symlink_len == bufsiz) {
 					free(symlink);
-					goto restart_stat;
+					bufsiz *= 2;
+					goto restart_readlink;
 				} else {
 					symlink[symlink_len] = 0;
 				}
