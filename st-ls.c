@@ -41,14 +41,16 @@ ht_init(struct ht *ht)
 	ht->keys_max = 4;
 	ht->table_size = 4;
 
-	if (hcreate_r(ht->keys_max, &ht->ht) == 0) {
-		perror("hcreate_r");
-		return 2;
-	}
-
 	ht->table = malloc(ht->table_size * sizeof(ht->table[0]));
 	if (!ht->table) {
 		perror("malloc");
+		return 2;
+	}
+
+	if (hcreate_r(ht->keys_max, &ht->ht) == 0) {
+		perror("hcreate_r");
+		free(ht->table);
+		ht->table = NULL;
 		return 2;
 	}
 
@@ -83,7 +85,7 @@ get_value(struct ht *ht, char *key, void *(*cb)(void *), void *cb_data)
 
 		if (hcreate_r(ht->keys_max, &ht->ht) == 0) {
 			perror("hcreate_r");
-			exit(2);
+			exit(2); /* no sane way to handle */
 		}
 
 		for (size_t u = 0; u < ht->inserted; ++u) {
@@ -91,7 +93,7 @@ get_value(struct ht *ht, char *key, void *(*cb)(void *), void *cb_data)
 			e.data = NULL;
 
 			if (hsearch_r(e, ENTER, &entry, &ht->ht) == 0)
-				exit(1);
+				exit(2); /* impossible */
 
 			entry->key = ht->table[u].key;
 			entry->data = ht->table[u].data;
@@ -107,17 +109,21 @@ get_value(struct ht *ht, char *key, void *(*cb)(void *), void *cb_data)
 		ht->table_size *= 2;
 		ht->table = realloc(ht->table,
 				ht->table_size * sizeof(ht->table[0]));
-		if (!ht->table)
-			abort();
+		if (!ht->table) {
+			perror("realloc");
+			exit(2); /* no sane way to handle */
+		}
 	}
 
 	entry->key = strdup(key);
-	if (!entry->key)
-		abort();
+	if (!entry->key) {
+		perror("strdup");
+		exit(2); /* no sane way to handle */
+	}
 
 	entry->data = cb(cb_data);
 	if (!entry->data)
-		abort();
+		exit(2); /* no sane way to handle */
 
 	ht->table[ht->inserted].key = entry->key;
 	ht->table[ht->inserted].data = entry->data;
@@ -129,20 +135,29 @@ get_value(struct ht *ht, char *key, void *(*cb)(void *), void *cb_data)
 static void *
 get_user_slow(void *uidp)
 {
+	char *ret;
 	uid_t uid = *(uid_t *)uidp;
 	struct passwd *passwd = getpwuid(uid);
-	if (passwd)
-		return strdup(passwd->pw_name);
+	if (passwd) {
+		ret = strdup(passwd->pw_name);
+		if (!ret)
+			perror("strdup");
 
-	char *ret;
-	asprintf(&ret, "%d", uid);
+		return ret;
+	}
+
+	if (asprintf(&ret, "%d", uid) < 0) {
+		perror("asprintf");
+		ret = NULL;
+	}
+
 	return ret;
 }
 
 static const char *
 get_user(uid_t uid)
 {
-	char key[10];
+	char key[30];
 	sprintf(key, "%d", uid);
 
 	return get_value(&users_ht, key, get_user_slow, &uid);
@@ -151,20 +166,29 @@ get_user(uid_t uid)
 static void *
 get_group_slow(void *gidp)
 {
+	char *ret;
 	gid_t gid = *(uid_t *)gidp;
 	struct group *gr = getgrgid(gid);
-	if (gr)
-		return strdup(gr->gr_name);
+	if (gr) {
+		ret = strdup(gr->gr_name);
+		if (!ret)
+			perror("strdup");
 
-	char *ret;
-	asprintf(&ret, "%d", gid);
+		return ret;
+	}
+
+	if (asprintf(&ret, "%d", gid) < 0) {
+		perror("asprintf");
+		ret = NULL;
+	}
+
 	return ret;
 }
 
 static const char *
 get_group(gid_t gid)
 {
-	char key[10];
+	char key[30];
 	sprintf(key, "%d", gid);
 
 	return get_value(&groups_ht, key, get_group_slow, &gid);
@@ -276,8 +300,10 @@ list(const char *dirpath, int dirfd, int recursive, int all, int sort,
 	char *path;
 	size_t pos = strlen(dirpath);
 
-	if (pos < 1)
-		return -1;
+	if (pos < 1) {
+		fprintf(stderr, "empty path\n");
+		return 2;
+	}
 
 	int (*compar)(const struct dirent **, const struct dirent **);
 	if (sort)
@@ -287,22 +313,22 @@ list(const char *dirpath, int dirfd, int recursive, int all, int sort,
 
 	int entries = scandirat(dirfd, ".", &namelist, NULL, compar);
 	if (entries < 0) {
-		fprintf(stderr, "reading %s failed: %s\n", dirpath,
+		fprintf(stderr, "listing directory '%s' failed: %s\n", dirpath,
 				strerror(errno));
-		return -1;
+		return 1;
 	}
 
 	dirs = malloc(entries * sizeof(dirs[0]));
 	if (!dirs) {
 		perror("malloc");
-		ret = -1;
+		ret = 2;
 		goto dirs_alloc_fail;
 	}
 
 	path = malloc(pos + 1 + sizeof(namelist[0]->d_name));
 	if (!path) {
 		perror("malloc");
-		ret = -1;
+		ret = 2;
 		goto path_alloc_fail;
 	}
 
@@ -318,12 +344,15 @@ list(const char *dirpath, int dirfd, int recursive, int all, int sort,
 
 		if (fstatat(dirfd, namelist[i]->d_name, &statbuf,
 				AT_SYMLINK_NOFOLLOW)) {
-			ret = 1;
+			if (errno == EACCES || errno == ENOENT)
+				ret |= 1;
+			else
+				ret |= 2;
 			continue;
 		}
 
 		char *symlink = NULL;
-		if (S_ISLNK(statbuf.st_mode)) {
+		if (S_ISLNK(statbuf.st_mode)) do {
 			size_t bufsiz;
 			if (statbuf.st_size)
 				bufsiz = statbuf.st_size + 1;
@@ -331,14 +360,22 @@ list(const char *dirpath, int dirfd, int recursive, int all, int sort,
 				bufsiz = PATH_MAX;
 restart_readlink:
 			symlink = malloc(bufsiz);
+			if (!symlink) {
+				perror("malloc");
+				ret |= 2;
+				break;
+			}
 			ssize_t symlink_len = readlinkat(dirfd,
 					namelist[i]->d_name, symlink,
 					bufsiz);
 			if (symlink_len < 0) {
-				perror("readlinkat");
+				fprintf(stderr,
+					"reading symlink '%s/%s' failed: %s\n",
+					dirpath, namelist[i]->d_name,
+					strerror(errno));
 				free(symlink);
 				symlink = NULL;
-				ret = 1;
+				ret |= 1;
 			} else if (symlink_len == bufsiz) {
 				free(symlink);
 				bufsiz *= 2;
@@ -346,7 +383,7 @@ restart_readlink:
 			} else {
 				symlink[symlink_len] = 0;
 			}
-		}
+		} while (0);
 
 		print_stat(dirpath, namelist[i]->d_name, &statbuf, symlink,
 				long_format);
@@ -370,14 +407,15 @@ restart_readlink:
 	for (int j = 0; j < numdirs; ++j) {
 		int fd = openat(dirfd, dirs[j], O_PATH | O_DIRECTORY);
 		if (fd < 0) {
-			perror("openat");
+			fprintf(stderr, "open '%s/%s' failed: %s\n", dirpath,
+					dirs[j], strerror(errno));
+			ret |= 1;
 			continue;
 		}
 
 		strcpy(path + pos, dirs[j]);
 
-		if (list(path, fd, recursive, all, sort, long_format))
-			ret = 1;
+		ret |= list(path, fd, recursive, all, sort, long_format);
 
 		close(fd);
 	}
@@ -420,7 +458,7 @@ main(int argc, char *argv[])
 				fprintf(stderr,
 					"Usage: %s [-a] [-d] [-R] [-U] [paths ...]\n",
 					argv[0]);
-				break;
+				return 2;
 		}
 	}
 
@@ -429,8 +467,10 @@ main(int argc, char *argv[])
 	if (ht_init(&users_ht))
 		return 2;
 
-	if (ht_init(&groups_ht))
+	if (ht_init(&groups_ht)) {
+		ht_destroy(&users_ht);
 		return 2;
+	}
 
 	if (optind == argc) {
 		argv[optind] = ".";
@@ -440,24 +480,28 @@ main(int argc, char *argv[])
 	for (int i = optind; i < argc; ++i) {
 		int fd = openat(AT_FDCWD, argv[i], O_PATH | O_NOFOLLOW);
 		if (fd < 0) {
-			perror("open");
+			fprintf(stderr, "open '%s' failed: %s\n", argv[i],
+					strerror(errno));
+			ret |= 2;
 			continue;
 		}
 
 		struct stat buf;
 		int r = fstat(fd, &buf);
 		if (r < 0) {
-			perror("fstat");
+			fprintf(stderr, "fstat '%s' failed: %s\n", argv[i],
+					strerror(errno));
+			ret |= 2;
 			close(fd);
 			continue;
 		}
 
 		if (S_ISDIR(buf.st_mode) && !dir) {
-			if (list(argv[i], fd, recursive, all, sort, long_format))
-				ret = 1;
+			ret |= list(argv[i], fd, recursive, all, sort,
+					long_format);
 		} else {
 			char *symlink = NULL;
-			if (S_ISLNK(buf.st_mode)) {
+			if (S_ISLNK(buf.st_mode)) do {
 				size_t bufsiz;
 				if (buf.st_size)
 					bufsiz = buf.st_size + 1;
@@ -466,13 +510,21 @@ main(int argc, char *argv[])
 
 restart_readlink:
 				symlink = malloc(bufsiz);
+				if (!symlink) {
+					perror("malloc");
+					ret |= 2;
+					break;
+				}
 				ssize_t symlink_len = readlinkat(fd,
 						"", symlink, bufsiz);
 				if (symlink_len < 0) {
-					perror("readlinkat");
+					fprintf(stderr,
+						"reading symlink '%s' failed: %s\n",
+						argv[i], strerror(errno));
+
 					free(symlink);
 					symlink = NULL;
-					ret = 1;
+					ret |= 2;
 				} else if (symlink_len == bufsiz) {
 					free(symlink);
 					bufsiz *= 2;
@@ -480,7 +532,7 @@ restart_readlink:
 				} else {
 					symlink[symlink_len] = 0;
 				}
-			}
+			} while (0);
 
 			print_stat(NULL, argv[i], &buf, symlink, long_format);
 		}
@@ -491,5 +543,10 @@ restart_readlink:
 	ht_destroy(&users_ht);
 	ht_destroy(&groups_ht);
 
-	return ret;
+	if (ret & 2)
+		return 2;
+	if (ret & 1)
+		return 1;
+
+	return 0;
 }
