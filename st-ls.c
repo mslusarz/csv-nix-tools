@@ -306,7 +306,10 @@ print_stat(const char *dirpath, const char *path, struct stat *st,
 	printf("%ld,%ld,", st->st_atim.tv_sec, st->st_atim.tv_nsec);
 	printf("0x%lx,", st->st_dev);
 	printf("%ld,", st->st_ino);
-	printf("0x%lx,", st->st_rdev);
+	if (st->st_rdev)
+		printf("0x%lx,", st->st_rdev);
+	else
+		printf("0,");
 	printf("%ld,", st->st_blksize);
 	printf("%ld,", st->st_blocks);
 
@@ -314,18 +317,18 @@ print_stat(const char *dirpath, const char *path, struct stat *st,
 		printf("%s,", get_file_type_long(st->st_mode));
 		printf("%s,", get_user(st->st_uid));
 		printf("%s,", get_group(st->st_uid));
-		printf("%s,", (st->st_mode & S_IRUSR) ? "true" : "false");
-		printf("%s,", (st->st_mode & S_IWUSR) ? "true" : "false");
-		printf("%s,", (st->st_mode & S_IXUSR) ? "true" : "false");
-		printf("%s,", (st->st_mode & S_IRGRP) ? "true" : "false");
-		printf("%s,", (st->st_mode & S_IWGRP) ? "true" : "false");
-		printf("%s,", (st->st_mode & S_IXGRP) ? "true" : "false");
-		printf("%s,", (st->st_mode & S_IROTH) ? "true" : "false");
-		printf("%s,", (st->st_mode & S_IWOTH) ? "true" : "false");
-		printf("%s,", (st->st_mode & S_IXOTH) ? "true" : "false");
-		printf("%s,", (st->st_mode & S_ISUID) ? "true" : "false");
-		printf("%s,", (st->st_mode & S_ISGID) ? "true" : "false");
-		printf("%s,", (st->st_mode & S_ISVTX) ? "true" : "false");
+		printf("%s,", (st->st_mode & S_IRUSR) ? "1" : "0");
+		printf("%s,", (st->st_mode & S_IWUSR) ? "1" : "0");
+		printf("%s,", (st->st_mode & S_IXUSR) ? "1" : "0");
+		printf("%s,", (st->st_mode & S_IRGRP) ? "1" : "0");
+		printf("%s,", (st->st_mode & S_IWGRP) ? "1" : "0");
+		printf("%s,", (st->st_mode & S_IXGRP) ? "1" : "0");
+		printf("%s,", (st->st_mode & S_IROTH) ? "1" : "0");
+		printf("%s,", (st->st_mode & S_IWOTH) ? "1" : "0");
+		printf("%s,", (st->st_mode & S_IXOTH) ? "1" : "0");
+		printf("%s,", (st->st_mode & S_ISUID) ? "1" : "0");
+		printf("%s,", (st->st_mode & S_ISGID) ? "1" : "0");
+		printf("%s,", (st->st_mode & S_ISVTX) ? "1" : "0");
 
 		print_timespec(&st->st_mtim);
 		fputs(",", stdout);
