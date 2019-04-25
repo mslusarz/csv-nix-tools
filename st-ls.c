@@ -361,7 +361,7 @@ print_stat(const char *dirpath, const char *path, struct stat *st,
 				printf("%s\n", path);
 		}
 	} else if (format == FMT_XML) {
-		printf("<file ");
+		printf("<entry ");
 		printf("name=\"%s\" ", path);
 		if (dirpath)
 			printf("parent=\"%s\" ", dirpath);
