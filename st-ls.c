@@ -239,7 +239,8 @@ get_file_type_long(mode_t m)
 	if (S_ISBLK(m))
 		return "blk";
 
-	return "?";
+	fprintf(stderr, "unknown file type 0%o\n", m);
+	abort();
 }
 
 static void
