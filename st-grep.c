@@ -34,10 +34,7 @@
 #include <stdio.h>
 #include <string.h>
 
-enum outformat {FMT_TEXT, FMT_XML, FMT_JSON};
-
 static const struct option long_options[] = {
-	{"st-format", 	required_argument,	NULL, 0},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -48,7 +45,6 @@ usage(void)
 {
 	printf("Usage: st-grep [OPTION]...\n");
 	printf("Options:\n");
-	printf("      --st-format=xml/json/text\n");
 	printf("      --help\n");
 	printf("      --version\n");
 }
@@ -58,7 +54,6 @@ main(int argc, char *argv[])
 {
 	int opt;
 	int longindex;
-	enum outformat format = FMT_TEXT;
 
 	while ((opt = getopt_long(argc, argv, "", long_options,
 			&longindex)) != -1) {
@@ -69,22 +64,7 @@ main(int argc, char *argv[])
 			case 0:
 				switch (longindex) {
 					case 0:
-						if (strcmp(optarg, "xml") == 0)
-							format = FMT_XML;
-						else if (strcmp(optarg, "json") == 0)
-							format = FMT_JSON;
-						else if (strcmp(optarg, "text") == 0)
-							format = FMT_TEXT;
-						else {
-							fprintf(stderr,
-								"unknown format '%s'\n",
-								optarg);
-							return 2;
-						}
-
-						break;
 					case 1:
-						break;
 					default:
 						usage();
 						return 2;
@@ -95,11 +75,6 @@ main(int argc, char *argv[])
 				usage();
 				return 2;
 		}
-	}
-
-	if (format == FMT_JSON) {
-		fprintf(stderr, "json format not implemented yet\n");
-		return 2;
 	}
 
 	return 0;
