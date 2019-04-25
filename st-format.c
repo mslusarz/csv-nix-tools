@@ -34,6 +34,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <libxml/xmlreader.h>
+
 enum outformat {FMT_TEXT, FMT_XML, FMT_JSON};
 
 static const struct option long_options[] = {
@@ -51,6 +53,61 @@ usage(void)
 	printf("      --st-format=xml/json/text\n");
 	printf("      --help\n");
 	printf("      --version\n");
+}
+
+/*
+ * ${parent}/${name}$(if ($type == "slnk") "$symlink" else "")
+ *
+ *
+ */
+static void
+processNode(xmlTextReaderPtr reader) {
+	const xmlChar *name, *value;
+
+	name = xmlTextReaderConstName(reader);
+	if (name == NULL)
+		name = BAD_CAST "--";
+
+	int depth = xmlTextReaderDepth(reader);
+	if (depth == 0) {
+		if (strcmp(name, "st") != 0) {
+			fprintf(stderr,
+				"this is not st document (top-level='%s')\n",
+				name);
+			exit(2);
+		}
+
+		return;
+	}
+
+	if (depth != 1) {
+		fprintf(stderr, "this document is too deep\n");
+		exit(2);
+	}
+
+	int type = xmlTextReaderNodeType(reader);
+
+	if (type == XML_READER_TYPE_SIGNIFICANT_WHITESPACE)
+		return;
+	if (type != XML_READER_TYPE_ELEMENT) {
+		fprintf(stderr, "unhandled type: %d\n", type);
+		exit(2);
+	}
+
+	if (strcmp(name, "entry") != 0) {
+		fprintf(stderr, "unknown tag: '%s'\n", name);
+		exit(2);
+	}
+
+	xmlNodePtr node = xmlTextReaderCurrentNode(reader);
+	xmlAttr *attr = node->properties;
+	while (attr) {
+		xmlChar* value = xmlNodeListGetString(node->doc, attr->children, 1);
+		printf ("A %s: %s\n",attr->name, value);
+		xmlFree(value);
+
+		attr = attr->next;
+	}
 }
 
 int
@@ -100,6 +157,23 @@ main(int argc, char *argv[])
 	if (format == FMT_JSON) {
 		fprintf(stderr, "json format not implemented yet\n");
 		return 2;
+	}
+
+	xmlTextReader *reader = xmlReaderForFd(0, NULL, NULL, 0);
+	if (!reader)
+		abort();
+
+	int ret;
+	do {
+		ret = xmlTextReaderRead(reader);
+		if (ret == 1)
+			processNode(reader);
+	} while (ret == 1);
+
+	xmlFreeTextReader(reader);
+
+	if (ret != 0) {
+		fprintf(stderr, "failed to parse\n");
 	}
 
 	return 0;
