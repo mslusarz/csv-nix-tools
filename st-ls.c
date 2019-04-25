@@ -314,7 +314,7 @@ print_quoted(const char *str)
 
 static void
 print_stat(const char *dirpath, const char *path, struct stat *st,
-		const char *symlink, int long_format, int raw_only)
+		const char *symlink, int long_format)
 {
 	printf("%ld,", st->st_size);
 	printf("0%o,", st->st_mode);
@@ -322,16 +322,15 @@ print_stat(const char *dirpath, const char *path, struct stat *st,
 	printf("%d,", st->st_gid);
 	printf("%ld,", st->st_nlink);
 	printf("%ld,%ld,", st->st_mtim.tv_sec, st->st_mtim.tv_nsec);
+	printf("%ld,%ld,", st->st_ctim.tv_sec, st->st_ctim.tv_nsec);
+	printf("%ld,%ld,", st->st_atim.tv_sec, st->st_atim.tv_nsec);
+	printf("0x%lx,", st->st_dev);
+	printf("%ld,", st->st_ino);
+	printf("0x%lx,", st->st_rdev);
+	printf("%ld,", st->st_blksize);
+	printf("%ld,", st->st_blocks);
+
 	if (long_format) {
-		printf("%ld,%ld,", st->st_ctim.tv_sec, st->st_ctim.tv_nsec);
-		printf("%ld,%ld,", st->st_atim.tv_sec, st->st_atim.tv_nsec);
-		printf("0x%lx,", st->st_dev);
-		printf("%ld,", st->st_ino);
-		printf("0x%lx,", st->st_rdev);
-		printf("%ld,", st->st_blksize);
-		printf("%ld,", st->st_blocks);
-	}
-	if (!raw_only) {
 		printf("%s,", get_file_type_long(st->st_mode));
 		printf("%s,", get_user(st->st_uid));
 		printf("%s,", get_group(st->st_uid));
@@ -351,13 +350,11 @@ print_stat(const char *dirpath, const char *path, struct stat *st,
 		print_timespec(&st->st_mtim);
 		fputs(",", stdout);
 
-		if (long_format) {
-			print_timespec(&st->st_ctim);
-			fputs(",", stdout);
+		print_timespec(&st->st_ctim);
+		fputs(",", stdout);
 
-			print_timespec(&st->st_atim);
-			fputs(",", stdout);
-		}
+		print_timespec(&st->st_atim);
+		fputs(",", stdout);
 	}
 
 	if (S_ISLNK(st->st_mode) && symlink)
@@ -381,7 +378,7 @@ alphasort_caseinsensitive(const struct dirent **a, const struct dirent **b)
 
 static int
 list(const char *dirpath, int dirfd, int recursive, int all, int sort,
-		int long_format, int raw_only)
+		int long_format)
 {
 	int ret = 0;
 	struct dirent **namelist;
@@ -476,7 +473,7 @@ restart_readlink:
 		} while (0);
 
 		print_stat(dirpath, namelist[i]->d_name, &statbuf, symlink,
-				long_format, raw_only);
+				long_format);
 
 		if (S_ISLNK(statbuf.st_mode))
 			free(symlink);
@@ -505,8 +502,7 @@ restart_readlink:
 
 		strcpy(path + pos, dirs[j]);
 
-		ret |= list(path, fd, recursive, all, sort, long_format,
-				raw_only);
+		ret |= list(path, fd, recursive, all, sort, long_format);
 
 		close(fd);
 	}
@@ -523,7 +519,6 @@ dirs_alloc_fail:
 }
 
 static const struct option long_options[] = {
-	{"st-raw-only",	no_argument,		NULL, 0},
 	{"all",		no_argument, 		NULL, 'a'},
 	{"directory",	no_argument,		NULL, 'd'},
 	{"recursive",	no_argument,		NULL, 'R'},
@@ -542,7 +537,6 @@ usage(void)
 	printf("  -l\n");
 	printf("  -R, --recursive\n");
 	printf("  -U\n");
-	printf("      --st-raw-only\n");
 	printf("      --help\n");
 	printf("      --version\n");
 }
@@ -551,7 +545,7 @@ int
 main(int argc, char *argv[])
 {
 	int opt, ret = 0;
-	int dir = 0, long_format = 0, recursive = 0, all = 0, sort = 1, raw_only = 0;
+	int dir = 0, long_format = 0, recursive = 0, all = 0, sort = 1;
 	int longindex;
 
 	while ((opt = getopt_long(argc, argv, "adlRU", long_options,
@@ -578,8 +572,6 @@ main(int argc, char *argv[])
 			case 0:
 				switch (longindex) {
 					case 0:
-						raw_only = 1;
-						break;
 					default:
 						usage();
 						return 2;
@@ -613,19 +605,18 @@ main(int argc, char *argv[])
 		"group_id(int),"
 		"nlink(int),"
 		"mtime_sec(int),"
-		"mtime_nsec(int),");
+		"mtime_nsec(int),"
+		"ctime_sec(int),"
+		"ctime_nsec(int),"
+		"atime_sec(int),"
+		"atime_nsec(int),"
+		"dev(int),"
+		"ino(int),"
+		"rdev(int),"
+		"blksize(int),"
+		"blocks(int),");
+
 	if (long_format) {
-		printf("ctime_sec(int),"
-			"ctime_nsec(int),"
-			"atime_sec(int),"
-			"atime_nsec(int),"
-			"dev(int),"
-			"ino(int),"
-			"rdev(int),"
-			"blksize(int),"
-			"blocks(int),");
-	}
-	if (!raw_only) {
 		printf("type(string),"
 			"owner_name(string),"
 			"group_name(string),"
@@ -641,13 +632,11 @@ main(int argc, char *argv[])
 			"setuid(bool),"
 			"setgid(bool),"
 			"sticky(bool),"
-			"mtime(string),");
-
-		if (long_format) {
-			printf("ctime(string),"
-				"atime(string),");
-		}
+			"mtime(string),"
+			"ctime(string),"
+			"atime(string),");
 	}
+
 	printf("symlink(string),"
 		"parent(string),"
 		"name(string)\n");
@@ -673,7 +662,7 @@ main(int argc, char *argv[])
 
 		if (S_ISDIR(buf.st_mode) && !dir) {
 			ret |= list(argv[i], fd, recursive, all, sort,
-					long_format, raw_only);
+					long_format);
 		} else {
 			char *symlink = NULL;
 			if (S_ISLNK(buf.st_mode)) do {
@@ -709,8 +698,7 @@ restart_readlink:
 				}
 			} while (0);
 
-			print_stat(NULL, argv[i], &buf, symlink, long_format,
-					raw_only);
+			print_stat(NULL, argv[i], &buf, symlink, long_format);
 		}
 
 		close(fd);
