@@ -30,3 +30,5 @@ install(FILES ${CMAKE_BINARY_DIR}/st-ls.pc
 	DESTINATION ${CMAKE_INSTALL_BINDIR}/)
 
 add_executable(st-ls st-ls.c)
+add_executable(st-format st-format.c)
+add_executable(st-grep st-grep.c)
