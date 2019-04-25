@@ -39,6 +39,7 @@
 #include <grp.h>
 #include <pwd.h>
 #include <search.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -48,7 +49,7 @@
 #include <time.h>
 #include <unistd.h>
 
-enum outformat {FMT_TEXT, FMT_XML, FMT_JSON};
+enum outformat {FMT_TEXT, FMT_CSV, FMT_XML, FMT_JSON};
 
 struct ht {
 	size_t keys_max;
@@ -281,9 +282,37 @@ print_timespec(struct timespec *ts)
 	printf("%s.%09ld", buf, ts->tv_nsec);
 	return;
 fallback:
-	printf("%lu.%lu", ts->tv_sec, ts->tv_nsec);
+	printf("%lu.%09lu", ts->tv_sec, ts->tv_nsec);
 }
 
+static void
+print_quoted(const char *str)
+{
+	const char *comma = strchr(str, ',');
+	const char *nl = strchr(str, '\n');
+	const char *quot = strchr(str, '"');
+	if (!comma && !nl && !quot) {
+		fputs(str, stdout);
+		return;
+	}
+	fputs("\"", stdout);
+	if (!quot) {
+		fputs(str, stdout);
+		fputs("\"", stdout);
+		return;
+	}
+
+	do {
+		size_t len = (uintptr_t)quot - (uintptr_t)str + 1;
+		fwrite(str, 1, len, stdout);
+		str += len;
+		fputs("\"", stdout);
+		quot = strchr(str, '"');
+	} while (quot);
+
+	fputs(str, stdout);
+	fputs("\"", stdout);
+}
 
 static void
 print_stat(const char *dirpath, const char *path, struct stat *st,
@@ -414,6 +443,63 @@ print_stat(const char *dirpath, const char *path, struct stat *st,
 			}
 		}
 		printf("/>\n");
+	} else if (format == FMT_CSV) {
+		printf("%ld,", st->st_size);
+		printf("0%o,", st->st_mode);
+		printf("%d,", st->st_uid);
+		printf("%d,", st->st_gid);
+		printf("%ld,", st->st_nlink);
+		printf("%ld,%ld,", st->st_mtim.tv_sec, st->st_mtim.tv_nsec);
+		if (long_format) {
+			printf("%ld,%ld,", st->st_ctim.tv_sec, st->st_ctim.tv_nsec);
+			printf("%ld,%ld,", st->st_atim.tv_sec, st->st_atim.tv_nsec);
+			printf("0x%lx,", st->st_dev);
+			printf("%ld,", st->st_ino);
+			printf("0x%lx,", st->st_rdev);
+			printf("%ld,", st->st_blksize);
+			printf("%ld,", st->st_blocks);
+		}
+		if (!raw_only) {
+			printf("%s,", get_file_type_long(st->st_mode));
+			printf("%s,", get_user(st->st_uid));
+			printf("%s,", get_group(st->st_uid));
+			printf("%s,", (st->st_mode & S_IRUSR) ? "true" : "false");
+			printf("%s,", (st->st_mode & S_IWUSR) ? "true" : "false");
+			printf("%s,", (st->st_mode & S_IXUSR) ? "true" : "false");
+			printf("%s,", (st->st_mode & S_IRGRP) ? "true" : "false");
+			printf("%s,", (st->st_mode & S_IWGRP) ? "true" : "false");
+			printf("%s,", (st->st_mode & S_IXGRP) ? "true" : "false");
+			printf("%s,", (st->st_mode & S_IROTH) ? "true" : "false");
+			printf("%s,", (st->st_mode & S_IWOTH) ? "true" : "false");
+			printf("%s,", (st->st_mode & S_IXOTH) ? "true" : "false");
+			printf("%s,", (st->st_mode & S_ISUID) ? "true" : "false");
+			printf("%s,", (st->st_mode & S_ISGID) ? "true" : "false");
+			printf("%s,", (st->st_mode & S_ISVTX) ? "true" : "false");
+
+			print_timespec(&st->st_mtim);
+			fputs(",", stdout);
+
+			if (long_format) {
+				print_timespec(&st->st_ctim);
+				fputs(",", stdout);
+
+				print_timespec(&st->st_atim);
+				fputs(",", stdout);
+			}
+		}
+
+		if (S_ISLNK(st->st_mode) && symlink)
+			print_quoted(symlink);
+		fputs(",", stdout);
+
+		if (dirpath)
+			print_quoted(dirpath);
+		fputs(",", stdout);
+
+		print_quoted(path);
+
+		printf("\n");
+
 	}
 }
 
@@ -588,7 +674,7 @@ usage(void)
 	printf("  -R, --recursive\n");
 	printf("  -U\n");
 	printf("      --st-raw-only\n");
-	printf("      --st-format=xml/json/text\n");
+	printf("      --st-format=text/csv/xml/json\n");
 	printf("      --help\n");
 	printf("      --version\n");
 }
@@ -628,12 +714,14 @@ main(int argc, char *argv[])
 						raw_only = 1;
 						break;
 					case 1:
-						if (strcmp(optarg, "xml") == 0)
+						if (strcmp(optarg, "text") == 0)
+							format = FMT_TEXT;
+						else if (strcmp(optarg, "csv") == 0)
+							format = FMT_CSV;
+						else if (strcmp(optarg, "xml") == 0)
 							format = FMT_XML;
 						else if (strcmp(optarg, "json") == 0)
 							format = FMT_JSON;
-						else if (strcmp(optarg, "text") == 0)
-							format = FMT_TEXT;
 						else {
 							fprintf(stderr,
 								"unknown format '%s'\n",
@@ -676,6 +764,52 @@ main(int argc, char *argv[])
 
 	if (format == FMT_XML)
 		printf("<st>\n");
+	else if (format == FMT_CSV) {
+		printf("size(int),"
+			"mode(int),"
+			"owner_id(int),"
+			"group_id(int),"
+			"nlink(int),"
+			"mtime_sec(int),"
+			"mtime_nsec(int),");
+		if (long_format) {
+			printf("ctime_sec(int),"
+				"ctime_nsec(int),"
+				"atime_sec(int),"
+				"atime_nsec(int),"
+				"dev(int),"
+				"ino(int),"
+				"rdev(int),"
+				"blksize(int),"
+				"blocks(int),");
+		}
+		if (!raw_only) {
+			printf("type(string),"
+				"owner_name(string),"
+				"group_name(string),"
+				"owner_read(bool),"
+				"owner_write(bool),"
+				"owner_execute(bool),"
+				"group_read(bool),"
+				"group_write(bool),"
+				"group_execute(bool),"
+				"other_read(bool),"
+				"other_write(bool),"
+				"other_execute(bool),"
+				"setuid(bool),"
+				"setgid(bool),"
+				"sticky(bool),"
+				"mtime(string),");
+
+			if (long_format) {
+				printf("ctime(string),"
+					"atime(string),");
+			}
+		}
+		printf("symlink(string),"
+			"parent(string),"
+			"name(string)\n");
+	}
 
 	for (int i = optind; i < argc; ++i) {
 		int fd = openat(AT_FDCWD, argv[i], O_PATH | O_NOFOLLOW);
