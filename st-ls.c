@@ -35,6 +35,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <getopt.h>
 #include <grp.h>
 #include <pwd.h>
 #include <search.h>
@@ -46,6 +47,8 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
+
+enum outformat {FMT_TEXT, FMT_XML, FMT_JSON};
 
 struct ht {
 	size_t keys_max;
@@ -240,6 +243,27 @@ get_file_type(mode_t m)
 	return '?';
 }
 
+static const char *
+get_file_type_long(mode_t m)
+{
+	if (S_ISREG(m))
+		return "reg";
+	if (S_ISDIR(m))
+		return "dir";
+	if (S_ISLNK(m))
+		return "slnk";
+	if (S_ISFIFO(m))
+		return "fifo";
+	if (S_ISSOCK(m))
+		return "sock";
+	if (S_ISCHR(m))
+		return "chr";
+	if (S_ISBLK(m))
+		return "blk";
+
+	return "?";
+}
+
 static void
 print_timespec(struct timespec *ts)
 {
@@ -254,58 +278,143 @@ print_timespec(struct timespec *ts)
 	if (ret == 0)
 		goto fallback;
 
-	printf("%s.%09ld ", buf, ts->tv_nsec);
+	printf("%s.%09ld", buf, ts->tv_nsec);
 	return;
 fallback:
-	printf("%lu.%lu ", ts->tv_sec, ts->tv_nsec);
+	printf("%lu.%lu", ts->tv_sec, ts->tv_nsec);
 }
 
 
 static void
 print_stat(const char *dirpath, const char *path, struct stat *st,
-		const char *symlink, int long_format)
+		const char *symlink, int long_format, int raw_only,
+		enum outformat format)
 {
-	printf("%c%c%c%c%c%c%c%c%c%c %3ld %8s %8s %8ld ",
-		get_file_type(st->st_mode),
-		st->st_mode & S_IRUSR ? 'r' : '-',
-		st->st_mode & S_IWUSR ? 'w' : '-',
-		st->st_mode & S_ISUID ? 's' : (st->st_mode & S_IXUSR ? 'x' : '-'),
-		st->st_mode & S_IRGRP ? 'r' : '-',
-		st->st_mode & S_IWGRP ? 'w' : '-',
-		st->st_mode & S_ISGID ? 's' : (st->st_mode & S_IXGRP ? 'x' : '-'),
-		st->st_mode & S_IROTH ? 'r' : '-',
-		st->st_mode & S_IWOTH ? 'w' : '-',
-		st->st_mode & S_ISVTX ? 't' : (st->st_mode & S_IXOTH ? 'x' : '-'),
-		st->st_nlink,
-		get_user(st->st_uid),
-		get_group(st->st_gid),
-		st->st_size);
-	print_timespec(&st->st_mtim);
+	if (format == FMT_TEXT) {
+		if (raw_only) {
+			printf("0x%lx:%ld 0%o %d %d 0x%lx %ld %ld %ld %ld ",
+				st->st_dev,
+				st->st_ino,
+				st->st_mode,
+				st->st_uid,
+				st->st_gid,
+				st->st_rdev,
+				st->st_blksize,
+				st->st_blocks,
+				st->st_nlink,
+				st->st_size);
 
-	if (long_format) {
-		printf("0x%03lx:%08ld 0%06o %5d %5d 0x%lx %ld %4ld ",
-			st->st_dev,
-			st->st_ino,
-			st->st_mode,
-			st->st_uid,
-			st->st_gid,
-			st->st_rdev,
-			st->st_blksize,
-			st->st_blocks);
-		print_timespec(&st->st_atim);
-		print_timespec(&st->st_ctim);
+			if (dirpath) {
+				fputs(dirpath, stdout);
+				if (dirpath[strlen(dirpath) - 1] != '/')
+					fputs("/", stdout);
+			}
+
+			if (S_ISLNK(st->st_mode) && symlink)
+				printf("%s -> %s\n", path, symlink);
+			else
+				printf("%s\n", path);
+		} else {
+			printf("%c%c%c%c%c%c%c%c%c%c %3ld %8s %8s %8ld ",
+				get_file_type(st->st_mode),
+				st->st_mode & S_IRUSR ? 'r' : '-',
+				st->st_mode & S_IWUSR ? 'w' : '-',
+				st->st_mode & S_ISUID ? 's' : (st->st_mode & S_IXUSR ? 'x' : '-'),
+				st->st_mode & S_IRGRP ? 'r' : '-',
+				st->st_mode & S_IWGRP ? 'w' : '-',
+				st->st_mode & S_ISGID ? 's' : (st->st_mode & S_IXGRP ? 'x' : '-'),
+				st->st_mode & S_IROTH ? 'r' : '-',
+				st->st_mode & S_IWOTH ? 'w' : '-',
+				st->st_mode & S_ISVTX ? 't' : (st->st_mode & S_IXOTH ? 'x' : '-'),
+				st->st_nlink,
+				get_user(st->st_uid),
+				get_group(st->st_gid),
+				st->st_size);
+			print_timespec(&st->st_mtim);
+			printf(" ");
+
+			if (long_format) {
+				printf("0x%03lx:%08ld 0%06o %5d %5d 0x%lx %ld %4ld ",
+					st->st_dev,
+					st->st_ino,
+					st->st_mode,
+					st->st_uid,
+					st->st_gid,
+					st->st_rdev,
+					st->st_blksize,
+					st->st_blocks);
+				print_timespec(&st->st_atim);
+				printf(" ");
+				print_timespec(&st->st_ctim);
+				printf(" ");
+			}
+
+			if (dirpath) {
+				fputs(dirpath, stdout);
+				if (dirpath[strlen(dirpath) - 1] != '/')
+					fputs("/", stdout);
+			}
+
+			if (S_ISLNK(st->st_mode) && symlink)
+				printf("%s -> %s\n", path, symlink);
+			else
+				printf("%s\n", path);
+		}
+	} else if (format == FMT_XML) {
+		printf("<file ");
+		printf("name=\"%s\" ", path);
+		if (dirpath)
+			printf("parent=\"%s\" ", dirpath);
+		printf("size=\"%ld\" ", st->st_size);
+		printf("mode=\"0%o\" ", st->st_mode);
+		if (S_ISLNK(st->st_mode) && symlink)
+			printf("symlink=\"%s\" ", symlink);
+		printf("owner_id=\"%d\" ", st->st_uid);
+		printf("group_id=\"%d\" ", st->st_gid);
+		printf("nlink=\"%ld\" ", st->st_nlink);
+		printf("mtime=\"%ld.%ld\" ", st->st_mtim.tv_sec, st->st_mtim.tv_nsec);
+		if (long_format) {
+			printf("ctime=\"%ld.%ld\" ", st->st_ctim.tv_sec, st->st_ctim.tv_nsec);
+			printf("atime=\"%ld.%ld\" ", st->st_atim.tv_sec, st->st_atim.tv_nsec);
+			printf("dev=\"0x%lx\" ", st->st_dev);
+			printf("ino=\"%ld\" ", st->st_ino);
+			printf("rdev=\"0x%lx\" ", st->st_rdev);
+			printf("blksize=\"%ld\" ", st->st_blksize);
+			printf("blocks=\"%ld\" ", st->st_blocks);
+		}
+		if (!raw_only) {
+			printf("type=\"%s\" ", get_file_type_long(st->st_mode));
+			printf("owner_name=\"%s\" ", get_user(st->st_uid));
+			printf("group_name=\"%s\" ", get_group(st->st_uid));
+			printf("owner_read=\"%s\" ", (st->st_mode & S_IRUSR) ? "true" : "false");
+			printf("owner_write=\"%s\" ", (st->st_mode & S_IWUSR) ? "true" : "false");
+			printf("owner_execute=\"%s\" ", (st->st_mode & S_IXUSR) ? "true" : "false");
+			printf("group_read=\"%s\" ", (st->st_mode & S_IRGRP) ? "true" : "false");
+			printf("group_write=\"%s\" ", (st->st_mode & S_IWGRP) ? "true" : "false");
+			printf("group_execute=\"%s\" ", (st->st_mode & S_IXGRP) ? "true" : "false");
+			printf("other_read=\"%s\" ", (st->st_mode & S_IROTH) ? "true" : "false");
+			printf("other_write=\"%s\" ", (st->st_mode & S_IWOTH) ? "true" : "false");
+			printf("other_execute=\"%s\" ", (st->st_mode & S_IXOTH) ? "true" : "false");
+			printf("setuid=\"%s\" ", (st->st_mode & S_ISUID) ? "true" : "false");
+			printf("setgid=\"%s\" ", (st->st_mode & S_ISGID) ? "true" : "false");
+			printf("sticky=\"%s\" ", (st->st_mode & S_ISVTX) ? "true" : "false");
+
+			printf("mtime_text=\"");
+			print_timespec(&st->st_mtim);
+			printf("\" ");
+
+			if (long_format) {
+				printf("ctime_text=\"");
+				print_timespec(&st->st_ctim);
+				printf("\" ");
+
+				printf("atime_text=\"");
+				print_timespec(&st->st_atim);
+				printf("\" ");
+			}
+		}
+		printf("/>\n");
 	}
-
-	if (dirpath) {
-		fputs(dirpath, stdout);
-		if (dirpath[strlen(dirpath) - 1] != '/')
-			fputs("/", stdout);
-	}
-
-	if (S_ISLNK(st->st_mode) && symlink)
-		printf("%s -> %s\n", path, symlink);
-	else
-		printf("%s\n", path);
 }
 
 static int
@@ -316,7 +425,7 @@ alphasort_caseinsensitive(const struct dirent **a, const struct dirent **b)
 
 static int
 list(const char *dirpath, int dirfd, int recursive, int all, int sort,
-		int long_format)
+		int long_format, int raw_only, enum outformat format)
 {
 	int ret = 0;
 	struct dirent **namelist;
@@ -411,7 +520,7 @@ restart_readlink:
 		} while (0);
 
 		print_stat(dirpath, namelist[i]->d_name, &statbuf, symlink,
-				long_format);
+				long_format, raw_only, format);
 
 		if (S_ISLNK(statbuf.st_mode))
 			free(symlink);
@@ -440,7 +549,8 @@ restart_readlink:
 
 		strcpy(path + pos, dirs[j]);
 
-		ret |= list(path, fd, recursive, all, sort, long_format);
+		ret |= list(path, fd, recursive, all, sort, long_format,
+				raw_only, format);
 
 		close(fd);
 	}
@@ -456,13 +566,43 @@ dirs_alloc_fail:
 	return ret;
 }
 
+static const struct option long_options[] = {
+	{"st-raw-only",	no_argument,		NULL, 0},
+	{"st-format", 	required_argument,	NULL, 0},
+	{"all",		no_argument, 		NULL, 'a'},
+	{"directory",	no_argument,		NULL, 'd'},
+	{"recursive",	no_argument,		NULL, 'R'},
+	{"version",	no_argument,		NULL, 'V'},
+	{"help",	no_argument,		NULL, 'h'},
+	{NULL,		0,			NULL, 0},
+};
+
+static void
+usage(void)
+{
+	printf("Usage: st-ls [OPTION]... [FILE]...\n");
+	printf("Options:\n");
+	printf("  -a, --all\n");
+	printf("  -d, --directory\n");
+	printf("  -l\n");
+	printf("  -R, --recursive\n");
+	printf("  -U\n");
+	printf("      --st-raw-only\n");
+	printf("      --st-format=xml/json/text\n");
+	printf("      --help\n");
+	printf("      --version\n");
+}
+
 int
 main(int argc, char *argv[])
 {
 	int opt, ret = 0;
-	int dir = 0, long_format = 0, recursive = 0, all = 0, sort = 1;
+	int dir = 0, long_format = 0, recursive = 0, all = 0, sort = 1, raw_only = 0;
+	int longindex;
+	enum outformat format = FMT_TEXT;
 
-	while ((opt = getopt(argc, argv, "adlRU")) != -1) {
+	while ((opt = getopt_long(argc, argv, "adlRU", long_options,
+			&longindex)) != -1) {
 		switch (opt) {
 			case 'a':
 				all = 1;
@@ -479,10 +619,37 @@ main(int argc, char *argv[])
 			case 'U':
 				sort = 0;
 				break;
+			case 'V':
+				printf("git\n");
+				return 0;
+			case 0:
+				switch (longindex) {
+					case 0:
+						raw_only = 1;
+						break;
+					case 1:
+						if (strcmp(optarg, "xml") == 0)
+							format = FMT_XML;
+						else if (strcmp(optarg, "json") == 0)
+							format = FMT_JSON;
+						else if (strcmp(optarg, "text") == 0)
+							format = FMT_TEXT;
+						else {
+							fprintf(stderr,
+								"unknown format '%s'\n",
+								optarg);
+							return 2;
+						}
+
+						break;
+					default:
+						usage();
+						return 2;
+				}
+				break;
+			case 'h':
 			default:
-				fprintf(stderr,
-					"Usage: %s [-a] [-d] [-R] [-U] [paths ...]\n",
-					argv[0]);
+				usage();
 				return 2;
 		}
 	}
@@ -501,6 +668,14 @@ main(int argc, char *argv[])
 		argv[optind] = ".";
 		argc++;
 	}
+
+	if (format == FMT_JSON) {
+		fprintf(stderr, "json format not implemented yet\n");
+		return 2;
+	}
+
+	if (format == FMT_XML)
+		printf("<st>\n");
 
 	for (int i = optind; i < argc; ++i) {
 		int fd = openat(AT_FDCWD, argv[i], O_PATH | O_NOFOLLOW);
@@ -523,7 +698,7 @@ main(int argc, char *argv[])
 
 		if (S_ISDIR(buf.st_mode) && !dir) {
 			ret |= list(argv[i], fd, recursive, all, sort,
-					long_format);
+					long_format, raw_only, format);
 		} else {
 			char *symlink = NULL;
 			if (S_ISLNK(buf.st_mode)) do {
@@ -559,11 +734,15 @@ restart_readlink:
 				}
 			} while (0);
 
-			print_stat(NULL, argv[i], &buf, symlink, long_format);
+			print_stat(NULL, argv[i], &buf, symlink, long_format,
+					raw_only, format);
 		}
 
 		close(fd);
 	}
+
+	if (format == FMT_XML)
+		printf("</st>\n");
 
 	ht_destroy(&users_ht);
 	ht_destroy(&groups_ht);
