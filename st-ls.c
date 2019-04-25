@@ -297,7 +297,8 @@ print_stat(const char *dirpath, const char *path, struct stat *st,
 		const char *symlink, int long_format)
 {
 	printf("%ld,", st->st_size);
-	printf("0%o,", st->st_mode);
+	printf("0%o,", st->st_mode & S_IFMT);
+	printf("0%o,", st->st_mode & (S_IRWXU | S_IRWXG | S_IRWXO | S_ISUID | S_ISGID | S_ISVTX));
 	printf("%d,", st->st_uid);
 	printf("%d,", st->st_gid);
 	printf("%ld,", st->st_nlink);
@@ -583,6 +584,7 @@ main(int argc, char *argv[])
 	}
 
 	printf("size(int),"
+		"type(int),"
 		"mode(int),"
 		"owner_id(int),"
 		"group_id(int),"
