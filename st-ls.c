@@ -221,27 +221,6 @@ get_group(gid_t gid)
 	return get_value(&groups_ht, key, get_group_slow, &gid);
 }
 
-static char
-get_file_type(mode_t m)
-{
-	if (S_ISREG(m))
-		return '-';
-	if (S_ISDIR(m))
-		return 'd';
-	if (S_ISLNK(m))
-		return 'l';
-	if (S_ISFIFO(m))
-		return 'p';
-	if (S_ISSOCK(m))
-		return 's';
-	if (S_ISCHR(m))
-		return 'c';
-	if (S_ISBLK(m))
-		return 'b';
-
-	return '?';
-}
-
 static const char *
 get_file_type_long(mode_t m)
 {
