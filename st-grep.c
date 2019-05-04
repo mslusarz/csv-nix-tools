@@ -59,35 +59,8 @@ struct header {
 	char *type;
 };
 
-static struct header
-parse_header(const char *start, const char *end)
-{
-	const char *p = strchr(start, '|');
-	if (!p || p >= end) {
-		fprintf(stderr, "one of the columns does not have type name\n");
-		exit(2);
-	}
-
-	struct header h;
-	// XXX don't alloc
-	h.name = strndup(start, (uintptr_t)p - (uintptr_t)start);
-	if (!h.name) {
-		perror("strndup");
-		exit(2);
-	}
-
-	h.type = strndup(p + 1, (uintptr_t)end - 1 - (uintptr_t)p);
-	if (!h.type) {
-		perror("strndup");
-		exit(2);
-	}
-
-	return h;
-}
-
 static void
-add_header(struct header **headers, size_t *nheaders,
-		const struct header *header)
+add_header(struct header **headers, size_t *nheaders, char *start)
 {
 	(*nheaders)++;
 
@@ -97,7 +70,16 @@ add_header(struct header **headers, size_t *nheaders,
 		exit(2);
 	}
 
-	memcpy(&(*headers)[*nheaders - 1], header, sizeof(*header));
+	(*headers)[*nheaders - 1].name = start;
+
+	char *pipe = strchr(start, '|');
+	if (!pipe) {
+		fprintf(stderr, "one of the columns does not have type name\n");
+		exit(2);
+	}
+
+	*pipe = 0;
+	(*headers)[*nheaders - 1].type = pipe + 1;
 }
 
 struct data_pos {
@@ -213,27 +195,27 @@ main(int argc, char *argv[])
 	struct header *headers = NULL;
 	size_t nheaders = 0;
 
-	const char *start = line;
-	const char *comma;
+	char *start = line;
+	char *comma;
 	do {
 		comma = strchr(start, ',');
 		if (comma) {
-			struct header h = parse_header(start, comma);
+			*comma = 0;
 
-			add_header(&headers, &nheaders, &h);
+			add_header(&headers, &nheaders, start);
 
 			start = comma + 1;
 		}
 	} while (comma);
 
-	const char *nl = strchr(start, '\n');
+	char *nl = strchr(start, '\n');
 	if (!nl) {
 		fprintf(stderr, "corrupted input\n");
 		exit(2);
 	}
+	*nl = 0;
 
-	struct header h = parse_header(start, nl);
-	add_header(&headers, &nheaders, &h);
+	add_header(&headers, &nheaders, start);
 
 	for (size_t i = 0; i < nconditions; ++i) {
 		bool found = false;
@@ -253,20 +235,15 @@ main(int argc, char *argv[])
 		}
 	}
 
-	// XXX use header info
-	printf("%s", line);
-
-	free(line);
-
-//	for (size_t i = 0; i < nheaders; ++i)
-//		printf("'%s' '%s'\n", headers[i].name, headers[i].type);
+	for (size_t i = 0; i < nheaders - 1; ++i)
+		printf("%s|%s,", headers[i].name, headers[i].type);
+	printf("%s|%s\n", headers[nheaders - 1].name, headers[nheaders - 1].type);
 
 	struct data_pos *positions = malloc(nheaders * sizeof(positions[0]));
 	if (!positions) {
 		perror("malloc");
 		exit(2);
 	}
-
 
 	int eof = 0;
 	size_t buflen = 0;
@@ -381,6 +358,8 @@ main(int argc, char *argv[])
 		start_off = ready;
 		ready += readin;
 	}
+
+	free(line);
 
 	return 0;
 }
