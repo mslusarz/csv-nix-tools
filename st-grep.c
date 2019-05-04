@@ -62,8 +62,7 @@ struct header {
 static struct header
 parse_header(const char *start, const char *end)
 {
-	// XXX change format
-	const char *p = strchr(start, '(');
+	const char *p = strchr(start, '|');
 	if (!p || p >= end) {
 		fprintf(stderr, "one of the columns does not have type name\n");
 		exit(2);
@@ -77,7 +76,7 @@ parse_header(const char *start, const char *end)
 		exit(2);
 	}
 
-	h.type = strndup(p + 1, (uintptr_t)end - 1 - (uintptr_t)p - 1);
+	h.type = strndup(p + 1, (uintptr_t)end - 1 - (uintptr_t)p);
 	if (!h.type) {
 		perror("strndup");
 		exit(2);
