@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.3)
-project(st C)
+project(csv-nix-tools C)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 	if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
@@ -26,9 +26,14 @@ configure_file(
 	"${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
 	IMMEDIATE @ONLY)
 
-install(FILES ${CMAKE_BINARY_DIR}/st-ls.pc
-	DESTINATION ${CMAKE_INSTALL_BINDIR}/)
+add_executable(csv-ls ls.c)
+add_executable(csv-format format.c)
+add_executable(csv-grep grep.c)
 
-add_executable(st-ls st-ls.c)
-add_executable(st-format st-format.c)
-add_executable(st-grep st-grep.c)
+install(FILES ${CMAKE_BINARY_DIR}/csv-ls
+	DESTINATION ${CMAKE_INSTALL_BINDIR}/)
+install(FILES ${CMAKE_BINARY_DIR}/csv-grep
+	DESTINATION ${CMAKE_INSTALL_BINDIR}/)
+#install(FILES ${CMAKE_BINARY_DIR}/csv-format
+#	DESTINATION ${CMAKE_INSTALL_BINDIR}/)
+
