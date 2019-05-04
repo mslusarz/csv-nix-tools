@@ -94,8 +94,10 @@ unquot(const char *str)
 	size_t len = strlen(str);
 	char *n = malloc(len);
 	size_t idx = 0;
-	if (str[0] != '"')
+	if (str[0] != '"' || str[len - 1] != '"') {
+		fprintf(stderr, "internal error - can't unquot string that is not quoted\n");
 		abort();
+	}
 
 	for (size_t i = 1; i < len - 1; ++i) {
 		n[idx++] = str[i];
@@ -375,8 +377,11 @@ main(int argc, char *argv[])
 				} else if (buf[i] == '"') {
 					// if we are not at the beginning of
 					// a column, then the stream is corrupted
-					if (i != col_offs[column])
-						abort(); // XXX
+					if (i != col_offs[column]) {
+						fprintf(stderr,
+							"corrupted stream - \" in the middle of unquoted string\n");
+						exit(2);
+					}
 
 					// switch to quoted string logic
 					in_quoted_string = true;
@@ -398,8 +403,10 @@ main(int argc, char *argv[])
 		if (ready == buflen) {
 			buflen += 1024;
 			buf = realloc(buf, buflen);
-			if (!buf)
-				abort();
+			if (!buf) {
+				perror("realloc");
+				exit(2);
+			}
 		}
 
 		size_t nmemb = buflen - ready;
