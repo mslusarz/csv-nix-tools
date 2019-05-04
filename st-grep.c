@@ -82,9 +82,35 @@ add_header(struct header **headers, size_t *nheaders, char *start)
 	(*headers)[*nheaders - 1].type = pipe + 1;
 }
 
+struct condition {
+	char *column;
+	char *value;
+	size_t col_num;
+};
+
+static char *
+unquot(const char *str)
+{
+	size_t len = strlen(str);
+	char *n = malloc(len);
+	size_t idx = 0;
+	if (str[0] != '"')
+		abort();
+
+	for (size_t i = 1; i < len - 1; ++i) {
+		n[idx++] = str[i];
+		if (str[i] == '"')
+			++i;
+	}
+	n[idx] = 0;
+
+	return n;
+}
+
 static void
 yield_row(const char *buf, const size_t *col_offs, struct header *headers,
-		size_t nheaders)
+		size_t nheaders, struct condition *conditions,
+		size_t nconditions, bool invert)
 {
 #if 0
 	for (size_t i = 0; i < nheaders; ++i) {
@@ -93,6 +119,46 @@ yield_row(const char *buf, const size_t *col_offs, struct header *headers,
 		printf("' end of column %ld %s\n", i, headers[i].name);
 	}
 #endif
+
+	if (invert) {
+		// !AA && !BB && !CC -> AA || BB || CCC
+		for (size_t i = 0; i < nconditions; ++i) {
+			const char *val = &buf[col_offs[conditions[i].col_num]];
+			const char *unquoted = val;
+			bool omit = false;
+
+			if (val[0] == '"')
+				unquoted = unquot(val);
+
+			if (strcmp(unquoted, conditions[i].value) == 0)
+				omit = true;
+
+			if (val[0] == '"')
+				free((char *)unquoted);
+
+			if (omit)
+				return;
+		}
+	} else {
+		// AA || BB || CC -> !AA && !BB && !CC
+		size_t numfalse = 0;
+		for (size_t i = 0; i < nconditions; ++i) {
+			const char *val = &buf[col_offs[conditions[i].col_num]];
+			const char *unquoted = val;
+
+			if (val[0] == '"')
+				unquoted = unquot(val);
+
+			if (strcmp(unquoted, conditions[i].value) != 0)
+				numfalse++;
+
+			if (val[0] == '"')
+				free((char *)unquoted);
+		}
+
+		if (numfalse == nconditions)
+			return;
+	}
 
 	for (size_t i = 0; i < nheaders - 1; ++i) {
 		fputs(&buf[col_offs[i]], stdout);
@@ -107,13 +173,7 @@ main(int argc, char *argv[])
 {
 	int opt;
 	int longindex;
-	int invert = 0;
-	struct condition {
-		char *column;
-		char *value;
-		size_t col_num;
-	};
-
+	bool invert = false;
 	struct condition *conditions = NULL;
 	size_t nconditions = 0;
 
@@ -162,7 +222,7 @@ main(int argc, char *argv[])
 				break;
 			}
 			case 'v':
-				invert = 1;
+				invert = true;
 				break;
 			case 'V':
 				printf("git\n");
@@ -296,7 +356,9 @@ main(int argc, char *argv[])
 					column++;
 					if (column == nheaders) {
 						yield_row(buf, col_offs,
-							headers, nheaders);
+							headers, nheaders,
+							conditions, nconditions,
+							invert);
 
 						i++;
 						memmove(&buf[0], &buf[i], ready - i);
