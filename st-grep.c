@@ -86,11 +86,20 @@ static void
 yield_row(const char *buf, const size_t *col_offs, struct header *headers,
 		size_t nheaders)
 {
+#if 0
 	for (size_t i = 0; i < nheaders; ++i) {
 		printf("column %ld: '", i);
 		fputs(&buf[col_offs[i]], stdout);
 		printf("' end of column %ld %s\n", i, headers[i].name);
 	}
+#endif
+
+	for (size_t i = 0; i < nheaders - 1; ++i) {
+		fputs(&buf[col_offs[i]], stdout);
+		fputs(",", stdout);
+	}
+	fputs(&buf[col_offs[nheaders - 1]], stdout);
+	fputs("\n", stdout);
 }
 
 int
