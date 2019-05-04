@@ -82,18 +82,13 @@ add_header(struct header **headers, size_t *nheaders, char *start)
 	(*headers)[*nheaders - 1].type = pipe + 1;
 }
 
-struct data_pos {
-	size_t start;
-	size_t len;
-};
-
 static void
-yield_row(const char *buf, struct data_pos *positions, struct header *headers,
+yield_row(const char *buf, const size_t *col_offs, struct header *headers,
 		size_t nheaders)
 {
 	for (size_t i = 0; i < nheaders; ++i) {
 		printf("column %ld: '", i);
-		fwrite(&buf[positions[i].start], 1, positions[i].len, stdout);
+		fputs(&buf[col_offs[i]], stdout);
 		printf("' end of column %ld %s\n", i, headers[i].name);
 	}
 }
@@ -239,8 +234,8 @@ main(int argc, char *argv[])
 		printf("%s|%s,", headers[i].name, headers[i].type);
 	printf("%s|%s\n", headers[nheaders - 1].name, headers[nheaders - 1].type);
 
-	struct data_pos *positions = malloc(nheaders * sizeof(positions[0]));
-	if (!positions) {
+	size_t *col_offs = malloc(nheaders * sizeof(col_offs[0]));
+	if (!col_offs) {
 		perror("malloc");
 		exit(2);
 	}
@@ -253,7 +248,7 @@ main(int argc, char *argv[])
 	int column = 0;
 	bool in_quoted_string = false;
 	bool last_char_was_quot = false;
-	positions[0].start = 0;
+	col_offs[0] = 0;
 	size_t start_off = 0;
 
 	while (1) {
@@ -288,10 +283,10 @@ main(int argc, char *argv[])
 			} else {
 				if (buf[i] == ',' || buf[i] == '\n') {
 					// end of non-quoted column
-					positions[column].len = i - positions[column].start;
+					buf[i] = 0;
 					column++;
 					if (column == nheaders) {
-						yield_row(buf, positions,
+						yield_row(buf, col_offs,
 							headers, nheaders);
 
 						i++;
@@ -304,12 +299,12 @@ main(int argc, char *argv[])
 
 					// move on to the next column
 					i++;
-					positions[column].start = i;
+					col_offs[column] = i;
 					continue;
 				} else if (buf[i] == '"') {
 					// if we are not at the beginning of
 					// a column, then the stream is corrupted
-					if (i != positions[column].start)
+					if (i != col_offs[column])
 						abort(); // XXX
 
 					// switch to quoted string logic
@@ -361,7 +356,7 @@ main(int argc, char *argv[])
 
 	free(line);
 	free(headers);
-	free(positions);
+	free(col_offs);
 	free(buf);
 
 	for (size_t i = 0; i < nconditions; ++i) {
