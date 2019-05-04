@@ -360,6 +360,16 @@ main(int argc, char *argv[])
 	}
 
 	free(line);
+	free(headers);
+	free(positions);
+	free(buf);
+
+	for (size_t i = 0; i < nconditions; ++i) {
+		free(conditions[i].column);
+		free(conditions[i].value);
+	}
+
+	free(conditions);
 
 	return 0;
 }
