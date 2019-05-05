@@ -26,14 +26,19 @@ configure_file(
 	"${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
 	IMMEDIATE @ONLY)
 
-add_executable(csv-ls ls.c)
-add_executable(csv-format format.c)
+add_executable(csv-columns columns.c parse.c)
+#add_executable(csv-format format.c)
 add_executable(csv-grep grep.c parse.c utils.c)
 add_executable(csv-head head.c parse.c utils.c)
+add_executable(csv-ls ls.c)
+add_executable(csv-rows rows.c parse.c)
 add_executable(csv-tail tail.c parse.c utils.c)
 
-install(FILES	${CMAKE_BINARY_DIR}/csv-ls
+install(FILES
+		${CMAKE_BINARY_DIR}/csv-columns
 		${CMAKE_BINARY_DIR}/csv-grep
 		${CMAKE_BINARY_DIR}/csv-head
+		${CMAKE_BINARY_DIR}/csv-ls
+		${CMAKE_BINARY_DIR}/csv-rows
 		${CMAKE_BINARY_DIR}/csv-tail
 	DESTINATION ${CMAKE_INSTALL_BINDIR}/)
