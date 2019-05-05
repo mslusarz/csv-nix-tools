@@ -72,28 +72,10 @@ next_row(const char *buf, const size_t *col_offs,
 
 	for (size_t i = 0; i < params->ncolumns; ++i) {
 		const char *val = &buf[col_offs[params->columns[i]]];
-		char *end;
 
-		errno = 0;
-		long long llval = strtoll(val, &end, 0);
-
-		if (llval == LLONG_MIN && errno) {
-			fprintf(stderr,
-				"value '%s' is too small\n", val);
+		long long llval;
+		if (strtoll_safe(val, &llval))
 			return -1;
-		}
-
-		if (llval == LLONG_MAX && errno) {
-			fprintf(stderr,
-				"value '%s' is too big\n", val);
-			return -1;
-		}
-
-		if (*end) {
-			fprintf(stderr,
-				"value '%s' doesn't convert to integer\n", val);
-			return -1;
-		}
 
 		if (llval > 0 && params->sums[i] > LLONG_MAX - llval) {
 			fprintf(stderr, "integer overflow\n");

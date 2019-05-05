@@ -30,6 +30,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <errno.h>
+#include <limits.h>
+#include <stdlib.h>
 #include "utils.h"
 
 void
@@ -51,4 +54,34 @@ csv_print_line(FILE *out, const char *buf, const size_t *col_offs,
 	}
 	fputs(&buf[col_offs[nheaders - 1]], stdout);
 	fputc('\n', stdout);
+}
+
+int
+strtoll_safe(const char *str, long long *val)
+{
+	char *end;
+
+	errno = 0;
+	long long llval = strtoll(str, &end, 0);
+
+	if (llval == LLONG_MIN && errno) {
+		fprintf(stderr,
+			"value '%s' is too small\n", str);
+		return -1;
+	}
+
+	if (llval == LLONG_MAX && errno) {
+		fprintf(stderr,
+			"value '%s' is too big\n", str);
+		return -1;
+	}
+
+	if (*end) {
+		fprintf(stderr,
+			"value '%s' doesn't convert to integer\n", str);
+		return -1;
+	}
+
+	*val = llval;
+	return 0;
 }

@@ -33,7 +33,8 @@ add_executable(csv-grep grep.c parse.c utils.c)
 add_executable(csv-head head.c parse.c utils.c)
 add_executable(csv-ls ls.c)
 add_executable(csv-rows rows.c parse.c)
-add_executable(csv-sum sum.c parse.c)
+add_executable(csv-sort sort.c parse.c utils.c)
+add_executable(csv-sum sum.c parse.c utils.c)
 add_executable(csv-tail tail.c parse.c utils.c)
 
 install(FILES
@@ -43,6 +44,7 @@ install(FILES
 		${CMAKE_BINARY_DIR}/csv-head
 		${CMAKE_BINARY_DIR}/csv-ls
 		${CMAKE_BINARY_DIR}/csv-rows
+		${CMAKE_BINARY_DIR}/csv-sort
 		${CMAKE_BINARY_DIR}/csv-sum
 		${CMAKE_BINARY_DIR}/csv-tail
 	DESTINATION ${CMAKE_INSTALL_BINDIR}/)

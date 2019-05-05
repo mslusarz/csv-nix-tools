@@ -41,4 +41,6 @@ void csv_print_header(FILE *out, const struct col_header *headers,
 void csv_print_line(FILE *out, const char *buf, const size_t *col_offs,
 		const struct col_header *headers, size_t nheaders);
 
+int strtoll_safe(const char *str, long long *val);
+
 #endif
