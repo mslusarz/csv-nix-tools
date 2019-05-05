@@ -154,6 +154,8 @@ main(int argc, char *argv[])
 		name = strtok(NULL, ",");
 	}
 
+	free(cols);
+
 	for (size_t i = 0; i < params.ncolumns - 1; ++i)
 		printf("%s|%s,", headers[params.columns[i]].name,
 				headers[params.columns[i]].type);
@@ -164,8 +166,6 @@ main(int argc, char *argv[])
 		exit(2);
 
 	csv_destroy_ctx(s);
-
-	free(cols);
 
 	return 0;
 }

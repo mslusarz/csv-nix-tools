@@ -192,6 +192,9 @@ main(int argc, char *argv[])
 
 		name = strtok(NULL, ",");
 	}
+
+	free(cols);
+
 	params.sums = calloc(params.ncolumns, sizeof(params.sums[0]));
 
 	for (size_t i = 0; i < params.ncolumns - 1; ++i)
@@ -208,8 +211,6 @@ main(int argc, char *argv[])
 	for (size_t i = 0; i < params.ncolumns - 1; ++i)
 		printf("%lld,", params.sums[i]);
 	printf("%lld\n", params.sums[params.ncolumns - 1]);
-
-	free(cols);
 
 	return 0;
 }
