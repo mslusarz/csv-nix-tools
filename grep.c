@@ -48,7 +48,7 @@ static const struct option long_options[] = {
 static void
 usage(void)
 {
-	printf("Usage: st-grep [OPTION]...\n");
+	printf("Usage: csv-grep [OPTION]...\n");
 	printf("Options:\n");
 	printf("  -e column=value\n");
 	printf("  -v\n");

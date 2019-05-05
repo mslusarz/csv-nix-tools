@@ -514,7 +514,7 @@ static const struct option long_options[] = {
 static void
 usage(void)
 {
-	printf("Usage: st-ls [OPTION]... [FILE]...\n");
+	printf("Usage: csv-ls [OPTION]... [FILE]...\n");
 	printf("Options:\n");
 	printf("  -a, --all\n");
 	printf("  -d, --directory\n");
