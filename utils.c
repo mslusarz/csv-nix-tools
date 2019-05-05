@@ -47,8 +47,8 @@ csv_print_line(FILE *out, const char *buf, const size_t *col_offs,
 {
 	for (size_t i = 0; i < nheaders - 1; ++i) {
 		fputs(&buf[col_offs[i]], stdout);
-		fputs(",", stdout);
+		fputc(',', stdout);
 	}
 	fputs(&buf[col_offs[nheaders - 1]], stdout);
-	fputs("\n", stdout);
+	fputc('\n', stdout);
 }

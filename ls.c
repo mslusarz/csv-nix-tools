@@ -273,10 +273,10 @@ print_quoted(const char *str)
 		fputs(str, stdout);
 		return;
 	}
-	fputs("\"", stdout);
+	fputc('"', stdout);
 	if (!quot) {
 		fputs(str, stdout);
-		fputs("\"", stdout);
+		fputc('"', stdout);
 		return;
 	}
 
@@ -284,12 +284,12 @@ print_quoted(const char *str)
 		size_t len = (uintptr_t)quot - (uintptr_t)str + 1;
 		fwrite(str, 1, len, stdout);
 		str += len;
-		fputs("\"", stdout);
+		fputc('"', stdout);
 		quot = strchr(str, '"');
 	} while (quot);
 
 	fputs(str, stdout);
-	fputs("\"", stdout);
+	fputc('"', stdout);
 }
 
 static void
@@ -332,26 +332,26 @@ print_stat(const char *dirpath, const char *path, struct stat *st,
 		printf("%s,", (st->st_mode & S_ISVTX) ? "1" : "0");
 
 		print_timespec(&st->st_mtim);
-		fputs(",", stdout);
+		fputc(',', stdout);
 
 		print_timespec(&st->st_ctim);
-		fputs(",", stdout);
+		fputc(',', stdout);
 
 		print_timespec(&st->st_atim);
-		fputs(",", stdout);
+		fputc(',', stdout);
 	}
 
 	if (S_ISLNK(st->st_mode) && symlink)
 		print_quoted(symlink);
-	fputs(",", stdout);
+	fputc(',', stdout);
 
 	if (dirpath)
 		print_quoted(dirpath);
-	fputs(",", stdout);
+	fputc(',', stdout);
 
 	print_quoted(path);
 
-	printf("\n");
+	fputc('\n', stdout);
 }
 
 static int

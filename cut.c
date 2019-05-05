@@ -70,10 +70,10 @@ next_row(const char *buf, const size_t *col_offs,
 
 	for (size_t i = 0; i < params->ncolumns - 1; ++i) {
 		fputs(&buf[col_offs[params->columns[i]]], stdout);
-		fputs(",", stdout);
+		fputc(',', stdout);
 	}
 	fputs(&buf[col_offs[params->columns[params->ncolumns - 1]]], stdout);
-	fputs("\n", stdout);
+	fputc('\n', stdout);
 
 	return 0;
 }
