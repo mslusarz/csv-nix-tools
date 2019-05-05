@@ -30,13 +30,10 @@ add_executable(csv-ls ls.c)
 add_executable(csv-format format.c)
 add_executable(csv-grep grep.c parse.c utils.c)
 add_executable(csv-head head.c parse.c utils.c)
+add_executable(csv-tail tail.c parse.c utils.c)
 
-install(FILES ${CMAKE_BINARY_DIR}/csv-ls
+install(FILES	${CMAKE_BINARY_DIR}/csv-ls
+		${CMAKE_BINARY_DIR}/csv-grep
+		${CMAKE_BINARY_DIR}/csv-head
+		${CMAKE_BINARY_DIR}/csv-tail
 	DESTINATION ${CMAKE_INSTALL_BINDIR}/)
-install(FILES ${CMAKE_BINARY_DIR}/csv-grep
-	DESTINATION ${CMAKE_INSTALL_BINDIR}/)
-install(FILES ${CMAKE_BINARY_DIR}/csv-head
-	DESTINATION ${CMAKE_INSTALL_BINDIR}/)
-#install(FILES ${CMAKE_BINARY_DIR}/csv-format
-#	DESTINATION ${CMAKE_INSTALL_BINDIR}/)
-
