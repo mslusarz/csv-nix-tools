@@ -38,6 +38,7 @@
 #include <string.h>
 
 #include "parse.h"
+#include "utils.h"
 
 static const struct option long_options[] = {
 	{"version",	no_argument,		NULL, 'V'},
@@ -139,12 +140,8 @@ next_row(const char *buf, const size_t *col_offs,
 			return 0;
 	}
 
-	for (size_t i = 0; i < nheaders - 1; ++i) {
-		fputs(&buf[col_offs[i]], stdout);
-		fputs(",", stdout);
-	}
-	fputs(&buf[col_offs[nheaders - 1]], stdout);
-	fputs("\n", stdout);
+
+	csv_print_line(stdout, buf, col_offs, headers, nheaders);
 
 	return 0;
 }
@@ -250,9 +247,7 @@ main(int argc, char *argv[])
 		}
 	}
 
-	for (size_t i = 0; i < nheaders - 1; ++i)
-		printf("%s|%s,", headers[i].name, headers[i].type);
-	printf("%s|%s\n", headers[nheaders - 1].name, headers[nheaders - 1].type);
+	csv_print_header(stdout, headers, nheaders);
 
 	struct cb_params params;
 	params.conditions = conditions;
