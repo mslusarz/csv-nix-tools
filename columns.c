@@ -52,11 +52,6 @@ usage(void)
 	printf("      --version\n");
 }
 
-struct cb_params {
-	size_t lines;
-	size_t printed;
-};
-
 int
 main(int argc, char *argv[])
 {

@@ -106,7 +106,7 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
-	if (csv_read_all(s, &next_row, &params) < 0)
+	if (csv_read_all(s, &next_row, &params))
 		exit(2);
 
 	csv_destroy_ctx(s);

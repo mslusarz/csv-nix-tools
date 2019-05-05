@@ -159,7 +159,7 @@ main(int argc, char *argv[])
 	csv_print_header(stdout, headers, nheaders);
 
 	if (params.nlines > 0)
-		if (csv_read_all(s, &next_row, &params) < 0)
+		if (csv_read_all(s, &next_row, &params))
 			exit(2);
 
 	csv_destroy_ctx(s);

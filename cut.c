@@ -160,7 +160,7 @@ main(int argc, char *argv[])
 	printf("%s|%s\n", headers[params.columns[params.ncolumns - 1]].name,
 			headers[params.columns[params.ncolumns - 1]].type);
 
-	if (csv_read_all(s, &next_row, &params) < 0)
+	if (csv_read_all(s, &next_row, &params))
 		exit(2);
 
 	csv_destroy_ctx(s);
