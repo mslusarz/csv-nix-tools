@@ -37,6 +37,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "parse.h"
+
 static const struct option long_options[] = {
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
@@ -52,34 +54,6 @@ usage(void)
 	printf("  -v\n");
 	printf("      --help\n");
 	printf("      --version\n");
-}
-
-struct header {
-	char *name;
-	char *type;
-};
-
-static void
-add_header(struct header **headers, size_t *nheaders, char *start)
-{
-	(*nheaders)++;
-
-	*headers = realloc(*headers, (*nheaders) * sizeof((*headers)[0]));
-	if (!*headers) {
-		perror("realloc");
-		exit(2);
-	}
-
-	(*headers)[*nheaders - 1].name = start;
-
-	char *pipe = strchr(start, '|');
-	if (!pipe) {
-		fprintf(stderr, "one of the columns does not have type name\n");
-		exit(2);
-	}
-
-	*pipe = 0;
-	(*headers)[*nheaders - 1].type = pipe + 1;
 }
 
 struct condition {
@@ -109,18 +83,21 @@ unquot(const char *str)
 	return n;
 }
 
-static void
-yield_row(const char *buf, const size_t *col_offs, struct header *headers,
-		size_t nheaders, struct condition *conditions,
-		size_t nconditions, bool invert)
+struct cb_params {
+	struct condition *conditions;
+	size_t nconditions;
+	bool invert;
+};
+
+static int
+next_row(const char *buf, const size_t *col_offs,
+		const struct col_header *headers, size_t nheaders,
+		void *arg)
 {
-#if 0
-	for (size_t i = 0; i < nheaders; ++i) {
-		printf("column %ld: '", i);
-		fputs(&buf[col_offs[i]], stdout);
-		printf("' end of column %ld %s\n", i, headers[i].name);
-	}
-#endif
+	struct cb_params *params = arg;
+	struct condition *conditions = params->conditions;
+	size_t nconditions = params->nconditions;
+	bool invert = params->invert;
 
 	if (invert) {
 		// !AA && !BB && !CC -> AA || BB || CCC
@@ -139,7 +116,7 @@ yield_row(const char *buf, const size_t *col_offs, struct header *headers,
 				free((char *)unquoted);
 
 			if (omit)
-				return;
+				return 0;
 		}
 	} else {
 		// AA || BB || CC -> !AA && !BB && !CC
@@ -159,7 +136,7 @@ yield_row(const char *buf, const size_t *col_offs, struct header *headers,
 		}
 
 		if (numfalse == nconditions)
-			return;
+			return 0;
 	}
 
 	for (size_t i = 0; i < nheaders - 1; ++i) {
@@ -168,6 +145,8 @@ yield_row(const char *buf, const size_t *col_offs, struct header *headers,
 	}
 	fputs(&buf[col_offs[nheaders - 1]], stdout);
 	fputs("\n", stdout);
+
+	return 0;
 }
 
 int
@@ -245,43 +224,13 @@ main(int argc, char *argv[])
 		}
 	}
 
-//	for (size_t i = 0; i < nconditions; ++i) {
-//		printf("'%s' = '%s'\n", conditions[i].column,
-//				conditions[i].value);
-//	}
-
-	char *line = NULL;
-	size_t buf_size = 0;
-	ssize_t line_len = getline(&line, &buf_size, stdin);
-	if (line_len < 1) {
-		perror("getline");
+	struct csv_ctx *s = csv_create_ctx(stdin, stderr);
+	if (!s)
 		exit(2);
-	}
-
-	struct header *headers = NULL;
-	size_t nheaders = 0;
-
-	char *start = line;
-	char *comma;
-	do {
-		comma = strchr(start, ',');
-		if (comma) {
-			*comma = 0;
-
-			add_header(&headers, &nheaders, start);
-
-			start = comma + 1;
-		}
-	} while (comma);
-
-	char *nl = strchr(start, '\n');
-	if (!nl) {
-		fprintf(stderr, "corrupted input\n");
+	if (csv_read_header(s))
 		exit(2);
-	}
-	*nl = 0;
-
-	add_header(&headers, &nheaders, start);
+	const struct col_header *headers;
+	size_t nheaders = csv_get_headers(s, &headers);
 
 	for (size_t i = 0; i < nconditions; ++i) {
 		bool found = false;
@@ -305,137 +254,13 @@ main(int argc, char *argv[])
 		printf("%s|%s,", headers[i].name, headers[i].type);
 	printf("%s|%s\n", headers[nheaders - 1].name, headers[nheaders - 1].type);
 
-	size_t *col_offs = malloc(nheaders * sizeof(col_offs[0]));
-	if (!col_offs) {
-		perror("malloc");
+	struct cb_params params;
+	params.conditions = conditions;
+	params.nconditions = nconditions;
+	params.invert = invert;
+
+	if (csv_read_all(s, &next_row, &params))
 		exit(2);
-	}
-
-	int eof = 0;
-	size_t buflen = 0;
-	char *buf = NULL;
-	size_t ready = 0;
-
-	int column = 0;
-	bool in_quoted_string = false;
-	bool last_char_was_quot = false;
-	col_offs[0] = 0;
-	size_t start_off = 0;
-
-	while (1) {
-		size_t i = start_off;
-		while (i < ready) {
-			if (last_char_was_quot) {
-				if (buf[i] == '"') {
-					// this character was escaped
-
-					// so switch back to in_quot_string logic
-					last_char_was_quot = false;
-
-					// and continue from the next character
-					i++;
-					continue;
-				}
-
-				// last " was end of quoted string
-
-				// so reset quoting logic
-				last_char_was_quot = false;
-				in_quoted_string = false;
-
-				// and continue from the *same* character
-				continue;
-			} else if (in_quoted_string) {
-				if (buf[i] == '"')
-					last_char_was_quot = true;
-
-				i++;
-				continue;
-			} else {
-				if (buf[i] == ',' || buf[i] == '\n') {
-					// end of non-quoted column
-					buf[i] = 0;
-					column++;
-					if (column == nheaders) {
-						yield_row(buf, col_offs,
-							headers, nheaders,
-							conditions, nconditions,
-							invert);
-
-						i++;
-						memmove(&buf[0], &buf[i], ready - i);
-						ready -= i;
-						i = 0;
-						column = 0;
-						continue;
-					}
-
-					// move on to the next column
-					i++;
-					col_offs[column] = i;
-					continue;
-				} else if (buf[i] == '"') {
-					// if we are not at the beginning of
-					// a column, then the stream is corrupted
-					if (i != col_offs[column]) {
-						fprintf(stderr,
-							"corrupted stream - \" in the middle of unquoted string\n");
-						exit(2);
-					}
-
-					// switch to quoted string logic
-					in_quoted_string = true;
-
-					// and continue from the next character
-					i++;
-					continue;
-				} else {
-					// we are in the middle of a column
-					i++;
-					continue;
-				}
-			}
-		}
-
-		if (eof)
-			break;
-
-		if (ready == buflen) {
-			buflen += 1024;
-			buf = realloc(buf, buflen);
-			if (!buf) {
-				perror("realloc");
-				exit(2);
-			}
-		}
-
-		size_t nmemb = buflen - ready;
-		/*
-		 * Don't ask for too much, otherwise memove after each row
-		 * becomes a perf problem. TODO: figure out how to fix this
-		 * without impacting code readability.
-		 */
-		if (nmemb > 100)
-			nmemb = 100;
-
-		size_t readin = fread(&buf[ready], 1, nmemb, stdin);
-		if (readin < nmemb) {
-			if (feof(stdin)) {
-				eof = 1;
-			} else {
-				perror("fread");
-				exit(2);
-			}
-		}
-
-		start_off = ready;
-		ready += readin;
-	}
-
-	free(line);
-	free(headers);
-	free(col_offs);
-	free(buf);
 
 	for (size_t i = 0; i < nconditions; ++i) {
 		free(conditions[i].column);
@@ -443,6 +268,8 @@ main(int argc, char *argv[])
 	}
 
 	free(conditions);
+
+	csv_destroy_ctx(s);
 
 	return 0;
 }

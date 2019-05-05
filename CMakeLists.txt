@@ -28,7 +28,7 @@ configure_file(
 
 add_executable(csv-ls ls.c)
 add_executable(csv-format format.c)
-add_executable(csv-grep grep.c)
+add_executable(csv-grep grep.c parse.c)
 
 install(FILES ${CMAKE_BINARY_DIR}/csv-ls
 	DESTINATION ${CMAKE_INSTALL_BINDIR}/)
