@@ -254,7 +254,7 @@ csv_read_all(struct csv_ctx *ctx, csv_row_cb cb, void *arg)
 
 		size_t nmemb = buflen - ready;
 		/*
-		 * Don't ask for too much, otherwise memove after each row
+		 * Don't ask for too much, otherwise memmove after each row
 		 * becomes a perf problem. TODO: figure out how to fix this
 		 * without impacting code readability.
 		 */
