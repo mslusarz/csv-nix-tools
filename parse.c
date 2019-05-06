@@ -170,23 +170,20 @@ csv_read_all(struct csv_ctx *ctx, csv_row_cb cb, void *arg)
 
 					// and continue from the next character
 					i++;
-					continue;
+				} else {
+					// last " was end of quoted string
+
+					// so reset quoting logic
+					last_char_was_quot = false;
+					in_quoted_string = false;
+
+					// and continue from the *same* character
 				}
-
-				// last " was end of quoted string
-
-				// so reset quoting logic
-				last_char_was_quot = false;
-				in_quoted_string = false;
-
-				// and continue from the *same* character
-				continue;
 			} else if (in_quoted_string) {
 				if (buf[i] == '"')
 					last_char_was_quot = true;
 
 				i++;
-				continue;
 			} else if (buf[i] == ',' || buf[i] == '\n') {
 				// end of non-quoted column
 				buf[i] = 0;
@@ -203,13 +200,11 @@ csv_read_all(struct csv_ctx *ctx, csv_row_cb cb, void *arg)
 					ready -= i;
 					i = 0;
 					column = 0;
-					continue;
+				} else {
+					// move on to the next column
+					i++;
+					col_offs[column] = i;
 				}
-
-				// move on to the next column
-				i++;
-				col_offs[column] = i;
-				continue;
 			} else if (buf[i] == '"') {
 				// if we are not at the beginning of
 				// a column, then the stream is corrupted
@@ -225,11 +220,9 @@ csv_read_all(struct csv_ctx *ctx, csv_row_cb cb, void *arg)
 
 				// and continue from the next character
 				i++;
-				continue;
 			} else {
 				// we are in the middle of a column
 				i++;
-				continue;
 			}
 		}
 
