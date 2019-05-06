@@ -187,54 +187,49 @@ csv_read_all(struct csv_ctx *ctx, csv_row_cb cb, void *arg)
 
 				i++;
 				continue;
-			} else {
-				if (buf[i] == ',' || buf[i] == '\n') {
-					// end of non-quoted column
-					buf[i] = 0;
-					column++;
-					if (column == ctx->nheaders) {
-						if (cb(buf, col_offs,
-							ctx->headers,
-							ctx->nheaders,
-							arg)) {
-							ret = 1;
-							goto end;
-						}
-
-						i++;
-						memmove(&buf[0], &buf[i],
-							ready - i);
-						ready -= i;
-						i = 0;
-						column = 0;
-						continue;
-					}
-
-					// move on to the next column
-					i++;
-					col_offs[column] = i;
-					continue;
-				} else if (buf[i] == '"') {
-					// if we are not at the beginning of
-					// a column, then the stream is corrupted
-					if (i != col_offs[column]) {
-						fprintf(ctx->err,
-							"corrupted stream - \" in the middle of unquoted string\n");
-						ret = -1;
+			} else if (buf[i] == ',' || buf[i] == '\n') {
+				// end of non-quoted column
+				buf[i] = 0;
+				column++;
+				if (column == ctx->nheaders) {
+					if (cb(buf, col_offs, ctx->headers,
+						ctx->nheaders, arg)) {
+						ret = 1;
 						goto end;
 					}
 
-					// switch to quoted string logic
-					in_quoted_string = true;
-
-					// and continue from the next character
 					i++;
-					continue;
-				} else {
-					// we are in the middle of a column
-					i++;
+					memmove(&buf[0], &buf[i], ready - i);
+					ready -= i;
+					i = 0;
+					column = 0;
 					continue;
 				}
+
+				// move on to the next column
+				i++;
+				col_offs[column] = i;
+				continue;
+			} else if (buf[i] == '"') {
+				// if we are not at the beginning of
+				// a column, then the stream is corrupted
+				if (i != col_offs[column]) {
+					fprintf(ctx->err,
+						"corrupted stream - \" in the middle of unquoted string\n");
+					ret = -1;
+					goto end;
+				}
+
+				// switch to quoted string logic
+				in_quoted_string = true;
+
+				// and continue from the next character
+				i++;
+				continue;
+			} else {
+				// we are in the middle of a column
+				i++;
+				continue;
 			}
 		}
 
