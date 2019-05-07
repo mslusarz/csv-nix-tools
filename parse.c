@@ -73,7 +73,7 @@ csv_destroy_ctx(struct csv_ctx *ctx)
 static int
 add_header(struct csv_ctx *ctx, char *start)
 {
-	char *pipe = strchr(start, '|');
+	char *pipe = strchr(start, ':');
 	if (!pipe) {
 		fprintf(ctx->err, "one of the columns does not have type name\n");
 		return -1;

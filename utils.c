@@ -39,8 +39,8 @@ void
 csv_print_header(FILE *out, const struct col_header *headers, size_t nheaders)
 {
 	for (size_t i = 0; i < nheaders - 1; ++i)
-		fprintf(out, "%s|%s,", headers[i].name, headers[i].type);
-	fprintf(out, "%s|%s\n", headers[nheaders - 1].name,
+		fprintf(out, "%s:%s,", headers[i].name, headers[i].type);
+	fprintf(out, "%s:%s\n", headers[nheaders - 1].name,
 			headers[nheaders - 1].type);
 }
 

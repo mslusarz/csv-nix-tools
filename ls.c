@@ -583,48 +583,48 @@ main(int argc, char *argv[])
 		argc++;
 	}
 
-	printf("size|int,"
-		"type|int,"
-		"mode|int,"
-		"owner_id|int,"
-		"group_id|int,"
-		"nlink|int,"
-		"mtime_sec|int,"
-		"mtime_nsec|int,"
-		"ctime_sec|int,"
-		"ctime_nsec|int,"
-		"atime_sec|int,"
-		"atime_nsec|int,"
-		"dev|int,"
-		"ino|int,"
-		"rdev|int,"
-		"blksize|int,"
-		"blocks|int,");
+	printf("size:int,"
+		"type:int,"
+		"mode:int,"
+		"owner_id:int,"
+		"group_id:int,"
+		"nlink:int,"
+		"mtime_sec:int,"
+		"mtime_nsec:int,"
+		"ctime_sec:int,"
+		"ctime_nsec:int,"
+		"atime_sec:int,"
+		"atime_nsec:int,"
+		"dev:int,"
+		"ino:int,"
+		"rdev:int,"
+		"blksize:int,"
+		"blocks:int,");
 
 	if (long_format) {
-		printf("type|string,"
-			"owner_name|string,"
-			"group_name|string,"
-			"owner_read|bool,"
-			"owner_write|bool,"
-			"owner_execute|bool,"
-			"group_read|bool,"
-			"group_write|bool,"
-			"group_execute|bool,"
-			"other_read|bool,"
-			"other_write|bool,"
-			"other_execute|bool,"
-			"setuid|bool,"
-			"setgid|bool,"
-			"sticky|bool,"
-			"mtime|string,"
-			"ctime|string,"
-			"atime|string,");
+		printf("type:string,"
+			"owner_name:string,"
+			"group_name:string,"
+			"owner_read:bool,"
+			"owner_write:bool,"
+			"owner_execute:bool,"
+			"group_read:bool,"
+			"group_write:bool,"
+			"group_execute:bool,"
+			"other_read:bool,"
+			"other_write:bool,"
+			"other_execute:bool,"
+			"setuid:bool,"
+			"setgid:bool,"
+			"sticky:bool,"
+			"mtime:string,"
+			"ctime:string,"
+			"atime:string,");
 	}
 
-	printf("symlink|string,"
-		"parent|string,"
-		"name|string\n");
+	printf("symlink:string,"
+		"parent:string,"
+		"name:string\n");
 
 	for (int i = optind; i < argc; ++i) {
 		int fd = openat(AT_FDCWD, argv[i], O_PATH | O_NOFOLLOW);

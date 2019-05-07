@@ -22,28 +22,28 @@ sudo make install
 raw data about one file
 ```
 $ csv-ls build/Makefile
-size|int,type|int,mode|int,owner_id|int,group_id|int,nlink|int,mtime_sec|int,mtime_nsec|int,ctime_sec|int,ctime_nsec|int,atime_sec|int,atime_nsec|int,dev|int,ino|int,rdev|int,blksize|int,blocks|int,symlink|string,parent|string,name|string
+size:int,type:int,mode:int,owner_id:int,group_id:int,nlink:int,mtime_sec:int,mtime_nsec:int,ctime_sec:int,ctime_nsec:int,atime_sec:int,atime_nsec:int,dev:int,ino:int,rdev:int,blksize:int,blocks:int,symlink:string,parent:string,name:string
 18746,0100000,0644,1000,1000,1,1557072822,286415067,1557072822,286415067,1557072849,958066747,0x801,16126121,0,4096,40,,,./build/Makefile
 ```
 
 raw and processed data about one file
 ```
 $ csv-ls -l build/Makefile
-size|int,type|int,mode|int,owner_id|int,group_id|int,nlink|int,mtime_sec|int,mtime_nsec|int,ctime_sec|int,ctime_nsec|int,atime_sec|int,atime_nsec|int,dev|int,ino|int,rdev|int,blksize|int,blocks|int,type|string,owner_name|string,group_name|string,owner_read|bool,owner_write|bool,owner_execute|bool,group_read|bool,group_write|bool,group_execute|bool,other_read|bool,other_write|bool,other_execute|bool,setuid|bool,setgid|bool,sticky|bool,mtime|string,ctime|string,atime|string,symlink|string,parent|string,name|string
+size:int,type:int,mode:int,owner_id:int,group_id:int,nlink:int,mtime_sec:int,mtime_nsec:int,ctime_sec:int,ctime_nsec:int,atime_sec:int,atime_nsec:int,dev:int,ino:int,rdev:int,blksize:int,blocks:int,type:string,owner_name:string,group_name:string,owner_read:bool,owner_write:bool,owner_execute:bool,group_read:bool,group_write:bool,group_execute:bool,other_read:bool,other_write:bool,other_execute:bool,setuid:bool,setgid:bool,sticky:bool,mtime:string,ctime:string,atime:string,symlink:string,parent:string,name:string
 18746,0100000,0644,1000,1000,1,1557072822,286415067,1557072822,286415067,1557072849,958066747,0x801,16126121,0,4096,40,reg,marcin,marcin,1,1,0,1,0,0,1,0,0,0,0,0,2019-05-05 18:13:42.286415067,2019-05-05 18:13:42.286415067,2019-05-05 18:14:09.958066747,,,./build/Makefile
 ```
 
 all Makefiles in current directory and below
 ```
 $ csv-ls -R . | csv-grep -e name=Makefile | csv-cut -f size,parent,name
-size|int,parent|string,name|string
+size:int,parent:string,name:string
 18746,./build,Makefile
 ```
 
 files and their sizes sorted by size and name, in descending order
 ```
 $ csv-ls | csv-sort -r -f size,name | csv-cut -f size,name
-size|int,name|string
+size:int,name:string
 14660,ls.c
 7238,sort.c
 6297,parse.c
@@ -85,14 +85,14 @@ $ csv-ls -lR / 2>/dev/null | csv-grep -e other_read=1 | csv-cut -f parent,name
 sum of sizes of all files in the current directory
 ```
 $ csv-ls . | csv-sum -f size
-sum(size)|int
+sum(size):int
 78739
 ```
 
 4 biggest files in the current directory
 ```
 $ csv-ls . | csv-sort -r -f size | csv-head -n 4 | csv-cut -f size,name
-size|int,name|string
+size:int,name:string
 14660,ls.c
 7238,sort.c
 6297,parse.c
@@ -111,7 +111,7 @@ sum of file sizes and real allocated blocks in the current directory
   (TODO multiplication of blocks and blksize)
 ```
 $ csv-ls | csv-cut -f size,blocks,blksize | csv-sum -f size,blocks
-sum(size)|int,sum(blocks)|int
+sum(size):int,sum(blocks):int
 78893,232
 ```
 
