@@ -58,6 +58,58 @@ struct ht {
 	size_t inserted;
 };
 
+struct visible_columns {
+	struct {
+		char size;
+		char type;
+		char mode;
+		char owner_id;
+		char group_id;
+		char nlink;
+		char mtime_sec;
+		char mtime_nsec;
+		char ctime_sec;
+		char ctime_nsec;
+		char atime_sec;
+		char atime_nsec;
+		char dev;
+		char ino;
+		char rdev;
+		char blksize;
+		char blocks;
+
+		char symlink;
+		char parent;
+		char name;
+	} base;
+
+	struct {
+		char type_name;
+		char owner_name;
+		char group_name;
+		char owner_read;
+		char owner_write;
+		char owner_execute;
+		char group_read;
+		char group_write;
+		char group_execute;
+		char other_read;
+		char other_write;
+		char other_execute;
+		char setuid;
+		char setgid;
+		char sticky;
+		char mtime;
+		char ctime;
+		char atime;
+	} ext;
+};
+
+struct visibility_info {
+	struct visible_columns cols;
+	size_t count;
+};
+
 static struct ht users_ht;
 static struct ht groups_ht;
 
@@ -243,7 +295,7 @@ get_file_type_long(mode_t m)
 	abort();
 }
 
-static void
+static int
 print_timespec(struct timespec *ts)
 {
 	int ret;
@@ -258,9 +310,10 @@ print_timespec(struct timespec *ts)
 		goto fallback;
 
 	printf("%s.%09ld", buf, ts->tv_nsec);
-	return;
+	return 1;
 fallback:
 	printf("%lu.%09lu", ts->tv_sec, ts->tv_nsec);
+	return 1;
 }
 
 static void
@@ -292,64 +345,115 @@ print_quoted(const char *str)
 	fputc('"', stdout);
 }
 
+static int
+pc(size_t printed, const struct visibility_info *visinfo)
+{
+	if (printed < visinfo->count)
+		fputc(',', stdout);
+	return 0;
+}
+
 static void
 print_stat(const char *dirpath, const char *path, struct stat *st,
-		const char *symlink, int long_format)
+		const char *symlink, const struct visibility_info *visinfo)
 {
-	printf("%ld,", st->st_size);
-	printf("0%o,", st->st_mode & S_IFMT);
-	printf("0%o,", st->st_mode & (S_IRWXU | S_IRWXG | S_IRWXO | S_ISUID | S_ISGID | S_ISVTX));
-	printf("%d,", st->st_uid);
-	printf("%d,", st->st_gid);
-	printf("%ld,", st->st_nlink);
-	printf("%ld,%ld,", st->st_mtim.tv_sec, st->st_mtim.tv_nsec);
-	printf("%ld,%ld,", st->st_ctim.tv_sec, st->st_ctim.tv_nsec);
-	printf("%ld,%ld,", st->st_atim.tv_sec, st->st_atim.tv_nsec);
-	printf("0x%lx,", st->st_dev);
-	printf("%ld,", st->st_ino);
-	if (st->st_rdev)
-		printf("0x%lx,", st->st_rdev);
-	else
-		printf("0,");
-	printf("%ld,", st->st_blksize);
-	printf("%ld,", st->st_blocks);
+	size_t printed = 0;
+	if (visinfo->cols.base.size)
+		printf("%ld", st->st_size) && pc(++printed, visinfo);
+	if (visinfo->cols.base.type)
+		printf("0%o", st->st_mode & S_IFMT) && pc(++printed, visinfo);
+	if (visinfo->cols.base.mode)
+		printf("0%o", st->st_mode & (S_IRWXU | S_IRWXG | S_IRWXO | S_ISUID | S_ISGID | S_ISVTX)) &&
+			pc(++printed, visinfo);
+	if (visinfo->cols.base.owner_id)
+		printf("%d", st->st_uid) && pc(++printed, visinfo);
+	if (visinfo->cols.base.group_id)
+		printf("%d", st->st_gid) && pc(++printed, visinfo);
+	if (visinfo->cols.base.nlink)
+		printf("%ld", st->st_nlink) && pc(++printed, visinfo);
+	if (visinfo->cols.base.mtime_sec)
+		printf("%ld", st->st_mtim.tv_sec) && pc(++printed, visinfo);
+	if (visinfo->cols.base.mtime_nsec)
+		printf("%ld", st->st_mtim.tv_nsec) && pc(++printed, visinfo);
+	if (visinfo->cols.base.ctime_sec)
+		printf("%ld", st->st_ctim.tv_sec) && pc(++printed, visinfo);
+	if (visinfo->cols.base.ctime_nsec)
+		printf("%ld", st->st_ctim.tv_nsec) && pc(++printed, visinfo);
+	if (visinfo->cols.base.atime_sec)
+		printf("%ld", st->st_atim.tv_sec) && pc(++printed, visinfo);
+	if (visinfo->cols.base.atime_nsec)
+		printf("%ld", st->st_atim.tv_nsec) && pc(++printed, visinfo);
+	if (visinfo->cols.base.dev)
+		printf("0x%lx", st->st_dev) && pc(++printed, visinfo);
+	if (visinfo->cols.base.ino)
+		printf("%ld", st->st_ino) && pc(++printed, visinfo);
+	if (visinfo->cols.base.rdev) {
+		if (st->st_rdev)
+			printf("0x%lx", st->st_rdev) && pc(++printed, visinfo);
+		else
+			printf("0") && pc(++printed, visinfo);
+	}
+	if (visinfo->cols.base.blksize)
+		printf("%ld", st->st_blksize) && pc(++printed, visinfo);
+	if (visinfo->cols.base.blocks)
+		printf("%ld", st->st_blocks) && pc(++printed, visinfo);
 
-	if (long_format) {
-		printf("%s,", get_file_type_long(st->st_mode));
-		printf("%s,", get_user(st->st_uid));
-		printf("%s,", get_group(st->st_uid));
-		printf("%s,", (st->st_mode & S_IRUSR) ? "1" : "0");
-		printf("%s,", (st->st_mode & S_IWUSR) ? "1" : "0");
-		printf("%s,", (st->st_mode & S_IXUSR) ? "1" : "0");
-		printf("%s,", (st->st_mode & S_IRGRP) ? "1" : "0");
-		printf("%s,", (st->st_mode & S_IWGRP) ? "1" : "0");
-		printf("%s,", (st->st_mode & S_IXGRP) ? "1" : "0");
-		printf("%s,", (st->st_mode & S_IROTH) ? "1" : "0");
-		printf("%s,", (st->st_mode & S_IWOTH) ? "1" : "0");
-		printf("%s,", (st->st_mode & S_IXOTH) ? "1" : "0");
-		printf("%s,", (st->st_mode & S_ISUID) ? "1" : "0");
-		printf("%s,", (st->st_mode & S_ISGID) ? "1" : "0");
-		printf("%s,", (st->st_mode & S_ISVTX) ? "1" : "0");
+	if (visinfo->cols.ext.type_name)
+		printf("%s", get_file_type_long(st->st_mode)) && pc(++printed, visinfo);
+	if (visinfo->cols.ext.owner_name)
+		printf("%s", get_user(st->st_uid)) && pc(++printed, visinfo);
+	if (visinfo->cols.ext.group_name)
+		printf("%s", get_group(st->st_uid)) && pc(++printed, visinfo);
+	if (visinfo->cols.ext.owner_read)
+		printf("%s", (st->st_mode & S_IRUSR) ? "1" : "0") && pc(++printed, visinfo);
+	if (visinfo->cols.ext.owner_write)
+		printf("%s", (st->st_mode & S_IWUSR) ? "1" : "0") && pc(++printed, visinfo);
+	if (visinfo->cols.ext.owner_execute)
+		printf("%s", (st->st_mode & S_IXUSR) ? "1" : "0") && pc(++printed, visinfo);
+	if (visinfo->cols.ext.group_read)
+		printf("%s", (st->st_mode & S_IRGRP) ? "1" : "0") && pc(++printed, visinfo);
+	if (visinfo->cols.ext.group_write)
+		printf("%s", (st->st_mode & S_IWGRP) ? "1" : "0") && pc(++printed, visinfo);
+	if (visinfo->cols.ext.group_execute)
+		printf("%s", (st->st_mode & S_IXGRP) ? "1" : "0") && pc(++printed, visinfo);
+	if (visinfo->cols.ext.other_read)
+		printf("%s", (st->st_mode & S_IROTH) ? "1" : "0") && pc(++printed, visinfo);
+	if (visinfo->cols.ext.other_write)
+		printf("%s", (st->st_mode & S_IWOTH) ? "1" : "0") && pc(++printed, visinfo);
+	if (visinfo->cols.ext.other_execute)
+		printf("%s", (st->st_mode & S_IXOTH) ? "1" : "0") && pc(++printed, visinfo);
+	if (visinfo->cols.ext.setuid)
+		printf("%s", (st->st_mode & S_ISUID) ? "1" : "0") && pc(++printed, visinfo);
+	if (visinfo->cols.ext.setgid)
+		printf("%s", (st->st_mode & S_ISGID) ? "1" : "0") && pc(++printed, visinfo);
+	if (visinfo->cols.ext.sticky)
+		printf("%s", (st->st_mode & S_ISVTX) ? "1" : "0") && pc(++printed, visinfo);
 
-		print_timespec(&st->st_mtim);
-		fputc(',', stdout);
+	if (visinfo->cols.ext.mtime)
+		print_timespec(&st->st_mtim) && pc(++printed, visinfo);
 
-		print_timespec(&st->st_ctim);
-		fputc(',', stdout);
+	if (visinfo->cols.ext.ctime)
+		print_timespec(&st->st_ctim) && pc(++printed, visinfo);
 
-		print_timespec(&st->st_atim);
-		fputc(',', stdout);
+	if (visinfo->cols.ext.atime)
+		print_timespec(&st->st_atim) && pc(++printed, visinfo);
+
+	if (visinfo->cols.base.symlink) {
+		if (S_ISLNK(st->st_mode) && symlink)
+			print_quoted(symlink);
+		pc(++printed, visinfo);
 	}
 
-	if (S_ISLNK(st->st_mode) && symlink)
-		print_quoted(symlink);
-	fputc(',', stdout);
+	if (visinfo->cols.base.parent) {
+		if (dirpath)
+			print_quoted(dirpath);
+		pc(++printed, visinfo);
+	}
 
-	if (dirpath)
-		print_quoted(dirpath);
-	fputc(',', stdout);
-
-	print_quoted(path);
+	if (visinfo->cols.base.name) {
+		print_quoted(path);
+		pc(++printed, visinfo);
+	}
 
 	fputc('\n', stdout);
 }
@@ -362,7 +466,7 @@ alphasort_caseinsensitive(const struct dirent **a, const struct dirent **b)
 
 static int
 list(const char *dirpath, int dirfd, int recursive, int all, int sort,
-		int long_format)
+		const struct visibility_info *visinfo)
 {
 	int ret = 0;
 	struct dirent **namelist;
@@ -457,7 +561,7 @@ restart_readlink:
 		} while (0);
 
 		print_stat(dirpath, namelist[i]->d_name, &statbuf, symlink,
-				long_format);
+				visinfo);
 
 		if (S_ISLNK(statbuf.st_mode))
 			free(symlink);
@@ -486,7 +590,7 @@ restart_readlink:
 
 		strcpy(path + pos, dirs[j]);
 
-		ret |= list(path, fd, recursive, all, sort, long_format);
+		ret |= list(path, fd, recursive, all, sort, visinfo);
 
 		close(fd);
 	}
@@ -505,6 +609,7 @@ dirs_alloc_fail:
 static const struct option long_options[] = {
 	{"all",		no_argument, 		NULL, 'a'},
 	{"directory",	no_argument,		NULL, 'd'},
+	{"fields",	required_argument,	NULL, 'f'},
 	{"recursive",	no_argument,		NULL, 'R'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
@@ -518,6 +623,7 @@ usage(void)
 	printf("Options:\n");
 	printf("  -a, --all\n");
 	printf("  -d, --directory\n");
+	printf("  -f, --fields=name1[,name2...]\n");
 	printf("  -l\n");
 	printf("  -R, --recursive\n");
 	printf("  -U\n");
@@ -525,14 +631,33 @@ usage(void)
 	printf("      --version\n");
 }
 
+static void
+eval_col(char vis, const char *str, int print, size_t *visible_count, size_t count)
+{
+	if (!vis)
+		return;
+	(*visible_count)++;
+	if (!print)
+		return;
+
+	fputs(str, stdout);
+
+	if (*visible_count < count)
+		fputc(',', stdout);
+}
+
 int
 main(int argc, char *argv[])
 {
 	int opt, ret = 0;
-	int dir = 0, long_format = 0, recursive = 0, all = 0, sort = 1;
+	int dir = 0, recursive = 0, all = 0, sort = 1;
 	int longindex;
+	char *cols = NULL;
+	struct visible_columns vis;
+	memset(&vis, 0, sizeof(vis));
+	memset(&vis.base, 1, sizeof(vis.base));
 
-	while ((opt = getopt_long(argc, argv, "adlRU", long_options,
+	while ((opt = getopt_long(argc, argv, "adf:lRU", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'a':
@@ -541,8 +666,11 @@ main(int argc, char *argv[])
 			case 'd':
 				dir = 1;
 				break;
+			case 'f':
+				cols = strdup(optarg);
+				break;
 			case 'l':
-				long_format = 1;
+				memset(&vis.ext, 1, sizeof(vis.ext));
 				break;
 			case 'R':
 				recursive = 1;
@@ -583,48 +711,129 @@ main(int argc, char *argv[])
 		argc++;
 	}
 
-	printf("size:int,"
-		"type:int,"
-		"mode:int,"
-		"owner_id:int,"
-		"group_id:int,"
-		"nlink:int,"
-		"mtime_sec:int,"
-		"mtime_nsec:int,"
-		"ctime_sec:int,"
-		"ctime_nsec:int,"
-		"atime_sec:int,"
-		"atime_nsec:int,"
-		"dev:int,"
-		"ino:int,"
-		"rdev:int,"
-		"blksize:int,"
-		"blocks:int,");
+	if (cols) {
+		memset(&vis, 0, sizeof(vis));
 
-	if (long_format) {
-		printf("type_name:string,"
-			"owner_name:string,"
-			"group_name:string,"
-			"owner_read:bool,"
-			"owner_write:bool,"
-			"owner_execute:bool,"
-			"group_read:bool,"
-			"group_write:bool,"
-			"group_execute:bool,"
-			"other_read:bool,"
-			"other_write:bool,"
-			"other_execute:bool,"
-			"setuid:bool,"
-			"setgid:bool,"
-			"sticky:bool,"
-			"mtime:string,"
-			"ctime:string,"
-			"atime:string,");
+		const struct {
+			const char *name;
+			char *vis;
+		} map[] = {
+				{ "size", &vis.base.size },
+				{ "type", &vis.base.type },
+				{ "mode", &vis.base.mode },
+				{ "owner_id", &vis.base.owner_id },
+				{ "group_id", &vis.base.group_id },
+				{ "nlink", &vis.base.nlink },
+				{ "mtime_sec", &vis.base.mtime_sec },
+				{ "mtime_nsec", &vis.base.mtime_nsec },
+				{ "ctime_sec", &vis.base.ctime_sec },
+				{ "ctime_nsec", &vis.base.ctime_nsec },
+				{ "atime_sec", &vis.base.atime_sec },
+				{ "atime_nsec", &vis.base.atime_nsec },
+				{ "dev", &vis.base.dev },
+				{ "ino", &vis.base.ino },
+				{ "rdev", &vis.base.rdev },
+				{ "blksize", &vis.base.blksize },
+				{ "blocks", &vis.base.blocks },
+
+				{ "symlink", &vis.base.symlink },
+				{ "parent", &vis.base.parent },
+				{ "name", &vis.base.name },
+
+				{ "type_name", &vis.ext.type_name },
+				{ "owner_name", &vis.ext.owner_name },
+				{ "group_name", &vis.ext.group_name },
+				{ "owner_read", &vis.ext.owner_read },
+				{ "owner_write", &vis.ext.owner_write },
+				{ "owner_execute", &vis.ext.owner_execute },
+				{ "group_read", &vis.ext.group_read },
+				{ "group_write", &vis.ext.group_write },
+				{ "group_execute", &vis.ext.group_execute },
+				{ "other_read", &vis.ext.other_read },
+				{ "other_write", &vis.ext.other_write },
+				{ "other_execute", &vis.ext.other_execute },
+				{ "setuid", &vis.ext.setuid },
+				{ "setgid", &vis.ext.setgid },
+				{ "sticky", &vis.ext.sticky },
+				{ "mtime", &vis.ext.mtime },
+				{ "ctime", &vis.ext.ctime },
+				{ "atime", &vis.ext.atime },
+		};
+
+		char *name = strtok(cols, ",");
+		while (name) {
+			int found = 0;
+			for (size_t i = 0; i < sizeof(map) / sizeof(map[0]); ++i) {
+				if (strcmp(name, map[i].name) == 0) {
+					*map[i].vis = 1;
+					found = 1;
+					break;
+				}
+			}
+
+			if (!found) {
+				fprintf(stderr, "column %s not found\n", name);
+				exit(2);
+			}
+
+			name = strtok(NULL, ",");
+		}
+
+		free(cols);
 	}
 
-	printf("symlink:string,"
-		"parent:string,"
-		"name:string\n");
+	size_t visible = 0;
+	size_t count = sizeof(vis) + 1;
+	int print = 0;
+
+	do {
+		eval_col(vis.base.size, "size:int", print, &visible, count);
+		eval_col(vis.base.type, "type:int", print, &visible, count);
+		eval_col(vis.base.mode, "mode:int", print, &visible, count);
+		eval_col(vis.base.owner_id, "owner_id:int", print, &visible, count);
+		eval_col(vis.base.group_id, "group_id:int", print, &visible, count);
+		eval_col(vis.base.nlink, "nlink:int", print, &visible, count);
+		eval_col(vis.base.mtime_sec, "mtime_sec:int", print, &visible, count);
+		eval_col(vis.base.mtime_nsec, "mtime_nsec:int", print, &visible, count);
+		eval_col(vis.base.ctime_sec, "ctime_sec:int", print, &visible, count);
+		eval_col(vis.base.ctime_nsec, "ctime_nsec:int", print, &visible, count);
+		eval_col(vis.base.atime_sec, "atime_sec:int", print, &visible, count);
+		eval_col(vis.base.atime_nsec, "atime_nsec:int", print, &visible, count);
+		eval_col(vis.base.dev, "dev:int", print, &visible, count);
+		eval_col(vis.base.ino, "ino:int", print, &visible, count);
+		eval_col(vis.base.rdev, "rdev:int", print, &visible, count);
+		eval_col(vis.base.blksize, "blksize:int", print, &visible, count);
+		eval_col(vis.base.blocks, "blocks:int", print, &visible, count);
+
+		eval_col(vis.ext.type_name, "type_name:string", print, &visible, count);
+		eval_col(vis.ext.owner_name, "owner_name:string", print, &visible, count);
+		eval_col(vis.ext.group_name, "group_name:string", print, &visible, count);
+		eval_col(vis.ext.owner_read, "owner_read:bool", print, &visible, count);
+		eval_col(vis.ext.owner_write, "owner_write:bool", print, &visible, count);
+		eval_col(vis.ext.owner_execute, "owner_execute:bool", print, &visible, count);
+		eval_col(vis.ext.group_read, "group_read:bool", print, &visible, count);
+		eval_col(vis.ext.group_write, "group_write:bool", print, &visible, count);
+		eval_col(vis.ext.group_execute, "group_execute:bool", print, &visible, count);
+		eval_col(vis.ext.other_read, "other_read:bool", print, &visible, count);
+		eval_col(vis.ext.other_write, "other_write:bool", print, &visible, count);
+		eval_col(vis.ext.other_execute, "other_execute:bool", print, &visible, count);
+		eval_col(vis.ext.setuid, "setuid:bool", print, &visible, count);
+		eval_col(vis.ext.setgid, "setgid:bool", print, &visible, count);
+		eval_col(vis.ext.sticky, "sticky:bool", print, &visible, count);
+		eval_col(vis.ext.mtime, "mtime:string", print, &visible, count);
+		eval_col(vis.ext.ctime, "ctime:string", print, &visible, count);
+		eval_col(vis.ext.atime, "atime:string", print, &visible, count);
+
+		eval_col(vis.base.symlink, "symlink:string", print, &visible, count);
+		eval_col(vis.base.parent, "parent:string", print, &visible, count);
+		eval_col(vis.base.name, "name:string", print, &visible, count);
+		count = visible;
+		visible = 0;
+		print++;
+	} while (print == 1);
+
+	printf("\n");
+	struct visibility_info visinfo = {vis, count};
 
 	for (int i = optind; i < argc; ++i) {
 		int fd = openat(AT_FDCWD, argv[i], O_PATH | O_NOFOLLOW);
@@ -646,8 +855,7 @@ main(int argc, char *argv[])
 		}
 
 		if (S_ISDIR(buf.st_mode) && !dir) {
-			ret |= list(argv[i], fd, recursive, all, sort,
-					long_format);
+			ret |= list(argv[i], fd, recursive, all, sort, &visinfo);
 		} else {
 			char *symlink = NULL;
 			if (S_ISLNK(buf.st_mode)) do {
@@ -683,7 +891,7 @@ restart_readlink:
 				}
 			} while (0);
 
-			print_stat(NULL, argv[i], &buf, symlink, long_format);
+			print_stat(NULL, argv[i], &buf, symlink, &visinfo);
 		}
 
 		close(fd);
