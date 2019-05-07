@@ -602,7 +602,7 @@ main(int argc, char *argv[])
 		"blocks:int,");
 
 	if (long_format) {
-		printf("type:string,"
+		printf("type_name:string,"
 			"owner_name:string,"
 			"group_name:string,"
 			"owner_read:bool,"
