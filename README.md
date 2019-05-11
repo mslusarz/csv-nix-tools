@@ -7,6 +7,7 @@ This project is in early prototyping stage.
 
 # Requirements
 - cmake >= 3.3
+- glibc-devel
 
 # How to build
 ```sh

@@ -30,6 +30,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/*
+ * required to get:
+ *  O_PATH
+ *  hcreate_r
+ *  hdestroy_t
+ *  hsearch_r
+ *  asprintf
+ *  scandirat
+ */
 #define _GNU_SOURCE
 
 #include <dirent.h>

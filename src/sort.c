@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/* required to get qsort_r */
 #define _GNU_SOURCE
 
 #include <errno.h>
