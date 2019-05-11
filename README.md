@@ -3,7 +3,7 @@
 
 csv-nix-tools is a collection of tools for gathering and processing system information using csv as an intermediate format.
 
-This project is in very early prototyping stage. Don't use it for anything important.
+This project is in early prototyping stage.
 
 # Requirements
 - cmake >= 3.3
