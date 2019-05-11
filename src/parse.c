@@ -99,10 +99,17 @@ add_header(struct csv_ctx *ctx, char *start)
 int
 csv_read_header(struct csv_ctx *ctx)
 {
-	ssize_t line_len = getline(&ctx->header_line, &ctx->header_line_size,
-			ctx->in);
+	ssize_t line_len;
+
+	errno = 0;
+	line_len = getline(&ctx->header_line, &ctx->header_line_size, ctx->in);
 	if (line_len < 1) {
-		fprintf(ctx->err, "getline: %s\n", strerror(errno));
+		if (errno)
+			fprintf(ctx->err, "getline: %s\n", strerror(errno));
+		else if (feof(ctx->in))
+			fprintf(ctx->err, "EOF\n");
+		else
+			fprintf(ctx->err, "unrecognized error from getline: %ld\n", line_len);
 		return -1;
 	}
 
