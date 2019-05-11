@@ -147,6 +147,12 @@ rows.c
 sort.c
 ```
 
+full paths of all files in current directory and below
+```
+$ csv-ls -R -f parent,name . | csv-concat -f parent -s "/" -f name -n full_path | csv-cut -f full_path
+....
+```
+
 # TODO (high level)
 - figure out how to let users use complex filters and export data (lua?)
 - more processing tools (add-column, delete-column, rename-column, format/printf, filter, exec, cat, tac, tr, sed, etc)

@@ -28,6 +28,7 @@ configure_file(
 	IMMEDIATE @ONLY)
 
 add_executable(csv-columns src/columns.c src/parse.c)
+add_executable(csv-concat src/concat.c src/parse.c src/utils.c)
 add_executable(csv-cut src/cut.c src/parse.c)
 add_executable(csv-grep src/grep.c src/parse.c src/utils.c)
 add_executable(csv-head src/head.c src/parse.c src/utils.c)
@@ -42,6 +43,7 @@ add_executable(csv-tail src/tail.c src/parse.c src/utils.c)
 
 install(FILES
 		${CMAKE_BINARY_DIR}/csv-columns
+		${CMAKE_BINARY_DIR}/csv-concat
 		${CMAKE_BINARY_DIR}/csv-cut
 		${CMAKE_BINARY_DIR}/csv-grep
 		${CMAKE_BINARY_DIR}/csv-head
