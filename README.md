@@ -123,11 +123,10 @@ $ csv-ls . | csv-rows --no-header
 ```
 
 sum of file sizes and real allocated blocks in the current directory
-  (TODO multiplication of blocks and blksize)
 ```
-$ csv-ls | csv-cut -f size,blocks,blksize | csv-sum -f size,blocks
-sum(size):int,sum(blocks):int
-78893,232
+$ csv-ls | csv-cut -f size,blocks | csv-rpn -e "space_used=blocks 512 *" | csv-sum -f size,blocks,space_used
+sum(size):int,sum(blocks):int,sum(space_used):int
+109679,288,147456
 ```
 
 list of files formatted in human-readable format (similar to ls -l) with disabled pager
