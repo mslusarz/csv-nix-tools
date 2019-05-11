@@ -163,9 +163,9 @@ main(int argc, char *argv[])
 
 	if (print_header) {
 		for (size_t i = 0; i < params.ncolumns - 1; ++i)
-			printf("%s|%s,", headers[params.columns[i]].name,
+			printf("%s:%s,", headers[params.columns[i]].name,
 					headers[params.columns[i]].type);
-		printf("%s|%s\n", headers[params.columns[params.ncolumns - 1]].name,
+		printf("%s:%s\n", headers[params.columns[params.ncolumns - 1]].name,
 				headers[params.columns[params.ncolumns - 1]].type);
 	}
 
