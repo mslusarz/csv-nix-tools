@@ -59,7 +59,6 @@ usage(void)
 	printf("  -n name1,name2\n");
 	printf("  -r, --reverse\n");
 	printf("  -p  --print-separator=yes/no/auto\n");
-	printf("  -v\n");
 	printf("      --no-header\n");
 	printf("      --help\n");
 	printf("      --version\n");
@@ -148,7 +147,7 @@ main(int argc, char *argv[])
 
 	memset(&params, 0, sizeof(params));
 
-	while ((opt = getopt_long(argc, argv, "f:p:s:n:rv", long_options,
+	while ((opt = getopt_long(argc, argv, "f:p:s:n:r", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'f':

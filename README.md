@@ -124,7 +124,7 @@ sum(size):int,sum(blocks):int
 78893,232
 ```
 
-list of files formatted in human-readable format (similar to ls) with disabled pager
+list of files formatted in human-readable format (similar to ls -l) with disabled pager
 ```
 $ csv-ls -l | csv-cut -f mode,nlink,owner_name,group_name,size,mtime,name | csv-show -s 1 -p no --no-header
 0644 1  someuser    somegroup    1234     2019-04-23 20:17:58.331813826 file1
