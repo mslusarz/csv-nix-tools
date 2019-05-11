@@ -39,6 +39,7 @@
 #include <grp.h>
 #include <pwd.h>
 #include <search.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -298,7 +299,7 @@ get_file_type_long(mode_t m)
 	abort();
 }
 
-static int
+static void
 print_timespec(struct timespec *ts)
 {
 	int ret;
@@ -313,120 +314,135 @@ print_timespec(struct timespec *ts)
 		goto fallback;
 
 	printf("%s.%09ld", buf, ts->tv_nsec);
-	return 1;
+	return;
 fallback:
 	printf("%lu.%09lu", ts->tv_sec, ts->tv_nsec);
-	return 1;
 }
 
-static int
-pc(size_t printed, const struct visibility_info *visinfo)
+struct stat_ctx {
+	size_t printed;
+	const struct visibility_info *visinfo;
+};
+
+static void
+stat_printf(struct stat_ctx *ctx, const char *format, ...)
 {
-	if (printed < visinfo->count)
+	va_list ap;
+
+	va_start(ap, format);
+	vprintf(format, ap);
+	va_end(ap);
+
+	if (++ctx->printed < ctx->visinfo->count)
 		fputc(',', stdout);
-	return 0;
 }
 
 static void
 print_stat(const char *dirpath, const char *path, struct stat *st,
 		const char *symlink, const struct visibility_info *visinfo)
 {
-	size_t printed = 0;
+	struct stat_ctx ctx = {0, visinfo};
+
 	if (visinfo->cols.base.size)
-		printf("%ld", st->st_size) && pc(++printed, visinfo);
+		stat_printf(&ctx, "%ld", st->st_size);
 	if (visinfo->cols.base.type)
-		printf("0%o", st->st_mode & S_IFMT) && pc(++printed, visinfo);
+		stat_printf(&ctx, "0%o", st->st_mode & S_IFMT);
 	if (visinfo->cols.base.mode)
-		printf("0%o", st->st_mode & (S_IRWXU | S_IRWXG | S_IRWXO | S_ISUID | S_ISGID | S_ISVTX)) &&
-			pc(++printed, visinfo);
+		stat_printf(&ctx, "0%o", st->st_mode & (S_IRWXU | S_IRWXG | S_IRWXO | S_ISUID | S_ISGID | S_ISVTX));
 	if (visinfo->cols.base.owner_id)
-		printf("%d", st->st_uid) && pc(++printed, visinfo);
+		stat_printf(&ctx, "%d", st->st_uid);
 	if (visinfo->cols.base.group_id)
-		printf("%d", st->st_gid) && pc(++printed, visinfo);
+		stat_printf(&ctx, "%d", st->st_gid);
 	if (visinfo->cols.base.nlink)
-		printf("%ld", st->st_nlink) && pc(++printed, visinfo);
+		stat_printf(&ctx, "%ld", st->st_nlink);
 	if (visinfo->cols.base.mtime_sec)
-		printf("%ld", st->st_mtim.tv_sec) && pc(++printed, visinfo);
+		stat_printf(&ctx, "%ld", st->st_mtim.tv_sec);
 	if (visinfo->cols.base.mtime_nsec)
-		printf("%ld", st->st_mtim.tv_nsec) && pc(++printed, visinfo);
+		stat_printf(&ctx, "%ld", st->st_mtim.tv_nsec);
 	if (visinfo->cols.base.ctime_sec)
-		printf("%ld", st->st_ctim.tv_sec) && pc(++printed, visinfo);
+		stat_printf(&ctx, "%ld", st->st_ctim.tv_sec);
 	if (visinfo->cols.base.ctime_nsec)
-		printf("%ld", st->st_ctim.tv_nsec) && pc(++printed, visinfo);
+		stat_printf(&ctx, "%ld", st->st_ctim.tv_nsec);
 	if (visinfo->cols.base.atime_sec)
-		printf("%ld", st->st_atim.tv_sec) && pc(++printed, visinfo);
+		stat_printf(&ctx, "%ld", st->st_atim.tv_sec);
 	if (visinfo->cols.base.atime_nsec)
-		printf("%ld", st->st_atim.tv_nsec) && pc(++printed, visinfo);
+		stat_printf(&ctx, "%ld", st->st_atim.tv_nsec);
 	if (visinfo->cols.base.dev)
-		printf("0x%lx", st->st_dev) && pc(++printed, visinfo);
+		stat_printf(&ctx, "0x%lx", st->st_dev);
 	if (visinfo->cols.base.ino)
-		printf("%ld", st->st_ino) && pc(++printed, visinfo);
+		stat_printf(&ctx, "%ld", st->st_ino);
 	if (visinfo->cols.base.rdev) {
 		if (st->st_rdev)
-			printf("0x%lx", st->st_rdev) && pc(++printed, visinfo);
+			stat_printf(&ctx, "0x%lx", st->st_rdev);
 		else
-			printf("0") && pc(++printed, visinfo);
+			stat_printf(&ctx, "0");
 	}
 	if (visinfo->cols.base.blksize)
-		printf("%ld", st->st_blksize) && pc(++printed, visinfo);
+		stat_printf(&ctx, "%ld", st->st_blksize);
 	if (visinfo->cols.base.blocks)
-		printf("%ld", st->st_blocks) && pc(++printed, visinfo);
+		stat_printf(&ctx, "%ld", st->st_blocks);
 
 	if (visinfo->cols.ext.type_name)
-		printf("%s", get_file_type_long(st->st_mode)) && pc(++printed, visinfo);
+		stat_printf(&ctx, "%s", get_file_type_long(st->st_mode));
 	if (visinfo->cols.ext.owner_name)
-		printf("%s", get_user(st->st_uid)) && pc(++printed, visinfo);
+		stat_printf(&ctx, "%s", get_user(st->st_uid));
 	if (visinfo->cols.ext.group_name)
-		printf("%s", get_group(st->st_uid)) && pc(++printed, visinfo);
+		stat_printf(&ctx, "%s", get_group(st->st_uid));
 	if (visinfo->cols.ext.owner_read)
-		printf("%s", (st->st_mode & S_IRUSR) ? "1" : "0") && pc(++printed, visinfo);
+		stat_printf(&ctx, "%s", (st->st_mode & S_IRUSR) ? "1" : "0");
 	if (visinfo->cols.ext.owner_write)
-		printf("%s", (st->st_mode & S_IWUSR) ? "1" : "0") && pc(++printed, visinfo);
+		stat_printf(&ctx, "%s", (st->st_mode & S_IWUSR) ? "1" : "0");
 	if (visinfo->cols.ext.owner_execute)
-		printf("%s", (st->st_mode & S_IXUSR) ? "1" : "0") && pc(++printed, visinfo);
+		stat_printf(&ctx, "%s", (st->st_mode & S_IXUSR) ? "1" : "0");
 	if (visinfo->cols.ext.group_read)
-		printf("%s", (st->st_mode & S_IRGRP) ? "1" : "0") && pc(++printed, visinfo);
+		stat_printf(&ctx, "%s", (st->st_mode & S_IRGRP) ? "1" : "0");
 	if (visinfo->cols.ext.group_write)
-		printf("%s", (st->st_mode & S_IWGRP) ? "1" : "0") && pc(++printed, visinfo);
+		stat_printf(&ctx, "%s", (st->st_mode & S_IWGRP) ? "1" : "0");
 	if (visinfo->cols.ext.group_execute)
-		printf("%s", (st->st_mode & S_IXGRP) ? "1" : "0") && pc(++printed, visinfo);
+		stat_printf(&ctx, "%s", (st->st_mode & S_IXGRP) ? "1" : "0");
 	if (visinfo->cols.ext.other_read)
-		printf("%s", (st->st_mode & S_IROTH) ? "1" : "0") && pc(++printed, visinfo);
+		stat_printf(&ctx, "%s", (st->st_mode & S_IROTH) ? "1" : "0");
 	if (visinfo->cols.ext.other_write)
-		printf("%s", (st->st_mode & S_IWOTH) ? "1" : "0") && pc(++printed, visinfo);
+		stat_printf(&ctx, "%s", (st->st_mode & S_IWOTH) ? "1" : "0");
 	if (visinfo->cols.ext.other_execute)
-		printf("%s", (st->st_mode & S_IXOTH) ? "1" : "0") && pc(++printed, visinfo);
+		stat_printf(&ctx, "%s", (st->st_mode & S_IXOTH) ? "1" : "0");
 	if (visinfo->cols.ext.setuid)
-		printf("%s", (st->st_mode & S_ISUID) ? "1" : "0") && pc(++printed, visinfo);
+		stat_printf(&ctx, "%s", (st->st_mode & S_ISUID) ? "1" : "0");
 	if (visinfo->cols.ext.setgid)
-		printf("%s", (st->st_mode & S_ISGID) ? "1" : "0") && pc(++printed, visinfo);
+		stat_printf(&ctx, "%s", (st->st_mode & S_ISGID) ? "1" : "0");
 	if (visinfo->cols.ext.sticky)
-		printf("%s", (st->st_mode & S_ISVTX) ? "1" : "0") && pc(++printed, visinfo);
+		stat_printf(&ctx, "%s", (st->st_mode & S_ISVTX) ? "1" : "0");
 
-	if (visinfo->cols.ext.mtime)
-		print_timespec(&st->st_mtim) && pc(++printed, visinfo);
+	if (visinfo->cols.ext.mtime) {
+		print_timespec(&st->st_mtim);
+		stat_printf(&ctx, "");
+	}
 
-	if (visinfo->cols.ext.ctime)
-		print_timespec(&st->st_ctim) && pc(++printed, visinfo);
+	if (visinfo->cols.ext.ctime) {
+		print_timespec(&st->st_ctim);
+		stat_printf(&ctx, "");
+	}
 
-	if (visinfo->cols.ext.atime)
-		print_timespec(&st->st_atim) && pc(++printed, visinfo);
+	if (visinfo->cols.ext.atime) {
+		print_timespec(&st->st_atim);
+		stat_printf(&ctx, "");
+	}
 
 	if (visinfo->cols.base.symlink) {
 		if (S_ISLNK(st->st_mode) && symlink)
 			csv_print_quoted(symlink, strlen(symlink));
-		pc(++printed, visinfo);
+		stat_printf(&ctx, "");
 	}
 
 	if (visinfo->cols.base.parent) {
 		if (dirpath)
 			csv_print_quoted(dirpath, strlen(dirpath));
-		pc(++printed, visinfo);
+		stat_printf(&ctx, "");
 	}
 
 	if (visinfo->cols.base.name) {
 		csv_print_quoted(path, strlen(path));
-		pc(++printed, visinfo);
+		stat_printf(&ctx, "");
 	}
 
 	fputc('\n', stdout);
