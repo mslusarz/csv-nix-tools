@@ -40,7 +40,12 @@ cat empty.txt | ../build/csv-cut 1> "${test_name}.stdout.candidate" 2> "${test_n
  
 TEST_CASE "simple pass-through"
 cat one-column-one-row.csv | ../build/csv-cut 1> "${test_name}.stdout.candidate" 2> "${test_name}.stderr.candidate"
-./assert.sh one-column-one-row.csv empty.txt "${test_name}" $show_detailed_differences
+./assert.sh cut-usage.txt empty.txt "${test_name}" $show_detailed_differences
+
+TEST_CASE "simple pass-through with -f"
+cat one-column-one-row.csv | ../build/csv-cut -f 1> "${test_name}.stdout.candidate" 2> "${test_name}.stderr.candidate"
+./assert.sh cut-usage.txt cut-no-fields-error.txt "${test_name}" $show_detailed_differences
+
 
 
 TEST_CASE "the only field using -f "
