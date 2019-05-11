@@ -111,6 +111,7 @@ main(int argc, char *argv[])
 
 	csv_destroy_ctx(s);
 
+	printf("rows:int\n");
 	printf("%lu\n", params.rows);
 
 	return 0;

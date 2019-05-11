@@ -104,6 +104,7 @@ $ csv-ls . | csv-sort -f size | csv-tail -n 4 | csv-cut -f size,name
 number of files in the current directory
 ```
 $ csv-ls . | csv-rows
+rows:int
 19
 ```
 

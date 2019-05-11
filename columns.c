@@ -88,6 +88,7 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
+	printf("columns:int\n");
 	printf("%lu\n", nheaders);
 
 	csv_destroy_ctx(s);
