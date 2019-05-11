@@ -147,7 +147,6 @@ $ csv-ls -l | csv-cut -f mode,nlink,owner_name,group_name,size,mtime,name | csv-
 # TODO (low level)
 - regexp support (grep)
 - switch to deal with new lines in shell-compatible way (see what coreutils' ls does)
-- switch to drop header
 
 ## Random ideas
 - ability to "join" (in SQL sense) multiple files?
