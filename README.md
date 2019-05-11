@@ -110,6 +110,12 @@ size:int,name:string,base:string,ext:string
 789,file3.ext.in,file3.ext,in
 ```
 
+sum of sizes of all files with "png" extension
+```
+$ csv-ls . | csv-split -f name -s . -n base,ext -r | csv-grep -e ext=png | csv-sum -f size --no-header
+94877
+```
+
 number of files in the current directory, without header
 ```
 $ csv-ls . | csv-rows --no-header
@@ -130,6 +136,15 @@ $ csv-ls -l | csv-cut -f mode,nlink,owner_name,group_name,size,mtime,name | csv-
 0644 1  someuser    somegroup    1234     2019-04-23 20:17:58.331813826 file1
 0644 1  someuser    somegroup    30381380 2019-04-23 20:18:25.539676175 file2
 0644 12 anotheruser anothergroup 897722   2019-04-24 23:21:46.644869396 file3
+```
+
+list of files whose 2nd character is 'o'
+```
+$ csv-ls | csv-substring -f name -n 2nd-char -s 1 -l 1 | csv-grep -e 2nd-char=o | csv-cut -f name --no-header
+columns.c
+concat.c
+rows.c
+sort.c
 ```
 
 # TODO (high level)
