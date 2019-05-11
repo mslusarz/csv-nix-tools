@@ -89,6 +89,84 @@ strtoll_safe(const char *str, long long *val)
 	return 0;
 }
 
+int
+strtoull_safe(const char *str, unsigned long long *val)
+{
+	char *end;
+
+	errno = 0;
+	unsigned long long ullval = strtoull(str, &end, 0);
+
+	if (ullval == ULLONG_MAX && errno) {
+		fprintf(stderr,
+			"value '%s' is too big\n", str);
+		return -1;
+	}
+
+	if (*end) {
+		fprintf(stderr,
+			"value '%s' doesn't convert to integer\n", str);
+		return -1;
+	}
+
+	*val = ullval;
+	return 0;
+}
+
+int
+strtol_safe(const char *str, long *val)
+{
+	char *end;
+
+	errno = 0;
+	long lval = strtol(str, &end, 0);
+
+	if (lval == LONG_MIN && errno) {
+		fprintf(stderr,
+			"value '%s' is too small\n", str);
+		return -1;
+	}
+
+	if (lval == LONG_MAX && errno) {
+		fprintf(stderr,
+			"value '%s' is too big\n", str);
+		return -1;
+	}
+
+	if (*end) {
+		fprintf(stderr,
+			"value '%s' doesn't convert to integer\n", str);
+		return -1;
+	}
+
+	*val = lval;
+	return 0;
+}
+
+int
+strtoul_safe(const char *str, unsigned long *val)
+{
+	char *end;
+
+	errno = 0;
+	unsigned long ulval = strtoul(str, &end, 0);
+
+	if (ulval == ULONG_MAX && errno) {
+		fprintf(stderr,
+			"value '%s' is too big\n", str);
+		return -1;
+	}
+
+	if (*end) {
+		fprintf(stderr,
+			"value '%s' doesn't convert to integer\n", str);
+		return -1;
+	}
+
+	*val = ulval;
+	return 0;
+}
+
 static char *
 strnchr(const char *str, int c, size_t len)
 {
@@ -126,4 +204,25 @@ csv_print_quoted(const char *str, size_t len)
 
 	fwrite(str, 1, len, stdout);
 	fputc('"', stdout);
+}
+
+char *
+csv_unquot(const char *str)
+{
+	size_t len = strlen(str);
+	char *n = malloc(len);
+	size_t idx = 0;
+	if (str[0] != '"' || str[len - 1] != '"') {
+		fprintf(stderr, "internal error - can't unquot string that is not quoted\n");
+		abort();
+	}
+
+	for (size_t i = 1; i < len - 1; ++i) {
+		n[idx++] = str[i];
+		if (str[i] == '"')
+			++i;
+	}
+	n[idx] = 0;
+
+	return n;
 }

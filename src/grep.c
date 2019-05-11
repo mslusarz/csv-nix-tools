@@ -65,27 +65,6 @@ struct condition {
 	size_t col_num;
 };
 
-static char *
-unquot(const char *str)
-{
-	size_t len = strlen(str);
-	char *n = malloc(len);
-	size_t idx = 0;
-	if (str[0] != '"' || str[len - 1] != '"') {
-		fprintf(stderr, "internal error - can't unquot string that is not quoted\n");
-		abort();
-	}
-
-	for (size_t i = 1; i < len - 1; ++i) {
-		n[idx++] = str[i];
-		if (str[i] == '"')
-			++i;
-	}
-	n[idx] = 0;
-
-	return n;
-}
-
 struct cb_params {
 	struct condition *conditions;
 	size_t nconditions;
@@ -110,7 +89,7 @@ next_row(const char *buf, const size_t *col_offs,
 			bool omit = false;
 
 			if (val[0] == '"')
-				unquoted = unquot(val);
+				unquoted = csv_unquot(val);
 
 			if (strcmp(unquoted, conditions[i].value) == 0)
 				omit = true;
@@ -129,7 +108,7 @@ next_row(const char *buf, const size_t *col_offs,
 			const char *unquoted = val;
 
 			if (val[0] == '"')
-				unquoted = unquot(val);
+				unquoted = csv_unquot(val);
 
 			if (strcmp(unquoted, conditions[i].value) != 0)
 				numfalse++;

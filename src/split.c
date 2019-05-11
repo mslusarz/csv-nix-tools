@@ -65,27 +65,6 @@ usage(void)
 	printf("      --version\n");
 }
 
-static char *
-unquot(const char *str)
-{
-	size_t len = strlen(str);
-	char *n = malloc(len);
-	size_t idx = 0;
-	if (str[0] != '"' || str[len - 1] != '"') {
-		fprintf(stderr, "internal error - can't unquot string that is not quoted\n");
-		abort();
-	}
-
-	for (size_t i = 1; i < len - 1; ++i) {
-		n[idx++] = str[i];
-		if (str[i] == '"')
-			++i;
-	}
-	n[idx] = 0;
-
-	return n;
-}
-
 struct cb_params {
 	size_t col;
 	char *separators;
@@ -106,7 +85,7 @@ next_row(const char *buf, const size_t *col_offs,
 	const char *str = &buf[col_offs[params->col]];
 	const char *unquoted = str;
 	if (str[0] == '"')
-		unquoted = unquot(str);
+		unquoted = csv_unquot(str);
 
 	const char *sep = params->separators;
 

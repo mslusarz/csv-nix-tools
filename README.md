@@ -124,6 +124,14 @@ sum(size):int,sum(blocks):int
 78893,232
 ```
 
+list of files formatted in human-readable format (similar to ls) with disabled pager
+```
+$ csv-ls -l | csv-cut -f mode,nlink,owner_name,group_name,size,mtime,name | csv-show -s 1 -p no --no-header
+0644 1  someuser    somegroup    1234     2019-04-23 20:17:58.331813826 file1
+0644 1  someuser    somegroup    30381380 2019-04-23 20:18:25.539676175 file2
+0644 12 anotheruser anothergroup 897722   2019-04-24 23:21:46.644869396 file3
+```
+
 # TODO (high level)
 - figure out how to let users use complex filters and export data (lua?)
 - more processing tools (add-column, delete-column, rename-column, format/printf, filter, exec, cat, tac, tr, sed, etc)
