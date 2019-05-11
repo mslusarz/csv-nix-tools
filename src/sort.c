@@ -251,33 +251,26 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
+	sort_params.columns = malloc(nheaders * sizeof(sort_params.columns[0]));
+	if (!sort_params.columns) {
+		fprintf(stderr, "malloc: %s\n", strerror(errno));
+		exit(2);
+	}
+
 	char *name = strtok(cols, ",");
 	while (name) {
-		int found = 0;
-		for (size_t i = 0; i < nheaders; ++i) {
-			if (strcmp(name, headers[i].name) != 0)
-				continue;
-
-			sort_params.ncolumns++;
-			sort_params.columns = realloc(sort_params.columns,
-					sort_params.ncolumns *
-					sizeof(sort_params.columns[0]));
-			if (!sort_params.columns) {
-				fprintf(stderr, "realloc: %s\n",
-						strerror(errno));
-				exit(2);
-			}
-
-			sort_params.columns[sort_params.ncolumns - 1] = i;
-
-			found = 1;
-			break;
-		}
-
-		if (!found) {
+		size_t idx = csv_find(headers, nheaders, name);
+		if (idx == CSV_NOT_FOUND) {
 			fprintf(stderr, "column %s not found\n", name);
 			exit(2);
 		}
+
+		if (sort_params.ncolumns == nheaders) {
+			fprintf(stderr, "duplicated columns\n");
+			exit(2);
+		}
+
+		sort_params.columns[sort_params.ncolumns++] = idx;
 
 		name = strtok(NULL, ",");
 	}

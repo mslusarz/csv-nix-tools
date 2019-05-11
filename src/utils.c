@@ -226,3 +226,14 @@ csv_unquot(const char *str)
 
 	return n;
 }
+
+size_t
+csv_find(const struct col_header *headers, size_t nheaders, const char *name)
+{
+	for (size_t i = 0; i < nheaders; ++i) {
+		if (strcmp(name, headers[i].name) == 0)
+			return i;
+	}
+
+	return CSV_NOT_FOUND;
+}

@@ -143,39 +143,31 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
+	params.columns = malloc(nheaders * sizeof(params.columns[0]));
+	if (!params.columns) {
+		fprintf(stderr, "malloc: %s\n", strerror(errno));
+		exit(2);
+	}
+
 	char *name = strtok(cols, ",");
 	while (name) {
-		int found = 0;
-		for (size_t i = 0; i < nheaders; ++i) {
-			if (strcmp(name, headers[i].name) != 0)
-				continue;
-
-			if (strcmp(headers[i].type, "int") != 0) {
-				fprintf(stderr,
-					"column %s is not an integer\n", name);
-				exit(2);
-			}
-
-			params.ncolumns++;
-			params.columns = realloc(params.columns,
-					params.ncolumns *
-					sizeof(params.columns[0]));
-			if (!params.columns) {
-				fprintf(stderr, "realloc: %s\n",
-						strerror(errno));
-				exit(2);
-			}
-
-			params.columns[params.ncolumns - 1] = i;
-
-			found = 1;
-			break;
-		}
-
-		if (!found) {
+		size_t idx = csv_find(headers, nheaders, name);
+		if (idx == CSV_NOT_FOUND) {
 			fprintf(stderr, "column %s not found\n", name);
 			exit(2);
 		}
+
+		if (strcmp(headers[idx].type, "int") != 0) {
+			fprintf(stderr, "column %s is not an integer\n", name);
+			exit(2);
+		}
+
+		if (params.ncolumns == nheaders) {
+			fprintf(stderr, "duplicated columns\n");
+			exit(2);
+		}
+
+		params.columns[params.ncolumns++] = idx;
 
 		name = strtok(NULL, ",");
 	}

@@ -29,7 +29,7 @@ configure_file(
 
 add_executable(csv-columns src/columns.c src/parse.c)
 add_executable(csv-concat src/concat.c src/parse.c src/utils.c)
-add_executable(csv-cut src/cut.c src/parse.c)
+add_executable(csv-cut src/cut.c src/parse.c src/utils.c)
 add_executable(csv-grep src/grep.c src/parse.c src/utils.c)
 add_executable(csv-head src/head.c src/parse.c src/utils.c)
 add_executable(csv-ls src/ls.c src/utils.c)

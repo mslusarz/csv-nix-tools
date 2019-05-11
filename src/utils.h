@@ -34,6 +34,7 @@
 #define CSV_UTILS_H
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stddef.h>
 #include "parse.h"
@@ -52,5 +53,10 @@ int strtoul_safe(const char *str, unsigned long *val);
 void csv_print_quoted(const char *str, size_t len);
 
 char *csv_unquot(const char *str);
+
+#define CSV_NOT_FOUND SIZE_MAX
+size_t csv_find(const struct col_header *headers,
+		size_t nheaders,
+		const char *name);
 
 #endif

@@ -184,21 +184,14 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
-	bool found = false;
-	for (size_t j = 0; j < nheaders; ++j) {
-		if (!found && strcmp(input_col, headers[j].name) == 0) {
-			found = true;
-			params.col = j;
-		}
-
-		if (strcmp(headers[j].name, new_name) == 0) {
-			fprintf(stderr, "column '%s' already exists in input\n",
-					headers[j].name);
-			exit(2);
-		}
+	if (csv_find(headers, nheaders, new_name) != CSV_NOT_FOUND) {
+		fprintf(stderr, "column '%s' already exists in input\n",
+				new_name);
+		exit(2);
 	}
 
-	if (!found) {
+	params.col = csv_find(headers, nheaders, input_col);
+	if (params.col == CSV_NOT_FOUND) {
 		fprintf(stderr, "column '%s' not found in input\n", input_col);
 		exit(2);
 	}

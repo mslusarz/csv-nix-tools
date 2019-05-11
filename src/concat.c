@@ -211,27 +211,25 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
+	if (csv_find(headers, nheaders, new_name) != CSV_NOT_FOUND) {
+		fprintf(stderr, "column '%s' already exists in input\n",
+				new_name);
+		exit(2);
+	}
+
 	for (size_t i = 0; i < params.count; ++i) {
 		if (!params.elements[i].is_column)
 			continue;
 
-		bool found = false;
-		for (size_t j = 0; j < nheaders; ++j) {
-			if (strcmp(params.elements[i].str, headers[j].name) != 0)
-				continue;
-
-			found = true;
-			free(params.elements[i].str);
-			params.elements[i].colnum = j;
-
-			break;
-		}
-
-		if (!found) {
+		size_t idx = csv_find(headers, nheaders, params.elements[i].str);
+		if (idx == CSV_NOT_FOUND) {
 			fprintf(stderr, "column '%s' not found in input\n",
 					params.elements[i].str);
 			exit(2);
 		}
+
+		free(params.elements[i].str);
+		params.elements[i].colnum = idx;
 	}
 
 	if (print_header) {

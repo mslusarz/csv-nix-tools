@@ -215,17 +215,10 @@ main(int argc, char *argv[])
 	size_t nheaders = csv_get_headers(s, &headers);
 
 	for (size_t i = 0; i < nconditions; ++i) {
-		bool found = false;
-		for (size_t j = 0; j < nheaders; ++j) {
-			found = strcmp(conditions[i].column, headers[j].name)
-					== 0;
-			if (found) {
-				conditions[i].col_num = j;
-				break;
-			}
-		}
+		conditions[i].col_num =
+			csv_find(headers, nheaders, conditions[i].column);
 
-		if (!found) {
+		if (conditions[i].col_num == CSV_NOT_FOUND) {
 			fprintf(stderr, "column '%s' not found in input\n",
 					conditions[i].column);
 			exit(2);

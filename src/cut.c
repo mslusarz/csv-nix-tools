@@ -165,22 +165,15 @@ main(int argc, char *argv[])
 	} else {
 		char *name = strtok(cols, ",");
 		while (name) {
-			int found = 0;
-			for (size_t i = 0; i < nheaders; ++i) {
-				if (strcmp(name, headers[i].name) != 0)
-					continue;
+			params.columns[params.ncolumns] =
+					csv_find(headers, nheaders, name);
 
-				params.columns[params.ncolumns++] = i;
-				found = 1;
-
-				break;
-			}
-
-			if (!found) {
+			if (params.columns[params.ncolumns] == CSV_NOT_FOUND) {
 				fprintf(stderr, "column %s not found\n", name);
 				exit(2);
 			}
 
+			params.ncolumns++;
 			name = strtok(NULL, ",");
 		}
 	}
