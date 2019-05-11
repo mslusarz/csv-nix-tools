@@ -1,0 +1,4 @@
+name:string,something:bool
+lorem ipsum,true
+not all that is gold,false
+something else,true
