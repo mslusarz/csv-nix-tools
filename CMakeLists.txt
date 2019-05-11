@@ -45,6 +45,7 @@ install(FILES
 		${CMAKE_BINARY_DIR}/csv-ls
 		${CMAKE_BINARY_DIR}/csv-rows
 		${CMAKE_BINARY_DIR}/csv-sort
+		${CMAKE_BINARY_DIR}/csv-split
 		${CMAKE_BINARY_DIR}/csv-sum
 		${CMAKE_BINARY_DIR}/csv-tail
 	DESTINATION ${CMAKE_INSTALL_BINDIR}/)
