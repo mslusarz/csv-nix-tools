@@ -1,0 +1,4 @@
+name:string,id:int,something:bool
+lorem ipsum,1,true
+not all that is gold,2,false
+something else,3,true
