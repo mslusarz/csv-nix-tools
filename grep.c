@@ -41,6 +41,7 @@
 #include "utils.h"
 
 static const struct option long_options[] = {
+	{"no-header",	no_argument,		NULL, 'H'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -53,6 +54,7 @@ usage(void)
 	printf("Options:\n");
 	printf("  -e column=value\n");
 	printf("  -v\n");
+	printf("      --no-header\n");
 	printf("      --help\n");
 	printf("      --version\n");
 }
@@ -154,6 +156,7 @@ main(int argc, char *argv[])
 	bool invert = false;
 	struct condition *conditions = NULL;
 	size_t nconditions = 0;
+	bool print_header = true;
 
 	while ((opt = getopt_long(argc, argv, "e:v", long_options,
 			&longindex)) != -1) {
@@ -199,6 +202,9 @@ main(int argc, char *argv[])
 
 				break;
 			}
+			case 'H':
+				print_header = false;
+				break;
 			case 'v':
 				invert = true;
 				break;
@@ -247,7 +253,8 @@ main(int argc, char *argv[])
 		}
 	}
 
-	csv_print_header(stdout, headers, nheaders);
+	if (print_header)
+		csv_print_header(stdout, headers, nheaders);
 
 	struct cb_params params;
 	params.conditions = conditions;

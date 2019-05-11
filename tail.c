@@ -32,6 +32,7 @@
 
 #include <errno.h>
 #include <getopt.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,6 +42,7 @@
 
 static const struct option long_options[] = {
 	{"lines",	required_argument,	NULL, 'n'},
+	{"no-header",	no_argument,		NULL, 'H'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -52,6 +54,7 @@ usage(void)
 	printf("Usage: csv-tail [OPTION]...\n");
 	printf("Options:\n");
 	printf("  -n, --lines=count\n");
+	printf("      --no-header\n");
 	printf("      --help\n");
 	printf("      --version\n");
 }
@@ -114,17 +117,20 @@ main(int argc, char *argv[])
 	int opt;
 	int longindex;
 	struct cb_params params;
+	bool print_header = true;
+
 	params.count = 0;
 	params.nlines = 0;
 
 	while ((opt = getopt_long(argc, argv, "n:v", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
-			case 'n': {
+			case 'n':
 				params.nlines = atoi(optarg);
-
 				break;
-			}
+			case 'H':
+				print_header = false;
+				break;
 			case 'V':
 				printf("git\n");
 				return 0;
@@ -156,7 +162,8 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
-	csv_print_header(stdout, headers, nheaders);
+	if (print_header)
+		csv_print_header(stdout, headers, nheaders);
 
 	if (params.nlines > 0)
 		if (csv_read_all(s, &next_row, &params))

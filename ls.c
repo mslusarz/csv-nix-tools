@@ -39,6 +39,7 @@
 #include <grp.h>
 #include <pwd.h>
 #include <search.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -610,6 +611,7 @@ static const struct option long_options[] = {
 	{"all",		no_argument, 		NULL, 'a'},
 	{"directory",	no_argument,		NULL, 'd'},
 	{"fields",	required_argument,	NULL, 'f'},
+	{"no-header",	no_argument,		NULL, 'H'},
 	{"recursive",	no_argument,		NULL, 'R'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
@@ -627,6 +629,7 @@ usage(void)
 	printf("  -l\n");
 	printf("  -R, --recursive\n");
 	printf("  -U\n");
+	printf("      --no-header\n");
 	printf("      --help\n");
 	printf("      --version\n");
 }
@@ -654,6 +657,8 @@ main(int argc, char *argv[])
 	int longindex;
 	char *cols = NULL;
 	struct visible_columns vis;
+	bool print_header = true;
+
 	memset(&vis, 0, sizeof(vis));
 	memset(&vis.base, 1, sizeof(vis.base));
 
@@ -668,6 +673,9 @@ main(int argc, char *argv[])
 				break;
 			case 'f':
 				cols = strdup(optarg);
+				break;
+			case 'H':
+				print_header = false;
 				break;
 			case 'l':
 				memset(&vis.ext, 1, sizeof(vis.ext));
@@ -829,10 +837,13 @@ main(int argc, char *argv[])
 		eval_col(vis.base.name, "name:string", print, &visible, count);
 		count = visible;
 		visible = 0;
-		print++;
+		if (print_header)
+			print++;
 	} while (print == 1);
 
-	printf("\n");
+	if (print_header)
+		printf("\n");
+
 	struct visibility_info visinfo = {vis, count};
 
 	for (int i = optind; i < argc; ++i) {

@@ -32,6 +32,7 @@
 
 #include <errno.h>
 #include <getopt.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,6 +42,7 @@
 
 static const struct option long_options[] = {
 	{"fields",	required_argument,	NULL, 'f'},
+	{"no-header",	no_argument,		NULL, 'H'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -52,6 +54,7 @@ usage(void)
 	printf("Usage: csv-cut [OPTION]...\n");
 	printf("Options:\n");
 	printf("  -f, --fields=name1[,name2...]\n");
+	printf("      --no-header\n");
 	printf("      --help\n");
 	printf("      --version\n");
 }
@@ -87,15 +90,17 @@ main(int argc, char *argv[])
 	params.columns = NULL;
 	params.ncolumns = 0;
 	char *cols = NULL;
+	bool print_header = true;
 
 	while ((opt = getopt_long(argc, argv, "f:v", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
-			case 'f': {
+			case 'f':
 				cols = strdup(optarg);
-
 				break;
-			}
+			case 'H':
+				print_header = false;
+				break;
 			case 'V':
 				printf("git\n");
 				return 0;
@@ -156,11 +161,13 @@ main(int argc, char *argv[])
 
 	free(cols);
 
-	for (size_t i = 0; i < params.ncolumns - 1; ++i)
-		printf("%s|%s,", headers[params.columns[i]].name,
-				headers[params.columns[i]].type);
-	printf("%s|%s\n", headers[params.columns[params.ncolumns - 1]].name,
-			headers[params.columns[params.ncolumns - 1]].type);
+	if (print_header) {
+		for (size_t i = 0; i < params.ncolumns - 1; ++i)
+			printf("%s|%s,", headers[params.columns[i]].name,
+					headers[params.columns[i]].type);
+		printf("%s|%s\n", headers[params.columns[params.ncolumns - 1]].name,
+				headers[params.columns[params.ncolumns - 1]].type);
+	}
 
 	if (csv_read_all(s, &next_row, &params))
 		exit(2);

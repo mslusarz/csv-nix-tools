@@ -101,10 +101,9 @@ $ csv-ls . | csv-sort -f size | csv-tail -n 4 | csv-cut -f size,name
 ...
 ```
 
-number of files in the current directory
+number of files in the current directory, without header
 ```
-$ csv-ls . | csv-rows
-rows:int
+$ csv-ls . | csv-rows --no-header
 19
 ```
 

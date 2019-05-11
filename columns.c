@@ -31,6 +31,7 @@
  */
 
 #include <getopt.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,6 +39,7 @@
 #include "parse.h"
 
 static const struct option long_options[] = {
+	{"no-header",	no_argument,		NULL, 'H'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -48,6 +50,7 @@ usage(void)
 {
 	printf("Usage: csv-columns [OPTION]...\n");
 	printf("Options:\n");
+	printf("      --no-header\n");
 	printf("      --help\n");
 	printf("      --version\n");
 }
@@ -57,10 +60,14 @@ main(int argc, char *argv[])
 {
 	int opt;
 	int longindex;
+	bool print_header = true;
 
 	while ((opt = getopt_long(argc, argv, "v", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
+			case 'H':
+				print_header = false;
+				break;
 			case 'V':
 				printf("git\n");
 				return 0;
@@ -88,7 +95,8 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
-	printf("columns:int\n");
+	if (print_header)
+		printf("columns:int\n");
 	printf("%lu\n", nheaders);
 
 	csv_destroy_ctx(s);
