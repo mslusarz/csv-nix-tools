@@ -32,7 +32,9 @@
 
 #include <errno.h>
 #include <limits.h>
+#include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include "utils.h"
 
 void
@@ -46,14 +48,15 @@ csv_print_header(FILE *out, const struct col_header *headers, size_t nheaders)
 
 void
 csv_print_line(FILE *out, const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t nheaders)
+		const struct col_header *headers, size_t nheaders, bool nl)
 {
 	for (size_t i = 0; i < nheaders - 1; ++i) {
 		fputs(&buf[col_offs[i]], stdout);
 		fputc(',', stdout);
 	}
 	fputs(&buf[col_offs[nheaders - 1]], stdout);
-	fputc('\n', stdout);
+	if (nl)
+		fputc('\n', stdout);
 }
 
 int
@@ -84,4 +87,43 @@ strtoll_safe(const char *str, long long *val)
 
 	*val = llval;
 	return 0;
+}
+
+static char *
+strnchr(const char *str, int c, size_t len)
+{
+	char *r = strchr(str, c);
+	if (r >= str + len)
+		return NULL;
+	return r;
+}
+
+void
+csv_print_quoted(const char *str, size_t len)
+{
+	const char *comma = strnchr(str, ',', len);
+	const char *nl = strnchr(str, '\n', len);
+	const char *quot = strnchr(str, '"', len);
+	if (!comma && !nl && !quot) {
+		fwrite(str, 1, len, stdout);
+		return;
+	}
+	fputc('"', stdout);
+	if (!quot) {
+		fwrite(str, 1, len, stdout);
+		fputc('"', stdout);
+		return;
+	}
+
+	do {
+		size_t curlen = (uintptr_t)quot - (uintptr_t)str + 1;
+		fwrite(str, 1, curlen, stdout);
+		str += curlen;
+		fputc('"', stdout);
+		len -= curlen;
+		quot = strnchr(str, '"', len);
+	} while (quot);
+
+	fwrite(str, 1, len, stdout);
+	fputc('"', stdout);
 }

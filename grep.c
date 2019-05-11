@@ -143,7 +143,7 @@ next_row(const char *buf, const size_t *col_offs,
 	}
 
 
-	csv_print_line(stdout, buf, col_offs, headers, nheaders);
+	csv_print_line(stdout, buf, col_offs, headers, nheaders, true);
 
 	return 0;
 }

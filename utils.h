@@ -33,14 +33,19 @@
 #ifndef CSV_UTILS_H
 #define CSV_UTILS_H
 
+#include <stdbool.h>
+#include <stdio.h>
+#include <stddef.h>
 #include "parse.h"
 
 void csv_print_header(FILE *out, const struct col_header *headers,
 		size_t nheaders);
 
 void csv_print_line(FILE *out, const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t nheaders);
+		const struct col_header *headers, size_t nheaders, bool nl);
 
 int strtoll_safe(const char *str, long long *val);
+
+void csv_print_quoted(const char *str, size_t len);
 
 #endif

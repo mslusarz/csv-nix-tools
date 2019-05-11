@@ -101,6 +101,15 @@ $ csv-ls . | csv-sort -f size | csv-tail -n 4 | csv-cut -f size,name
 ...
 ```
 
+files with names splitted into base and extension
+```
+$ csv-ls -f size,name | csv-split -f name -s . -n base,ext -r
+size:int,name:string,base:string,ext:string
+123,file1,file1,
+456,file2.ext,file2,ext
+789,file3.ext.in,file3.ext,in
+```
+
 number of files in the current directory, without header
 ```
 $ csv-ls . | csv-rows --no-header

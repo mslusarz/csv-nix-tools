@@ -183,7 +183,7 @@ static void
 print_line(struct line *line, const struct col_header *headers, size_t nheaders)
 {
 	csv_print_line(stdout, line->buf, line->col_offs, headers,
-			nheaders);
+			nheaders, true);
 
 	free(line->buf);
 	free(line->col_offs);

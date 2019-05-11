@@ -317,35 +317,6 @@ fallback:
 	return 1;
 }
 
-static void
-print_quoted(const char *str)
-{
-	const char *comma = strchr(str, ',');
-	const char *nl = strchr(str, '\n');
-	const char *quot = strchr(str, '"');
-	if (!comma && !nl && !quot) {
-		fputs(str, stdout);
-		return;
-	}
-	fputc('"', stdout);
-	if (!quot) {
-		fputs(str, stdout);
-		fputc('"', stdout);
-		return;
-	}
-
-	do {
-		size_t len = (uintptr_t)quot - (uintptr_t)str + 1;
-		fwrite(str, 1, len, stdout);
-		str += len;
-		fputc('"', stdout);
-		quot = strchr(str, '"');
-	} while (quot);
-
-	fputs(str, stdout);
-	fputc('"', stdout);
-}
-
 static int
 pc(size_t printed, const struct visibility_info *visinfo)
 {
@@ -441,18 +412,18 @@ print_stat(const char *dirpath, const char *path, struct stat *st,
 
 	if (visinfo->cols.base.symlink) {
 		if (S_ISLNK(st->st_mode) && symlink)
-			print_quoted(symlink);
+			csv_print_quoted(symlink, strlen(symlink));
 		pc(++printed, visinfo);
 	}
 
 	if (visinfo->cols.base.parent) {
 		if (dirpath)
-			print_quoted(dirpath);
+			csv_print_quoted(dirpath, strlen(dirpath));
 		pc(++printed, visinfo);
 	}
 
 	if (visinfo->cols.base.name) {
-		print_quoted(path);
+		csv_print_quoted(path, strlen(path));
 		pc(++printed, visinfo);
 	}
 
