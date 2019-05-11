@@ -111,8 +111,6 @@ main(int argc, char *argv[])
 		exit(2);
 	if (csv_read_header(s))
 		exit(2);
-	const struct col_header *headers;
-	size_t nheaders = csv_get_headers(s, &headers);
 
 	if (csv_read_all(s, &next_row, &params))
 		exit(2);

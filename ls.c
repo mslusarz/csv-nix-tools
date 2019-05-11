@@ -50,6 +50,8 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "utils.h"
+
 struct ht {
 	size_t keys_max;
 	struct hsearch_data ht;
