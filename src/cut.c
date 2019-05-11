@@ -43,6 +43,7 @@
 static const struct option long_options[] = {
 	{"fields",	required_argument,	NULL, 'f'},
 	{"no-header",	no_argument,		NULL, 'H'},
+	{"reverse",	no_argument,		NULL, 'r'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -54,6 +55,7 @@ usage(void)
 	printf("Usage: csv-cut [OPTION]...\n");
 	printf("Options:\n");
 	printf("  -f, --fields=name1[,name2...]\n");
+	printf("  -r, --reverse\n");
 	printf("      --no-header\n");
 	printf("      --help\n");
 	printf("      --version\n");
@@ -91,12 +93,16 @@ main(int argc, char *argv[])
 	params.ncolumns = 0;
 	char *cols = NULL;
 	bool print_header = true;
+	bool reverse = false;
 
-	while ((opt = getopt_long(argc, argv, "f:v", long_options,
+	while ((opt = getopt_long(argc, argv, "f:r", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'f':
 				cols = strdup(optarg);
+				break;
+			case 'r':
+				reverse = true;
 				break;
 			case 'H':
 				print_header = false;
@@ -132,39 +138,59 @@ main(int argc, char *argv[])
 		usage();
 		return 2;
 	}
-    
-	char *name = strtok(cols, ",");
-	while (name) {
-		int found = 0;
-		for (size_t i = 0; i < nheaders; ++i) {
-			if (strcmp(name, headers[i].name) != 0)
-				continue;
 
-			params.ncolumns++;
-			params.columns = realloc(params.columns,
-					params.ncolumns *
-					sizeof(params.columns[0]));
-			if (!params.columns) {
-				fprintf(stderr, "realloc: %s\n",
-						strerror(errno));
+	params.columns = malloc(nheaders * sizeof(params.columns[0]));
+	if (!params.columns) {
+		fprintf(stderr, "malloc: %s\n", strerror(errno));
+		exit(2);
+	}
+
+	if (reverse) {
+		char *cols2 = malloc(strlen(cols) + 3);
+		sprintf(cols2, ",%s,", cols);
+
+		size_t longest_header = 0;
+		for (size_t i = 0; i < nheaders; ++i) {
+			size_t hlen = strlen(headers[i].name);
+			if (hlen > longest_header)
+				longest_header = hlen;
+		}
+		char *tmp = malloc(longest_header + 3);
+
+		for (size_t i = 0; i < nheaders; ++i) {
+			sprintf(tmp, ",%s,", headers[i].name);
+			if (strstr(cols2, tmp) == NULL)
+				params.columns[params.ncolumns++] = i;
+		}
+	} else {
+		char *name = strtok(cols, ",");
+		while (name) {
+			int found = 0;
+			for (size_t i = 0; i < nheaders; ++i) {
+				if (strcmp(name, headers[i].name) != 0)
+					continue;
+
+				params.columns[params.ncolumns++] = i;
+				found = 1;
+
+				break;
+			}
+
+			if (!found) {
+				fprintf(stderr, "column %s not found\n", name);
 				exit(2);
 			}
 
-			params.columns[params.ncolumns - 1] = i;
-
-			found = 1;
-			break;
+			name = strtok(NULL, ",");
 		}
-
-		if (!found) {
-			fprintf(stderr, "column %s not found\n", name);
-			exit(2);
-		}
-
-		name = strtok(NULL, ",");
 	}
 
 	free(cols);
+
+	if (params.ncolumns == 0) {
+		fprintf(stderr, "no columns left\n");
+		exit(2);
+	}
 
 	if (print_header) {
 		for (size_t i = 0; i < params.ncolumns - 1; ++i)
