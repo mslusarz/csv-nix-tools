@@ -128,6 +128,11 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
+	if (cols == NULL) {
+		usage();
+		return 2;
+	}
+    
 	char *name = strtok(cols, ",");
 	while (name) {
 		int found = 0;
