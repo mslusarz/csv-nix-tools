@@ -36,18 +36,95 @@
 
 #include "utils.h"
 
+struct str_tokens {
+	char *in_it;
+};
+
+static void
+token_init(struct str_tokens *ctx, char *str)
+{
+	memset(ctx, 0, sizeof(*ctx));
+	ctx->in_it = str;
+}
+
+static char *
+token_next(struct str_tokens *ctx)
+{
+	while (ctx->in_it[0] == ' ')
+		ctx->in_it++;
+
+	if (ctx->in_it[0] == 0)
+		return NULL;
+
+	char *ret = ctx->in_it;
+
+	if (*ret == '\'') {
+		char *in_it = ret + 1;
+		char *out_it = ret + 1;
+
+		while (1) {
+			while (*in_it != 0 && *in_it != '\'')
+				*out_it++ = *in_it++;
+			if (*in_it == 0) {
+				fprintf(stderr, "unfinished string\n");
+				exit(2);
+			}
+
+			if (in_it[1] != '\'')
+				break;
+
+			*out_it++ = *in_it++;
+			in_it++;
+		}
+
+		if (in_it[1] == ' ' || in_it[1] == 0) {
+			*out_it++ = *in_it++;
+			*out_it++ = 0;
+			ctx->in_it = ++in_it;
+		} else {
+			fprintf(stderr,
+				"unrecognized character after end of string: '%c'\n",
+				in_it[1]);
+			exit(2);
+		}
+	} else {
+		char *space = index(ctx->in_it, ' ');
+		if (space) {
+			*space = 0;
+			ctx->in_it = space + 1;
+		} else {
+			ctx->in_it += strlen(ctx->in_it);
+		}
+	}
+
+	return ret;
+}
+
 int
 rpn_parse(struct rpn_expression *exp, char *str,
 		const struct col_header *headers, size_t nheaders)
 {
-	char *token = strtok(str, " ");
+	struct str_tokens ctx;
+	token_init(&ctx, str);
+	char *token = token_next(&ctx);
+
 	while (token) {
 		struct rpn_token tkn;
 
 		if (isdigit(token[0])) {
 			tkn.type = RPN_CONSTANT;
-			if (strtoll_safe(token, &tkn.constant))
+			tkn.constant.type = RPN_LLONG;
+			if (strtoll_safe(token, &tkn.constant.llong))
 				goto fail;
+		} else if (token[0] == '\'') {
+			tkn.type = RPN_CONSTANT;
+			tkn.constant.type = RPN_PCHAR;
+			size_t len = strlen(token);
+			tkn.constant.pchar = strndup(token + 1, len - 2);
+			if (!tkn.constant.pchar) {
+				perror("strdup");
+				goto fail;
+			}
 		} else if (isalpha(token[0])) {
 			tkn.type = RPN_COLUMN;
 			tkn.colnum = csv_find(headers, nheaders, token);
@@ -87,6 +164,21 @@ rpn_parse(struct rpn_expression *exp, char *str,
 		} else if (strcmp(token, ">>") == 0) {
 			tkn.type = RPN_OPERATOR;
 			tkn.operator = RPN_BIT_RSHIFT;
+		} else if (token[0] == ':') {
+			tkn.type = RPN_OPERATOR;
+			if (strcmp(token + 1, "substr") == 0)
+				tkn.operator = RPN_SUBSTR;
+			else if (strcmp(token + 1, "concat") == 0)
+				tkn.operator = RPN_CONCAT;
+			else if (strcmp(token + 1, "tostring") == 0)
+				tkn.operator = RPN_TOSTRING;
+			else if (strcmp(token + 1, "toint") == 0)
+				tkn.operator = RPN_TOINT;
+			else {
+				fprintf(stderr, "unknown operator '%s'\n",
+						token + 1);
+				goto fail;
+			}
 		} else {
 			fprintf(stderr,
 				"don't know how to interpret '%s'\n",
@@ -103,7 +195,7 @@ rpn_parse(struct rpn_expression *exp, char *str,
 
 		exp->tokens[exp->count++] = tkn;
 
-		token = strtok(NULL, " ");
+		token = token_next(&ctx);
 	}
 
 	return 0;
@@ -117,6 +209,13 @@ fail:
 void
 rpn_free(struct rpn_expression *exp)
 {
+	for (size_t i = 0; i < exp->count; ++i) {
+		struct rpn_token *token = &exp->tokens[i];
+
+		if (token->type == RPN_CONSTANT &&
+				token->constant.type == RPN_PCHAR)
+			free(token->constant.pchar);
+	}
 	free(exp->tokens);
 	exp->tokens = NULL;
 }

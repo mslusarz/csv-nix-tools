@@ -30,16 +30,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/* asprintf */
+#define _GNU_SOURCE
+
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "utils.h"
 
 int
-rpn_eval(struct rpn_expression *exp, const char *buf, const size_t *col_offs,
-		long long *value)
+rpn_eval(struct rpn_expression *exp,
+		const char *buf,
+		const size_t *col_offs,
+		const struct col_header *headers,
+		struct rpn_variant *value)
 {
-	long long *stack = NULL;
+	struct rpn_variant *stack = NULL;
 	size_t height = 0;
 
 	for (size_t j = 0; j < exp->count; ++j) {
@@ -52,65 +59,206 @@ rpn_eval(struct rpn_expression *exp, const char *buf, const size_t *col_offs,
 			}
 
 			stack[height++] = t->constant;
+			if (t->constant.type == RPN_PCHAR) {
+				stack[height - 1].pchar = strdup(stack[height - 1].pchar);
+				if (!stack[height - 1].pchar) {
+					perror("strdup");
+					goto fail;
+				}
+			}
 		} else if (t->type == RPN_COLUMN) {
 			stack = realloc(stack, (height + 1) * sizeof(stack[0]));
 			if (!stack) {
 				perror("realloc");
 				goto fail;
 			}
+			const char *str = &buf[col_offs[t->colnum]];
 
-			if (strtoll_safe(&buf[col_offs[t->colnum]],
-					&stack[height++]))
-				goto fail;
-		} else if (t->type == RPN_OPERATOR) {
-			if (height < 2) {
-				fprintf(stderr, "not enough stack entries\n");
-				goto fail;
+			if (strcmp(headers[t->colnum].type, "int") == 0) {
+				stack[height].type = RPN_LLONG;
+				if (strtoll_safe(str, &stack[height].llong))
+					goto fail;
+			} else {
+				stack[height].type = RPN_PCHAR;
+				if (str[0] == '"')
+					stack[height].pchar = csv_unquot(str);
+				else
+					stack[height].pchar = strdup(str);
 			}
-
+			height++;
+		} else if (t->type == RPN_OPERATOR) {
 			switch (t->operator) {
 			case RPN_ADD:
-				stack[height - 2] += stack[height - 1];
-				break;
 			case RPN_SUB:
-				stack[height - 2] -= stack[height - 1];
-				break;
 			case RPN_MUL:
-				stack[height - 2] *= stack[height - 1];
-				break;
 			case RPN_DIV:
-				stack[height - 2] /= stack[height - 1];
-				break;
 			case RPN_REM:
-				stack[height - 2] %= stack[height - 1];
-				break;
 			case RPN_BIT_OR:
-				stack[height - 2] |= stack[height - 1];
-				break;
 			case RPN_BIT_AND:
-				stack[height - 2] &= stack[height - 1];
-				break;
 			case RPN_BIT_XOR:
-				stack[height - 2] ^= stack[height - 1];
-				break;
 			case RPN_BIT_LSHIFT:
-				stack[height - 2] <<= stack[height - 1];
-				break;
 			case RPN_BIT_RSHIFT:
-				stack[height - 2] >>= stack[height - 1];
+				if (height < 2) {
+					fprintf(stderr, "not enough stack entries\n");
+					goto fail;
+				}
+				height--;
+				if (stack[height - 1].type != RPN_LLONG ||
+						stack[height].type != RPN_LLONG) {
+					fprintf(stderr, "+,-,*,/,%%,|,&,^,<<,>> can operate only on numeric values\n");
+					goto fail;
+				}
+				break;
+			case RPN_SUBSTR:
+				if (height < 3) {
+					fprintf(stderr, "not enough stack entries\n");
+					goto fail;
+				}
+				height -= 2;
+				if (stack[height - 1].type != RPN_PCHAR ||
+						stack[height].type != RPN_LLONG ||
+						stack[height + 1].type != RPN_LLONG) {
+					fprintf(stderr, "invalid types for substr operator\n");
+					goto fail;
+				}
+				break;
+			case RPN_CONCAT:
+				if (height < 2) {
+					fprintf(stderr, "not enough stack entries\n");
+					goto fail;
+				}
+				height--;
+				if (stack[height - 1].type != RPN_PCHAR ||
+						stack[height].type != RPN_PCHAR) {
+					fprintf(stderr, "invalid types for concat operator\n");
+					goto fail;
+				}
+				break;
+			case RPN_TOSTRING:
+				if (height < 1) {
+					fprintf(stderr, "not enough stack entries\n");
+					goto fail;
+				}
+
+				if (stack[height - 1].type != RPN_LLONG) {
+					fprintf(stderr, "tostring can operate only on numeric values\n");
+					goto fail;
+				}
+
+				break;
+			case RPN_TOINT:
+				if (height < 1) {
+					fprintf(stderr, "not enough stack entries\n");
+					goto fail;
+				}
+
+				if (stack[height - 1].type != RPN_PCHAR) {
+					fprintf(stderr, "toint can operate only on string values\n");
+					goto fail;
+				}
+
 				break;
 			default:
 				abort();
 			}
 
-			stack = realloc(stack, (height - 1) * sizeof(stack[0]));
+			switch (t->operator) {
+			case RPN_ADD:
+				stack[height - 1].llong += stack[height].llong;
+				break;
+			case RPN_SUB:
+				stack[height - 1].llong -= stack[height].llong;
+				break;
+			case RPN_MUL:
+				stack[height - 1].llong *= stack[height].llong;
+				break;
+			case RPN_DIV:
+				stack[height - 1].llong /= stack[height].llong;
+				break;
+			case RPN_REM:
+				stack[height - 1].llong %= stack[height].llong;
+				break;
+			case RPN_BIT_OR:
+				stack[height - 1].llong |= stack[height].llong;
+				break;
+			case RPN_BIT_AND:
+				stack[height - 1].llong &= stack[height].llong;
+				break;
+			case RPN_BIT_XOR:
+				stack[height - 1].llong ^= stack[height].llong;
+				break;
+			case RPN_BIT_LSHIFT:
+				stack[height - 1].llong <<= stack[height].llong;
+				break;
+			case RPN_BIT_RSHIFT:
+				stack[height - 1].llong >>= stack[height].llong;
+				break;
+			case RPN_SUBSTR: {
+				char *str = stack[height - 1].pchar;
+				long long start = stack[height].llong;
+				long long len = stack[height + 1].llong;
+
+				char *n = strndup(str + start, len);
+				if (!n) {
+					perror("strndup");
+					goto fail;
+				}
+
+				free(str);
+				stack[height - 1].pchar = n;
+
+				break;
+			}
+			case RPN_CONCAT: {
+				char *str1, *str2;
+				str1 = stack[height - 1].pchar;
+				str2 = stack[height].pchar;
+				char *n = malloc(strlen(str1) + strlen(str2) + 1);
+				if (!n) {
+					perror("malloc");
+					goto fail;
+				}
+				strcpy(n, str1);
+				strcat(n, str2);
+
+				free(str1);
+				free(str2);
+				stack[height - 1].pchar = n;
+
+				break;
+			}
+			case RPN_TOSTRING: {
+				char *str;
+				if (asprintf(&str, "%lld", stack[height - 1].llong) < 0) {
+					perror("asprintf");
+					goto fail;
+				}
+
+				stack[height - 1].type = RPN_PCHAR;
+				stack[height - 1].pchar = str;
+
+				break;
+			}
+			case RPN_TOINT: {
+				long long ret;
+				if (strtoll_safe(stack[height - 1].pchar, &ret) < 0)
+					goto fail;
+
+				free(stack[height - 1].pchar);
+
+				stack[height - 1].type = RPN_LLONG;
+				stack[height - 1].llong = ret;
+				break;
+			}
+			default:
+				abort();
+			}
+
+			stack = realloc(stack, height * sizeof(stack[0]));
 			if (!stack) {
 				perror("realloc");
 				goto fail;
 			}
-
-			height--;
-
 		} else {
 			/* impossible */
 			abort();

@@ -61,7 +61,7 @@ size_t csv_find(const struct col_header *headers,
 
 enum rpn_token_type {
 	RPN_COLUMN,		/* column */
-	RPN_CONSTANT,		/* integer constant */
+	RPN_CONSTANT,		/* constant */
 	RPN_OPERATOR,		/* rpn_operator */
 };
 
@@ -76,13 +76,30 @@ enum rpn_operator {
 	RPN_BIT_XOR,		/* bitwise xor */
 	RPN_BIT_LSHIFT,		/* bitwise left shift */
 	RPN_BIT_RSHIFT,		/* bitwise right shift */
+	RPN_SUBSTR,		/* substring */
+	RPN_CONCAT,		/* concatenation of 2 strings */
+	RPN_TOSTRING,		/* convert int to string */
+	RPN_TOINT,		/* convert string to int */
+};
+
+enum rpn_variant_type {
+	RPN_LLONG,
+	RPN_PCHAR,
+};
+
+struct rpn_variant {
+	enum rpn_variant_type type;
+	union {
+		long long llong;
+		char *pchar;
+	};
 };
 
 struct rpn_token {
 	enum rpn_token_type type;
 	union {
 		size_t colnum;
-		long long constant;
+		struct rpn_variant constant;
 		enum rpn_operator operator;
 	};
 };
@@ -94,8 +111,11 @@ struct rpn_expression {
 
 int rpn_parse(struct rpn_expression *exp, char *str,
 		const struct col_header *headers, size_t nheaders);
-int rpn_eval(struct rpn_expression *exp, const char *buf,
-		const size_t *col_offs, long long *value);
+int rpn_eval(struct rpn_expression *exp,
+		const char *buf,
+		const size_t *col_offs,
+		const struct col_header *headers,
+		struct rpn_variant *value);
 void rpn_free(struct rpn_expression *exp);
 
 #endif
