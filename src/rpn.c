@@ -59,120 +59,10 @@ usage(void)
 	printf("      --version\n");
 }
 
-struct token {
-	enum { COLUMN, CONSTANT, OPERATOR } type;
-	union {
-		size_t colnum;
-		long long constant;
-		enum { ADD, SUB, MUL, DIV, REM, OR, AND, XOR, LSHIFT, RSHIFT } operator;
-	};
-};
-
 struct cb_params {
-	struct expression {
-		struct token *tokens;
-		size_t count;
-	} *expressions;
+	struct rpn_expression *expressions;
 	size_t count;
 };
-
-static long long
-eval(struct expression *exp, const char *buf, const size_t *col_offs)
-{
-	long long *stack = NULL;
-	size_t height = 0;
-
-	for (size_t j = 0; j < exp->count; ++j) {
-		struct token *t = &exp->tokens[j];
-		if (t->type == CONSTANT) {
-			stack = realloc(stack,
-				(height + 1) * sizeof(stack[0]));
-			if (!stack) {
-				perror("realloc");
-				exit(2);
-			}
-
-			stack[height++] = t->constant;
-		} else if (t->type == COLUMN) {
-			stack = realloc(stack,
-				(height + 1) * sizeof(stack[0]));
-			if (!stack) {
-				perror("realloc");
-				exit(2);
-			}
-
-			if (strtoll_safe(&buf[col_offs[t->colnum]],
-					&stack[height++]))
-				exit(2);
-		} else if (t->type == OPERATOR) {
-			if (height < 2) {
-				fprintf(stderr, "not enough stack entries\n");
-				exit(2);
-			}
-			switch (t->operator) {
-			case ADD:
-				stack[height - 2] += stack[height - 1];
-				break;
-			case SUB:
-				stack[height - 2] -= stack[height - 1];
-				break;
-			case MUL:
-				stack[height - 2] *= stack[height - 1];
-				break;
-			case DIV:
-				stack[height - 2] /= stack[height - 1];
-				break;
-			case REM:
-				stack[height - 2] %= stack[height - 1];
-				break;
-			case OR:
-				stack[height - 2] |= stack[height - 1];
-				break;
-			case AND:
-				stack[height - 2] &= stack[height - 1];
-				break;
-			case XOR:
-				stack[height - 2] ^= stack[height - 1];
-				break;
-			case LSHIFT:
-				stack[height - 2] <<= stack[height - 1];
-				break;
-			case RSHIFT:
-				stack[height - 2] >>= stack[height - 1];
-				break;
-			default:
-				abort();
-			}
-
-			stack = realloc(stack, (height - 1) * sizeof(stack[0]));
-			if (!stack) {
-				perror("realloc");
-				exit(2);
-			}
-
-			height--;
-
-		} else {
-			/* impossible */
-			abort();
-		}
-	}
-
-	if (height == 0) {
-		fprintf(stderr, "empty stack\n");
-		exit(2);
-	}
-
-	if (height >= 2) {
-		fprintf(stderr, "too many entries on stack (%lu)\n", height);
-		exit(2);
-	}
-
-	long long ret = stack[0];
-	free(stack);
-
-	return ret;
-}
 
 static int
 next_row(const char *buf, const size_t *col_offs,
@@ -180,19 +70,27 @@ next_row(const char *buf, const size_t *col_offs,
 		void *arg)
 {
 	struct cb_params *params = arg;
+	struct rpn_expression *exp;
+	long long ret;
 
 	csv_print_line(stdout, buf, col_offs, headers, nheaders, false);
 	fputc(',', stdout);
-	struct expression *exp;
 
 	for (size_t i = 0; i < params->count - 1; ++i) {
 		exp = &params->expressions[i];
 
-		printf("%lld,", eval(exp, buf, col_offs));
+		if (rpn_eval(exp, buf, col_offs, &ret))
+			exit(2);
+
+		printf("%lld,", ret);
 	}
 
 	exp = &params->expressions[params->count - 1];
-	printf("%lld\n", eval(exp, buf, col_offs));
+
+	if (rpn_eval(exp, buf, col_offs, &ret))
+		exit(2);
+
+	printf("%lld\n", ret);
 
 	return 0;
 }
@@ -275,7 +173,6 @@ main(int argc, char *argv[])
 			exit(2);
 		}
 		*cur = 0;
-		struct expression *exp = &params.expressions[i];
 
 		if (csv_find(headers, nheaders, expstr) != CSV_NOT_FOUND) {
 			fprintf(stderr, "column '%s' already exists in input\n",
@@ -285,72 +182,9 @@ main(int argc, char *argv[])
 
 		cur++;
 
-		char *token = strtok(cur, " ");
-		while (token) {
-			struct token tkn;
-
-			if (isdigit(token[0])) {
-				tkn.type = CONSTANT;
-				if (strtoll_safe(token, &tkn.constant))
-					exit(2);
-			} else if (isalpha(token[0])) {
-				tkn.type = COLUMN;
-				tkn.colnum = csv_find(headers, nheaders, token);
-				if (tkn.colnum == CSV_NOT_FOUND) {
-					fprintf(stderr,
-						"column '%s' not found in input\n",
-						token);
-					exit(2);
-				}
-			} else if (strcmp(token, "+") == 0) {
-				tkn.type = OPERATOR;
-				tkn.operator = ADD;
-			} else if (strcmp(token, "-") == 0) {
-				tkn.type = OPERATOR;
-				tkn.operator = SUB;
-			} else if (strcmp(token, "*") == 0) {
-				tkn.type = OPERATOR;
-				tkn.operator = MUL;
-			} else if (strcmp(token, "/") == 0) {
-				tkn.type = OPERATOR;
-				tkn.operator = DIV;
-			} else if (strcmp(token, "%") == 0) {
-				tkn.type = OPERATOR;
-				tkn.operator = REM;
-			} else if (strcmp(token, "|") == 0) {
-				tkn.type = OPERATOR;
-				tkn.operator = OR;
-			} else if (strcmp(token, "&") == 0) {
-				tkn.type = OPERATOR;
-				tkn.operator = AND;
-			} else if (strcmp(token, "^") == 0) {
-				tkn.type = OPERATOR;
-				tkn.operator = XOR;
-			} else if (strcmp(token, "<<") == 0) {
-				tkn.type = OPERATOR;
-				tkn.operator = LSHIFT;
-			} else if (strcmp(token, ">>") == 0) {
-				tkn.type = OPERATOR;
-				tkn.operator = RSHIFT;
-			} else {
-				fprintf(stderr,
-					"don't know how to interpret '%s'\n",
-					token);
-				exit(2);
-			}
-
-			exp->tokens = realloc(exp->tokens,
-					(exp->count + 1) * sizeof(exp->tokens[0]));
-			if (!exp->tokens) {
-				perror("realloc");
-				exit(2);
-			}
-
-			exp->tokens[exp->count++] = tkn;
-
-			token = strtok(NULL, " ");
-		}
-
+		struct rpn_expression *exp = &params.expressions[i];
+		if (rpn_parse(exp, cur, headers, nheaders))
+			exit(2);
 	}
 
 	if (print_header) {

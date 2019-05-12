@@ -59,4 +59,23 @@ size_t csv_find(const struct col_header *headers,
 		size_t nheaders,
 		const char *name);
 
+struct rpn_token {
+	enum { COLUMN, CONSTANT, OPERATOR } type;
+	union {
+		size_t colnum;
+		long long constant;
+		enum { ADD, SUB, MUL, DIV, REM, OR, AND, XOR, LSHIFT, RSHIFT } operator;
+	};
+};
+
+struct rpn_expression {
+	struct rpn_token *tokens;
+	size_t count;
+};
+
+int rpn_parse(struct rpn_expression *exp, char *str,
+		const struct col_header *headers, size_t nheaders);
+int rpn_eval(struct rpn_expression *exp, const char *buf,
+		const size_t *col_offs, long long *value);
+
 #endif
