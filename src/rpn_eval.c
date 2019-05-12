@@ -69,6 +69,16 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 			return -1;
 		}
 		break;
+	case RPN_LOGIC_NOT:
+		if (height < 1) {
+			fprintf(stderr, "not enough stack entries\n");
+			return -1;
+		}
+		if (stack[height - 1].type != RPN_LLONG) {
+			fprintf(stderr, "logic not can operate only on numeric values\n");
+			return -1;
+		}
+		break;
 	case RPN_SUBSTR:
 		if (height < 3) {
 			fprintf(stderr, "not enough stack entries\n");
@@ -188,6 +198,9 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		break;
 	case RPN_LOGIC_OR:
 		stack[height - 1].llong = stack[height - 1].llong || stack[height].llong ? 1 : 0;
+		break;
+	case RPN_LOGIC_NOT:
+		stack[height - 1].llong = stack[height - 1].llong ? 0 : 1;
 		break;
 	case RPN_SUBSTR: {
 		char *str = stack[height - 1].pchar;

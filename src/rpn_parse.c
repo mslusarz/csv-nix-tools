@@ -188,6 +188,9 @@ rpn_parse(struct rpn_expression *exp, char *str,
 		} else if (strcmp(token, "||") == 0) {
 			tkn.type = RPN_OPERATOR;
 			tkn.operator = RPN_LOGIC_OR;
+		} else if (strcmp(token, "!") == 0) {
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_LOGIC_NOT;
 		} else if (strcmp(token, "?") == 0) {
 			tkn.type = RPN_OPERATOR;
 			tkn.operator = RPN_IF;
@@ -217,6 +220,8 @@ rpn_parse(struct rpn_expression *exp, char *str,
 				tkn.operator = RPN_LOGIC_AND;
 			else if (strcmp(token + 1, "or") == 0)
 				tkn.operator = RPN_LOGIC_OR;
+			else if (strcmp(token + 1, "not") == 0)
+				tkn.operator = RPN_LOGIC_NOT;
 			else if (strcmp(token + 1, "if") == 0)
 				tkn.operator = RPN_IF;
 			else {
@@ -273,6 +278,7 @@ expression_type(const struct rpn_expression *exp,
 				case RPN_BIT_RSHIFT:
 				case RPN_LOGIC_AND:
 				case RPN_LOGIC_OR:
+				case RPN_LOGIC_NOT:
 				case RPN_TOINT:
 				case RPN_LT:
 				case RPN_LE:
