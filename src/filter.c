@@ -50,9 +50,9 @@ static const struct option long_options[] = {
 static void
 usage(void)
 {
-	printf("Usage: csv-rpn [OPTION]...\n");
+	printf("Usage: csv-filter [OPTION]...\n");
 	printf("Options:\n");
-	printf("  -e name=\"RPN expression\"\n");
+	printf("  -e \"RPN expression\"\n");
 	printf("      --no-header\n");
 	printf("      --help\n");
 	printf("      --version\n");
@@ -69,44 +69,21 @@ next_row(const char *buf, const size_t *col_offs,
 		void *arg)
 {
 	struct cb_params *params = arg;
-	struct rpn_expression *exp;
-	struct rpn_variant ret;
 
-	csv_print_line(stdout, buf, col_offs, headers, nheaders, false);
-	fputc(',', stdout);
-
-	for (size_t i = 0; i < params->count - 1; ++i) {
-		exp = &params->expressions[i];
+	for (size_t i = 0; i < params->count; ++i) {
+		struct rpn_expression *exp = &params->expressions[i];
+		struct rpn_variant ret;
 
 		if (rpn_eval(exp, buf, col_offs, headers, &ret))
 			exit(2);
 
-		if (ret.type == RPN_LLONG)
-			printf("%lld,", ret.llong);
-		else if (ret.type == RPN_PCHAR) {
-			csv_print_quoted(ret.pchar, strlen(ret.pchar));
-			fputc(',', stdout);
-			free(ret.pchar);
-		} else {
-			fprintf(stderr, "unknown type %d\n", ret.type);
-			exit(2);
+		if (ret.type != RPN_LLONG) /* shouldn't be possible */
+			abort();
+
+		if (ret.llong) {
+			csv_print_line(stdout, buf, col_offs, headers, nheaders, true);
+			return 0;
 		}
-	}
-
-	exp = &params->expressions[params->count - 1];
-
-	if (rpn_eval(exp, buf, col_offs, headers, &ret))
-		exit(2);
-
-	if (ret.type == RPN_LLONG)
-		printf("%lld\n", ret.llong);
-	else if (ret.type == RPN_PCHAR) {
-		csv_print_quoted(ret.pchar, strlen(ret.pchar));
-		fputc('\n', stdout);
-		free(ret.pchar);
-	} else {
-		fprintf(stderr, "unknown type %d\n", ret.type);
-		exit(2);
 	}
 
 	return 0;
@@ -183,50 +160,31 @@ main(int argc, char *argv[])
 
 	for (size_t i = 0; i < nexpressions; ++i) {
 		char *expstr = expressions[i];
-		char *cur = index(expstr, '=');
-		if (!cur) {
-			fprintf(stderr, "invalid expression\n");
-			usage();
-			exit(2);
-		}
-		*cur = 0;
-
-		if (csv_find(headers, nheaders, expstr) != CSV_NOT_FOUND) {
-			fprintf(stderr, "column '%s' already exists in input\n",
-					expstr);
-			exit(2);
-		}
-
-		cur++;
 
 		struct rpn_expression *exp = &params.expressions[i];
-		if (rpn_parse(exp, cur, headers, nheaders))
+		if (rpn_parse(exp, expstr, headers, nheaders))
 			exit(2);
+
+		if (strcmp(rpn_expression_type(exp, headers), "int") != 0) {
+			fprintf(stderr, "expression %ld is not numeric\n", i);
+			exit(2);
+		}
 	}
 
-	if (print_header) {
-		for (size_t i = 0; i < nheaders; ++i)
-			printf("%s:%s,", headers[i].name, headers[i].type);
-		for (size_t i = 0; i < nexpressions - 1; ++i)
-			printf("%s:%s,", expressions[i],
-				rpn_expression_type(&params.expressions[i],
-						headers));
-		printf("%s:%s\n", expressions[nexpressions - 1],
-			rpn_expression_type(&params.expressions[nexpressions - 1],
-						headers));
-	}
+	for (size_t i = 0; i < nexpressions; ++i)
+		free(expressions[i]);
+	free(expressions);
+
+	if (print_header)
+		csv_print_header(stdout, headers, nheaders);
 
 	if (csv_read_all(s, &next_row, &params))
 		exit(2);
 
 	csv_destroy_ctx(s);
 
-	for (size_t i = 0; i < nexpressions; ++i) {
+	for (size_t i = 0; i < nexpressions; ++i)
 		rpn_free(&params.expressions[i]);
-		free(expressions[i]);
-	}
-
-	free(expressions);
 	free(params.expressions);
 
 	return 0;

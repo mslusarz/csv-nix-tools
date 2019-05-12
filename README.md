@@ -155,7 +155,14 @@ sum(size):int,sum(blocks):int,sum(space_used):int
 
 list of files whose size is between 2000 and 3000 bytes
 ```
-$ csv-ls -f size,name | csv-rpn  -e "range2k-3k=size 2000 :ge size 3000 :lt :and" | csv-grep -e range2k-3k=1 | csv-cut -f size,name
+$ csv-ls -f size,name | csv-rpn -e "range2k-3k=size 2000 :ge size 3000 :lt :and" | csv-grep -e range2k-3k=1 | csv-cut -f size,name
+size:int,name:string
+2893,columns.c
+2204,parse.h
+```
+or
+```
+$ csv-ls -f size,name | csv-filter -e "size 2000 :ge size 3000 :lt :and"
 size:int,name:string
 2893,columns.c
 2204,parse.h
@@ -178,8 +185,7 @@ mode:int,strmode:string,name:string
 ```
 
 # TODO (high level)
-- figure out how to let users use complex filters and export data (lua?)
-- more processing tools (filter, exec, tr, sed, etc)
+- more processing tools (exec, tr, sed, etc)
 - more data collection tools (ps, find, df, netstat, ifconfig/ip?, lsattr, lsusb, etc)
 - exporting tools (to-xml, to-json, to-sql)
 - importing tools (from-xml, from-json)
