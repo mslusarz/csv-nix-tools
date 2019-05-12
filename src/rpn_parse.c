@@ -164,6 +164,30 @@ rpn_parse(struct rpn_expression *exp, char *str,
 		} else if (strcmp(token, ">>") == 0) {
 			tkn.type = RPN_OPERATOR;
 			tkn.operator = RPN_BIT_RSHIFT;
+		} else if (strcmp(token, "<") == 0) {
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_LT;
+		} else if (strcmp(token, "<=") == 0) {
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_LE;
+		} else if (strcmp(token, ">") == 0) {
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_GT;
+		} else if (strcmp(token, ">=") == 0) {
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_GE;
+		} else if (strcmp(token, "==") == 0) {
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_EQ;
+		} else if (strcmp(token, "!=") == 0) {
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_NE;
+		} else if (strcmp(token, "&&") == 0) {
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_LOGIC_AND;
+		} else if (strcmp(token, "||") == 0) {
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_LOGIC_OR;
 		} else if (token[0] == ':') {
 			tkn.type = RPN_OPERATOR;
 			if (strcmp(token + 1, "substr") == 0)
@@ -174,6 +198,22 @@ rpn_parse(struct rpn_expression *exp, char *str,
 				tkn.operator = RPN_TOSTRING;
 			else if (strcmp(token + 1, "toint") == 0)
 				tkn.operator = RPN_TOINT;
+			else if (strcmp(token + 1, "lt") == 0)
+				tkn.operator = RPN_LT;
+			else if (strcmp(token + 1, "le") == 0)
+				tkn.operator = RPN_LE;
+			else if (strcmp(token + 1, "gt") == 0)
+				tkn.operator = RPN_GT;
+			else if (strcmp(token + 1, "ge") == 0)
+				tkn.operator = RPN_GE;
+			else if (strcmp(token + 1, "eq") == 0)
+				tkn.operator = RPN_EQ;
+			else if (strcmp(token + 1, "ne") == 0)
+				tkn.operator = RPN_NE;
+			else if (strcmp(token + 1, "and") == 0)
+				tkn.operator = RPN_LOGIC_AND;
+			else if (strcmp(token + 1, "or") == 0)
+				tkn.operator = RPN_LOGIC_OR;
 			else {
 				fprintf(stderr, "unknown operator '%s'\n",
 						token + 1);

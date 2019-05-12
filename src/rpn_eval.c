@@ -98,6 +98,8 @@ rpn_eval(struct rpn_expression *exp,
 			case RPN_BIT_XOR:
 			case RPN_BIT_LSHIFT:
 			case RPN_BIT_RSHIFT:
+			case RPN_LOGIC_AND:
+			case RPN_LOGIC_OR:
 				if (height < 2) {
 					fprintf(stderr, "not enough stack entries\n");
 					goto fail;
@@ -158,6 +160,24 @@ rpn_eval(struct rpn_expression *exp,
 				}
 
 				break;
+			case RPN_LT:
+			case RPN_LE:
+			case RPN_GT:
+			case RPN_GE:
+			case RPN_EQ:
+			case RPN_NE:
+				if (height < 2) {
+					fprintf(stderr, "not enough stack entries\n");
+					goto fail;
+				}
+				height--;
+
+				if (stack[height - 1].type != stack[height].type) {
+					fprintf(stderr,
+						"comparison operators can operate only on the same type values\n");
+					goto fail;
+				}
+				break;
 			default:
 				abort();
 			}
@@ -192,6 +212,12 @@ rpn_eval(struct rpn_expression *exp,
 				break;
 			case RPN_BIT_RSHIFT:
 				stack[height - 1].llong >>= stack[height].llong;
+				break;
+			case RPN_LOGIC_AND:
+				stack[height - 1].llong = stack[height - 1].llong && stack[height].llong ? 1 : 0;
+				break;
+			case RPN_LOGIC_OR:
+				stack[height - 1].llong = stack[height - 1].llong || stack[height].llong ? 1 : 0;
 				break;
 			case RPN_SUBSTR: {
 				char *str = stack[height - 1].pchar;
@@ -250,6 +276,84 @@ rpn_eval(struct rpn_expression *exp,
 				stack[height - 1].llong = ret;
 				break;
 			}
+			case RPN_LT:
+				if (stack[height - 1].type == RPN_LLONG)
+					stack[height - 1].llong = stack[height - 1].llong < stack[height].llong ? 1 : 0;
+				else {
+					int ret = strcmp(stack[height - 1].pchar, stack[height].pchar) < 0 ? 1 : 0;
+
+					free(stack[height - 1].pchar);
+					free(stack[height].pchar);
+
+					stack[height - 1].type = RPN_LLONG;
+					stack[height - 1].llong = ret;
+				}
+				break;
+			case RPN_LE:
+				if (stack[height - 1].type == RPN_LLONG)
+					stack[height - 1].llong = stack[height - 1].llong <= stack[height].llong ? 1 : 0;
+				else {
+					int ret = strcmp(stack[height - 1].pchar, stack[height].pchar) <= 0 ? 1 : 0;
+
+					free(stack[height - 1].pchar);
+					free(stack[height].pchar);
+
+					stack[height - 1].type = RPN_LLONG;
+					stack[height - 1].llong = ret;
+				}
+				break;
+			case RPN_GT:
+				if (stack[height - 1].type == RPN_LLONG)
+					stack[height - 1].llong = stack[height - 1].llong > stack[height].llong ? 1 : 0;
+				else {
+					int ret = strcmp(stack[height - 1].pchar, stack[height].pchar) > 0 ? 1 : 0;
+
+					free(stack[height - 1].pchar);
+					free(stack[height].pchar);
+
+					stack[height - 1].type = RPN_LLONG;
+					stack[height - 1].llong = ret;
+				}
+				break;
+			case RPN_GE:
+				if (stack[height - 1].type == RPN_LLONG)
+					stack[height - 1].llong = stack[height - 1].llong >= stack[height].llong ? 1 : 0;
+				else {
+					int ret = strcmp(stack[height - 1].pchar, stack[height].pchar) >= 0 ? 1 : 0;
+
+					free(stack[height - 1].pchar);
+					free(stack[height].pchar);
+
+					stack[height - 1].type = RPN_LLONG;
+					stack[height - 1].llong = ret;
+				}
+				break;
+			case RPN_EQ:
+				if (stack[height - 1].type == RPN_LLONG)
+					stack[height - 1].llong = stack[height - 1].llong == stack[height].llong ? 1 : 0;
+				else {
+					int ret = strcmp(stack[height - 1].pchar, stack[height].pchar) == 0 ? 1 : 0;
+
+					free(stack[height - 1].pchar);
+					free(stack[height].pchar);
+
+					stack[height - 1].type = RPN_LLONG;
+					stack[height - 1].llong = ret;
+				}
+				break;
+			case RPN_NE:
+				if (stack[height - 1].type == RPN_LLONG)
+					stack[height - 1].llong = stack[height - 1].llong != stack[height].llong ? 1 : 0;
+				else {
+					int ret = strcmp(stack[height - 1].pchar, stack[height].pchar) != 0 ? 1 : 0;
+
+					free(stack[height - 1].pchar);
+					free(stack[height].pchar);
+
+					stack[height - 1].type = RPN_LLONG;
+					stack[height - 1].llong = ret;
+				}
+				break;
 			default:
 				abort();
 			}

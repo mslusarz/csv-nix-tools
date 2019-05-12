@@ -80,6 +80,14 @@ enum rpn_operator {
 	RPN_CONCAT,		/* concatenation of 2 strings */
 	RPN_TOSTRING,		/* convert int to string */
 	RPN_TOINT,		/* convert string to int */
+	RPN_LT,			/* less */
+	RPN_LE,			/* less or equal */
+	RPN_GT,			/* greater */
+	RPN_GE,			/* greater or equal */
+	RPN_EQ,			/* equal */
+	RPN_NE,			/* no equal */
+	RPN_LOGIC_OR,		/* logic or */
+	RPN_LOGIC_AND,		/* logic and */
 };
 
 enum rpn_variant_type {

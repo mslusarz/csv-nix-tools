@@ -130,6 +130,14 @@ sum(size):int,sum(blocks):int,sum(space_used):int
 109679,288,147456
 ```
 
+list of files whose size is between 2000 and 3000 bytes
+```
+$ csv-ls -f size,name | csv-rpn  -e "range2k-3k=size 2000 :ge size 3000 :lt :and" | csv-grep -e range2k-3k=1 | csv-cut -f size,name
+size:int,name:string
+2893,columns.c
+2204,parse.h
+```
+
 list of files formatted in human-readable format (similar to ls -l) with disabled pager
 ```
 $ csv-ls -l | csv-cut -f mode,nlink,owner_name,group_name,size,mtime,name | csv-show -s 1 -p no --no-header
