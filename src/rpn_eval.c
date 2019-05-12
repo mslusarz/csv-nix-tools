@@ -136,6 +136,18 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 			return -1;
 		}
 		break;
+	case RPN_IF:
+		if (height < 3) {
+			fprintf(stderr, "not enough stack entries\n");
+			return -1;
+		}
+		height -= 2;
+		if (stack[height - 1].type != RPN_LLONG ||
+				stack[height].type != stack[height + 1].type) {
+			fprintf(stderr, "invalid types for substr operator\n");
+			return -1;
+		}
+		break;
 	default:
 		abort();
 	}
@@ -311,6 +323,18 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 			stack[height - 1].type = RPN_LLONG;
 			stack[height - 1].llong = ret;
 		}
+		break;
+	case RPN_IF:
+		if (stack[height - 1].llong) {
+			stack[height - 1] = stack[height];
+			if (stack[height + 1].type == RPN_PCHAR)
+				free(stack[height + 1].pchar);
+		} else {
+			stack[height - 1] = stack[height + 1];
+			if (stack[height].type == RPN_PCHAR)
+				free(stack[height].pchar);
+		}
+
 		break;
 	default:
 		abort();

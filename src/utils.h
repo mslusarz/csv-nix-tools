@@ -88,6 +88,7 @@ enum rpn_operator {
 	RPN_NE,			/* no equal */
 	RPN_LOGIC_OR,		/* logic or */
 	RPN_LOGIC_AND,		/* logic and */
+	RPN_IF,			/* if then else */
 };
 
 enum rpn_variant_type {

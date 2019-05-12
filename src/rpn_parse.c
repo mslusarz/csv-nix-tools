@@ -188,6 +188,9 @@ rpn_parse(struct rpn_expression *exp, char *str,
 		} else if (strcmp(token, "||") == 0) {
 			tkn.type = RPN_OPERATOR;
 			tkn.operator = RPN_LOGIC_OR;
+		} else if (strcmp(token, "?") == 0) {
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_IF;
 		} else if (token[0] == ':') {
 			tkn.type = RPN_OPERATOR;
 			if (strcmp(token + 1, "substr") == 0)
@@ -214,6 +217,8 @@ rpn_parse(struct rpn_expression *exp, char *str,
 				tkn.operator = RPN_LOGIC_AND;
 			else if (strcmp(token + 1, "or") == 0)
 				tkn.operator = RPN_LOGIC_OR;
+			else if (strcmp(token + 1, "if") == 0)
+				tkn.operator = RPN_IF;
 			else {
 				fprintf(stderr, "unknown operator '%s'\n",
 						token + 1);
@@ -246,11 +251,12 @@ fail:
 	return -1;
 }
 
-const char *
-rpn_expression_type(const struct rpn_expression *exp,
-		const struct col_header *headers)
+static const char *
+expression_type(const struct rpn_expression *exp,
+		const struct col_header *headers,
+		size_t fallback_idx)
 {
-	const struct rpn_token *last_token = &exp->tokens[exp->count - 1];
+	const struct rpn_token *last_token = &exp->tokens[fallback_idx];
 
 	switch(last_token->type) {
 		case RPN_OPERATOR:
@@ -280,6 +286,9 @@ rpn_expression_type(const struct rpn_expression *exp,
 				case RPN_CONCAT:
 				case RPN_TOSTRING:
 					return "string";
+				case RPN_IF:
+					return expression_type(exp, headers,
+							fallback_idx - 1);
 			}
 			break;
 		case RPN_CONSTANT:
@@ -295,6 +304,14 @@ rpn_expression_type(const struct rpn_expression *exp,
 	}
 
 	abort();
+
+}
+
+const char *
+rpn_expression_type(const struct rpn_expression *exp,
+		const struct col_header *headers)
+{
+	return expression_type(exp, headers, exp->count - 1);
 }
 
 void

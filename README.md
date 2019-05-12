@@ -123,21 +123,6 @@ $ csv-ls . | csv-rows --no-header
 19
 ```
 
-sum of file sizes and real allocated blocks in the current directory
-```
-$ csv-ls | csv-cut -f size,blocks | csv-rpn -e "space_used=blocks 512 *" | csv-sum -f size,blocks,space_used
-sum(size):int,sum(blocks):int,sum(space_used):int
-109679,288,147456
-```
-
-list of files whose size is between 2000 and 3000 bytes
-```
-$ csv-ls -f size,name | csv-rpn  -e "range2k-3k=size 2000 :ge size 3000 :lt :and" | csv-grep -e range2k-3k=1 | csv-cut -f size,name
-size:int,name:string
-2893,columns.c
-2204,parse.h
-```
-
 list of files formatted in human-readable format (similar to ls -l) with disabled pager
 ```
 $ csv-ls -l | csv-cut -f mode,nlink,owner_name,group_name,size,mtime,name | csv-show -s 1 -p no --no-header
@@ -159,6 +144,37 @@ full paths of all files in current directory and below
 ```
 $ csv-ls -R -f parent,name . | csv-concat -f parent -s "/" -f name -n full_path | csv-cut -f full_path
 ....
+```
+
+sum of file sizes and real allocated blocks in the current directory
+```
+$ csv-ls | csv-cut -f size,blocks | csv-rpn -e "space_used=blocks 512 *" | csv-sum -f size,blocks,space_used
+sum(size):int,sum(blocks):int,sum(space_used):int
+109679,288,147456
+```
+
+list of files whose size is between 2000 and 3000 bytes
+```
+$ csv-ls -f size,name | csv-rpn  -e "range2k-3k=size 2000 :ge size 3000 :lt :and" | csv-grep -e range2k-3k=1 | csv-cut -f size,name
+size:int,name:string
+2893,columns.c
+2204,parse.h
+```
+
+
+files and their permissions printed in human-readable format
+```
+$ csv-ls -f mode,name | csv-rpn -e "strmode=\
+mode 0400 & 'r' '-' :if         mode 0200 & 'w' '-' :if :concat mode 0100 & 'x' '-' :if :concat \
+mode  040 & 'r' '-' :if :concat mode  020 & 'w' '-' :if :concat mode  010 & 'x' '-' :if :concat \
+mode   04 & 'r' '-' :if :concat mode   02 & 'w' '-' :if :concat mode   01 & 'x' '-' :if :concat" | \
+csv-cut -f mode,strmode,name
+
+mode:int,strmode:string,name:string
+0644,rw-r--r--,CMakeCache.txt
+0755,rwxr-xr-x,CMakeFiles
+0600,rw-------,core
+...
 ```
 
 # TODO (high level)
