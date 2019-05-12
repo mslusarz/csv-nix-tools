@@ -113,3 +113,10 @@ fail:
 	memset(exp, 0, sizeof(*exp));
 	return -1;
 }
+
+void
+rpn_free(struct rpn_expression *exp)
+{
+	free(exp->tokens);
+	exp->tokens = NULL;
+}

@@ -200,5 +200,13 @@ main(int argc, char *argv[])
 
 	csv_destroy_ctx(s);
 
+	for (size_t i = 0; i < nexpressions; ++i) {
+		rpn_free(&params.expressions[i]);
+		free(expressions[i]);
+	}
+
+	free(expressions);
+	free(params.expressions);
+
 	return 0;
 }

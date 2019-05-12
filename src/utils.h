@@ -96,5 +96,6 @@ int rpn_parse(struct rpn_expression *exp, char *str,
 		const struct col_header *headers, size_t nheaders);
 int rpn_eval(struct rpn_expression *exp, const char *buf,
 		const size_t *col_offs, long long *value);
+void rpn_free(struct rpn_expression *exp);
 
 #endif
