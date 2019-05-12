@@ -155,7 +155,7 @@ $ csv-ls -R -f parent,name . | csv-concat -f parent -s "/" -f name -n full_path 
 
 # TODO (high level)
 - figure out how to let users use complex filters and export data (lua?)
-- more processing tools (filter, exec, tac, tr, sed, etc)
+- more processing tools (filter, exec, tr, sed, etc)
 - more data collection tools (ps, find, df, netstat, ifconfig/ip?, lsattr, lsusb, etc)
 - exporting tools (to-xml, to-json, to-sql)
 - importing tools (from-xml, from-json)
