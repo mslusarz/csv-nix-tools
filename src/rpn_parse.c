@@ -246,6 +246,57 @@ fail:
 	return -1;
 }
 
+const char *
+rpn_expression_type(const struct rpn_expression *exp,
+		const struct col_header *headers)
+{
+	const struct rpn_token *last_token = &exp->tokens[exp->count - 1];
+
+	switch(last_token->type) {
+		case RPN_OPERATOR:
+			switch (last_token->operator) {
+				case RPN_ADD:
+				case RPN_SUB:
+				case RPN_MUL:
+				case RPN_DIV:
+				case RPN_REM:
+				case RPN_BIT_OR:
+				case RPN_BIT_AND:
+				case RPN_BIT_XOR:
+				case RPN_BIT_LSHIFT:
+				case RPN_BIT_RSHIFT:
+				case RPN_LOGIC_AND:
+				case RPN_LOGIC_OR:
+				case RPN_TOINT:
+				case RPN_LT:
+				case RPN_LE:
+				case RPN_GT:
+				case RPN_GE:
+				case RPN_EQ:
+				case RPN_NE:
+					return "int";
+
+				case RPN_SUBSTR:
+				case RPN_CONCAT:
+				case RPN_TOSTRING:
+					return "string";
+			}
+			break;
+		case RPN_CONSTANT:
+			switch (last_token->constant.type) {
+				case RPN_LLONG:
+					return "int";
+				case RPN_PCHAR:
+					return "string";
+			}
+			break;
+		case RPN_COLUMN:
+			return headers[last_token->colnum].type;
+	}
+
+	abort();
+}
+
 void
 rpn_free(struct rpn_expression *exp)
 {

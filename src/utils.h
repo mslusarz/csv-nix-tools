@@ -124,6 +124,10 @@ int rpn_eval(struct rpn_expression *exp,
 		const size_t *col_offs,
 		const struct col_header *headers,
 		struct rpn_variant *value);
+
+const char *rpn_expression_type(const struct rpn_expression *exp,
+		const struct col_header *headers);
+
 void rpn_free(struct rpn_expression *exp);
 
 #endif

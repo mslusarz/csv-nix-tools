@@ -209,8 +209,12 @@ main(int argc, char *argv[])
 		for (size_t i = 0; i < nheaders; ++i)
 			printf("%s:%s,", headers[i].name, headers[i].type);
 		for (size_t i = 0; i < nexpressions - 1; ++i)
-			printf("%s:int,", expressions[i]);
-		printf("%s:int\n", expressions[nexpressions - 1]);
+			printf("%s:%s,", expressions[i],
+				rpn_expression_type(&params.expressions[i],
+						headers));
+		printf("%s:%s\n", expressions[nexpressions - 1],
+			rpn_expression_type(&params.expressions[nexpressions - 1],
+						headers));
 	}
 
 	if (csv_read_all(s, &next_row, &params))
