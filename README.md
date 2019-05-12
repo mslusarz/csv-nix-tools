@@ -185,8 +185,9 @@ mode:int,strmode:string,name:string
 ```
 
 # TODO (high level)
-- more processing tools (exec, tr, sed, etc)
-- more data collection tools (ps, find, df, netstat, ifconfig/ip?, lsattr, lsusb, etc)
+- more processing tools (exec, tr, sed, uniq, rev, drop, exec-edit?, paste?, etc)
+- more data collection tools (ps, find, df, netstat, ifconfig/ip?, lsattr, lsusb, readlink, tcpdump?, etc)
+- more rpn operators/functions (split, rev, base64enc/dec, timestamp conversion, now, regex, sed, tr)
 - exporting tools (to-xml, to-json, to-sql)
 - importing tools (from-xml, from-json)
 - export as much as possible as a library(ies)
@@ -196,6 +197,7 @@ mode:int,strmode:string,name:string
 - i18n
 
 # TODO (low level)
+- rpn:substring negative pos support (just like in csv-substring)
 - regexp support (grep)
 - switch to deal with new lines in shell-compatible way (see what coreutils' ls does)
 
@@ -204,3 +206,9 @@ mode:int,strmode:string,name:string
 - use sqlite for that? expose using sql syntax?
 - importing from other tools (lspci -mm?, strace?, lsof -F, ss)?
 - tool for encoding strings in safe for transport way (base64? just hex?)
+- loops and temporary variables in rpn?
+- built-in pipes?
+- csv-show enabled by default?
+- what about unicode?
+- drop datetime type?
+- one multicommand binary?
