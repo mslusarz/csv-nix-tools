@@ -59,12 +59,31 @@ size_t csv_find(const struct col_header *headers,
 		size_t nheaders,
 		const char *name);
 
+enum rpn_token_type {
+	RPN_COLUMN,		/* column */
+	RPN_CONSTANT,		/* integer constant */
+	RPN_OPERATOR,		/* rpn_operator */
+};
+
+enum rpn_operator {
+	RPN_ADD,		/* numeric add */
+	RPN_SUB,		/* numeric subtract */
+	RPN_MUL,		/* numeric multiplication */
+	RPN_DIV,		/* numeric division */
+	RPN_REM,		/* numeric division remainder */
+	RPN_BIT_OR,		/* bitwise or */
+	RPN_BIT_AND,		/* bitwise and */
+	RPN_BIT_XOR,		/* bitwise xor */
+	RPN_BIT_LSHIFT,		/* bitwise left shift */
+	RPN_BIT_RSHIFT,		/* bitwise right shift */
+};
+
 struct rpn_token {
-	enum { COLUMN, CONSTANT, OPERATOR } type;
+	enum rpn_token_type type;
 	union {
 		size_t colnum;
 		long long constant;
-		enum { ADD, SUB, MUL, DIV, REM, OR, AND, XOR, LSHIFT, RSHIFT } operator;
+		enum rpn_operator operator;
 	};
 };
 

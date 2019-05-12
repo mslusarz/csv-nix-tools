@@ -45,11 +45,11 @@ rpn_parse(struct rpn_expression *exp, char *str,
 		struct rpn_token tkn;
 
 		if (isdigit(token[0])) {
-			tkn.type = CONSTANT;
+			tkn.type = RPN_CONSTANT;
 			if (strtoll_safe(token, &tkn.constant))
 				goto fail;
 		} else if (isalpha(token[0])) {
-			tkn.type = COLUMN;
+			tkn.type = RPN_COLUMN;
 			tkn.colnum = csv_find(headers, nheaders, token);
 			if (tkn.colnum == CSV_NOT_FOUND) {
 				fprintf(stderr,
@@ -58,35 +58,35 @@ rpn_parse(struct rpn_expression *exp, char *str,
 				goto fail;
 			}
 		} else if (strcmp(token, "+") == 0) {
-			tkn.type = OPERATOR;
-			tkn.operator = ADD;
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_ADD;
 		} else if (strcmp(token, "-") == 0) {
-			tkn.type = OPERATOR;
-			tkn.operator = SUB;
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_SUB;
 		} else if (strcmp(token, "*") == 0) {
-			tkn.type = OPERATOR;
-			tkn.operator = MUL;
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_MUL;
 		} else if (strcmp(token, "/") == 0) {
-			tkn.type = OPERATOR;
-			tkn.operator = DIV;
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_DIV;
 		} else if (strcmp(token, "%") == 0) {
-			tkn.type = OPERATOR;
-			tkn.operator = REM;
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_REM;
 		} else if (strcmp(token, "|") == 0) {
-			tkn.type = OPERATOR;
-			tkn.operator = OR;
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_BIT_OR;
 		} else if (strcmp(token, "&") == 0) {
-			tkn.type = OPERATOR;
-			tkn.operator = AND;
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_BIT_AND;
 		} else if (strcmp(token, "^") == 0) {
-			tkn.type = OPERATOR;
-			tkn.operator = XOR;
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_BIT_XOR;
 		} else if (strcmp(token, "<<") == 0) {
-			tkn.type = OPERATOR;
-			tkn.operator = LSHIFT;
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_BIT_LSHIFT;
 		} else if (strcmp(token, ">>") == 0) {
-			tkn.type = OPERATOR;
-			tkn.operator = RSHIFT;
+			tkn.type = RPN_OPERATOR;
+			tkn.operator = RPN_BIT_RSHIFT;
 		} else {
 			fprintf(stderr,
 				"don't know how to interpret '%s'\n",

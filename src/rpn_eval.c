@@ -44,7 +44,7 @@ rpn_eval(struct rpn_expression *exp, const char *buf, const size_t *col_offs,
 
 	for (size_t j = 0; j < exp->count; ++j) {
 		struct rpn_token *t = &exp->tokens[j];
-		if (t->type == CONSTANT) {
+		if (t->type == RPN_CONSTANT) {
 			stack = realloc(stack, (height + 1) * sizeof(stack[0]));
 			if (!stack) {
 				perror("realloc");
@@ -52,7 +52,7 @@ rpn_eval(struct rpn_expression *exp, const char *buf, const size_t *col_offs,
 			}
 
 			stack[height++] = t->constant;
-		} else if (t->type == COLUMN) {
+		} else if (t->type == RPN_COLUMN) {
 			stack = realloc(stack, (height + 1) * sizeof(stack[0]));
 			if (!stack) {
 				perror("realloc");
@@ -62,41 +62,41 @@ rpn_eval(struct rpn_expression *exp, const char *buf, const size_t *col_offs,
 			if (strtoll_safe(&buf[col_offs[t->colnum]],
 					&stack[height++]))
 				goto fail;
-		} else if (t->type == OPERATOR) {
+		} else if (t->type == RPN_OPERATOR) {
 			if (height < 2) {
 				fprintf(stderr, "not enough stack entries\n");
 				goto fail;
 			}
 
 			switch (t->operator) {
-			case ADD:
+			case RPN_ADD:
 				stack[height - 2] += stack[height - 1];
 				break;
-			case SUB:
+			case RPN_SUB:
 				stack[height - 2] -= stack[height - 1];
 				break;
-			case MUL:
+			case RPN_MUL:
 				stack[height - 2] *= stack[height - 1];
 				break;
-			case DIV:
+			case RPN_DIV:
 				stack[height - 2] /= stack[height - 1];
 				break;
-			case REM:
+			case RPN_REM:
 				stack[height - 2] %= stack[height - 1];
 				break;
-			case OR:
+			case RPN_BIT_OR:
 				stack[height - 2] |= stack[height - 1];
 				break;
-			case AND:
+			case RPN_BIT_AND:
 				stack[height - 2] &= stack[height - 1];
 				break;
-			case XOR:
+			case RPN_BIT_XOR:
 				stack[height - 2] ^= stack[height - 1];
 				break;
-			case LSHIFT:
+			case RPN_BIT_LSHIFT:
 				stack[height - 2] <<= stack[height - 1];
 				break;
-			case RSHIFT:
+			case RPN_BIT_RSHIFT:
 				stack[height - 2] >>= stack[height - 1];
 				break;
 			default:
