@@ -256,9 +256,9 @@ csv_read_all(struct csv_ctx *ctx, csv_row_cb cb, void *arg)
 		if (nmemb > 100)
 			nmemb = 100;
 
-		size_t readin = fread(&buf[ready], 1, nmemb, stdin);
+		size_t readin = fread(&buf[ready], 1, nmemb, ctx->in);
 		if (readin < nmemb) {
-			if (!feof(stdin)) {
+			if (!feof(ctx->in)) {
 				fprintf(ctx->err, "fread: %s\n",
 					strerror(errno));
 				ret = -1;
