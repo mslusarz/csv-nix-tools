@@ -19,6 +19,16 @@ if(NOT PKG_CONFIG_FOUND)
 	message(WARNING "Pkg-config not found. Detection of dependencies may fail.")
 endif()
 
+if(PKG_CONFIG_FOUND)
+	pkg_check_modules(SQLITE3 sqlite3)
+else()
+	find_package(SQLITE3)
+endif()
+
+if(NOT SQLITE3_FOUND)
+	message(WARNING "SQLite3 not found. csv-sqlite won't be built.")
+endif()
+
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 
@@ -45,6 +55,14 @@ add_executable(csv-sum src/sum.c src/parse.c src/utils.c)
 add_executable(csv-tac src/tac.c src/parse.c src/utils.c)
 add_executable(csv-tail src/tail.c src/parse.c src/utils.c)
 
+if(SQLITE3_FOUND)
+	add_executable(csv-sqlite src/sqlite.c src/parse.c src/utils.c)
+	if (SQLITE3_INCLUDE_DIRS)
+		target_include_directories(csv-sqlite ${SQLITE3_INCLUDE_DIRS})
+	endif()
+	target_link_libraries(csv-sqlite ${SQLITE3_LIBRARIES})
+endif()
+
 install(FILES
 		${CMAKE_BINARY_DIR}/csv-cat
 		${CMAKE_BINARY_DIR}/csv-columns
@@ -64,3 +82,8 @@ install(FILES
 		${CMAKE_BINARY_DIR}/csv-tac
 		${CMAKE_BINARY_DIR}/csv-tail
 	DESTINATION ${CMAKE_INSTALL_BINDIR}/)
+
+if(SQLITE3_FOUND)
+	install(FILES ${CMAKE_BINARY_DIR}/csv-sqlite
+		DESTINATION ${CMAKE_INSTALL_BINDIR}/)
+endif()

@@ -167,6 +167,13 @@ size:int,name:string
 2893,columns.c
 2204,parse.h
 ```
+or
+```
+$ csv-ls | csv-sqlite "select size, name from input where size > 2000 and size < 3000"
+size:int,name:string
+2893,columns.c
+2204,parse.h
+```
 
 
 files and their permissions printed in human-readable format
