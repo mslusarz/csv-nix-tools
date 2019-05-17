@@ -341,6 +341,7 @@ main(int argc, char *argv[])
 				const char *txt =
 					(const char *)sqlite3_column_text(select, i);
 				csv_print_quoted(txt, strlen(txt));
+				fputc(',', stdout);
 			} else {
 				fprintf(stderr, "unsupported return type: %d\n",
 						type);
