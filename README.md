@@ -217,5 +217,4 @@ mode:int,strmode:string,name:string
 - built-in pipes?
 - csv-show enabled by default?
 - what about unicode?
-- drop datetime type?
 - one multicommand binary?
