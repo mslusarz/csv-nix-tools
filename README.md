@@ -113,7 +113,8 @@ size:int,name:string,base:string,ext:string
 
 sum of sizes of all files with "png" extension
 ```
-$ csv-ls . | csv-split -f name -e . -n base,ext -r | csv-grep -e ext=png | csv-sum -f size --no-header
+$ csv-ls . | csv-split -f name -e . -n base,ext -r | \
+csv-grep -e ext=png | csv-sum -f size --no-header
 94877
 ```
 
@@ -125,7 +126,8 @@ $ csv-ls . | csv-rows --no-header
 
 list of files formatted in human-readable format (similar to ls -l) with disabled pager
 ```
-$ csv-ls -l | csv-cut -f mode,nlink,owner_name,group_name,size,mtime,name | csv-show -s 1 -p no --no-header
+$ csv-ls -l | csv-cut -f mode,nlink,owner_name,group_name,size,mtime,name | \
+csv-show -s 1 -p no --no-header
 0644 1  someuser    somegroup    1234     2019-04-23 20:17:58.331813826 file1
 0644 1  someuser    somegroup    30381380 2019-04-23 20:18:25.539676175 file2
 0644 12 anotheruser anothergroup 897722   2019-04-24 23:21:46.644869396 file3
@@ -133,7 +135,8 @@ $ csv-ls -l | csv-cut -f mode,nlink,owner_name,group_name,size,mtime,name | csv-
 
 list of files whose 2nd character is 'o'
 ```
-$ csv-ls | csv-substring -f name -n 2nd-char -p 1 -l 1 | csv-grep -e 2nd-char=o | csv-cut -f name --no-header
+$ csv-ls | csv-substring -f name -n 2nd-char -p 1 -l 1 | \
+csv-grep -e 2nd-char=o | csv-cut -f name --no-header
 columns.c
 concat.c
 rows.c
@@ -142,20 +145,24 @@ sort.c
 
 full paths of all files in current directory and below
 ```
-$ csv-ls -R -f parent,name . | csv-concat -f parent -c "/" -f name -n full_path | csv-cut -f full_path
+$ csv-ls -R -f parent,name . | \
+csv-concat -f parent -c "/" -f name -n full_path | csv-cut -f full_path
 ....
 ```
 
 sum of file sizes and real allocated blocks in the current directory
 ```
-$ csv-ls | csv-cut -f size,blocks | csv-rpn-add -e "space_used=blocks 512 *" | csv-sum -f size,blocks,space_used
+$ csv-ls | csv-cut -f size,blocks | csv-rpn-add -e "space_used=blocks 512 *" | \
+csv-sum -f size,blocks,space_used
 sum(size):int,sum(blocks):int,sum(space_used):int
 109679,288,147456
 ```
 
 list of files whose size is between 2000 and 3000 bytes
 ```
-$ csv-ls -f size,name | csv-rpn-add -e "range2k-3k=size 2000 :ge size 3000 :lt :and" | csv-grep -e range2k-3k=1 | csv-cut -f size,name
+$ csv-ls -f size,name | \
+csv-rpn-add -e "range2k-3k=size 2000 :ge size 3000 :lt :and" | \
+csv-grep -e range2k-3k=1 | csv-cut -f size,name
 size:int,name:string
 2893,columns.c
 2204,parse.h
@@ -193,7 +200,8 @@ mode:int,strmode:string,name:string
 
 remove all temporary files (ending with "~"), even if path contains spaces or line breaks (TODO: replace csv-rpn-filter with csv-grep once regexps are implemented)
 ```
-$ csv-ls -R -f parent,name . | csv-rpn-filter -e "name -1 1 :substr '~' ==" | csv-concat -f parent -c "/" -f name -n full_path | csv-exec -- rm -f %full_path
+$ csv-ls -R -f parent,name . | csv-rpn-filter -e "name -1 1 :substr '~' ==" | \
+csv-concat -f parent -c "/" -f name -n full_path | csv-exec -- rm -f %full_path
 ```
 
 # TODO (high level)
