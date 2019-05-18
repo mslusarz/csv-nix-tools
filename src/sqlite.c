@@ -53,11 +53,19 @@ usage(void)
 {
 	printf("Usage: csv-sqlite [OPTION] sql-query\n");
 	printf("Options:\n");
+	printf("  -i path\n");
 	printf("  -s, --show\n");
 	printf("      --no-header\n");
 	printf("      --help\n");
 	printf("      --version\n");
 }
+
+struct input {
+	char *path;
+	struct csv_ctx *csv_ctx;
+	const struct col_header *headers;
+	size_t nheaders;
+};
 
 struct cb_params {
 	sqlite3 *db;
@@ -125,10 +133,10 @@ type(const char *t)
 
 static int
 build_queries(const struct col_header *headers, size_t nheaders,
-		char **pcreate, char **pins)
+		char **pcreate, char **pins, const char *table_name)
 {
-	size_t create_len = strlen("create table input();");
-	size_t insert_len = strlen("insert into input() values();");
+	size_t create_len = strlen("create table ();") + strlen(table_name);
+	size_t insert_len = strlen("insert into () values();") + strlen(table_name);
 
 	for (size_t i = 0; i < nheaders; ++i) {
 		create_len += strlen(headers[i].name) + strlen(" ") +
@@ -152,8 +160,8 @@ build_queries(const struct col_header *headers, size_t nheaders,
 		return -1;
 	}
 
-	int cr_written = sprintf(create, "create table input(");
-	int ins_written = sprintf(insert, "insert into input(");
+	int cr_written = sprintf(create, "create table %s(", table_name);
+	int ins_written = sprintf(insert, "insert into %s(", table_name);
 	for (size_t i = 0; i < nheaders - 1; ++i) {
 		cr_written += sprintf(&create[cr_written], "%s %s, ",
 				headers[i].name, type(headers[i].type));
@@ -204,10 +212,105 @@ sqlite_type_to_csv_name(int t)
 	else if (t == SQLITE_TEXT)
 		return "string";
 	else if (t == SQLITE_NULL)
-		return "string";
+		return NULL;
 
 	fprintf(stderr, "unsupported sqlite type: %d\n", t);
 	exit(2);
+}
+
+static void
+add_file(FILE *f, size_t num, sqlite3 *db, struct input *input)
+{
+	struct csv_ctx *s = csv_create_ctx(f, stderr);
+	if (!s)
+		exit(2);
+	if (csv_read_header(s))
+		exit(2);
+
+	const struct col_header *headers;
+	size_t nheaders = csv_get_headers(s, &headers);
+
+	input->csv_ctx = s;
+	input->headers = headers;
+	input->nheaders = nheaders;
+
+	char table_name[32];
+	if (num == SIZE_MAX)
+		strcpy(table_name, "input");
+	else
+		sprintf(table_name, "input%ld", num);
+
+	char *create, *insert;
+	if (build_queries(headers, nheaders, &create, &insert, table_name))
+		exit(2);
+
+	if (sqlite3_exec(db, create, NULL, NULL, NULL) != SQLITE_OK) {
+		fprintf(stderr, "sqlite3_exec(create): %s\n",
+				sqlite3_errmsg(db));
+		exit(2);
+	}
+	free(create);
+
+	struct cb_params params;
+	if (sqlite3_prepare_v2(db, insert, -1, &params.insert, NULL) !=
+			SQLITE_OK) {
+		fprintf(stderr, "sqlite3_prepare_v2(insert): %s\n",
+				sqlite3_errmsg(db));
+		exit(2);
+	}
+
+	params.db = db;
+	if (csv_read_all(s, &next_row, &params))
+		exit(2);
+
+	if (sqlite3_finalize(params.insert) != SQLITE_OK) {
+		fprintf(stderr, "sqlite3_finalize(insert): %s\n",
+				sqlite3_errmsg(db));
+		exit(2);
+	}
+
+	free(insert);
+}
+
+static void
+print_col(sqlite3_stmt *select, size_t i, struct input *inputs, size_t ninputs)
+{
+	const char *name = sqlite3_column_name(select, i);
+	int type = sqlite3_column_type(select, i);
+	const char *type_str = sqlite_type_to_csv_name(type);
+
+	if (type_str) {
+		printf("%s:%s", name, type_str);
+		return;
+	}
+
+	bool found = false;
+	for (size_t j = 0; j < ninputs; ++j) {
+		size_t col = csv_find(inputs[j].headers, inputs[j].nheaders, name);
+		if (col == CSV_NOT_FOUND)
+			continue;
+		printf("%s:%s", name, inputs[j].headers[col].type);
+		found = true;
+		break;
+	}
+
+	if (!found) /* guess */
+		printf("%s:string", name);
+}
+
+static void
+print_val(sqlite3_stmt *select, size_t i)
+{
+	int type = sqlite3_column_type(select, i);
+	if (type == SQLITE_INTEGER)
+		printf("%lld", sqlite3_column_int64(select, i));
+	else if (type == SQLITE_TEXT) {
+		const char *txt = (const char *)sqlite3_column_text(select, i);
+		csv_print_quoted(txt, strlen(txt));
+	} else {
+		fprintf(stderr, "unsupported return type: %d\n", type);
+		exit(2);
+	}
 }
 
 int
@@ -215,15 +318,29 @@ main(int argc, char *argv[])
 {
 	int opt;
 	int longindex;
-	struct cb_params params;
 	bool print_header = true;
 	bool show = false;
+	struct input *inputs = NULL;
+	size_t ninputs = 0;
 
-	while ((opt = getopt_long(argc, argv, "sv", long_options,
+	while ((opt = getopt_long(argc, argv, "i:sv", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'H':
 				print_header = false;
+				break;
+			case 'i':
+				inputs = realloc(inputs,
+						++ninputs * sizeof(inputs[0]));
+				if (!inputs) {
+					perror("realloc");
+					exit(2);
+				}
+				inputs[ninputs - 1].path = strdup(optarg);
+				if (!inputs[ninputs - 1].path) {
+					perror("strdup");
+					exit(2);
+				}
 				break;
 			case 's':
 				show = true;
@@ -255,47 +372,50 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show();
 
-	struct csv_ctx *s = csv_create_ctx(stdin, stderr);
-	if (!s)
-		exit(2);
-	if (csv_read_header(s))
-		exit(2);
-	const struct col_header *headers;
-	size_t nheaders = csv_get_headers(s, &headers);
-
 	sqlite3 *db;
 	if (sqlite3_open(":memory:", &db) != SQLITE_OK) {
 		fprintf(stderr, "sqlite3_open: %s\n", sqlite3_errmsg(db));
 		exit(2);
 	}
-	params.db = db;
 
-	char *create, *insert;
-	if (build_queries(headers, nheaders, &create, &insert))
-		exit(2);
+	if (ninputs == 0) {
+		inputs = calloc(1, sizeof(inputs[0]));
+		if (!inputs) {
+			perror("malloc");
+			exit(2);
+		}
+		ninputs++;
 
-	if (sqlite3_exec(db, create, NULL, NULL, NULL) != SQLITE_OK) {
-		fprintf(stderr, "sqlite3_exec(create): %s\n",
-				sqlite3_errmsg(db));
-		exit(2);
+		add_file(stdin, SIZE_MAX, db, &inputs[0]);
+	} else {
+		bool stdin_used = false;
+		for (size_t i = 0; i < ninputs; ++i) {
+			FILE *f;
+			char *path = inputs[i].path;
+
+			if (strcmp(path, "-") == 0) {
+				if (stdin_used) {
+					fprintf(stderr,
+						"stdin used multiple times\n");
+					exit(2);
+				}
+
+				f = stdin;
+				stdin_used = true;
+			} else
+				f = fopen(path, "r");
+
+			if (!f) {
+				perror("fopen");
+				exit(2);
+			}
+
+			add_file(f, i + 1, db, &inputs[i]);
+
+			if (strcmp(path, "-") != 0)
+				fclose(f);
+		}
 	}
-	free(create);
-
-	if (sqlite3_prepare_v2(db, insert, -1, &params.insert, NULL) != SQLITE_OK) {
-		fprintf(stderr, "sqlite3_prepare_v2(insert): %s\n",
-				sqlite3_errmsg(db));
-		exit(2);
-	}
-
-	if (csv_read_all(s, &next_row, &params))
-		exit(2);
-
-	if (sqlite3_finalize(params.insert) != SQLITE_OK) {
-		fprintf(stderr, "sqlite3_finalize(insert): %s\n",
-				sqlite3_errmsg(db));
-		exit(2);
-	}
-	free(insert);
 
 	sqlite3_stmt *select;
 	if (sqlite3_prepare_v2(db, argv[optind], -1, &select, NULL) != SQLITE_OK) {
@@ -319,57 +439,22 @@ main(int argc, char *argv[])
 
 	if (print_header) {
 		for (size_t i = 0; i < cnt - 1; ++i) {
-			const char *name = sqlite3_column_name(select, i);
-			size_t col = csv_find(headers, nheaders, name);
-			if (col == CSV_NOT_FOUND) {
-				int type = sqlite3_column_type(select, i);
-				printf("%s:%s,", name,
-						sqlite_type_to_csv_name(type));
-			} else {
-				printf("%s:%s,", name, headers[col].type);
-			}
+			print_col(select, i, inputs, ninputs);
+			fputc(',', stdout);
 		}
 
-		const char *name = sqlite3_column_name(select, cnt - 1);
-		size_t col = csv_find(headers, nheaders, name);
-		if (col == CSV_NOT_FOUND) {
-			int type = sqlite3_column_type(select, cnt - 1);
-			printf("%s:%s\n", name,
-					sqlite_type_to_csv_name(type));
-		} else {
-			printf("%s:%s\n", name, headers[col].type);
-		}
+		print_col(select, cnt - 1, inputs, ninputs);
+		fputc('\n', stdout);
 	}
 
 	while (ret == SQLITE_ROW) {
 		for (size_t i = 0; i < cnt - 1; ++i) {
-			int type = sqlite3_column_type(select, i);
-			if (type == SQLITE_INTEGER)
-				printf("%lld,", sqlite3_column_int64(select, i));
-			else if (type == SQLITE_TEXT) {
-				const char *txt =
-					(const char *)sqlite3_column_text(select, i);
-				csv_print_quoted(txt, strlen(txt));
-				fputc(',', stdout);
-			} else {
-				fprintf(stderr, "unsupported return type: %d\n",
-						type);
-				exit(2);
-			}
+			print_val(select, i);
+			fputc(',', stdout);
 		}
 
-		int type = sqlite3_column_type(select, cnt - 1);
-		if (type == SQLITE_INTEGER)
-			printf("%lld\n", sqlite3_column_int64(select, cnt - 1));
-		else if (type == SQLITE_TEXT) {
-			const char *txt =
-				(const char *)sqlite3_column_text(select, cnt - 1);
-			csv_print_quoted(txt, strlen(txt));
-			fputc('\n', stdout);
-		} else {
-			fprintf(stderr, "unsupported return type: %d\n", type);
-			exit(2);
-		}
+		print_val(select, cnt - 1);
+		fputc('\n', stdout);
 
 		ret = sqlite3_step(select);
 	}
@@ -391,7 +476,12 @@ main(int argc, char *argv[])
 		exit(2);
 	}
 
-	csv_destroy_ctx(s);
+	for (size_t i = 0; i < ninputs; ++i) {
+		csv_destroy_ctx(inputs[i].csv_ctx);
+		free(inputs[i].path);
+	}
+
+	free(inputs);
 
 	return 0;
 }

@@ -208,8 +208,6 @@ mode:int,strmode:string,name:string
 - switch to deal with new lines in shell-compatible way (see what coreutils' ls does)
 
 ## Random ideas
-- ability to "join" (in SQL sense) multiple files?
-- use sqlite for that? expose using sql syntax?
 - importing from other tools (lspci -mm?, strace?, lsof -F, ss)?
 - tool for encoding strings in safe for transport way (base64? just hex?)
 - loops and temporary variables in rpn?
