@@ -41,12 +41,12 @@ add_executable(csv-cat src/cat.c src/parse.c src/utils.c)
 add_executable(csv-columns src/columns.c src/parse.c)
 add_executable(csv-concat src/concat.c src/parse.c src/utils.c)
 add_executable(csv-cut src/cut.c src/parse.c src/utils.c)
-add_executable(csv-filter src/filter.c src/parse.c src/rpn_eval.c src/rpn_parse.c src/utils.c)
 add_executable(csv-grep src/grep.c src/parse.c src/utils.c)
 add_executable(csv-head src/head.c src/parse.c src/utils.c)
 add_executable(csv-ls src/ls.c src/utils.c)
 add_executable(csv-rows src/rows.c src/parse.c)
 add_executable(csv-rpn-add src/rpn-add.c src/parse.c src/rpn_eval.c src/rpn_parse.c src/utils.c)
+add_executable(csv-rpn-filter src/rpn-filter.c src/parse.c src/rpn_eval.c src/rpn_parse.c src/utils.c)
 add_executable(csv-show src/show.c src/parse.c src/utils.c)
 add_executable(csv-sort src/sort.c src/parse.c src/utils.c)
 add_executable(csv-split src/split.c src/parse.c src/utils.c)
@@ -68,12 +68,12 @@ install(FILES
 		${CMAKE_BINARY_DIR}/csv-columns
 		${CMAKE_BINARY_DIR}/csv-concat
 		${CMAKE_BINARY_DIR}/csv-cut
-		${CMAKE_BINARY_DIR}/csv-filter
 		${CMAKE_BINARY_DIR}/csv-grep
 		${CMAKE_BINARY_DIR}/csv-head
 		${CMAKE_BINARY_DIR}/csv-ls
 		${CMAKE_BINARY_DIR}/csv-rows
 		${CMAKE_BINARY_DIR}/csv-rpn-add
+		${CMAKE_BINARY_DIR}/csv-rpn-filter
 		${CMAKE_BINARY_DIR}/csv-show
 		${CMAKE_BINARY_DIR}/csv-sort
 		${CMAKE_BINARY_DIR}/csv-split

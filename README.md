@@ -162,7 +162,7 @@ size:int,name:string
 ```
 or
 ```
-$ csv-ls -f size,name | csv-filter -e "size 2000 :ge size 3000 :lt :and"
+$ csv-ls -f size,name | csv-rpn-filter -e "size 2000 :ge size 3000 :lt :and"
 size:int,name:string
 2893,columns.c
 2204,parse.h
