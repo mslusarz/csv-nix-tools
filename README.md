@@ -24,14 +24,14 @@ raw data about one file
 ```
 $ csv-ls build/Makefile
 size:int,type:int,mode:int,owner_id:int,group_id:int,nlink:int,mtime_sec:int,mtime_nsec:int,ctime_sec:int,ctime_nsec:int,atime_sec:int,atime_nsec:int,dev:int,ino:int,rdev:int,blksize:int,blocks:int,symlink:string,parent:string,name:string
-18746,0100000,0644,1000,1000,1,1557072822,286415067,1557072822,286415067,1557072849,958066747,0x801,16126121,0,4096,40,,,./build/Makefile
+18746,0100000,0644,1000,1000,1,1557072822,286415067,1557072822,286415067,1557072849,958066747,0x801,16126121,0,4096,40,,,build/Makefile
 ```
 
 raw and processed data about one file
 ```
 $ csv-ls -l build/Makefile
-size:int,type:int,mode:int,owner_id:int,group_id:int,nlink:int,mtime_sec:int,mtime_nsec:int,ctime_sec:int,ctime_nsec:int,atime_sec:int,atime_nsec:int,dev:int,ino:int,rdev:int,blksize:int,blocks:int,type:string,owner_name:string,group_name:string,owner_read:bool,owner_write:bool,owner_execute:bool,group_read:bool,group_write:bool,group_execute:bool,other_read:bool,other_write:bool,other_execute:bool,setuid:bool,setgid:bool,sticky:bool,mtime:string,ctime:string,atime:string,symlink:string,parent:string,name:string
-18746,0100000,0644,1000,1000,1,1557072822,286415067,1557072822,286415067,1557072849,958066747,0x801,16126121,0,4096,40,reg,marcin,marcin,1,1,0,1,0,0,1,0,0,0,0,0,2019-05-05 18:13:42.286415067,2019-05-05 18:13:42.286415067,2019-05-05 18:14:09.958066747,,,./build/Makefile
+size:int,type:int,mode:int,owner_id:int,group_id:int,nlink:int,mtime_sec:int,mtime_nsec:int,ctime_sec:int,ctime_nsec:int,atime_sec:int,atime_nsec:int,dev:int,ino:int,rdev:int,blksize:int,blocks:int,type:string,owner_name:string,group_name:string,owner_read:bool,owner_write:bool,owner_execute:bool,group_read:bool,group_write:bool,group_execute:bool,other_read:bool,other_write:bool,other_execute:bool,setuid:bool,setgid:bool,sticky:bool,mtime:string,ctime:string,atime:string,symlink:string,parent:string,name:string,full_path:string
+18746,0100000,0644,1000,1000,1,1557072822,286415067,1557072822,286415067,1557072849,958066747,0x801,16126121,0,4096,40,reg,marcin,marcin,1,1,0,1,0,0,1,0,0,0,0,0,2019-05-05 18:13:42.286415067,2019-05-05 18:13:42.286415067,2019-05-05 18:14:09.958066747,,,build/Makefile,build/Makefile
 ```
 
 all Makefiles in current directory and below
