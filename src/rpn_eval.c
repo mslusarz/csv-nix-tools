@@ -104,7 +104,9 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 			return -1;
 		}
 		break;
-	case RPN_TOSTRING:
+	case RPN_TOSTRING_BASE8:
+	case RPN_TOSTRING_BASE10:
+	case RPN_TOSTRING_BASE16:
 		if (height < 1) {
 			fprintf(stderr, "not enough stack entries\n");
 			return -1;
@@ -244,9 +246,33 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 
 		break;
 	}
-	case RPN_TOSTRING: {
+	case RPN_TOSTRING_BASE8: {
+		char *str;
+		if (asprintf(&str, "0%llo", stack[height - 1].llong) < 0) {
+			perror("asprintf");
+			return -1;
+		}
+
+		stack[height - 1].type = RPN_PCHAR;
+		stack[height - 1].pchar = str;
+
+		break;
+	}
+	case RPN_TOSTRING_BASE10: {
 		char *str;
 		if (asprintf(&str, "%lld", stack[height - 1].llong) < 0) {
+			perror("asprintf");
+			return -1;
+		}
+
+		stack[height - 1].type = RPN_PCHAR;
+		stack[height - 1].pchar = str;
+
+		break;
+	}
+	case RPN_TOSTRING_BASE16: {
+		char *str;
+		if (asprintf(&str, "0x%llx", stack[height - 1].llong) < 0) {
 			perror("asprintf");
 			return -1;
 		}
