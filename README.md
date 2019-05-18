@@ -133,7 +133,7 @@ $ csv-ls -l | csv-cut -f mode,nlink,owner_name,group_name,size,mtime,name | csv-
 
 list of files whose 2nd character is 'o'
 ```
-$ csv-ls | csv-substring -f name -n 2nd-char -s 1 -l 1 | csv-grep -e 2nd-char=o | csv-cut -f name --no-header
+$ csv-ls | csv-substring -f name -n 2nd-char -p 1 -l 1 | csv-grep -e 2nd-char=o | csv-cut -f name --no-header
 columns.c
 concat.c
 rows.c
