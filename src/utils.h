@@ -52,6 +52,7 @@ int strtoul_safe(const char *str, unsigned long *val);
 
 void csv_print_quoted(const char *str, size_t len);
 void csv_show(void);
+void csv_substring_sanitize(const char *str, ssize_t *start, size_t *len);
 
 char *csv_unquot(const char *str);
 

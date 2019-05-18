@@ -204,8 +204,10 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		break;
 	case RPN_SUBSTR: {
 		char *str = stack[height - 1].pchar;
-		long long start = stack[height].llong;
-		long long len = stack[height + 1].llong;
+		ssize_t start = (ssize_t)stack[height].llong;
+		size_t len = (size_t)stack[height + 1].llong;
+
+		csv_substring_sanitize(str, &start, &len);
 
 		char *n = strndup(str + start, len);
 		if (!n) {

@@ -204,7 +204,6 @@ mode:int,strmode:string,name:string
 - i18n
 
 # TODO (low level)
-- rpn:substring negative pos support (just like in csv-substring)
 - regexp support (grep)
 - switch to deal with new lines in shell-compatible way (see what coreutils' ls does)
 

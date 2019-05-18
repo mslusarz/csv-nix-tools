@@ -274,3 +274,23 @@ csv_show(void)
 	dup2(fds[1], 1);
 	close(fds[1]);
 }
+
+void
+csv_substring_sanitize(const char *str, ssize_t *start, size_t *len)
+{
+	size_t max_len = strlen(str);
+
+	if (*start < 0) {
+		if (*start + (ssize_t)max_len < 0)
+			*start = 0;
+		else
+			*start += (ssize_t)max_len;
+	} else {
+		if (*start >= (ssize_t)max_len)
+			*start = (ssize_t)max_len;
+	}
+
+	if ((size_t)*start + *len < (size_t)*start ||
+			(size_t)*start + *len >= max_len)
+		*len = max_len - *start;
+}

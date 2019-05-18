@@ -84,34 +84,10 @@ next_row(const char *buf, const size_t *col_offs,
 	if (str[0] == '"')
 		unquoted = csv_unquot(str);
 
-	size_t start;
-	size_t len = strlen(unquoted);
-
-	if (params->start_pos < 0) {
-		if (params->start_pos + (ssize_t)len < 0)
-			start = 0;
-		else
-			start = (size_t)(params->start_pos + (ssize_t)len);
-
-		if (start + params->length < start ||
-				start + params->length >= len)
-			len = len - start;
-		else
-			len = params->length;
-	} else {
-		if (params->start_pos >= len)
-			start = len;
-		else
-			start = params->start_pos;
-
-		if (start + params->length < start ||
-				start + params->length >= len)
-			len = len - start;
-		else
-			len = params->length;
-	}
-
-	csv_print_quoted(unquoted + start, len);
+	ssize_t start = params->start_pos;
+	size_t len = params->length;
+	csv_substring_sanitize(unquoted, &start, &len);
+	csv_print_quoted(unquoted + (size_t)start, len);
 
 	fputc('\n', stdout);
 
