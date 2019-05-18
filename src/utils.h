@@ -50,6 +50,7 @@ int strtoull_safe(const char *str, unsigned long long *val);
 int strtol_safe(const char *str, long *val);
 int strtoul_safe(const char *str, unsigned long *val);
 
+bool csv_requires_quoting(const char *str, size_t len);
 void csv_print_quoted(const char *str, size_t len);
 void csv_show(void);
 void csv_substring_sanitize(const char *str, ssize_t *start, size_t *len);

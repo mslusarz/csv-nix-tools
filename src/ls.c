@@ -115,6 +115,7 @@ struct visible_columns {
 		char mtime;
 		char ctime;
 		char atime;
+		char full_path;
 	} ext;
 };
 
@@ -454,6 +455,25 @@ print_stat(const char *dirpath, const char *path, struct stat *st,
 		stat_printf(&ctx, "");
 	}
 
+	if (visinfo->cols.ext.full_path) {
+		size_t dirpath_len = strlen(dirpath);
+		size_t path_len = strlen(path);
+
+		if (csv_requires_quoting(dirpath, dirpath_len) ||
+				csv_requires_quoting(path, path_len)) {
+			size_t len = dirpath_len + 1 + path_len;
+			char *buf = malloc(len + 1);
+			sprintf(buf, "%s/%s", dirpath, path);
+			csv_print_quoted(buf, len);
+			free(buf);
+		} else {
+			fwrite(dirpath, 1, dirpath_len, stdout);
+			fputc('/', stdout);
+			fwrite(path, 1, path_len, stdout);
+		}
+		stat_printf(&ctx, "");
+	}
+
 	fputc('\n', stdout);
 }
 
@@ -770,6 +790,7 @@ main(int argc, char *argv[])
 				{ "mtime", &vis.ext.mtime },
 				{ "ctime", &vis.ext.ctime },
 				{ "atime", &vis.ext.atime },
+				{ "full_path", &vis.ext.full_path },
 		};
 
 		char *name = strtok(cols, ",");
@@ -842,6 +863,7 @@ main(int argc, char *argv[])
 		eval_col(vis.base.symlink, "symlink:string", print, &visible, count);
 		eval_col(vis.base.parent, "parent:string", print, &visible, count);
 		eval_col(vis.base.name, "name:string", print, &visible, count);
+		eval_col(vis.ext.full_path, "full_path:string", print, &visible, count);
 		count = visible;
 		visible = 0;
 		if (print_header)

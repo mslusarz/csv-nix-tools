@@ -198,6 +198,16 @@ strnchr(const char *str, int c, size_t len)
 	return r;
 }
 
+bool
+csv_requires_quoting(const char *str, size_t len)
+{
+	const char *comma = strnchr(str, ',', len);
+	const char *nl = strnchr(str, '\n', len);
+	const char *quot = strnchr(str, '"', len);
+
+	return comma || nl || quot;
+}
+
 void
 csv_print_quoted(const char *str, size_t len)
 {

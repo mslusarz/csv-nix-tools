@@ -149,6 +149,10 @@ $ csv-ls -R -f parent,name . | \
 csv-concat -f parent -c "/" -f name -n full_path | csv-cut -f full_path
 ....
 ```
+or
+```
+$ csv-ls -R -f full_path .
+```
 
 sum of file sizes and real allocated blocks in the current directory
 ```
@@ -200,8 +204,8 @@ mode:int,strmode:string,name:string
 
 remove all temporary files (ending with "~"), even if path contains spaces or line breaks (TODO: replace csv-rpn-filter with csv-grep once regexps are implemented)
 ```
-$ csv-ls -R -f parent,name . | csv-rpn-filter -e "name -1 1 :substr '~' ==" | \
-csv-concat -f parent -c "/" -f name -n full_path | csv-exec -- rm -f %full_path
+$ csv-ls -R -f full_path . | csv-rpn-filter -e "full_path -1 1 :substr '~' ==" | \
+csv-exec -- rm -f %full_path
 ```
 
 # TODO (high level)
