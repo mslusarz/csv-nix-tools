@@ -50,7 +50,7 @@ static const struct option long_options[] = {
 static void
 usage(void)
 {
-	printf("Usage: csv-rpn [OPTION]...\n");
+	printf("Usage: csv-rpn-add [OPTION]...\n");
 	printf("Options:\n");
 	printf("  -e name=\"RPN expression\"\n");
 	printf("      --no-header\n");
