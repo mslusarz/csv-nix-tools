@@ -196,7 +196,8 @@ rpn_parse(struct rpn_expression *exp, char *str,
 			tkn.operator = RPN_IF;
 		} else if (token[0] == ':') {
 			tkn.type = RPN_OPERATOR;
-			if (strcmp(token + 1, "substr") == 0)
+			if (strcmp(token + 1, "substr") == 0 ||
+					strcmp(token + 1, "substring") == 0)
 				tkn.operator = RPN_SUBSTR;
 			else if (strcmp(token + 1, "concat") == 0)
 				tkn.operator = RPN_CONCAT;
