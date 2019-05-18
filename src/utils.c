@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <ctype.h>
 #include <errno.h>
 #include <limits.h>
 #include <stdint.h>
@@ -84,7 +85,7 @@ strtoll_safe(const char *str, long long *val)
 
 	if (*end) {
 		fprintf(stderr,
-			"value '%s' doesn't convert to integer\n", str);
+			"value '%s' is not an integer\n", str);
 		return -1;
 	}
 
@@ -95,6 +96,15 @@ strtoll_safe(const char *str, long long *val)
 int
 strtoull_safe(const char *str, unsigned long long *val)
 {
+	while (isspace(str[0]))
+		str++;
+
+	if (*str == '-') {
+		fprintf(stderr,
+			"value '%s' doesn't fit in an unsigned variable\n", str);
+		return -1;
+	}
+
 	char *end;
 
 	errno = 0;
@@ -108,7 +118,7 @@ strtoull_safe(const char *str, unsigned long long *val)
 
 	if (*end) {
 		fprintf(stderr,
-			"value '%s' doesn't convert to integer\n", str);
+			"value '%s' is not an integer\n", str);
 		return -1;
 	}
 
@@ -138,7 +148,7 @@ strtol_safe(const char *str, long *val)
 
 	if (*end) {
 		fprintf(stderr,
-			"value '%s' doesn't convert to integer\n", str);
+			"value '%s' is not an integer\n", str);
 		return -1;
 	}
 
@@ -149,6 +159,15 @@ strtol_safe(const char *str, long *val)
 int
 strtoul_safe(const char *str, unsigned long *val)
 {
+	while (isspace(str[0]))
+		str++;
+
+	if (*str == '-') {
+		fprintf(stderr,
+			"value '%s' doesn't fit in an unsigned variable\n", str);
+		return -1;
+	}
+
 	char *end;
 
 	errno = 0;
@@ -162,7 +181,7 @@ strtoul_safe(const char *str, unsigned long *val)
 
 	if (*end) {
 		fprintf(stderr,
-			"value '%s' doesn't convert to integer\n", str);
+			"value '%s' is not an integer\n", str);
 		return -1;
 	}
 

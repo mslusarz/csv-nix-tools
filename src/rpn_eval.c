@@ -205,6 +205,12 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 	case RPN_SUBSTR: {
 		char *str = stack[height - 1].pchar;
 		ssize_t start = (ssize_t)stack[height].llong;
+		if (stack[height + 1].llong < 0) {
+			fprintf(stderr,
+				"negative length (%lld) for substring op\n",
+				stack[height + 1].llong);
+			exit(2);
+		}
 		size_t len = (size_t)stack[height + 1].llong;
 
 		csv_substring_sanitize(str, &start, &len);
