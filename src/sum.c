@@ -141,6 +141,11 @@ main(int argc, char *argv[])
 		}
 	}
 
+	if (!cols) {
+		usage();
+		exit(2);
+	}
+
 	if (show)
 		csv_show();
 
