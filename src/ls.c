@@ -456,20 +456,24 @@ print_stat(const char *dirpath, const char *path, struct stat *st,
 	}
 
 	if (visinfo->cols.ext.full_path) {
-		size_t dirpath_len = strlen(dirpath);
-		size_t path_len = strlen(path);
+		if (dirpath) {
+			size_t dirpath_len = strlen(dirpath);
+			size_t path_len = strlen(path);
 
-		if (csv_requires_quoting(dirpath, dirpath_len) ||
-				csv_requires_quoting(path, path_len)) {
-			size_t len = dirpath_len + 1 + path_len;
-			char *buf = malloc(len + 1);
-			sprintf(buf, "%s/%s", dirpath, path);
-			csv_print_quoted(buf, len);
-			free(buf);
+			if (csv_requires_quoting(dirpath, dirpath_len) ||
+					csv_requires_quoting(path, path_len)) {
+				size_t len = dirpath_len + 1 + path_len;
+				char *buf = malloc(len + 1);
+				sprintf(buf, "%s/%s", dirpath, path);
+				csv_print_quoted(buf, len);
+				free(buf);
+			} else {
+				fwrite(dirpath, 1, dirpath_len, stdout);
+				fputc('/', stdout);
+				fwrite(path, 1, path_len, stdout);
+			}
 		} else {
-			fwrite(dirpath, 1, dirpath_len, stdout);
-			fputc('/', stdout);
-			fwrite(path, 1, path_len, stdout);
+			csv_print_quoted(path, strlen(path));
 		}
 		stat_printf(&ctx, "");
 	}
