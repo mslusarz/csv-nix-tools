@@ -191,8 +191,13 @@ mode:int,strmode:string,name:string
 ...
 ```
 
+remove all temporary files (ending with "~"), even if path contains spaces or line breaks (TODO: replace csv-rpn-filter with csv-grep once regexps are implemented)
+```
+$ csv-ls -R -f parent,name . | csv-rpn-filter -e "name -1 1 :substr '~' ==" | csv-concat -f parent -c "/" -f name -n full_path | csv-exec -- rm -f %full_path
+```
+
 # TODO (high level)
-- more processing tools (exec, tr, sed, uniq, rev, drop, exec-edit?, paste?, etc)
+- more processing tools (tr, sed, uniq, rev, drop, exec-edit?, paste?, etc)
 - more data collection tools (ps, find, df, netstat, ifconfig/ip?, lsattr, lsusb, readlink, tcpdump?, etc)
 - more rpn operators/functions (split, rev, base64enc/dec, timestamp conversion, now, regex, sed, tr)
 - exporting tools (to-xml, to-json, to-sql)
