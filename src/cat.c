@@ -76,6 +76,71 @@ next_row(const char *buf, const size_t *col_offs,
 	return 0;
 }
 
+struct input {
+	FILE *f;
+	struct csv_ctx *s;
+	size_t *idx;
+};
+
+static size_t nheaders;
+static const struct col_header *headers;
+
+static void
+add_input(FILE *f, struct input *in, size_t file_idx)
+{
+	struct csv_ctx *s = csv_create_ctx(f, stderr);
+	if (!s)
+		exit(2);
+	if (csv_read_header(s))
+		exit(2);
+
+	const struct col_header *headers_cur;
+	size_t nheaders_cur = csv_get_headers(s, &headers_cur);
+
+	in->f = f;
+	in->s = s;
+	in->idx = malloc(nheaders_cur * sizeof(in->idx[0]));
+	if (!in->idx) {
+		perror("malloc");
+		exit(2);
+	}
+
+	if (headers == NULL) {
+		nheaders = nheaders_cur;
+		headers = headers_cur;
+
+		for (size_t j = 0; j < nheaders; ++j)
+			in->idx[j] = j;
+	} else {
+		if (nheaders != nheaders_cur) {
+			fprintf(stderr,
+				"files have different number of columns\n");
+			exit(2);
+		}
+
+		for (size_t j = 0; j < nheaders; ++j) {
+			size_t idx = csv_find(headers_cur, nheaders_cur,
+					headers[j].name);
+			if (idx == CSV_NOT_FOUND) {
+				fprintf(stderr,
+					"column '%s' not found in input %ld\n",
+					headers[j].name, file_idx);
+				exit(2);
+			}
+
+			if (strcmp(headers[j].type,
+					headers_cur[idx].type) != 0) {
+				fprintf(stderr,
+					"column '%s' have different types in different inputs\n",
+					headers[j].name);
+				exit(2);
+			}
+
+			in->idx[j] = idx;
+		}
+	}
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -115,99 +180,52 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show();
 
+	bool use_stdin_only = false;
 	size_t ninputs = argc - optind;
+	if (ninputs == 0) {
+		ninputs++;
+		use_stdin_only = true;
+	}
 
-	struct inputs {
-		FILE *f;
-		struct csv_ctx *s;
-		size_t *idx;
-	} *inputs = calloc(ninputs, sizeof(inputs[0]));
+	struct input *inputs = calloc(ninputs, sizeof(inputs[0]));
 
-	bool stdin_used = false;
-	size_t nheaders;
-	const struct col_header *headers;
+	if (use_stdin_only) {
+		add_input(stdin, &inputs[0], 1);
+	} else {
+		bool stdin_used = false;
 
-	size_t i = 0;
-	while (optind < argc) {
-		FILE *f;
-		if (strcmp(argv[optind], "-") == 0) {
-			if (stdin_used) {
-				fprintf(stderr,
-					"stdin is used more than once\n");
-				exit(2);
-			}
-			f = stdin;
-			stdin_used = true;
-		} else {
-			f = fopen(argv[optind], "r");
-			if (!f) {
-				fprintf(stderr, "opening '%s' failed: %s\n",
-					argv[optind], strerror(errno));
-				exit(2);
-			}
-		}
-
-		struct csv_ctx *s = csv_create_ctx(f, stderr);
-		if (!s)
-			exit(2);
-		if (csv_read_header(s))
-			exit(2);
-
-		const struct col_header *headers_cur;
-		size_t nheaders_cur = csv_get_headers(s, &headers_cur);
-
-		inputs[i].f = f;
-		inputs[i].s = s;
-		inputs[i].idx = malloc(nheaders_cur * sizeof(inputs->idx[0]));
-		if (!inputs->idx) {
-			perror("malloc");
-			exit(2);
-		}
-
-		if (i == 0) {
-			nheaders = nheaders_cur;
-			headers = headers_cur;
-
-			for (size_t j = 0; j < nheaders; ++j)
-				inputs[i].idx[j] = j;
-		} else {
-			if (nheaders != nheaders_cur) {
-				fprintf(stderr,
-					"files have different number of columns\n");
-				exit(2);
-			}
-
-			for (size_t j = 0; j < nheaders; ++j) {
-				size_t idx = csv_find(headers_cur, nheaders_cur,
-						headers[j].name);
-				if (idx == CSV_NOT_FOUND) {
+		size_t i = 0;
+		while (optind < argc) {
+			FILE *f;
+			if (strcmp(argv[optind], "-") == 0) {
+				if (stdin_used) {
 					fprintf(stderr,
-						"column '%s' not found in input %ld\n",
-						headers[j].name, i + 1);
+						"stdin is used more than once\n");
 					exit(2);
 				}
-
-				if (strcmp(headers[j].type,
-						headers_cur[idx].type) != 0) {
-					fprintf(stderr,
-						"column '%s' have different types in different inputs\n",
-						headers[j].name);
+				f = stdin;
+				stdin_used = true;
+			} else {
+				f = fopen(argv[optind], "r");
+				if (!f) {
+					fprintf(stderr, "opening '%s' failed: %s\n",
+						argv[optind], strerror(errno));
 					exit(2);
 				}
-
-				inputs[i].idx[j] = idx;
 			}
-		}
 
-		optind++;
-		i++;
+			add_input(f, &inputs[i], i + 1);
+
+			optind++;
+			i++;
+		}
 	}
 
 	if (print_header)
 		csv_print_header(stdout, headers, nheaders);
 
-	for (i = 0; i < ninputs; ++i) {
-		struct inputs *in = &inputs[i];
+	for (size_t i = 0; i < ninputs; ++i) {
+		struct input *in = &inputs[i];
 		if (csv_read_all(in->s, &next_row, in->idx))
 			exit(2);
 		csv_destroy_ctx(in->s);
