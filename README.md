@@ -104,7 +104,7 @@ $ csv-ls . | csv-sort -f size | csv-tail -n 4 | csv-cut -f size,name
 
 files with names splitted into base and extension
 ```
-$ csv-ls -f size,name | csv-split -f name -s . -n base,ext -r
+$ csv-ls -f size,name | csv-split -f name -e . -n base,ext -r
 size:int,name:string,base:string,ext:string
 123,file1,file1,
 456,file2.ext,file2,ext
@@ -113,7 +113,7 @@ size:int,name:string,base:string,ext:string
 
 sum of sizes of all files with "png" extension
 ```
-$ csv-ls . | csv-split -f name -s . -n base,ext -r | csv-grep -e ext=png | csv-sum -f size --no-header
+$ csv-ls . | csv-split -f name -e . -n base,ext -r | csv-grep -e ext=png | csv-sum -f size --no-header
 94877
 ```
 
@@ -142,7 +142,7 @@ sort.c
 
 full paths of all files in current directory and below
 ```
-$ csv-ls -R -f parent,name . | csv-concat -f parent -s "/" -f name -n full_path | csv-cut -f full_path
+$ csv-ls -R -f parent,name . | csv-concat -f parent -c "/" -f name -n full_path | csv-cut -f full_path
 ....
 ```
 
@@ -215,6 +215,5 @@ mode:int,strmode:string,name:string
 - tool for encoding strings in safe for transport way (base64? just hex?)
 - loops and temporary variables in rpn?
 - built-in pipes?
-- csv-show enabled by default?
 - what about unicode?
 - one multicommand binary?

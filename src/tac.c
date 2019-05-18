@@ -42,6 +42,7 @@
 
 static const struct option long_options[] = {
 	{"no-header",	no_argument,		NULL, 'H'},
+	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -52,6 +53,7 @@ usage(void)
 {
 	printf("Usage: csv-cat [OPTION]... [FILE]...\n");
 	printf("Options:\n");
+	printf("  -s, --show\n");
 	printf("      --no-header\n");
 	printf("      --help\n");
 	printf("      --version\n");
@@ -136,12 +138,16 @@ main(int argc, char *argv[])
 	int opt;
 	int longindex;
 	bool print_header = true;
+	bool show = false;
 
-	while ((opt = getopt_long(argc, argv, "v", long_options,
+	while ((opt = getopt_long(argc, argv, "sv", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'H':
 				print_header = false;
+				break;
+			case 's':
+				show = true;
 				break;
 			case 'V':
 				printf("git\n");
@@ -161,6 +167,9 @@ main(int argc, char *argv[])
 				return 2;
 		}
 	}
+
+	if (show)
+		csv_show();
 
 	size_t ninputs = argc - optind;
 

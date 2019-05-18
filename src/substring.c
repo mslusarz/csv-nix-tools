@@ -42,6 +42,7 @@
 
 static const struct option long_options[] = {
 	{"no-header",		no_argument,		NULL, 'H'},
+	{"show",		no_argument,		NULL, 's'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{NULL,			0,			NULL, 0},
@@ -54,7 +55,8 @@ usage(void)
 	printf("Options:\n");
 	printf("  -f name\n");
 	printf("  -n new-name\n");
-	printf("  -s start-pos\n");
+	printf("  -p start-pos\n");
+	printf("  -s, --show\n");
 	printf("  -l length\n");
 	printf("      --no-header\n");
 	printf("      --help\n");
@@ -128,11 +130,12 @@ main(int argc, char *argv[])
 	char *input_col = NULL;
 	char *new_name = NULL;
 	struct cb_params params;
+	bool show = false;
 
 	memset(&params, 0, sizeof(params));
 	params.length = SIZE_MAX;
 
-	while ((opt = getopt_long(argc, argv, "f:l:s:n:", long_options,
+	while ((opt = getopt_long(argc, argv, "f:l:p:sn:", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'f':
@@ -141,9 +144,12 @@ main(int argc, char *argv[])
 			case 'n':
 				new_name = strdup(optarg);
 				break;
-			case 's':
+			case 'p':
 				if (strtol_safe(optarg, &params.start_pos))
 					exit(2);
+				break;
+			case 's':
+				show = true;
 				break;
 			case 'l':
 				if (strtoul_safe(optarg, &params.length))
@@ -175,6 +181,9 @@ main(int argc, char *argv[])
 		usage();
 		exit(2);
 	}
+
+	if (show)
+		csv_show();
 
 	struct csv_ctx *s = csv_create_ctx(stdin, stderr);
 	if (!s)

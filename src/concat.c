@@ -42,6 +42,7 @@
 
 static const struct option long_options[] = {
 	{"no-header",		no_argument,		NULL, 'H'},
+	{"show",		no_argument,		NULL, 's'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{NULL,			0,			NULL, 0},
@@ -52,8 +53,9 @@ usage(void)
 {
 	printf("Usage: csv-concat [OPTION]...\n");
 	printf("Options:\n");
+	printf("  -c \"constant string\"\n");
 	printf("  -f name\n");
-	printf("  -s \"string\"\n");
+	printf("  -s, --show\n");
 	printf("  -n new-name\n");
 	printf("      --no-header\n");
 	printf("      --help\n");
@@ -139,12 +141,27 @@ main(int argc, char *argv[])
 	bool print_header = true;
 	char *new_name = NULL;
 	struct cb_params params;
+	bool show = false;
 
 	memset(&params, 0, sizeof(params));
 
-	while ((opt = getopt_long(argc, argv, "f:s:n:", long_options,
+	while ((opt = getopt_long(argc, argv, "f:c:n:s", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
+			case 'c': {
+				params.elements = realloc(params.elements,
+						(params.count + 1) *
+						sizeof(params.elements[0]));
+				if (!params.elements) {
+					perror("realloc");
+					exit(2);
+				}
+				params.elements[params.count].is_column = false;
+				params.elements[params.count].str = strdup(optarg);
+				params.count++;
+
+				break;
+			}
 			case 'f': {
 				params.elements = realloc(params.elements,
 						(params.count + 1) *
@@ -162,20 +179,9 @@ main(int argc, char *argv[])
 			case 'n':
 				new_name = strdup(optarg);
 				break;
-			case 's': {
-				params.elements = realloc(params.elements,
-						(params.count + 1) *
-						sizeof(params.elements[0]));
-				if (!params.elements) {
-					perror("realloc");
-					exit(2);
-				}
-				params.elements[params.count].is_column = false;
-				params.elements[params.count].str = strdup(optarg);
-				params.count++;
-
+			case 's':
+				show = true;
 				break;
-			}
 			case 'H':
 				print_header = false;
 				break;
@@ -202,6 +208,9 @@ main(int argc, char *argv[])
 		usage();
 		exit(2);
 	}
+
+	if (show)
+		csv_show();
 
 	struct csv_ctx *s = csv_create_ctx(stdin, stderr);
 	if (!s)

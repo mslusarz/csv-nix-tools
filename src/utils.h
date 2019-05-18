@@ -51,6 +51,7 @@ int strtol_safe(const char *str, long *val);
 int strtoul_safe(const char *str, unsigned long *val);
 
 void csv_print_quoted(const char *str, size_t len);
+void csv_show(void);
 
 char *csv_unquot(const char *str);
 

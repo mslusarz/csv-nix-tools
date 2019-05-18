@@ -42,6 +42,7 @@
 
 static const struct option long_options[] = {
 	{"no-header",	no_argument,		NULL, 'H'},
+	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -53,6 +54,7 @@ usage(void)
 	printf("Usage: csv-grep [OPTION]...\n");
 	printf("Options:\n");
 	printf("  -e column=value\n");
+	printf("  -s, --show\n");
 	printf("  -v\n");
 	printf("      --no-header\n");
 	printf("      --help\n");
@@ -136,8 +138,9 @@ main(int argc, char *argv[])
 	struct condition *conditions = NULL;
 	size_t nconditions = 0;
 	bool print_header = true;
+	bool show = false;
 
-	while ((opt = getopt_long(argc, argv, "e:v", long_options,
+	while ((opt = getopt_long(argc, argv, "e:sv", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'e': {
@@ -184,6 +187,9 @@ main(int argc, char *argv[])
 			case 'H':
 				print_header = false;
 				break;
+			case 's':
+				show = true;
+				break;
 			case 'v':
 				invert = true;
 				break;
@@ -205,6 +211,9 @@ main(int argc, char *argv[])
 				return 2;
 		}
 	}
+
+	if (show)
+		csv_show();
 
 	struct csv_ctx *s = csv_create_ctx(stdin, stderr);
 	if (!s)

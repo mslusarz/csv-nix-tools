@@ -33,8 +33,11 @@
 #include <errno.h>
 #include <limits.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+
 #include "utils.h"
 
 void
@@ -236,4 +239,38 @@ csv_find(const struct col_header *headers, size_t nheaders, const char *name)
 	}
 
 	return CSV_NOT_FOUND;
+}
+
+void
+csv_show(void)
+{
+	int fds[2];
+	pid_t pid;
+
+	if (pipe(fds) < 0) {
+		perror("pipe");
+		exit(2);
+	}
+
+	pid = fork();
+	if (pid < 0) {
+		perror("fork");
+		exit(2);
+	}
+
+	if (pid > 0) {
+		char *show[] = {"csv-show", NULL};
+
+		close(fds[1]);
+		dup2(fds[0], 0);
+		close(fds[0]);
+		execvp(show[0], show);
+
+		perror("execvp");
+		exit(2);
+	}
+
+	close(fds[0]);
+	dup2(fds[1], 1);
+	close(fds[1]);
 }

@@ -44,6 +44,7 @@ static const struct option long_options[] = {
 	{"no-header",		no_argument,		NULL, 'H'},
 	{"print-separator",	required_argument,	NULL, 'p'},
 	{"reverse",		no_argument,		NULL, 'r'},
+	{"show",		no_argument,		NULL, 's'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{NULL,			0,			NULL, 0},
@@ -54,11 +55,12 @@ usage(void)
 {
 	printf("Usage: csv-split [OPTION]...\n");
 	printf("Options:\n");
+	printf("  -e separator\n");
 	printf("  -f name\n");
-	printf("  -s separator\n");
 	printf("  -n name1,name2\n");
 	printf("  -r, --reverse\n");
 	printf("  -p  --print-separator=yes/no/auto\n");
+	printf("  -s, --show\n");
 	printf("      --no-header\n");
 	printf("      --help\n");
 	printf("      --version\n");
@@ -144,12 +146,16 @@ main(int argc, char *argv[])
 	char *name1 = NULL;
 	char *name2 = NULL;
 	int print_separators = -1;
+	bool show = false;
 
 	memset(&params, 0, sizeof(params));
 
-	while ((opt = getopt_long(argc, argv, "f:p:s:n:r", long_options,
+	while ((opt = getopt_long(argc, argv, "e:f:p:sn:r", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
+			case 'e':
+				params.separators = strdup(optarg);
+				break;
 			case 'f':
 				col = strdup(optarg);
 				break;
@@ -186,7 +192,7 @@ main(int argc, char *argv[])
 				params.reverse = true;
 				break;
 			case 's':
-				params.separators = strdup(optarg);
+				show = true;
 				break;
 			case 'H':
 				print_header = false;
@@ -214,6 +220,9 @@ main(int argc, char *argv[])
 		usage();
 		exit(2);
 	}
+
+	if (show)
+		csv_show();
 
 	if (print_separators >= 0)
 		params.print_separators = print_separators;

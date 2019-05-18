@@ -43,6 +43,7 @@
 static const struct option long_options[] = {
 	{"lines",	required_argument,	NULL, 'n'},
 	{"no-header",	no_argument,		NULL, 'H'},
+	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -54,6 +55,7 @@ usage(void)
 	printf("Usage: csv-tail [OPTION]...\n");
 	printf("Options:\n");
 	printf("  -n, --lines=count\n");
+	printf("  -s, --show\n");
 	printf("      --no-header\n");
 	printf("      --help\n");
 	printf("      --version\n");
@@ -118,11 +120,12 @@ main(int argc, char *argv[])
 	int longindex;
 	struct cb_params params;
 	bool print_header = true;
+	bool show = false;
 
 	params.count = 0;
 	params.nlines = 0;
 
-	while ((opt = getopt_long(argc, argv, "n:v", long_options,
+	while ((opt = getopt_long(argc, argv, "n:sv", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'n':
@@ -130,6 +133,9 @@ main(int argc, char *argv[])
 				break;
 			case 'H':
 				print_header = false;
+				break;
+			case 's':
+				show = true;
 				break;
 			case 'V':
 				printf("git\n");
@@ -153,6 +159,9 @@ main(int argc, char *argv[])
 	params.first_empty = 0;
 	params.lines = calloc(params.nlines, sizeof(params.lines[0]));
 	params.sizes = calloc(params.nlines, sizeof(params.sizes[0]));
+
+	if (show)
+		csv_show();
 
 	struct csv_ctx *s = csv_create_ctx(stdin, stderr);
 	if (!s)

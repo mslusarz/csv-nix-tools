@@ -611,6 +611,7 @@ static const struct option long_options[] = {
 	{"fields",	required_argument,	NULL, 'f'},
 	{"no-header",	no_argument,		NULL, 'H'},
 	{"recursive",	no_argument,		NULL, 'R'},
+	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -626,6 +627,7 @@ usage(void)
 	printf("  -f, --fields=name1[,name2...]\n");
 	printf("  -l\n");
 	printf("  -R, --recursive\n");
+	printf("  -s, --show\n");
 	printf("  -U\n");
 	printf("      --no-header\n");
 	printf("      --help\n");
@@ -656,11 +658,12 @@ main(int argc, char *argv[])
 	char *cols = NULL;
 	struct visible_columns vis;
 	bool print_header = true;
+	bool show = false;
 
 	memset(&vis, 0, sizeof(vis));
 	memset(&vis.base, 1, sizeof(vis.base));
 
-	while ((opt = getopt_long(argc, argv, "adf:lRU", long_options,
+	while ((opt = getopt_long(argc, argv, "adf:lRsU", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'a':
@@ -680,6 +683,9 @@ main(int argc, char *argv[])
 				break;
 			case 'R':
 				recursive = 1;
+				break;
+			case 's':
+				show = true;
 				break;
 			case 'U':
 				sort = 0;
@@ -787,6 +793,9 @@ main(int argc, char *argv[])
 
 		free(cols);
 	}
+
+	if (show)
+		csv_show();
 
 	size_t visible = 0;
 	size_t count = sizeof(vis) + 1;

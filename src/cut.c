@@ -44,6 +44,7 @@ static const struct option long_options[] = {
 	{"fields",	required_argument,	NULL, 'f'},
 	{"no-header",	no_argument,		NULL, 'H'},
 	{"reverse",	no_argument,		NULL, 'r'},
+	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -56,6 +57,7 @@ usage(void)
 	printf("Options:\n");
 	printf("  -f, --fields=name1[,name2...]\n");
 	printf("  -r, --reverse\n");
+	printf("  -s, --show\n");
 	printf("      --no-header\n");
 	printf("      --help\n");
 	printf("      --version\n");
@@ -94,8 +96,9 @@ main(int argc, char *argv[])
 	char *cols = NULL;
 	bool print_header = true;
 	bool reverse = false;
+	bool show = false;
 
-	while ((opt = getopt_long(argc, argv, "f:r", long_options,
+	while ((opt = getopt_long(argc, argv, "f:rs", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'f':
@@ -106,6 +109,9 @@ main(int argc, char *argv[])
 				break;
 			case 'H':
 				print_header = false;
+				break;
+			case 's':
+				show = true;
 				break;
 			case 'V':
 				printf("git\n");
@@ -125,6 +131,9 @@ main(int argc, char *argv[])
 				return 2;
 		}
 	}
+
+	if (show)
+		csv_show();
 
 	struct csv_ctx *s = csv_create_ctx(stdin, stderr);
 	if (!s)

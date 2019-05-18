@@ -42,6 +42,7 @@
 
 static const struct option long_options[] = {
 	{"no-header",		no_argument,		NULL, 'H'},
+	{"show",		no_argument,		NULL, 's'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{NULL,			0,			NULL, 0},
@@ -53,6 +54,7 @@ usage(void)
 	printf("Usage: csv-rpn-add [OPTION]...\n");
 	printf("Options:\n");
 	printf("  -e name=\"RPN expression\"\n");
+	printf("  -s, --show\n");
 	printf("      --no-header\n");
 	printf("      --help\n");
 	printf("      --version\n");
@@ -121,10 +123,11 @@ main(int argc, char *argv[])
 	size_t nexpressions = 0;
 	char **expressions = NULL;
 	struct cb_params params;
+	bool show = false;
 
 	memset(&params, 0, sizeof(params));
 
-	while ((opt = getopt_long(argc, argv, "e:", long_options,
+	while ((opt = getopt_long(argc, argv, "e:s", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'e': {
@@ -141,6 +144,9 @@ main(int argc, char *argv[])
 			}
 			case 'H':
 				print_header = false;
+				break;
+			case 's':
+				show = true;
 				break;
 			case 'V':
 				printf("git\n");
@@ -165,6 +171,9 @@ main(int argc, char *argv[])
 		usage();
 		exit(2);
 	}
+
+	if (show)
+		csv_show();
 
 	struct csv_ctx *s = csv_create_ctx(stdin, stderr);
 	if (!s)
