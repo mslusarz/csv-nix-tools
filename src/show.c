@@ -276,18 +276,36 @@ main(int argc, char *argv[])
 		if (pid > 0) {
 			char *less[] = {"less", "-S", NULL};
 
-			close(fds[1]);
-			dup2(fds[0], 0);
-			close(fds[0]);
+			if (close(fds[1])) {
+				perror("close");
+				exit(2);
+			}
+			if (dup2(fds[0], 0) < 0) {
+				perror("dup2");
+				exit(2);
+			}
+			if (close(fds[0])) {
+				perror("close");
+				exit(2);
+			}
 			execvp(less[0], less);
 
 			perror("execvp");
 			exit(2);
 		}
 
-		close(fds[0]);
-		dup2(fds[1], 1);
-		close(fds[1]);
+		if (close(fds[0])) {
+			perror("close");
+			exit(2);
+		}
+		if (dup2(fds[1], 1) < 0) {
+			perror("dup2");
+			exit(2);
+		}
+		if (close(fds[1])) {
+			perror("close");
+			exit(2);
+		}
 	}
 
 	if (print_header) {

@@ -615,7 +615,11 @@ restart_readlink:
 
 		ret |= list(path, fd, recursive, all, sort, visinfo);
 
-		close(fd);
+		if (close(fd)) {
+			perror("close");
+			ret = 2;
+			break;
+		}
 	}
 
 	free(path);
@@ -894,7 +898,8 @@ main(int argc, char *argv[])
 			fprintf(stderr, "fstat '%s' failed: %s\n", argv[i],
 					strerror(errno));
 			ret |= 2;
-			close(fd);
+			if (close(fd))
+				perror("close");
 			continue;
 		}
 
@@ -938,7 +943,11 @@ restart_readlink:
 			print_stat(NULL, argv[i], &buf, symlink, &visinfo);
 		}
 
-		close(fd);
+		if (close(fd)) {
+			perror("close");
+			ret |= 2;
+			break;
+		}
 	}
 
 	ht_destroy(&users_ht);

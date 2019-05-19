@@ -290,18 +290,36 @@ csv_show(void)
 	if (pid > 0) {
 		char *show[] = {"csv-show", NULL};
 
-		close(fds[1]);
-		dup2(fds[0], 0);
-		close(fds[0]);
+		if (close(fds[1])) {
+			perror("close");
+			exit(2);
+		}
+		if (dup2(fds[0], 0) < 0) {
+			perror("dup2");
+			exit(2);
+		}
+		if (close(fds[0])) {
+			perror("close");
+			exit(2);
+		}
 		execvp(show[0], show);
 
 		perror("execvp");
 		exit(2);
 	}
 
-	close(fds[0]);
-	dup2(fds[1], 1);
-	close(fds[1]);
+	if (close(fds[0])) {
+		perror("close");
+		exit(2);
+	}
+	if (dup2(fds[1], 1) < 0) {
+		perror("dup2");
+		exit(2);
+	}
+	if (close(fds[1])) {
+		perror("close");
+		exit(2);
+	}
 }
 
 void
