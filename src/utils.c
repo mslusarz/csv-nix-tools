@@ -192,8 +192,11 @@ strtoul_safe(const char *str, unsigned long *val)
 static char *
 strnchr(const char *str, int c, size_t len)
 {
-	char *r = strchr(str, c);
-	if (r >= str + len)
+	char *r = memchr(str, c, len);
+	if (!r)
+		return NULL;
+	char *nul = memchr(str, 0, len);
+	if (nul && r > nul)
 		return NULL;
 	return r;
 }
