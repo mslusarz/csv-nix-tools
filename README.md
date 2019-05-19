@@ -217,9 +217,18 @@ remove all temporary files (ending with "~"), even if path contains spaces or li
 $ csv-ls -R -f full_path . | csv-grep -e 'full_path=~$' | csv-exec -- rm -f %full_path
 ```
 
+if file has .c extension, then replace it with .o, otherwise leave it as is
+```
+$ csv-ls -R -f full_path . | csv-exec-add -f full_path -n new -- sed 's/.c$/.o/'
+```
+or 400x faster:
+```
+$ csv-ls -R -f full_path . | csv-rpn-add -e "new=full_path -1 1 :substr 'c' == full_path 0 name :strlen 1 - :substr 'o' :concat full_path :if"
+```
+
 # TODO (high level)
-- more processing tools (tr, sed, uniq, rev, drop, exec-edit?, paste?, etc)
-- more data collection tools (ps, find, df, netstat, ifconfig/ip?, lsattr, lsusb, readlink, tcpdump?, etc)
+- more processing tools (tr, sed, uniq, rev, drop, paste?, etc)
+- more data collection tools (ps, find, df, netstat, ifconfig/ip?, lsattr, lsusb, readlink, tcpdump?, accounts, etc)
 - more rpn operators/functions (split, rev, base64enc/dec, timestamp conversion, now, regex, sed, tr)
 - exporting tools (to-xml, to-json, to-sql)
 - importing tools (from-xml, from-json)
