@@ -111,7 +111,16 @@ rpn_parse(struct rpn_expression *exp, char *str,
 	while (token) {
 		struct rpn_token tkn;
 
-		if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1]))) {
+		if (token[0] == '%') {
+			tkn.type = RPN_COLUMN;
+			tkn.colnum = csv_find(headers, nheaders, token + 1);
+			if (tkn.colnum == CSV_NOT_FOUND) {
+				fprintf(stderr,
+					"column '%s' not found in input\n",
+					token);
+				goto fail;
+			}
+		} else if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1]))) {
 			tkn.type = RPN_CONSTANT;
 			tkn.constant.type = RPN_LLONG;
 			if (strtoll_safe(token, &tkn.constant.llong))
@@ -125,124 +134,90 @@ rpn_parse(struct rpn_expression *exp, char *str,
 				perror("strdup");
 				goto fail;
 			}
-		} else if (isalpha(token[0])) {
-			tkn.type = RPN_COLUMN;
-			tkn.colnum = csv_find(headers, nheaders, token);
-			if (tkn.colnum == CSV_NOT_FOUND) {
-				fprintf(stderr,
-					"column '%s' not found in input\n",
-					token);
-				goto fail;
-			}
-		} else if (strcmp(token, "+") == 0) {
+		} else {
 			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_ADD;
-		} else if (strcmp(token, "-") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_SUB;
-		} else if (strcmp(token, "*") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_MUL;
-		} else if (strcmp(token, "/") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_DIV;
-		} else if (strcmp(token, "%") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_REM;
-		} else if (strcmp(token, "|") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_BIT_OR;
-		} else if (strcmp(token, "&") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_BIT_AND;
-		} else if (strcmp(token, "^") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_BIT_XOR;
-		} else if (strcmp(token, "<<") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_BIT_LSHIFT;
-		} else if (strcmp(token, ">>") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_BIT_RSHIFT;
-		} else if (strcmp(token, "<") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_LT;
-		} else if (strcmp(token, "<=") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_LE;
-		} else if (strcmp(token, ">") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_GT;
-		} else if (strcmp(token, ">=") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_GE;
-		} else if (strcmp(token, "==") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_EQ;
-		} else if (strcmp(token, "!=") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_NE;
-		} else if (strcmp(token, "&&") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_LOGIC_AND;
-		} else if (strcmp(token, "||") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_LOGIC_OR;
-		} else if (strcmp(token, "!") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_LOGIC_NOT;
-		} else if (strcmp(token, "?") == 0) {
-			tkn.type = RPN_OPERATOR;
-			tkn.operator = RPN_IF;
-		} else if (token[0] == ':') {
-			tkn.type = RPN_OPERATOR;
-			if (strcmp(token + 1, "substr") == 0 ||
-					strcmp(token + 1, "substring") == 0)
-				tkn.operator = RPN_SUBSTR;
-			else if (strcmp(token + 1, "strlen") == 0)
-				tkn.operator = RPN_STRLEN;
-			else if (strcmp(token + 1, "concat") == 0)
-				tkn.operator = RPN_CONCAT;
-			else if (strcmp(token + 1, "tostring") == 0)
-				tkn.operator = RPN_TOSTRING_BASE10;
-			else if (strcmp(token + 1, "tostring_base8") == 0)
-				tkn.operator = RPN_TOSTRING_BASE8;
-			else if (strcmp(token + 1, "tostring_base10") == 0)
-				tkn.operator = RPN_TOSTRING_BASE10;
-			else if (strcmp(token + 1, "tostring_base16") == 0)
-				tkn.operator = RPN_TOSTRING_BASE16;
-			else if (strcmp(token + 1, "toint") == 0)
-				tkn.operator = RPN_TOINT;
-			else if (strcmp(token + 1, "lt") == 0)
+			if (strcmp(token, "+") == 0)
+				tkn.operator = RPN_ADD;
+			else if (strcmp(token, "-") == 0)
+				tkn.operator = RPN_SUB;
+			else if (strcmp(token, "*") == 0)
+				tkn.operator = RPN_MUL;
+			else if (strcmp(token, "/") == 0)
+				tkn.operator = RPN_DIV;
+			else if (strcmp(token, "%") == 0)
+				tkn.operator = RPN_REM;
+			else if (strcmp(token, "|") == 0)
+				tkn.operator = RPN_BIT_OR;
+			else if (strcmp(token, "&") == 0)
+				tkn.operator = RPN_BIT_AND;
+			else if (strcmp(token, "^") == 0)
+				tkn.operator = RPN_BIT_XOR;
+			else if (strcmp(token, "<<") == 0)
+				tkn.operator = RPN_BIT_LSHIFT;
+			else if (strcmp(token, ">>") == 0)
+				tkn.operator = RPN_BIT_RSHIFT;
+			else if (strcmp(token, "<") == 0)
 				tkn.operator = RPN_LT;
-			else if (strcmp(token + 1, "le") == 0)
+			else if (strcmp(token, "<=") == 0)
 				tkn.operator = RPN_LE;
-			else if (strcmp(token + 1, "gt") == 0)
+			else if (strcmp(token, ">") == 0)
 				tkn.operator = RPN_GT;
-			else if (strcmp(token + 1, "ge") == 0)
+			else if (strcmp(token, ">=") == 0)
 				tkn.operator = RPN_GE;
-			else if (strcmp(token + 1, "eq") == 0)
+			else if (strcmp(token, "==") == 0)
 				tkn.operator = RPN_EQ;
-			else if (strcmp(token + 1, "ne") == 0)
+			else if (strcmp(token, "!=") == 0)
 				tkn.operator = RPN_NE;
-			else if (strcmp(token + 1, "and") == 0)
+			else if (strcmp(token, "&&") == 0)
 				tkn.operator = RPN_LOGIC_AND;
-			else if (strcmp(token + 1, "or") == 0)
+			else if (strcmp(token, "||") == 0)
 				tkn.operator = RPN_LOGIC_OR;
-			else if (strcmp(token + 1, "not") == 0)
+			else if (strcmp(token, "!") == 0)
 				tkn.operator = RPN_LOGIC_NOT;
-			else if (strcmp(token + 1, "if") == 0)
+			else if (strcmp(token, "?") == 0)
+				tkn.operator = RPN_IF;
+			else if (strcmp(token, "substr") == 0 ||
+					strcmp(token, "substring") == 0)
+				tkn.operator = RPN_SUBSTR;
+			else if (strcmp(token, "strlen") == 0)
+				tkn.operator = RPN_STRLEN;
+			else if (strcmp(token, "concat") == 0)
+				tkn.operator = RPN_CONCAT;
+			else if (strcmp(token, "tostring") == 0)
+				tkn.operator = RPN_TOSTRING_BASE10;
+			else if (strcmp(token, "tostring_base8") == 0)
+				tkn.operator = RPN_TOSTRING_BASE8;
+			else if (strcmp(token, "tostring_base10") == 0)
+				tkn.operator = RPN_TOSTRING_BASE10;
+			else if (strcmp(token, "tostring_base16") == 0)
+				tkn.operator = RPN_TOSTRING_BASE16;
+			else if (strcmp(token, "toint") == 0)
+				tkn.operator = RPN_TOINT;
+			else if (strcmp(token, "lt") == 0)
+				tkn.operator = RPN_LT;
+			else if (strcmp(token, "le") == 0)
+				tkn.operator = RPN_LE;
+			else if (strcmp(token, "gt") == 0)
+				tkn.operator = RPN_GT;
+			else if (strcmp(token, "ge") == 0)
+				tkn.operator = RPN_GE;
+			else if (strcmp(token, "eq") == 0)
+				tkn.operator = RPN_EQ;
+			else if (strcmp(token, "ne") == 0)
+				tkn.operator = RPN_NE;
+			else if (strcmp(token, "and") == 0)
+				tkn.operator = RPN_LOGIC_AND;
+			else if (strcmp(token, "or") == 0)
+				tkn.operator = RPN_LOGIC_OR;
+			else if (strcmp(token, "not") == 0)
+				tkn.operator = RPN_LOGIC_NOT;
+			else if (strcmp(token, "if") == 0)
 				tkn.operator = RPN_IF;
 			else {
 				fprintf(stderr, "unknown operator '%s'\n",
-						token + 1);
+						token);
 				goto fail;
 			}
-		} else {
-			fprintf(stderr,
-				"don't know how to interpret '%s'\n",
-				token);
-			goto fail;
 		}
 
 		exp->tokens = realloc(exp->tokens,

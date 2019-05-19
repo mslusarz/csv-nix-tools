@@ -166,7 +166,7 @@ $ csv-ls -R -f full_path .
 
 sum of file sizes and real allocated blocks in the current directory
 ```
-$ csv-ls | csv-cut -f size,blocks | csv-rpn-add -e "space_used=blocks 512 *" | \
+$ csv-ls | csv-cut -f size,blocks | csv-rpn-add -e "space_used=%blocks 512 *" | \
 csv-sum -f size,blocks,space_used
 sum(size):int,sum(blocks):int,sum(space_used):int
 109679,288,147456
@@ -175,7 +175,7 @@ sum(size):int,sum(blocks):int,sum(space_used):int
 list of files whose size is between 2000 and 3000 bytes
 ```
 $ csv-ls -f size,name | \
-csv-rpn-add -e "range2k-3k=size 2000 :ge size 3000 :lt :and" | \
+csv-rpn-add -e "range2k-3k=%size 2000 >= %size 3000 < and" | \
 csv-grep -e range2k-3k=1 | csv-cut -f size,name
 size:int,name:string
 2893,columns.c
@@ -183,7 +183,7 @@ size:int,name:string
 ```
 or
 ```
-$ csv-ls -f size,name | csv-rpn-filter -e "size 2000 :ge size 3000 :lt :and"
+$ csv-ls -f size,name | csv-rpn-filter -e "%size 2000 >= %size 3000 < and"
 size:int,name:string
 2893,columns.c
 2204,parse.h
@@ -200,9 +200,9 @@ size:int,name:string
 files and their permissions printed in human-readable format
 ```
 $ csv-ls -f mode,name | csv-rpn-add -e "strmode=\
-mode 0400 & 'r' '-' :if         mode 0200 & 'w' '-' :if :concat mode 0100 & 'x' '-' :if :concat \
-mode  040 & 'r' '-' :if :concat mode  020 & 'w' '-' :if :concat mode  010 & 'x' '-' :if :concat \
-mode   04 & 'r' '-' :if :concat mode   02 & 'w' '-' :if :concat mode   01 & 'x' '-' :if :concat" | \
+%mode 0400 & 'r' '-' if        %mode 0200 & 'w' '-' if concat %mode 0100 & 'x' '-' if concat \
+%mode  040 & 'r' '-' if concat %mode  020 & 'w' '-' if concat %mode  010 & 'x' '-' if concat \
+%mode   04 & 'r' '-' if concat %mode   02 & 'w' '-' if concat %mode   01 & 'x' '-' if concat" | \
 csv-cut -f mode,strmode,name
 
 mode:int,strmode:string,name:string
@@ -223,7 +223,7 @@ $ csv-ls -R -f full_path . | csv-exec-add -f full_path -n new -- sed 's/.c$/.o/'
 ```
 or 400x faster:
 ```
-$ csv-ls -R -f full_path . | csv-rpn-add -e "new=full_path -1 1 :substr 'c' == full_path 0 name :strlen 1 - :substr 'o' :concat full_path :if"
+$ csv-ls -R -f full_path . | csv-rpn-add -e "new=%full_path -1 1 substr 'c' == %full_path 0 %full_path strlen 1 - substr 'o' concat %full_path if"
 ```
 
 # TODO (high level)
