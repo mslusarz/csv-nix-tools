@@ -111,7 +111,7 @@ rpn_parse(struct rpn_expression *exp, char *str,
 	while (token) {
 		struct rpn_token tkn;
 
-		if (token[0] == '%') {
+		if (token[0] == '%' && token[1] != 0) {
 			tkn.type = RPN_COLUMN;
 			tkn.colnum = csv_find(headers, nheaders, token + 1);
 			if (tkn.colnum == CSV_NOT_FOUND) {
