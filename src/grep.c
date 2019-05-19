@@ -31,6 +31,7 @@
  */
 
 #include <getopt.h>
+#include <regex.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -41,11 +42,13 @@
 #include "utils.h"
 
 static const struct option long_options[] = {
-	{"no-header",	no_argument,		NULL, 'H'},
-	{"show",	no_argument,		NULL, 's'},
-	{"version",	no_argument,		NULL, 'V'},
-	{"help",	no_argument,		NULL, 'h'},
-	{NULL,		0,			NULL, 0},
+	{"extended-regexp",	no_argument,	NULL, 'E'},
+	{"no-header",		no_argument,	NULL, 'H'},
+	{"ignore-case",		no_argument,	NULL, 'i'},
+	{"show",		no_argument,	NULL, 's'},
+	{"version",		no_argument,	NULL, 'V'},
+	{"help",		no_argument,	NULL, 'h'},
+	{NULL,			0,		NULL, 0},
 };
 
 static void
@@ -54,6 +57,8 @@ usage(void)
 	printf("Usage: csv-grep [OPTION]...\n");
 	printf("Options:\n");
 	printf("  -e column=value\n");
+	printf("  -E, --extended-regexp\n");
+	printf("  -i, --ignore-case\n");
 	printf("  -s, --show\n");
 	printf("  -v\n");
 	printf("      --no-header\n");
@@ -65,6 +70,7 @@ struct condition {
 	char *column;
 	char *value;
 	size_t col_num;
+	regex_t preg;
 };
 
 struct cb_params {
@@ -93,7 +99,8 @@ next_row(const char *buf, const size_t *col_offs,
 			if (val[0] == '"')
 				unquoted = csv_unquot(val);
 
-			if (strcmp(unquoted, conditions[i].value) == 0)
+			if (regexec(&conditions[i].preg, unquoted, 0, NULL, 0)
+					== 0)
 				omit = true;
 
 			if (val[0] == '"')
@@ -112,7 +119,8 @@ next_row(const char *buf, const size_t *col_offs,
 			if (val[0] == '"')
 				unquoted = csv_unquot(val);
 
-			if (strcmp(unquoted, conditions[i].value) != 0)
+			if (regexec(&conditions[i].preg, unquoted, 0, NULL, 0)
+					== REG_NOMATCH)
 				numfalse++;
 
 			if (val[0] == '"')
@@ -139,8 +147,10 @@ main(int argc, char *argv[])
 	size_t nconditions = 0;
 	bool print_header = true;
 	bool show = false;
+	bool extended_regexp = false;
+	bool ignore_case = false;
 
-	while ((opt = getopt_long(argc, argv, "e:sv", long_options,
+	while ((opt = getopt_long(argc, argv, "e:Eisv", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'e': {
@@ -184,8 +194,14 @@ main(int argc, char *argv[])
 
 				break;
 			}
+			case 'E':
+				extended_regexp = true;
+				break;
 			case 'H':
 				print_header = false;
+				break;
+			case 'i':
+				ignore_case = true;
 				break;
 			case 's':
 				show = true;
@@ -232,6 +248,21 @@ main(int argc, char *argv[])
 					conditions[i].column);
 			exit(2);
 		}
+
+		int ret = regcomp(&conditions[i].preg, conditions[i].value,
+				REG_NOSUB |
+				(ignore_case ? REG_ICASE : 0) |
+				(extended_regexp ? REG_EXTENDED : 0));
+		if (ret) {
+			size_t len = regerror(ret, &conditions[i].preg, NULL, 0);
+			char *errbuf = malloc(len);
+			regerror(ret, &conditions[i].preg, errbuf, len);
+			fprintf(stderr,
+				"compilation of expression '%s' failed: %s\n",
+				conditions[i].value, errbuf);
+			free(errbuf);
+			exit(2);
+		}
 	}
 
 	if (print_header)
@@ -248,6 +279,7 @@ main(int argc, char *argv[])
 	for (size_t i = 0; i < nconditions; ++i) {
 		free(conditions[i].column);
 		free(conditions[i].value);
+		regfree(&conditions[i].preg);
 	}
 
 	free(conditions);

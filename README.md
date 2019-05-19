@@ -135,6 +135,16 @@ csv-show -s 1 -p no --no-header
 
 list of files whose 2nd character is 'o'
 ```
+$ csv-ls | csv-grep -e 'name=^.o' | csv-cut -f name --no-header
+columns.c
+concat.c
+rows.c
+sort.c
+```
+
+or
+
+```
 $ csv-ls | csv-substring -f name -n 2nd-char -p 1 -l 1 | \
 csv-grep -e 2nd-char=o | csv-cut -f name --no-header
 columns.c
@@ -202,10 +212,9 @@ mode:int,strmode:string,name:string
 ...
 ```
 
-remove all temporary files (ending with "~"), even if path contains spaces or line breaks (TODO: replace csv-rpn-filter with csv-grep once regexps are implemented)
+remove all temporary files (ending with "~"), even if path contains spaces or line breaks
 ```
-$ csv-ls -R -f full_path . | csv-rpn-filter -e "full_path -1 1 :substr '~' ==" | \
-csv-exec -- rm -f %full_path
+$ csv-ls -R -f full_path . | csv-grep -e 'full_path=~$' | csv-exec -- rm -f %full_path
 ```
 
 # TODO (high level)
@@ -221,10 +230,10 @@ csv-exec -- rm -f %full_path
 - i18n
 
 # TODO (low level)
-- regexp support (grep)
 - switch to deal with new lines in shell-compatible way (see what coreutils' ls does)
 
 ## Random ideas
+- float support?
 - importing from other tools (lspci -mm?, strace?, lsof -F, ss)?
 - tool for encoding strings in safe for transport way (base64? just hex?)
 - loops and temporary variables in rpn?
