@@ -155,8 +155,7 @@ sort.c
 
 full paths of all files in current directory and below
 ```
-$ csv-ls -R -f parent,name . | \
-csv-concat -f parent -c "/" -f name -n full_path | csv-cut -f full_path
+$ csv-ls -R -f parent,name . | csv-concat full_path = %parent / %name | csv-cut -f full_path
 ....
 ```
 or

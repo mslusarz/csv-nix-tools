@@ -51,12 +51,9 @@ static const struct option long_options[] = {
 static void
 usage(void)
 {
-	printf("Usage: csv-concat [OPTION]...\n");
+	printf("Usage: csv-concat [OPTION]... -- new_name = [%%name|str]...\n");
 	printf("Options:\n");
-	printf("  -c \"constant string\"\n");
-	printf("  -f name\n");
 	printf("  -s, --show\n");
-	printf("  -n new-name\n");
 	printf("      --no-header\n");
 	printf("      --help\n");
 	printf("      --version\n");
@@ -145,40 +142,9 @@ main(int argc, char *argv[])
 
 	memset(&params, 0, sizeof(params));
 
-	while ((opt = getopt_long(argc, argv, "f:c:n:s", long_options,
+	while ((opt = getopt_long(argc, argv, "s", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
-			case 'c': {
-				params.elements = realloc(params.elements,
-						(params.count + 1) *
-						sizeof(params.elements[0]));
-				if (!params.elements) {
-					perror("realloc");
-					exit(2);
-				}
-				params.elements[params.count].is_column = false;
-				params.elements[params.count].str = strdup(optarg);
-				params.count++;
-
-				break;
-			}
-			case 'f': {
-				params.elements = realloc(params.elements,
-						(params.count + 1) *
-						sizeof(params.elements[0]));
-				if (!params.elements) {
-					perror("realloc");
-					exit(2);
-				}
-				params.elements[params.count].is_column = true;
-				params.elements[params.count].str = strdup(optarg);
-				params.count++;
-
-				break;
-			}
-			case 'n':
-				new_name = strdup(optarg);
-				break;
 			case 's':
 				show = true;
 				break;
@@ -204,13 +170,35 @@ main(int argc, char *argv[])
 		}
 	}
 
-	if (params.count == 0 || !new_name) {
+	if (argc - optind < 3) {
 		usage();
 		exit(2);
 	}
 
-	if (show)
-		csv_show();
+	new_name = argv[optind++];
+
+	if (strcmp(argv[optind++], "=") != 0) {
+		usage();
+		exit(2);
+	}
+
+	params.count = argc - optind;
+	params.elements = malloc(params.count * sizeof(params.elements[0]));
+	if (!params.elements) {
+		perror("malloc");
+		exit(2);
+	}
+
+	size_t i = 0;
+	while (optind < argc) {
+		params.elements[i].is_column = argv[optind][0] == '%';
+		params.elements[i].str = argv[optind];
+
+		if (params.elements[i].is_column)
+			params.elements[i].str++;
+		optind++;
+		i++;
+	}
 
 	struct csv_ctx *s = csv_create_ctx(stdin, stderr);
 	if (!s)
@@ -237,17 +225,17 @@ main(int argc, char *argv[])
 			exit(2);
 		}
 
-		free(params.elements[i].str);
 		params.elements[i].colnum = idx;
 	}
+
+	if (show)
+		csv_show();
 
 	if (print_header) {
 		for (size_t i = 0; i < nheaders; ++i)
 			printf("%s:%s,", headers[i].name, headers[i].type);
 		printf("%s:string\n", new_name);
 	}
-	free(new_name);
-	new_name = NULL;
 
 	if (csv_read_all(s, &next_row, &params))
 		exit(2);
