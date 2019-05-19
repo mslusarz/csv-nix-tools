@@ -80,6 +80,7 @@ enum rpn_operator {
 	RPN_BIT_LSHIFT,		/* bitwise left shift */
 	RPN_BIT_RSHIFT,		/* bitwise right shift */
 	RPN_SUBSTR,		/* substring */
+	RPN_STRLEN,		/* string length */
 	RPN_CONCAT,		/* concatenation of 2 strings */
 	RPN_TOSTRING_BASE8,	/* convert int to string encoded as octal */
 	RPN_TOSTRING_BASE10,	/* convert int to string encoded as decimal */

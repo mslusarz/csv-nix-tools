@@ -118,6 +118,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		}
 
 		break;
+	case RPN_STRLEN:
 	case RPN_TOINT:
 		if (height < 1) {
 			fprintf(stderr, "not enough stack entries\n");
@@ -226,6 +227,15 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		free(str);
 		stack[height - 1].pchar = n;
 
+		break;
+	}
+	case RPN_STRLEN: {
+		long long ret = (long long)strlen(stack[height - 1].pchar);
+
+		free(stack[height - 1].pchar);
+
+		stack[height - 1].type = RPN_LLONG;
+		stack[height - 1].llong = ret;
 		break;
 	}
 	case RPN_CONCAT: {

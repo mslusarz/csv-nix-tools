@@ -199,6 +199,8 @@ rpn_parse(struct rpn_expression *exp, char *str,
 			if (strcmp(token + 1, "substr") == 0 ||
 					strcmp(token + 1, "substring") == 0)
 				tkn.operator = RPN_SUBSTR;
+			else if (strcmp(token + 1, "strlen") == 0)
+				tkn.operator = RPN_STRLEN;
 			else if (strcmp(token + 1, "concat") == 0)
 				tkn.operator = RPN_CONCAT;
 			else if (strcmp(token + 1, "tostring") == 0)
@@ -287,6 +289,7 @@ expression_type(const struct rpn_expression *exp,
 				case RPN_LOGIC_OR:
 				case RPN_LOGIC_NOT:
 				case RPN_TOINT:
+				case RPN_STRLEN:
 				case RPN_LT:
 				case RPN_LE:
 				case RPN_GT:
