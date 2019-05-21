@@ -226,8 +226,10 @@ $ csv-ls -R -f full_path . | csv-rpn-add -e "new=%full_path -1 1 substr 'c' == %
 ```
 
 # TODO (high level)
+- better name!
+- tool for advanced data processing and filtering with better syntax than rpn - probably sql-based
 - more processing tools (tr, sed, uniq, rev, drop, paste?, etc)
-- more data collection tools (ps, find, df, netstat, ifconfig/ip?, lsattr, lsusb, readlink, tcpdump?, accounts, etc)
+- more data collection tools (ps, find, df, netstat, ifconfig/ip?, lsattr, lsusb, readlink, tcpdump?, accounts, route, lscpu, lshw, lsblk, lsns, last, w/who/users?, etc)
 - more rpn operators/functions (split, rev, base64enc/dec, timestamp conversion, now, regex, sed, tr)
 - exporting tools (to-xml, to-json, to-sql)
 - importing tools (from-xml, from-json)
@@ -238,13 +240,17 @@ $ csv-ls -R -f full_path . | csv-rpn-add -e "new=%full_path -1 1 substr 'c' == %
 - i18n
 
 # TODO (low level)
+- sqlite: load /etc/passwd, /etc/group, /proc/mounts, /sys/devices, ps, netstat or any other tool output (ls)
+- tool for header ops (add/remove/change/detect types)
 - switch to deal with new lines in shell-compatible way (see what coreutils' ls does)
 
 ## Random ideas
 - float support?
-- importing from other tools (lspci -mm?, strace?, lsof -F, ss)?
+- importing from other tools (lspci -mm?, strace?, lsof -F, ss, dpkg, rpm)?
 - tool for encoding strings in safe for transport way (base64? just hex?)
 - loops and temporary variables in rpn?
-- built-in pipes?
+- built-in pipes? (csv "ls | grep -e size=0 | cut -f name")
 - what about unicode?
-- one multicommand binary?
+- one multicommand binary? (csv ls, csv grep, ...)
+- csv-show: column separators? header separator? number formatter? (see what csvlook from csvkit does)
+- invert naming? (ls-csv, grep-csv, etc)
