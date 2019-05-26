@@ -254,3 +254,4 @@ $ csv-ls -R -f full_path . | csv-rpn-add -e "new=%full_path -1 1 substr 'c' == %
 - one multicommand binary? (csv ls, csv grep, ...)
 - csv-show: column separators? header separator? number formatter? (see what csvlook from csvkit does)
 - invert naming? (ls-csv, grep-csv, etc)
+- rows+columns -> count --columns, --rows?
