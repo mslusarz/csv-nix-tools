@@ -65,6 +65,27 @@ struct cb_params {
 	size_t count;
 };
 
+static void
+process_exp(struct rpn_expression *exp, const char *buf, const size_t *col_offs,
+		const struct col_header *headers, char sep)
+{
+	struct rpn_variant ret;
+
+	if (rpn_eval(exp, buf, col_offs, headers, &ret))
+		exit(2);
+
+	if (ret.type == RPN_LLONG)
+		printf("%lld%c", ret.llong, sep);
+	else if (ret.type == RPN_PCHAR) {
+		csv_print_quoted(ret.pchar, strlen(ret.pchar));
+		fputc(sep, stdout);
+		free(ret.pchar);
+	} else {
+		fprintf(stderr, "unknown type %d\n", ret.type);
+		exit(2);
+	}
+}
+
 static int
 next_row(const char *buf, const size_t *col_offs,
 		const struct col_header *headers, size_t nheaders,
@@ -72,7 +93,6 @@ next_row(const char *buf, const size_t *col_offs,
 {
 	struct cb_params *params = arg;
 	struct rpn_expression *exp;
-	struct rpn_variant ret;
 
 	csv_print_line(stdout, buf, col_offs, headers, nheaders, false);
 	fputc(',', stdout);
@@ -80,36 +100,12 @@ next_row(const char *buf, const size_t *col_offs,
 	for (size_t i = 0; i < params->count - 1; ++i) {
 		exp = &params->expressions[i];
 
-		if (rpn_eval(exp, buf, col_offs, headers, &ret))
-			exit(2);
-
-		if (ret.type == RPN_LLONG)
-			printf("%lld,", ret.llong);
-		else if (ret.type == RPN_PCHAR) {
-			csv_print_quoted(ret.pchar, strlen(ret.pchar));
-			fputc(',', stdout);
-			free(ret.pchar);
-		} else {
-			fprintf(stderr, "unknown type %d\n", ret.type);
-			exit(2);
-		}
+		process_exp(exp, buf, col_offs, headers, ',');
 	}
 
 	exp = &params->expressions[params->count - 1];
 
-	if (rpn_eval(exp, buf, col_offs, headers, &ret))
-		exit(2);
-
-	if (ret.type == RPN_LLONG)
-		printf("%lld\n", ret.llong);
-	else if (ret.type == RPN_PCHAR) {
-		csv_print_quoted(ret.pchar, strlen(ret.pchar));
-		fputc('\n', stdout);
-		free(ret.pchar);
-	} else {
-		fprintf(stderr, "unknown type %d\n", ret.type);
-		exit(2);
-	}
+	process_exp(exp, buf, col_offs, headers, '\n');
 
 	return 0;
 }
