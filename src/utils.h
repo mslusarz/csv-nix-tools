@@ -73,7 +73,7 @@ enum rpn_operator {
 	RPN_SUB,		/* numeric subtract */
 	RPN_MUL,		/* numeric multiplication */
 	RPN_DIV,		/* numeric division */
-	RPN_REM,		/* numeric division remainder */
+	RPN_MOD,		/* numeric modulo */
 	RPN_BIT_OR,		/* bitwise or */
 	RPN_BIT_AND,		/* bitwise and */
 	RPN_BIT_XOR,		/* bitwise xor */

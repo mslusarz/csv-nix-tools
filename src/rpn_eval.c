@@ -50,7 +50,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 	case RPN_SUB:
 	case RPN_MUL:
 	case RPN_DIV:
-	case RPN_REM:
+	case RPN_MOD:
 	case RPN_BIT_OR:
 	case RPN_BIT_AND:
 	case RPN_BIT_XOR:
@@ -178,7 +178,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 	case RPN_DIV:
 		stack[height - 1].llong /= stack[height].llong;
 		break;
-	case RPN_REM:
+	case RPN_MOD:
 		stack[height - 1].llong %= stack[height].llong;
 		break;
 	case RPN_BIT_OR:

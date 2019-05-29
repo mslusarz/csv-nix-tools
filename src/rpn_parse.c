@@ -145,7 +145,7 @@ rpn_parse(struct rpn_expression *exp, char *str,
 			else if (strcmp(token, "/") == 0)
 				tkn.operator = RPN_DIV;
 			else if (strcmp(token, "%") == 0)
-				tkn.operator = RPN_REM;
+				tkn.operator = RPN_MOD;
 			else if (strcmp(token, "|") == 0)
 				tkn.operator = RPN_BIT_OR;
 			else if (strcmp(token, "&") == 0)
@@ -254,7 +254,7 @@ expression_type(const struct rpn_expression *exp,
 				case RPN_SUB:
 				case RPN_MUL:
 				case RPN_DIV:
-				case RPN_REM:
+				case RPN_MOD:
 				case RPN_BIT_OR:
 				case RPN_BIT_AND:
 				case RPN_BIT_XOR:
