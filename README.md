@@ -8,6 +8,9 @@ This project is in early prototyping stage.
 # Requirements
 - cmake >= 3.3
 - glibc-devel
+- sqlite >= 3 (optional)
+- flex (optional)
+- bison (optional)
 
 # How to build
 ```sh
