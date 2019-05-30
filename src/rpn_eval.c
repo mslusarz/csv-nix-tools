@@ -58,6 +58,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 	case RPN_BIT_RSHIFT:
 	case RPN_LOGIC_AND:
 	case RPN_LOGIC_OR:
+	case RPN_LOGIC_XOR:
 		if (height < 2) {
 			fprintf(stderr, "not enough stack entries\n");
 			return -1;
@@ -65,17 +66,18 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		height--;
 		if (stack[height - 1].type != RPN_LLONG ||
 				stack[height].type != RPN_LLONG) {
-			fprintf(stderr, "+,-,*,/,%%,|,&,^,<<,>> can operate only on numeric values\n");
+			fprintf(stderr, "+,-,*,/,%%,|,&,^,<<,>>,and,or,xor can operate only on numeric values\n");
 			return -1;
 		}
 		break;
+	case RPN_BIT_NEG:
 	case RPN_LOGIC_NOT:
 		if (height < 1) {
 			fprintf(stderr, "not enough stack entries\n");
 			return -1;
 		}
 		if (stack[height - 1].type != RPN_LLONG) {
-			fprintf(stderr, "logic not can operate only on numeric values\n");
+			fprintf(stderr, "not/bit_neg can operate only on numeric values\n");
 			return -1;
 		}
 		break;
@@ -166,6 +168,25 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 	}
 
 	switch (oper) {
+	case RPN_LOGIC_AND:
+	case RPN_LOGIC_OR:
+	case RPN_LOGIC_XOR:
+		if (stack[height - 1].llong != 0 && stack[height - 1].llong != 1) {
+			fprintf(stderr, "logic operators can operate only on 0/1 values\n");
+			return -1;
+		}
+		/* fall through */
+	case RPN_LOGIC_NOT:
+		if (stack[height].llong != 0 && stack[height].llong != 1) {
+			fprintf(stderr, "logic operators can operate only on 0/1 values\n");
+			return -1;
+		}
+		break;
+	default:
+		break;
+	}
+
+	switch (oper) {
 	case RPN_ADD:
 		stack[height - 1].llong += stack[height].llong;
 		break;
@@ -190,6 +211,9 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 	case RPN_BIT_XOR:
 		stack[height - 1].llong ^= stack[height].llong;
 		break;
+	case RPN_BIT_NEG:
+		stack[height - 1].llong = ~stack[height-1].llong;
+		break;
 	case RPN_BIT_LSHIFT:
 		stack[height - 1].llong <<= stack[height].llong;
 		break;
@@ -202,6 +226,9 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 	case RPN_LOGIC_OR:
 		stack[height - 1].llong = stack[height - 1].llong || stack[height].llong ? 1 : 0;
 		break;
+	case RPN_LOGIC_XOR:
+		stack[height - 1].llong = stack[height - 1].llong != stack[height].llong ? 1 : 0;
+		break;
 	case RPN_LOGIC_NOT:
 		stack[height - 1].llong = stack[height - 1].llong ? 0 : 1;
 		break;
@@ -212,7 +239,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 			fprintf(stderr,
 				"negative length (%lld) for substring op\n",
 				stack[height + 1].llong);
-			exit(2);
+			return -1;
 		}
 		size_t len = (size_t)stack[height + 1].llong;
 

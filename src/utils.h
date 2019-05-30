@@ -77,6 +77,7 @@ enum rpn_operator {
 	RPN_BIT_OR,		/* bitwise or */
 	RPN_BIT_AND,		/* bitwise and */
 	RPN_BIT_XOR,		/* bitwise xor */
+	RPN_BIT_NEG,		/* bitwise negation */
 	RPN_BIT_LSHIFT,		/* bitwise left shift */
 	RPN_BIT_RSHIFT,		/* bitwise right shift */
 	RPN_SUBSTR,		/* substring */
@@ -95,6 +96,7 @@ enum rpn_operator {
 	RPN_LOGIC_OR,		/* logic or */
 	RPN_LOGIC_AND,		/* logic and */
 	RPN_LOGIC_NOT,		/* logic not */
+	RPN_LOGIC_XOR,		/* logic xor */
 	RPN_IF,			/* if then else */
 };
 
