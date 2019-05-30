@@ -106,6 +106,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 			return -1;
 		}
 		break;
+	case RPN_TOSTRING_BASE2:
 	case RPN_TOSTRING_BASE8:
 	case RPN_TOSTRING_BASE10:
 	case RPN_TOSTRING_BASE16:
@@ -280,6 +281,12 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		free(str1);
 		free(str2);
 		stack[height - 1].pchar = n;
+
+		break;
+	}
+	case RPN_TOSTRING_BASE2: {
+		fprintf(stderr, "RPN_TOSTRING_BASE2 not implemented yet\n");
+		exit(2);
 
 		break;
 	}

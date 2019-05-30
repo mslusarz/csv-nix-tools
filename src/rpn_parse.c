@@ -187,6 +187,8 @@ rpn_parse(struct rpn_expression *exp, char *str,
 				tkn.operator = RPN_CONCAT;
 			else if (strcmp(token, "tostring") == 0)
 				tkn.operator = RPN_TOSTRING_BASE10;
+			else if (strcmp(token, "tostring_base2") == 0)
+				tkn.operator = RPN_TOSTRING_BASE2;
 			else if (strcmp(token, "tostring_base8") == 0)
 				tkn.operator = RPN_TOSTRING_BASE8;
 			else if (strcmp(token, "tostring_base10") == 0)
@@ -281,6 +283,7 @@ expression_type(const struct rpn_expression *exp,
 
 				case RPN_SUBSTR:
 				case RPN_CONCAT:
+				case RPN_TOSTRING_BASE2:
 				case RPN_TOSTRING_BASE8:
 				case RPN_TOSTRING_BASE10:
 				case RPN_TOSTRING_BASE16:
