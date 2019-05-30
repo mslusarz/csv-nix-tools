@@ -77,3 +77,21 @@ if(SQLITE3_FOUND)
 	endif()
 	target_link_libraries(csv-sqlite ${SQLITE3_LIBRARIES})
 endif()
+
+find_package(BISON)
+find_package(FLEX)
+
+if (BISON_FOUND AND FLEX_FOUND)
+	FLEX_TARGET(SQLLexer src/sql.l ${CMAKE_CURRENT_BINARY_DIR}/sql_lexer.c)
+	BISON_TARGET(SQLParser src/sql.y ${CMAKE_CURRENT_BINARY_DIR}/sql_parser.c)
+	ADD_FLEX_BISON_DEPENDENCY(SQLLexer SQLParser)
+
+	build_tool(csv-sql src/sql.c
+			${BISON_SQLParser_OUTPUTS}
+			${FLEX_SQLLexer_OUTPUTS})
+
+	target_include_directories(csv-sql PRIVATE src)
+
+	target_link_libraries(csv-sql ${FLEX_LIBRARIES})
+	target_link_libraries(csv-sql csvrpn)
+endif()

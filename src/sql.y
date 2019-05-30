@@ -1,0 +1,148 @@
+%{
+
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#include "sql.h"
+
+#define DBG 0
+
+static inline void
+dbg_printf(const char *format, ...)
+{
+#if DBG
+	va_list ap;
+	va_start(ap, format);
+	vprintf(format, ap);
+	va_end(ap);
+#endif
+}
+
+%}
+
+%token SELECT AS FROM WHERE STRING NUMBER COMMA LITERAL EQ NE LT GT LE GE
+%token OR AND XOR NOT LPAREN RPAREN ADD SUB MUL DIV MOD CONCAT IF
+%token BIT_OR BIT_XOR BIT_AND BIT_NEG BIT_LSHIFT BIT_RSHIFT OTHER
+%token LENGTH SUBSTR FMT_HEX FMT_OCT FMT_DEC FMT_BIN
+
+%type <name> STRING
+%type <number> NUMBER
+%type <name> LITERAL
+
+%left OR
+%left XOR
+%left AND
+%right NOT
+%left EQ NE
+%left LT GT LE GE
+%left BIT_OR BIT_XOR BIT_AND BIT_LSHIFT BIT_RSHIFT
+%left ADD SUB
+%left MUL DIV MOD
+%right BIT_NEG
+%left CONCAT
+%left LPAREN RPAREN
+
+%union {
+	char *name;
+	long long number;
+}
+
+%%
+
+prog:
+	query
+
+value: STRING     { dbg_printf("BISON: string '%s'\n", $1); sql_stack_push_string($1); }
+	| NUMBER  { dbg_printf("BISON: number '%d'\n", $1); sql_stack_push_llong($1); }
+	| LITERAL { dbg_printf("BISON: literal %s\n",  $1); sql_stack_push_literal($1); }
+
+column:
+	expr				{ sql_column_done(); }
+	| expr AS LITERAL		{ sql_named_column_done($3); }
+
+columns:
+	MUL			{ sql_all_columns(); }
+	| column
+	| columns COMMA column
+
+table: STRING { dbg_printf("BISON: table '%s'\n", $1); sql_from($1); }
+
+expr:     LPAREN expr RPAREN
+	| value
+	| expr CONCAT expr	{ sql_stack_push_op(RPN_CONCAT); }
+	| SUB { sql_stack_push_llong(0); } expr { sql_stack_push_op(RPN_SUB); }
+	| NOT expr		{ sql_stack_push_op(RPN_LOGIC_NOT); }
+	| BIT_NEG expr		{ sql_stack_push_op(RPN_BIT_NEG); }
+	| expr EQ expr		{ sql_stack_push_op(RPN_EQ); }
+	| expr NE expr		{ sql_stack_push_op(RPN_NE); }
+	| expr LT expr		{ sql_stack_push_op(RPN_LT); }
+	| expr GT expr		{ sql_stack_push_op(RPN_GT); }
+	| expr LE expr		{ sql_stack_push_op(RPN_LE); }
+	| expr GE expr		{ sql_stack_push_op(RPN_GE); }
+	| expr SUB expr		{ sql_stack_push_op(RPN_SUB); }
+	| expr ADD expr		{ sql_stack_push_op(RPN_ADD); }
+	| expr DIV expr		{ sql_stack_push_op(RPN_DIV); }
+	| expr MUL expr		{ sql_stack_push_op(RPN_MUL); }
+	| expr MOD expr		{ sql_stack_push_op(RPN_MOD); }
+	| expr AND expr		{ sql_stack_push_op(RPN_LOGIC_AND); }
+	| expr OR expr		{ sql_stack_push_op(RPN_LOGIC_OR); }
+	| expr XOR expr		{ sql_stack_push_op(RPN_LOGIC_XOR); }
+	| expr BIT_OR expr	{ sql_stack_push_op(RPN_BIT_OR); }
+	| expr BIT_XOR expr	{ sql_stack_push_op(RPN_BIT_XOR); }
+	| expr BIT_AND expr	{ sql_stack_push_op(RPN_BIT_AND); }
+	| expr BIT_LSHIFT expr	{ sql_stack_push_op(RPN_BIT_LSHIFT); }
+	| expr BIT_RSHIFT expr	{ sql_stack_push_op(RPN_BIT_RSHIFT); }
+	| SUBSTR LPAREN expr COMMA expr COMMA expr RPAREN { sql_stack_push_op(RPN_SUBSTR); }
+	| LENGTH LPAREN expr RPAREN	{ sql_stack_push_op(RPN_STRLEN); }
+	| IF LPAREN expr COMMA expr COMMA expr	RPAREN { sql_stack_push_op(RPN_IF); }
+	| FMT_DEC LPAREN expr RPAREN	{ sql_stack_push_op(RPN_TOSTRING_BASE10); }
+	| FMT_HEX LPAREN expr RPAREN	{ sql_stack_push_op(RPN_TOSTRING_BASE16); }
+	| FMT_OCT LPAREN expr RPAREN	{ sql_stack_push_op(RPN_TOSTRING_BASE8); }
+	| FMT_BIN LPAREN expr RPAREN	{ sql_stack_push_op(RPN_TOSTRING_BASE2); }
+
+condition:
+	expr		{ dbg_printf("BISON: expr\n"); }
+
+from:
+	FROM		{ dbg_printf("BISON: FROM\n"); }
+	table		{ dbg_printf("BISON: TABLE\n"); }
+	|		/* nothing, from is optional */
+
+where:
+	WHERE		{ dbg_printf("BISON: WHERE\n"); sql_where(); }
+	condition	{ dbg_printf("BISON: CONDITION\n"); sql_end_of_conditions(); }
+	|		/* nothing, where is optional */
+
+query:
+	SELECT		{ dbg_printf("BISON: SELECT\n"); }
+	columns		{ dbg_printf("BISON: COLUMNS\n"); }
+	from
+	where
+
+%%
+
+int
+yyerror(const char *s)
+{
+	fprintf(stderr, "BISON: parse error: '%s'\n", s);
+	exit(1);
+}
+
+#if 0
+int
+main(int argc, char *argv[])
+{
+	FILE *in = fmemopen(argv[1], strlen(argv[1]), "r");
+	if (!in)
+		abort();
+	yyin = in;
+
+	yyparse();
+	yylex_destroy();
+
+	fclose(in);
+	return 0;
+}
+#endif

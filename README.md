@@ -194,6 +194,13 @@ size:int,name:string
 2893,columns.c
 2204,parse.h
 ```
+or
+```
+$ csv-ls | csv-sql "select size, name from input where size > 2000 and size < 3000"
+size:int,name:string
+2893,columns.c
+2204,parse.h
+```
 
 
 files and their permissions printed in human-readable format
@@ -209,6 +216,18 @@ mode:int,strmode:string,name:string
 0755,rwxr-xr-x,CMakeFiles
 0600,rw-------,core
 ...
+```
+or
+```
+$ csv-ls -f mode,name | csv-sql "select fmt_oct(mode) as 'mode',\
+if (mode & 0400, 'r', '-') || if (mode & 0200, 'w', '-') || if (mode & 0100, 'x', '-') ||\
+if (mode & 040,  'r', '-') || if (mode & 020,  'w', '-') || if (mode & 010,  'x', '-') ||\
+if (mode & 04,   'r', '-') || if (mode & 02,   'w', '-') || if (mode & 01,   'x', '-') as 'strmode', name"
+
+mode:string,strmode:string,name:string
+0644,rw-r--r--,CMakeCache.txt
+0755,rwxr-xr-x,CMakeFiles
+0600,rw-------,core
 ```
 
 remove all temporary files (ending with "~"), even if path contains spaces or line breaks
@@ -227,7 +246,6 @@ $ csv-ls -R -f full_path . | csv-rpn-add -e "new=%full_path -1 1 substr 'c' == %
 
 # TODO (high level)
 - better name!
-- tool for advanced data processing and filtering with better syntax than rpn - probably sql-based
 - more processing tools (tr, sed, uniq, rev, drop, paste?, etc)
 - more data collection tools (ps, find, df, netstat, ifconfig/ip?, lsattr, lsusb, readlink, tcpdump?, accounts, route, lscpu, lshw, lsblk, lsns, last, w/who/users?, etc)
 - more rpn operators/functions (split, rev, base64enc/dec, timestamp conversion, now, regex, sed, tr)
@@ -240,7 +258,9 @@ $ csv-ls -R -f full_path . | csv-rpn-add -e "new=%full_path -1 1 substr 'c' == %
 - i18n
 
 # TODO (low level)
-- sqlite: load /etc/passwd, /etc/group, /proc/mounts, /sys/devices, ps, netstat or any other tool output (ls)
+- rpn: implement tostring_base2
+- rpn: substring should start from 1, to match sql's substr
+- sql/sqlite: load /etc/passwd, /etc/group, /proc/mounts, /sys/devices, ps, netstat or any other tool output (ls)
 - tool for header ops (add/remove/change/detect types)
 - switch to deal with new lines in shell-compatible way (see what coreutils' ls does)
 
