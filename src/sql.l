@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include "sql_parser.h"
+#include "utils.h"
 
 #define DBG 0
 
@@ -68,10 +69,10 @@ literal2 \"[^"]*\"
 "<<"		{ dbg_printf("LEX: matching BIT_LSHIFT\n"); return BIT_LSHIFT; }
 ">>"		{ dbg_printf("LEX: matching BIT_RSHIFT\n"); return BIT_RSHIFT; }
 
-{dec_number}	{ dbg_printf("LEX: matching dec_number\n"); yylval.number = strtoll(yytext,     NULL, 10); return NUMBER; }
-{hex_number}	{ dbg_printf("LEX: matching hex_number\n"); yylval.number = strtoll(yytext + 2, NULL, 16); return NUMBER; }
-{oct_number}	{ dbg_printf("LEX: matching oct_number\n"); yylval.number = strtoll(yytext + 1, NULL, 8); return NUMBER; }
-{bin_number}	{ dbg_printf("LEX: matching bin_number\n"); yylval.number = strtoll(yytext + 2, NULL, 2); return NUMBER; }
+{dec_number}	{ dbg_printf("LEX: matching dec_number\n"); if (strtoll_safe(yytext, &yylval.number, 10)) exit(2); return NUMBER; }
+{hex_number}	{ dbg_printf("LEX: matching hex_number\n"); if (strtoll_safe(yytext + 2, &yylval.number, 16)) exit(2); return NUMBER; }
+{oct_number}	{ dbg_printf("LEX: matching oct_number\n"); if (strtoll_safe(yytext + 1, &yylval.number, 8)) exit(2); return NUMBER; }
+{bin_number}	{ dbg_printf("LEX: matching bin_number\n"); if (strtoll_safe(yytext + 2, &yylval.number, 2)) exit(2); return NUMBER; }
 {alpha}		{ dbg_printf("LEX: matching alpha '%s'\n", yytext); yylval.name = strdup(yytext); return STRING; }
 {literal1}	{ dbg_printf("LEX: matching literal1 '%s'\n", yytext); yylval.name = strndup(yytext + 1, strlen(yytext) - 2); return LITERAL; }
 {literal2}	{ dbg_printf("LEX: matching literal2 '%s'\n", yytext); yylval.name = strndup(yytext + 1, strlen(yytext) - 2); return LITERAL; }
