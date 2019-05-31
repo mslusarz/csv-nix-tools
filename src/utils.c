@@ -64,22 +64,24 @@ csv_print_line(FILE *out, const char *buf, const size_t *col_offs,
 }
 
 int
-strtoll_safe(const char *str, long long *val)
+strtoll_safe(const char *str, long long *val, int base)
 {
 	char *end;
 
 	errno = 0;
-	long long llval = strtoll(str, &end, 0);
+	long long llval = strtoll(str, &end, base);
 
 	if (llval == LLONG_MIN && errno) {
 		fprintf(stderr,
-			"value '%s' is too small\n", str);
+			"value '%s' is too small to be held in %ld-bit signed integer\n",
+			str, 8 * sizeof(llval));
 		return -1;
 	}
 
 	if (llval == LLONG_MAX && errno) {
 		fprintf(stderr,
-			"value '%s' is too big\n", str);
+			"value '%s' is too big to be held in %ld-bit signed integer\n",
+			str, 8 * sizeof(llval));
 		return -1;
 	}
 
@@ -94,7 +96,7 @@ strtoll_safe(const char *str, long long *val)
 }
 
 int
-strtoull_safe(const char *str, unsigned long long *val)
+strtoull_safe(const char *str, unsigned long long *val, int base)
 {
 	while (isspace(str[0]))
 		str++;
@@ -108,11 +110,12 @@ strtoull_safe(const char *str, unsigned long long *val)
 	char *end;
 
 	errno = 0;
-	unsigned long long ullval = strtoull(str, &end, 0);
+	unsigned long long ullval = strtoull(str, &end, base);
 
 	if (ullval == ULLONG_MAX && errno) {
 		fprintf(stderr,
-			"value '%s' is too big\n", str);
+			"value '%s' is too big to be held in %ld-bit unsigned integer\n",
+			str, 8 * sizeof(ullval));
 		return -1;
 	}
 
@@ -127,22 +130,24 @@ strtoull_safe(const char *str, unsigned long long *val)
 }
 
 int
-strtol_safe(const char *str, long *val)
+strtol_safe(const char *str, long *val, int base)
 {
 	char *end;
 
 	errno = 0;
-	long lval = strtol(str, &end, 0);
+	long lval = strtol(str, &end, base);
 
 	if (lval == LONG_MIN && errno) {
 		fprintf(stderr,
-			"value '%s' is too small\n", str);
+			"value '%s' is too small to be held in %ld-bit signed integer\n",
+			str, 8 * sizeof(lval));
 		return -1;
 	}
 
 	if (lval == LONG_MAX && errno) {
 		fprintf(stderr,
-			"value '%s' is too big\n", str);
+			"value '%s' is too big to be held in %ld-bit signed integer\n",
+			str, 8 * sizeof(lval));
 		return -1;
 	}
 
@@ -157,7 +162,7 @@ strtol_safe(const char *str, long *val)
 }
 
 int
-strtoul_safe(const char *str, unsigned long *val)
+strtoul_safe(const char *str, unsigned long *val, int base)
 {
 	while (isspace(str[0]))
 		str++;
@@ -171,11 +176,12 @@ strtoul_safe(const char *str, unsigned long *val)
 	char *end;
 
 	errno = 0;
-	unsigned long ulval = strtoul(str, &end, 0);
+	unsigned long ulval = strtoul(str, &end, base);
 
 	if (ulval == ULONG_MAX && errno) {
 		fprintf(stderr,
-			"value '%s' is too big\n", str);
+			"value '%s' is too big to be held in %ld-bit unsigned integer\n",
+			str, 8 * sizeof(ulval));
 		return -1;
 	}
 

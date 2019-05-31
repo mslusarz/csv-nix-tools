@@ -203,7 +203,7 @@ main(int argc, char *argv[])
 				}
 				break;
 			case 's':
-				if (strtoul_safe(optarg, &spacing))
+				if (strtoul_safe(optarg, &spacing, 0))
 					exit(2);
 				break;
 			case 't':

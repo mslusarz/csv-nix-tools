@@ -79,7 +79,7 @@ next_row(const char *buf, const size_t *col_offs,
 		const char *val = &buf[col_offs[params->columns[i]]];
 
 		long long llval;
-		if (strtoll_safe(val, &llval))
+		if (strtoll_safe(val, &llval, 0))
 			return -1;
 
 		if (llval > 0 && params->sums[i] > LLONG_MAX - llval) {

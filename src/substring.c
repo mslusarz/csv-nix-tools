@@ -121,14 +121,14 @@ main(int argc, char *argv[])
 				new_name = strdup(optarg);
 				break;
 			case 'p':
-				if (strtol_safe(optarg, &params.start_pos))
+				if (strtol_safe(optarg, &params.start_pos, 0))
 					exit(2);
 				break;
 			case 's':
 				show = true;
 				break;
 			case 'l':
-				if (strtoul_safe(optarg, &params.length))
+				if (strtoul_safe(optarg, &params.length, 0))
 					exit(2);
 				break;
 			case 'H':

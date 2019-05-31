@@ -328,7 +328,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 	}
 	case RPN_TOINT: {
 		long long ret;
-		if (strtoll_safe(stack[height - 1].pchar, &ret) < 0)
+		if (strtoll_safe(stack[height - 1].pchar, &ret, 0) < 0)
 			return -1;
 
 		free(stack[height - 1].pchar);
@@ -480,7 +480,7 @@ rpn_eval(struct rpn_expression *exp,
 
 			if (strcmp(headers[t->colnum].type, "int") == 0) {
 				stack[height].type = RPN_LLONG;
-				if (strtoll_safe(str, &stack[height].llong))
+				if (strtoll_safe(str, &stack[height].llong, 0))
 					goto fail;
 			} else {
 				stack[height].type = RPN_PCHAR;

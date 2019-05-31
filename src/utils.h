@@ -45,10 +45,10 @@ void csv_print_header(FILE *out, const struct col_header *headers,
 void csv_print_line(FILE *out, const char *buf, const size_t *col_offs,
 		const struct col_header *headers, size_t nheaders, bool nl);
 
-int strtoll_safe(const char *str, long long *val);
-int strtoull_safe(const char *str, unsigned long long *val);
-int strtol_safe(const char *str, long *val);
-int strtoul_safe(const char *str, unsigned long *val);
+int strtoll_safe(const char *str, long long *val, int base);
+int strtoull_safe(const char *str, unsigned long long *val, int base);
+int strtol_safe(const char *str, long *val, int base);
+int strtoul_safe(const char *str, unsigned long *val, int base);
 
 bool csv_requires_quoting(const char *str, size_t len);
 void csv_print_quoted(const char *str, size_t len);

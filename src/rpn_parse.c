@@ -123,7 +123,7 @@ rpn_parse(struct rpn_expression *exp, char *str,
 		} else if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1]))) {
 			tkn.type = RPN_CONSTANT;
 			tkn.constant.type = RPN_LLONG;
-			if (strtoll_safe(token, &tkn.constant.llong))
+			if (strtoll_safe(token, &tkn.constant.llong, 0))
 				goto fail;
 		} else if (token[0] == '\'') {
 			tkn.type = RPN_CONSTANT;

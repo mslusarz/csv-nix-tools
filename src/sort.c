@@ -164,10 +164,10 @@ cmp(const void *p1, const void *p2, void *arg)
 		/* handle integers */
 		long long llval1, llval2;
 
-		if (strtoll_safe(val1, &llval1))
+		if (strtoll_safe(val1, &llval1, 0))
 			exit(2);
 
-		if (strtoll_safe(val2, &llval2))
+		if (strtoll_safe(val2, &llval2, 0))
 			exit(2);
 
 		if (llval1 < llval2)

@@ -83,7 +83,7 @@ next_row(const char *buf, const size_t *col_offs,
 		int ret;
 		if (headers[i].type[0] == 'i') {
 			long long val;
-			if (strtoll_safe(&buf[col_offs[i]], &val) < 0)
+			if (strtoll_safe(&buf[col_offs[i]], &val, 0) < 0)
 				exit(2);
 			ret = sqlite3_bind_int64(params->insert, i + 1, val);
 		} else {
