@@ -61,6 +61,7 @@ value: STRING     { dbg_printf("BISON: string '%s'\n", $1); sql_stack_push_strin
 column:
 	expr				{ sql_column_done(); }
 	| expr AS LITERAL		{ sql_named_column_done($3); }
+	| expr AS STRING		{ sql_named_column_done($3); }
 
 columns:
 	MUL			{ sql_all_columns(); }
