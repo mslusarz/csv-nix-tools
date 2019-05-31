@@ -285,8 +285,30 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		break;
 	}
 	case RPN_TOSTRING_BASE2: {
-		fprintf(stderr, "RPN_TOSTRING_BASE2 not implemented yet\n");
-		exit(2);
+		long long l = stack[height - 1].llong;
+		if (!l) {
+			stack[height - 1].type = RPN_PCHAR;
+			stack[height - 1].pchar = strdup("0b0");
+			break;
+		}
+
+		char *buf = malloc(68);
+		int idx = 0;
+		if (stack[height - 1].llong < 0) {
+			buf[idx++] = '-';
+			l = -l;
+		}
+		buf[idx++] = '0';
+		buf[idx++] = 'b';
+		long long msb = 1LL << (63 - __builtin_clzll(l));
+		while (msb) {
+			buf[idx++] = (l & msb) ? '1' : '0';
+			msb >>= 1;
+		}
+		buf[idx] = 0;
+
+		stack[height - 1].type = RPN_PCHAR;
+		stack[height - 1].pchar = buf;
 
 		break;
 	}

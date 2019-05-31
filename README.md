@@ -261,7 +261,6 @@ $ csv-ls -R -f full_path . | csv-rpn-add -e "new=%full_path -1 1 substr 'c' == %
 - i18n
 
 # TODO (low level)
-- rpn: implement tostring_base2
 - rpn: substring should start from 1, to match sql's substr
 - sql/sqlite: load /etc/passwd, /etc/group, /proc/mounts, /sys/devices, ps, netstat or any other tool output (ls)
 - tool for header ops (add/remove/change/detect types)
