@@ -8,9 +8,9 @@ This project is in early prototyping stage.
 # Requirements
 - cmake >= 3.3
 - glibc-devel
-- sqlite >= 3 (optional)
-- flex (optional)
-- bison (optional)
+- sqlite >= 3 (optional, required by csv-sqlite)
+- flex (optional, required by csv-sql)
+- bison (optional, required by csv-sql)
 
 # How to build
 ```sh
@@ -263,6 +263,7 @@ $ csv-ls -R -f full_path . | csv-rpn-add -e "new=%full_path -1 1 substr 'c' == %
 # TODO (low level)
 - rpn: substring should start from 1, to match sql's substr
 - sql/sqlite: load /etc/passwd, /etc/group, /proc/mounts, /sys/devices, ps, netstat or any other tool output (ls)
+- rpn: binary number parsing
 - tool for header ops (add/remove/change/detect types)
 - switch to deal with new lines in shell-compatible way (see what coreutils' ls does)
 
