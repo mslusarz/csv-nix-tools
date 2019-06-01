@@ -205,6 +205,23 @@ err:
 }
 
 static const char *
+sqlite_type_to_str(int t)
+{
+	if (t == SQLITE_FLOAT)
+		return "SQLITE_FLOAT";
+	if (t == SQLITE_BLOB)
+		return "SQLITE_BLOB";
+	if (t == SQLITE_NULL)
+		return "SQLITE_NULL";
+	if (t == SQLITE_INTEGER)
+		return "SQLITE_INTEGER";
+	if (t == SQLITE_TEXT)
+		return "SQLITE_TEXT";
+
+	return "?";
+}
+
+static const char *
 sqlite_type_to_csv_name(int t)
 {
 	if (t == SQLITE_INTEGER)
@@ -214,7 +231,8 @@ sqlite_type_to_csv_name(int t)
 	else if (t == SQLITE_NULL)
 		return NULL;
 
-	fprintf(stderr, "unsupported sqlite type: %d\n", t);
+	fprintf(stderr, "unsupported sqlite type: %d [%s]\n", t,
+			sqlite_type_to_str(t));
 	exit(2);
 }
 
@@ -308,7 +326,8 @@ print_val(sqlite3_stmt *select, size_t i)
 		const char *txt = (const char *)sqlite3_column_text(select, i);
 		csv_print_quoted(txt, strlen(txt));
 	} else {
-		fprintf(stderr, "unsupported return type: %d\n", type);
+		fprintf(stderr, "unsupported return type: %d [%s]\n", type,
+				sqlite_type_to_str(type));
 		exit(2);
 	}
 }
