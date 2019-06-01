@@ -128,7 +128,7 @@ type(const char *t)
 	if (strcmp(t, "int") == 0)
 		return "int";
 	else
-		return "string";
+		return "text";
 }
 
 static int
