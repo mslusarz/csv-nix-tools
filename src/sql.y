@@ -26,7 +26,7 @@ dbg_printf(const char *format, ...)
 %token SELECT AS FROM WHERE STRING NUMBER COMMA LITERAL EQ NE LT GT LE GE
 %token OR AND XOR NOT LPAREN RPAREN ADD SUB MUL DIV MOD CONCAT IF
 %token BIT_OR BIT_XOR BIT_AND BIT_NEG BIT_LSHIFT BIT_RSHIFT OTHER
-%token LENGTH SUBSTR FMT_HEX FMT_OCT FMT_DEC FMT_BIN
+%token LENGTH SUBSTR LIKE FMT_HEX FMT_OCT FMT_DEC FMT_BIN
 
 %type <name> STRING
 %type <number> NUMBER
@@ -36,7 +36,7 @@ dbg_printf(const char *format, ...)
 %left XOR
 %left AND
 %right NOT
-%left EQ NE
+%left EQ NE LIKE
 %left LT GT LE GE
 %left BIT_OR BIT_XOR BIT_AND BIT_LSHIFT BIT_RSHIFT
 %left ADD SUB
@@ -104,6 +104,8 @@ expr:     LPAREN expr RPAREN
 	| FMT_HEX LPAREN expr RPAREN	{ sql_stack_push_op(RPN_TOSTRING_BASE16); }
 	| FMT_OCT LPAREN expr RPAREN	{ sql_stack_push_op(RPN_TOSTRING_BASE8); }
 	| FMT_BIN LPAREN expr RPAREN	{ sql_stack_push_op(RPN_TOSTRING_BASE2); }
+	| expr LIKE expr		{ sql_stack_push_op(RPN_LIKE); }
+	| LIKE LPAREN expr COMMA expr RPAREN	{ sql_stack_push_op(RPN_LIKE); }
 
 condition:
 	expr		{ dbg_printf("BISON: expr\n"); }

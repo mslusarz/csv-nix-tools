@@ -33,6 +33,8 @@
 /* asprintf */
 #define _GNU_SOURCE
 
+#include <ctype.h>
+#include <regex.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -103,6 +105,18 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		if (stack[height - 1].type != RPN_PCHAR ||
 				stack[height].type != RPN_PCHAR) {
 			fprintf(stderr, "invalid types for concat operator\n");
+			return -1;
+		}
+		break;
+	case RPN_LIKE:
+		if (height < 2) {
+			fprintf(stderr, "not enough stack entries\n");
+			return -1;
+		}
+		height--;
+		if (stack[height - 1].type != RPN_PCHAR ||
+				stack[height].type != RPN_PCHAR) {
+			fprintf(stderr, "invalid types for like operator\n");
 			return -1;
 		}
 		break;
@@ -281,6 +295,81 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		free(str1);
 		free(str2);
 		stack[height - 1].pchar = n;
+
+		break;
+	}
+	case RPN_LIKE: {
+		char *str, *pattern;
+		str = stack[height - 1].pchar;
+		pattern = stack[height].pchar;
+		size_t patlen = strlen(pattern);
+
+		char *n = malloc(patlen * 3);
+		if (!n) {
+			perror("malloc");
+			return -1;
+		}
+
+		char *o = n;
+		static const char escape[256] = {
+				['.'] = 1,
+				['?'] = 1,
+				['*'] = 1,
+				['+'] = 1,
+				['['] = 1,
+				[']'] = 1,
+				['('] = 1,
+				[')'] = 1,
+				['$'] = 1,
+				['^'] = 1,
+				['\\'] = 1,
+				['|'] = 1,
+		};
+
+		*o++ = '^';
+
+		const char *c = pattern;
+		while (*c) {
+			if (*c == '%') {
+				*o++ = '.';
+				*o++ = '*';
+				c++;
+			} else if (escape[(unsigned char)*c]) {
+				*o++ = '\\';
+				*o++ = *c++;
+			} else {
+				*o++ = *c++;
+			}
+		}
+
+		*o++ = '$';
+		*o++ = 0;
+
+		regex_t preg;
+
+		/* TODO: cache compiled regex */
+		int ret = regcomp(&preg, n, REG_NOSUB);
+		if (ret) {
+			size_t len = regerror(ret, &preg, NULL, 0);
+			char *errbuf = malloc(len);
+			regerror(ret, &preg, errbuf, len);
+			fprintf(stderr,
+				"compilation of expression '%s' failed: %s\n",
+				n, errbuf);
+			free(errbuf);
+			return -1;
+		}
+
+		if (regexec(&preg, str, 0, NULL, 0) == 0)
+			stack[height - 1].llong = 1;
+		else
+			stack[height - 1].llong = 0;
+		stack[height - 1].type = RPN_LLONG;
+
+		regfree(&preg);
+		free(str);
+		free(pattern);
+		free(n);
 
 		break;
 	}

@@ -48,6 +48,7 @@ literal2 \"[^"]*\"
 "not"		{ dbg_printf("LEX: matching NOT\n"); return NOT; }
 "length"	{ dbg_printf("LEX: matching LENGTH\n"); return LENGTH; }
 "substr"	{ dbg_printf("LEX: matching SUBSTR\n"); return SUBSTR; }
+"like"		{ dbg_printf("LEX: matching LIKE\n"); return LIKE; }
 "fmt_hex"	{ dbg_printf("LEX: matching FMT_HEX\n"); return FMT_HEX; }
 "fmt_oct"	{ dbg_printf("LEX: matching FMT_OCT\n"); return FMT_OCT; }
 "fmt_dec"	{ dbg_printf("LEX: matching FMT_DEC\n"); return FMT_DEC; }

@@ -185,6 +185,8 @@ rpn_parse(struct rpn_expression *exp, char *str,
 				tkn.operator = RPN_STRLEN;
 			else if (strcmp(token, "concat") == 0)
 				tkn.operator = RPN_CONCAT;
+			else if (strcmp(token, "like") == 0)
+				tkn.operator = RPN_LIKE;
 			else if (strcmp(token, "tostring") == 0)
 				tkn.operator = RPN_TOSTRING_BASE10;
 			else if (strcmp(token, "tostring_base2") == 0)
@@ -273,6 +275,7 @@ expression_type(const struct rpn_expression *exp,
 				case RPN_LOGIC_NOT:
 				case RPN_TOINT:
 				case RPN_STRLEN:
+				case RPN_LIKE:
 				case RPN_LT:
 				case RPN_LE:
 				case RPN_GT:
