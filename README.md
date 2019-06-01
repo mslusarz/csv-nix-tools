@@ -251,7 +251,7 @@ $ csv-ls -R -f full_path . | csv-rpn-add -e "new=%full_path -1 1 substr 'c' == %
 - i18n
 
 # TODO (low level)
-- sql/sqlite: load /etc/passwd, /etc/group, /proc/mounts, /sys/devices, ps, netstat or any other tool output (ls)
+- sql/sqlite: load /proc/mounts, /sys/devices, ps, netstat or any other tool output (ls)
 - rpn: binary number parsing
 - tool for header ops (add/remove/change/detect types)
 - switch to deal with new lines in shell-compatible way (see what coreutils' ls does)

@@ -39,6 +39,8 @@
 
 #include "parse.h"
 #include "utils.h"
+#include "usr-grp.h"
+#include "sqlite.h"
 
 static const struct option long_options[] = {
 	{"no-header",	no_argument,		NULL, 'H'},
@@ -54,6 +56,7 @@ usage(void)
 	printf("Usage: csv-sqlite [OPTION] sql-query\n");
 	printf("Options:\n");
 	printf("  -i path\n");
+	printf("  -l table (users / groups / group_members)\n");
 	printf("  -s, --show\n");
 	printf("      --no-header\n");
 	printf("      --help\n");
@@ -339,8 +342,13 @@ main(int argc, char *argv[])
 	bool show = false;
 	struct input *inputs = NULL;
 	size_t ninputs = 0;
+	struct {
+		bool users;
+		bool groups;
+		bool group_members;
+	} tables = { false, false, false };
 
-	while ((opt = getopt_long(argc, argv, "i:sv", long_options,
+	while ((opt = getopt_long(argc, argv, "i:l:sv", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'H':
@@ -352,6 +360,19 @@ main(int argc, char *argv[])
 
 				inputs[ninputs - 1].path =
 						xstrdup_nofail(optarg);
+				break;
+			case 'l':
+				if (strcmp(optarg, "users") == 0) {
+					tables.users = true;
+				} else if (strcmp(optarg, "groups") == 0) {
+					tables.groups = true;
+				} else if (strcmp(optarg, "group_members") == 0) {
+					tables.group_members = true;
+				} else {
+					fprintf(stderr, "unknown table '%s'\n",
+							optarg);
+					exit(2);
+				}
 				break;
 			case 's':
 				show = true;
@@ -388,6 +409,20 @@ main(int argc, char *argv[])
 		fprintf(stderr, "sqlite3_open: %s\n", sqlite3_errmsg(db));
 		exit(2);
 	}
+
+	if (tables.users) {
+		load_users();
+		load_users_into_db(db);
+	}
+
+	if (tables.group_members || tables.groups)
+		load_groups();
+
+	if (tables.groups)
+		load_groups_into_db(db);
+
+	if (tables.group_members)
+		load_group_members_into_db(db);
 
 	if (ninputs == 0) {
 		inputs = calloc(1, sizeof(inputs[0]));

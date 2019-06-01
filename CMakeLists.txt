@@ -72,7 +72,7 @@ target_link_libraries(csv-rpn-add	csvrpn)
 target_link_libraries(csv-rpn-filter	csvrpn)
 
 if(SQLITE3_FOUND)
-	build_tool(csv-sqlite src/sqlite.c)
+	build_tool(csv-sqlite src/sqlite.c src/usr-grp.c src/sqlite-usr-grp.c)
 	if (SQLITE3_INCLUDE_DIRS)
 		target_include_directories(csv-sqlite ${SQLITE3_INCLUDE_DIRS})
 	endif()
