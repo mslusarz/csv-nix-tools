@@ -52,7 +52,7 @@ static const struct option long_options[] = {
 static void
 usage(void)
 {
-	printf("Usage: csv-exec-edit [OPTION]... -- command\n");
+	printf("Usage: csv-exec-add [OPTION]... -- command\n");
 	printf("Options:\n");
 	printf("  -f, --field=name\n");
 	printf("  -n, --new-name=name\n");
