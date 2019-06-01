@@ -1,5 +1,6 @@
 %{
 
+#include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -96,6 +97,7 @@ expr:     LPAREN expr RPAREN
 	| expr BIT_LSHIFT expr	{ sql_stack_push_op(RPN_BIT_LSHIFT); }
 	| expr BIT_RSHIFT expr	{ sql_stack_push_op(RPN_BIT_RSHIFT); }
 	| SUBSTR LPAREN expr COMMA expr COMMA expr RPAREN { sql_stack_push_op(RPN_SUBSTR); }
+	| SUBSTR LPAREN expr COMMA expr RPAREN { sql_stack_push_llong(LLONG_MAX); sql_stack_push_op(RPN_SUBSTR); }
 	| LENGTH LPAREN expr RPAREN	{ sql_stack_push_op(RPN_STRLEN); }
 	| IF LPAREN expr COMMA expr COMMA expr	RPAREN { sql_stack_push_op(RPN_IF); }
 	| FMT_DEC LPAREN expr RPAREN	{ sql_stack_push_op(RPN_TOSTRING_BASE10); }
