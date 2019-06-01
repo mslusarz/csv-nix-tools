@@ -21,6 +21,34 @@ make
 sudo make install
 ```
 
+Source tools:
+- csv-groups - lists system groups
+- csv-ls - lists files
+- csv-users - lists system users
+
+Filtering/processing tools:
+- csv-cat - concatenates input files
+- csv-concat - creates new column by concatenation of columns and user-defined strings
+- csv-count - counts number of columns and/or rows
+- csv-cut - removes columns and changes their order
+- csv-exec-add - creates new column by executing external tool and storing its output
+- csv-grep - filters rows matching a (regex) pattern
+- csv-head - outputs the first part of input
+- csv-rpn-add - creates new column from RPN expression
+- csv-rpn-filter - filters rows using RPN expression
+- csv-sort - sorts input by column(s)
+- csv-split - creates two columns by splitting existing column using a delimiter
+- csv-sql - SQL-based frontend for other tools (WIP)
+- csv-sqlite - advanced processor using in-memory SQLite database (requires loading whole input before processing)
+- csv-substring - creates new column based on a substring of an existing one
+- csv-sum - sums column(s)
+- csv-tac - concatenate files in reverse
+- csv-tail - outputs the last part of input
+
+Sink tools:
+- csv-exec - executes external command for each row
+- csv-show - formats data in human-readable form
+
 # Examples
 
 raw data about one file
