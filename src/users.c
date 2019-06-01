@@ -86,7 +86,7 @@ merge_groups_into_users(void)
 		char **members = g->members;
 
 		for (size_t j = 0; j < g->nmembers; ++j) {
-			struct csv_user *u = find_user(members[j]);
+			struct csv_user *u = find_user_by_name(members[j]);
 			if (u) {
 				u->groups = xrealloc_nofail(u->groups,
 						u->ngroups + 1,
@@ -98,6 +98,34 @@ merge_groups_into_users(void)
 					"warning: group '%s' contains unknown user '%s'\n",
 					g->name, *members);
 			}
+		}
+	}
+
+	for (size_t i = 0; i < nusers; ++i) {
+		struct csv_user *u = &users[i];
+
+		struct csv_group *g = find_group_by_gid(u->gid);
+		if (!g) {
+			fprintf(stderr,
+				"warning: user '%s' belongs to unknown group %d\n",
+				u->name, u->gid);
+			continue;
+		}
+
+		bool found = false;
+		for (size_t j = 0; j < u->ngroups; ++j) {
+			if (u->groups[j] == g) {
+				found = true;
+				break;
+			}
+		}
+
+		if (!found) {
+			u->groups = xrealloc_nofail(u->groups,
+					u->ngroups + 1,
+					sizeof(u->groups[0]));
+
+			u->groups[u->ngroups++] = g;
 		}
 	}
 }

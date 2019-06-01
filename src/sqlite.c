@@ -368,6 +368,10 @@ main(int argc, char *argv[])
 					tables.groups = true;
 				} else if (strcmp(optarg, "group_members") == 0) {
 					tables.group_members = true;
+					/* required to fill missing entries for
+					 * user's default group */
+					tables.users = true;
+					tables.groups = true;
 				} else {
 					fprintf(stderr, "unknown table '%s'\n",
 							optarg);

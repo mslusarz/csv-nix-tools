@@ -154,10 +154,19 @@ free_groups(void)
 }
 
 struct csv_user *
-find_user(const char *name)
+find_user_by_name(const char *name)
 {
 	for (size_t i = 0; i < nusers; ++i)
 		if (strcmp(users[i].name, name) == 0)
 			return &users[i];
+	return NULL;
+}
+
+struct csv_group *
+find_group_by_gid(gid_t gid)
+{
+	for (size_t i = 0; i < ngroups; ++i)
+		if (groups[i].gid == gid)
+			return &groups[i];
 	return NULL;
 }

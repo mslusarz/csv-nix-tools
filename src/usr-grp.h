@@ -71,7 +71,8 @@ extern size_t ngroups;
 
 void load_users(void);
 void load_groups(void);
-struct csv_user *find_user(const char *name);
+struct csv_user *find_user_by_name(const char *name);
+struct csv_group *find_group_by_gid(gid_t gid);
 
 void free_users(void);
 void free_groups(void);

@@ -259,4 +259,18 @@ load_group_members_into_db(sqlite3 *db)
 				sqlite3_errmsg(db));
 		exit(2);
 	}
+
+	static const char *ins2 =
+		"insert into group_members (user_name, group_name) \n"
+		"select users.name, groups.name \n"
+		"  from users, groups \n"
+		" where users.gid = groups.gid \n"
+		"   and (users.name, groups.name) not in \n"
+		"       (select user_name, group_name from group_members)";
+	if (sqlite3_exec(db, ins2, NULL, NULL, NULL) != SQLITE_OK) {
+		fprintf(stderr, "sqlite3_exec(ins2): %s\n",
+				sqlite3_errmsg(db));
+		exit(2);
+	}
+
 }
