@@ -325,6 +325,8 @@ stat_printf(struct stat_ctx *ctx, const char *format, ...)
 
 	if (++ctx->printed < ctx->visinfo->count)
 		fputc(',', stdout);
+	else
+		fputc('\n', stdout);
 }
 
 static void
@@ -457,8 +459,6 @@ print_stat(const char *dirpath, const char *path, struct stat *st,
 		}
 		stat_printf(&ctx, "");
 	}
-
-	fputc('\n', stdout);
 }
 
 static int
