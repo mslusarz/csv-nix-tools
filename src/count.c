@@ -40,6 +40,8 @@
 #include "utils.h"
 
 static const struct option long_options[] = {
+	{"columns",	no_argument,		NULL, 'c'},
+	{"rows",	no_argument,		NULL, 'r'},
 	{"no-header",	no_argument,		NULL, 'H'},
 	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
@@ -50,12 +52,30 @@ static const struct option long_options[] = {
 static void
 usage(void)
 {
-	printf("Usage: csv-columns [OPTION]...\n");
+	printf("Usage: csv-count [OPTION]...\n");
 	printf("Options:\n");
+	printf("  -c, --columns\n");
+	printf("  -r, --rows\n");
 	printf("  -s, --show\n");
 	printf("      --no-header\n");
 	printf("      --help\n");
 	printf("      --version\n");
+}
+
+struct cb_params {
+	size_t rows;
+};
+
+static int
+next_row(const char *buf, const size_t *col_offs,
+		const struct col_header *headers, size_t nheaders,
+		void *arg)
+{
+	struct cb_params *params = arg;
+
+	params->rows++;
+
+	return 0;
 }
 
 int
@@ -63,12 +83,23 @@ main(int argc, char *argv[])
 {
 	int opt;
 	int longindex;
+	struct cb_params params;
 	bool print_header = true;
 	bool show = false;
+	bool columns = false;
+	bool rows = false;
 
-	while ((opt = getopt_long(argc, argv, "sv", long_options,
+	params.rows = 0;
+
+	while ((opt = getopt_long(argc, argv, "crsv", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
+			case 'c':
+				columns = true;
+				break;
+			case 'r':
+				rows = true;
+				break;
 			case 'H':
 				print_header = false;
 				break;
@@ -97,6 +128,9 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show();
 
+	if (!columns && !rows)
+		return 0;
+
 	struct csv_ctx *s = csv_create_ctx(stdin, stderr);
 	if (!s)
 		exit(2);
@@ -105,11 +139,35 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
-	if (print_header)
-		printf("columns:int\n");
-	printf("%lu\n", nheaders);
+	if (rows)
+		if (csv_read_all(s, &next_row, &params))
+			exit(2);
 
 	csv_destroy_ctx(s);
+
+	if (print_header) {
+		if (columns) {
+			printf("columns:int");
+			if (rows)
+				putc(',', stdout);
+		}
+
+		if (rows)
+			printf("rows:int");
+
+		putc('\n', stdout);
+	}
+
+	if (columns) {
+		printf("%lu", nheaders);
+		if (rows)
+			putc(',', stdout);
+	}
+
+	if (rows)
+		printf("%lu", params.rows);
+
+	putc('\n', stdout);
 
 	return 0;
 }

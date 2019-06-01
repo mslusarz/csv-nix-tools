@@ -57,10 +57,8 @@ size:int,name:string
 4302,cut.c
 4096,build
 3322,head.c
-3006,rows.c
 2794,README.md
 2746,utils.c
-2676,columns.c
 2389,format.c
 2204,parse.h
 1957,utils.h
@@ -123,7 +121,7 @@ csv-grep -e ext=png | csv-sum -f size --no-header
 
 number of files in the current directory, without header
 ```
-$ csv-ls . | csv-rows --no-header
+$ csv-ls . | csv-count --rows --no-header
 19
 ```
 
@@ -139,9 +137,7 @@ csv-show -s 1 -p no --no-header
 list of files whose 2nd character is 'o'
 ```
 $ csv-ls | csv-grep -e 'name=^.o' | csv-cut -f name --no-header
-columns.c
 concat.c
-rows.c
 sort.c
 ```
 
@@ -150,9 +146,7 @@ or
 ```
 $ csv-ls | csv-substring -f name -n 2nd-char -p 2 -l 1 | \
 csv-grep -e 2nd-char=o | csv-cut -f name --no-header
-columns.c
 concat.c
-rows.c
 sort.c
 ```
 
@@ -180,28 +174,24 @@ $ csv-ls -f size,name | \
 csv-rpn-add -e "range2k-3k=%size 2000 >= %size 3000 < and" | \
 csv-grep -e range2k-3k=1 | csv-cut -f size,name
 size:int,name:string
-2893,columns.c
 2204,parse.h
 ```
 or
 ```
 $ csv-ls -f size,name | csv-rpn-filter -e "%size 2000 >= %size 3000 < and"
 size:int,name:string
-2893,columns.c
 2204,parse.h
 ```
 or
 ```
 $ csv-ls | csv-sqlite "select size, name from input where size > 2000 and size < 3000"
 size:int,name:string
-2893,columns.c
 2204,parse.h
 ```
 or
 ```
 $ csv-ls | csv-sql "select size, name from input where size > 2000 and size < 3000"
 size:int,name:string
-2893,columns.c
 2204,parse.h
 ```
 
@@ -276,4 +266,3 @@ $ csv-ls -R -f full_path . | csv-rpn-add -e "new=%full_path -1 1 substr 'c' == %
 - one multicommand binary? (csv ls, csv grep, ...)
 - csv-show: column separators? header separator? number formatter? (see what csvlook from csvkit does)
 - invert naming? (ls-csv, grep-csv, etc)
-- rows+columns -> count --columns, --rows?
