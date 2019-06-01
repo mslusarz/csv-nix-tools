@@ -148,7 +148,7 @@ sort.c
 or
 
 ```
-$ csv-ls | csv-substring -f name -n 2nd-char -p 1 -l 1 | \
+$ csv-ls | csv-substring -f name -n 2nd-char -p 2 -l 1 | \
 csv-grep -e 2nd-char=o | csv-cut -f name --no-header
 columns.c
 concat.c
@@ -244,7 +244,7 @@ $ csv-ls -R -f full_path . | csv-exec-add -f full_path -n new -- sed 's/.c$/.o/'
 ```
 or 400x faster:
 ```
-$ csv-ls -R -f full_path . | csv-rpn-add -e "new=%full_path -1 1 substr 'c' == %full_path 0 %full_path strlen 1 - substr 'o' concat %full_path if"
+$ csv-ls -R -f full_path . | csv-rpn-add -e "new=%full_path -1 1 substr 'c' == %full_path 1 %full_path strlen 1 - substr 'o' concat %full_path if"
 ```
 
 # TODO (high level)
@@ -261,7 +261,6 @@ $ csv-ls -R -f full_path . | csv-rpn-add -e "new=%full_path -1 1 substr 'c' == %
 - i18n
 
 # TODO (low level)
-- rpn: substring should start from 1, to match sql's substr
 - sql/sqlite: load /etc/passwd, /etc/group, /proc/mounts, /sys/devices, ps, netstat or any other tool output (ls)
 - rpn: binary number parsing
 - tool for header ops (add/remove/change/detect types)

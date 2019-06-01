@@ -336,6 +336,12 @@ csv_substring_sanitize(const char *str, ssize_t *start, size_t *len)
 {
 	size_t max_len = strlen(str);
 
+	/* count characters from 1, like sql does */
+	if (*start == 0)
+		(*len)--; /* that's what sqlite does */
+	else if (*start > 0)
+		(*start)--;
+
 	if (*start < 0) {
 		if (*start + (ssize_t)max_len < 0)
 			*start = 0;
