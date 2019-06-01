@@ -183,12 +183,10 @@ main(int argc, char *argv[])
 				}
 
 				nconditions++;
-				conditions = realloc(conditions, nconditions *
+				conditions = xrealloc_nofail(conditions,
+						nconditions,
 						sizeof(conditions[0]));
-				if (!conditions) {
-					perror("realloc");
-					exit(2);
-				}
+
 				memcpy(&conditions[nconditions - 1], &cond,
 						sizeof(cond));
 
@@ -255,7 +253,7 @@ main(int argc, char *argv[])
 				(extended_regexp ? REG_EXTENDED : 0));
 		if (ret) {
 			size_t len = regerror(ret, &conditions[i].preg, NULL, 0);
-			char *errbuf = malloc(len);
+			char *errbuf = xmalloc_nofail(len, 1);
 			regerror(ret, &conditions[i].preg, errbuf, len);
 			fprintf(stderr,
 				"compilation of expression '%s' failed: %s\n",

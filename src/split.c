@@ -154,10 +154,10 @@ main(int argc, char *argv[])
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'e':
-				params.separators = strdup(optarg);
+				params.separators = xstrdup_nofail(optarg);
 				break;
 			case 'f':
-				col = strdup(optarg);
+				col = xstrdup_nofail(optarg);
 				break;
 			case 'n': {
 				char *comma = index(optarg, ',');
@@ -172,7 +172,7 @@ main(int argc, char *argv[])
 					usage();
 					exit(2);
 				}
-				name2 = strdup(comma + 1);
+				name2 = xstrdup_nofail(comma + 1);
 				break;
 			}
 			case 'p':

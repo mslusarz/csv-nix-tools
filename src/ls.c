@@ -134,11 +134,9 @@ ht_init(struct ht *ht)
 	ht->keys_max = 4;
 	ht->table_size = 4;
 
-	ht->table = malloc(ht->table_size * sizeof(ht->table[0]));
-	if (!ht->table) {
-		perror("malloc");
+	ht->table = xmalloc(ht->table_size, sizeof(ht->table[0]));
+	if (!ht->table)
 		return 2;
-	}
 
 	if (hcreate_r(ht->keys_max, &ht->ht) == 0) {
 		perror("hcreate_r");
@@ -200,19 +198,11 @@ get_value(struct ht *ht, char *key, void *(*cb)(void *), void *cb_data)
 
 	if (ht->inserted == ht->table_size) {
 		ht->table_size *= 2;
-		ht->table = realloc(ht->table,
-				ht->table_size * sizeof(ht->table[0]));
-		if (!ht->table) {
-			perror("realloc");
-			exit(2); /* no sane way to handle */
-		}
+		ht->table = xrealloc_nofail(ht->table, ht->table_size,
+				sizeof(ht->table[0]));
 	}
 
-	entry->key = strdup(key);
-	if (!entry->key) {
-		perror("strdup");
-		exit(2); /* no sane way to handle */
-	}
+	entry->key = xstrdup_nofail(key);
 
 	entry->data = cb(cb_data);
 	if (!entry->data)
@@ -231,13 +221,8 @@ get_user_slow(void *uidp)
 	char *ret;
 	uid_t uid = *(uid_t *)uidp;
 	struct passwd *passwd = getpwuid(uid);
-	if (passwd) {
-		ret = strdup(passwd->pw_name);
-		if (!ret)
-			perror("strdup");
-
-		return ret;
-	}
+	if (passwd)
+		return xstrdup(passwd->pw_name);
 
 	if (asprintf(&ret, "%d", uid) < 0) {
 		perror("asprintf");
@@ -262,13 +247,8 @@ get_group_slow(void *gidp)
 	char *ret;
 	gid_t gid = *(uid_t *)gidp;
 	struct group *gr = getgrgid(gid);
-	if (gr) {
-		ret = strdup(gr->gr_name);
-		if (!ret)
-			perror("strdup");
-
-		return ret;
-	}
+	if (gr)
+		return xstrdup(gr->gr_name);
 
 	if (asprintf(&ret, "%d", gid) < 0) {
 		perror("asprintf");
@@ -463,7 +443,7 @@ print_stat(const char *dirpath, const char *path, struct stat *st,
 			if (csv_requires_quoting(dirpath, dirpath_len) ||
 					csv_requires_quoting(path, path_len)) {
 				size_t len = dirpath_len + 1 + path_len;
-				char *buf = malloc(len + 1);
+				char *buf = xmalloc_nofail(len + 1, 1);
 				sprintf(buf, "%s/%s", dirpath, path);
 				csv_print_quoted(buf, len);
 				free(buf);
@@ -516,16 +496,14 @@ list(const char *dirpath, int dirfd, int recursive, int all, int sort,
 		return 1;
 	}
 
-	dirs = malloc(entries * sizeof(dirs[0]));
+	dirs = xmalloc(entries, sizeof(dirs[0]));
 	if (!dirs) {
-		perror("malloc");
 		ret = 2;
 		goto dirs_alloc_fail;
 	}
 
-	path = malloc(pos + 1 + sizeof(namelist[0]->d_name));
+	path = xmalloc(pos + 1 + sizeof(namelist[0]->d_name), 1);
 	if (!path) {
-		perror("malloc");
 		ret = 2;
 		goto path_alloc_fail;
 	}
@@ -557,9 +535,8 @@ list(const char *dirpath, int dirfd, int recursive, int all, int sort,
 			else
 				bufsiz = PATH_MAX;
 restart_readlink:
-			symlink = malloc(bufsiz);
+			symlink = xmalloc(bufsiz, 1);
 			if (!symlink) {
-				perror("malloc");
 				ret |= 2;
 				break;
 			}
@@ -701,7 +678,7 @@ main(int argc, char *argv[])
 				dir = 1;
 				break;
 			case 'f':
-				cols = strdup(optarg);
+				cols = xstrdup_nofail(optarg);
 				break;
 			case 'H':
 				print_header = false;
@@ -915,9 +892,8 @@ main(int argc, char *argv[])
 					bufsiz = PATH_MAX;
 
 restart_readlink:
-				symlink = malloc(bufsiz);
+				symlink = xmalloc(bufsiz, 1);
 				if (!symlink) {
-					perror("malloc");
 					ret |= 2;
 					break;
 				}

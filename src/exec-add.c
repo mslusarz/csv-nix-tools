@@ -99,11 +99,7 @@ read_all(int fd, char **buf, size_t *buf_len)
 	size_t readin = 0;
 	if (*buf_len < 1) {
 		*buf_len = 1;
-		*buf = realloc(*buf, *buf_len);
-		if (!*buf) {
-			perror("malloc");
-			exit(2);
-		}
+		*buf = xrealloc_nofail(*buf, *buf_len, 1);
 	}
 
 	ssize_t ret;
@@ -114,11 +110,7 @@ read_all(int fd, char **buf, size_t *buf_len)
 
 		if (*buf_len - readin == 0) {
 			*buf_len *= 2;
-			*buf = realloc(*buf, *buf_len);
-			if (!*buf) {
-				perror("malloc");
-				exit(2);
-			}
+			*buf = xrealloc_nofail(*buf, *buf_len, 1);
 		}
 
 		ret = read(fd, (*buf) + readin, *buf_len - readin);
@@ -281,10 +273,10 @@ main(int argc, char *argv[])
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'f':
-				stdin_colname = strdup(optarg);
+				stdin_colname = xstrdup_nofail(optarg);
 				break;
 			case 'n':
-				new_colname = strdup(optarg);
+				new_colname = xstrdup_nofail(optarg);
 				break;
 			case 'H':
 				print_header = false;
@@ -319,11 +311,7 @@ main(int argc, char *argv[])
 		exit(2);
 	}
 
-	params.argv = malloc((args + 1) * sizeof(params.argv[0]));
-	if (!params.argv) {
-		perror("malloc");
-		exit(2);
-	}
+	params.argv = xmalloc_nofail(args + 1, sizeof(params.argv[0]));
 	params.argv[args] = NULL;
 
 	struct csv_ctx *s = csv_create_ctx(stdin, stderr);
@@ -345,12 +333,8 @@ main(int argc, char *argv[])
 				exit(2);
 			}
 
-			params.substs = realloc(params.substs,
-				++params.nsubsts * sizeof(params.substs[0]));
-			if (!params.substs) {
-				perror("realloc");
-				exit(2);
-			}
+			params.substs = xrealloc_nofail(params.substs,
+				++params.nsubsts, sizeof(params.substs[0]));
 
 			params.substs[params.nsubsts - 1].argv_idx = idx;
 			params.substs[params.nsubsts - 1].col = col;

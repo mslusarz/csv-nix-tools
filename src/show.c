@@ -90,12 +90,10 @@ next_row(const char *buf, const size_t *col_offs,
 		else
 			params->size *= 2;
 
-		struct line *newlines = realloc(params->lines,
-				params->size * sizeof(params->lines[0]));
-		if (!newlines) {
-			fprintf(stderr, "realloc: %s\n", strerror(errno));
+		struct line *newlines = xrealloc(params->lines,
+				params->size, sizeof(params->lines[0]));
+		if (!newlines)
 			return -1;
-		}
 
 		params->lines = newlines;
 	}
@@ -105,16 +103,13 @@ next_row(const char *buf, const size_t *col_offs,
 	size_t last_col_len = strlen(buf + col_offs[nheaders - 1]);
 	size_t len = col_offs[nheaders - 1] + last_col_len + 1;
 
-	line->buf = malloc(len);
-	if (!line->buf) {
-		fprintf(stderr, "malloc: %s\n", strerror(errno));
+	line->buf = xmalloc(len, 1);
+	if (!line->buf)
 		return -1;
-	}
 
 	size_t col_offs_size = nheaders * sizeof(col_offs[0]);
-	line->col_offs = malloc(col_offs_size);
+	line->col_offs = xmalloc(col_offs_size, 1);
 	if (!line->col_offs) {
-		fprintf(stderr, "malloc: %s\n", strerror(errno));
 		free(line->buf);
 		return -1;
 	}

@@ -102,7 +102,7 @@ main(int argc, char *argv[])
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'f':
-				cols = strdup(optarg);
+				cols = xstrdup_nofail(optarg);
 				break;
 			case 'r':
 				reverse = true;
@@ -148,14 +148,10 @@ main(int argc, char *argv[])
 		return 2;
 	}
 
-	params.columns = malloc(nheaders * sizeof(params.columns[0]));
-	if (!params.columns) {
-		fprintf(stderr, "malloc: %s\n", strerror(errno));
-		exit(2);
-	}
+	params.columns = xmalloc_nofail(nheaders, sizeof(params.columns[0]));
 
 	if (reverse) {
-		char *cols2 = malloc(strlen(cols) + 3);
+		char *cols2 = xmalloc_nofail(strlen(cols) + 3, 1);
 		sprintf(cols2, ",%s,", cols);
 
 		size_t longest_header = 0;
@@ -164,7 +160,7 @@ main(int argc, char *argv[])
 			if (hlen > longest_header)
 				longest_header = hlen;
 		}
-		char *tmp = malloc(longest_header + 3);
+		char *tmp = xmalloc_nofail(longest_header + 3, 1);
 
 		for (size_t i = 0; i < nheaders; ++i) {
 			sprintf(tmp, ",%s,", headers[i].name);

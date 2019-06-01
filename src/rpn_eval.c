@@ -284,11 +284,9 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		char *str1, *str2;
 		str1 = stack[height - 1].pchar;
 		str2 = stack[height].pchar;
-		char *n = malloc(strlen(str1) + strlen(str2) + 1);
-		if (!n) {
-			perror("malloc");
+		char *n = xmalloc(strlen(str1) + strlen(str2) + 1, 1);
+		if (!n)
 			return -1;
-		}
 		strcpy(n, str1);
 		strcat(n, str2);
 
@@ -304,11 +302,9 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		pattern = stack[height].pchar;
 		size_t patlen = strlen(pattern);
 
-		char *n = malloc(patlen * 3);
-		if (!n) {
-			perror("malloc");
+		char *n = xmalloc(patlen * 3, 1);
+		if (!n)
 			return -1;
-		}
 
 		char *o = n;
 		static const char escape[256] = {
@@ -351,7 +347,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		int ret = regcomp(&preg, n, REG_NOSUB);
 		if (ret) {
 			size_t len = regerror(ret, &preg, NULL, 0);
-			char *errbuf = malloc(len);
+			char *errbuf = xmalloc_nofail(len, 1);
 			regerror(ret, &preg, errbuf, len);
 			fprintf(stderr,
 				"compilation of expression '%s' failed: %s\n",
@@ -377,11 +373,11 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		long long l = stack[height - 1].llong;
 		if (!l) {
 			stack[height - 1].type = RPN_PCHAR;
-			stack[height - 1].pchar = strdup("0b0");
+			stack[height - 1].pchar = xstrdup_nofail("0b0");
 			break;
 		}
 
-		char *buf = malloc(68);
+		char *buf = xmalloc_nofail(68, 1);
 		int idx = 0;
 		if (stack[height - 1].llong < 0) {
 			buf[idx++] = '-';
@@ -542,11 +538,9 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		abort();
 	}
 
-	stack = realloc(stack, height * sizeof(stack[0]));
-	if (!stack) {
-		perror("realloc");
+	stack = xrealloc(stack, height, sizeof(stack[0]));
+	if (!stack)
 		return -1;
-	}
 
 	*pheight = height;
 	*pstack = stack;
@@ -567,26 +561,21 @@ rpn_eval(struct rpn_expression *exp,
 	for (size_t j = 0; j < exp->count; ++j) {
 		struct rpn_token *t = &exp->tokens[j];
 		if (t->type == RPN_CONSTANT) {
-			stack = realloc(stack, (height + 1) * sizeof(stack[0]));
-			if (!stack) {
-				perror("realloc");
+			stack = xrealloc(stack, height + 1, sizeof(stack[0]));
+			if (!stack)
 				goto fail;
-			}
 
 			stack[height++] = t->constant;
 			if (t->constant.type == RPN_PCHAR) {
-				stack[height - 1].pchar = strdup(stack[height - 1].pchar);
-				if (!stack[height - 1].pchar) {
-					perror("strdup");
+				stack[height - 1].pchar = xstrdup(stack[height - 1].pchar);
+				if (!stack[height - 1].pchar)
 					goto fail;
-				}
 			}
 		} else if (t->type == RPN_COLUMN) {
-			stack = realloc(stack, (height + 1) * sizeof(stack[0]));
-			if (!stack) {
-				perror("realloc");
+			stack = xrealloc(stack, height + 1, sizeof(stack[0]));
+			if (!stack)
 				goto fail;
-			}
+
 			const char *str = &buf[col_offs[t->colnum]];
 
 			if (strcmp(headers[t->colnum].type, "int") == 0) {
@@ -598,7 +587,9 @@ rpn_eval(struct rpn_expression *exp,
 				if (str[0] == '"')
 					stack[height].pchar = csv_unquot(str);
 				else
-					stack[height].pchar = strdup(str);
+					stack[height].pchar = xstrdup(str);
+				if (!stack[height].pchar)
+					goto fail;
 			}
 			height++;
 		} else if (t->type == RPN_OPERATOR) {

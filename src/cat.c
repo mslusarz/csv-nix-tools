@@ -99,11 +99,7 @@ add_input(FILE *f, struct input *in, size_t file_idx)
 
 	in->f = f;
 	in->s = s;
-	in->idx = malloc(nheaders_cur * sizeof(in->idx[0]));
-	if (!in->idx) {
-		perror("malloc");
-		exit(2);
-	}
+	in->idx = xmalloc_nofail(nheaders_cur, sizeof(in->idx[0]));
 
 	if (headers == NULL) {
 		nheaders = nheaders_cur;

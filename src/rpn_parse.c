@@ -228,12 +228,10 @@ rpn_parse(struct rpn_expression *exp, char *str,
 			}
 		}
 
-		exp->tokens = realloc(exp->tokens,
-				(exp->count + 1) * sizeof(exp->tokens[0]));
-		if (!exp->tokens) {
-			perror("realloc");
+		exp->tokens = xrealloc(exp->tokens, exp->count + 1,
+				sizeof(exp->tokens[0]));
+		if (!exp->tokens)
 			goto fail;
-		}
 
 		exp->tokens[exp->count++] = tkn;
 

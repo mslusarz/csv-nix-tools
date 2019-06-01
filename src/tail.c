@@ -81,11 +81,9 @@ next_row(const char *buf, const size_t *col_offs,
 	if (len > params->sizes[params->first_empty]) {
 		free(params->lines[params->first_empty]);
 
-		params->lines[params->first_empty] = malloc(len);
-		if (!params->lines[params->first_empty]) {
-			fprintf(stderr, "malloc: %s\n", strerror(errno));
+		params->lines[params->first_empty] = xmalloc(len, 1);
+		if (!params->lines[params->first_empty])
 			return -1;
-		}
 
 		params->sizes[params->first_empty] = len;
 	}

@@ -62,6 +62,15 @@ size_t csv_find(const struct col_header *headers,
 		size_t nheaders,
 		const char *name);
 
+char *xstrdup(const char *str);
+char *xstrdup_nofail(const char *str);
+
+void *xmalloc(size_t count, size_t size);
+void *xmalloc_nofail(size_t count, size_t size);
+
+void *xrealloc(void *ptr, size_t count, size_t size);
+void *xrealloc_nofail(void *ptr, size_t count, size_t size);
+
 enum rpn_token_type {
 	RPN_COLUMN,		/* column */
 	RPN_CONSTANT,		/* constant */

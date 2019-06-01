@@ -115,10 +115,10 @@ main(int argc, char *argv[])
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'f':
-				input_col = strdup(optarg);
+				input_col = xstrdup_nofail(optarg);
 				break;
 			case 'n':
-				new_name = strdup(optarg);
+				new_name = xstrdup_nofail(optarg);
 				break;
 			case 'p':
 				if (strtol_safe(optarg, &params.start_pos, 0))

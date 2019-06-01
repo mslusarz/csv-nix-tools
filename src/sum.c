@@ -114,7 +114,7 @@ main(int argc, char *argv[])
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'f':
-				cols = strdup(optarg);
+				cols = xstrdup_nofail(optarg);
 				break;
 			case 'H':
 				print_header = false;
@@ -157,11 +157,7 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
-	params.columns = malloc(nheaders * sizeof(params.columns[0]));
-	if (!params.columns) {
-		fprintf(stderr, "malloc: %s\n", strerror(errno));
-		exit(2);
-	}
+	params.columns = xmalloc_nofail(nheaders, sizeof(params.columns[0]));
 
 	char *name = strtok(cols, ",");
 	while (name) {

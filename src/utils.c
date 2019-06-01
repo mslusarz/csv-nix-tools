@@ -251,8 +251,12 @@ char *
 csv_unquot(const char *str)
 {
 	size_t len = strlen(str);
-	char *n = malloc(len);
+	char *n = xmalloc(len, 1);
 	size_t idx = 0;
+
+	if (!n)
+		return NULL;
+
 	if (str[0] != '"' || str[len - 1] != '"') {
 		fprintf(stderr, "internal error - can't unquot string that is not quoted\n");
 		abort();
@@ -355,4 +359,64 @@ csv_substring_sanitize(const char *str, ssize_t *start, size_t *len)
 	if ((size_t)*start + *len < (size_t)*start ||
 			(size_t)*start + *len >= max_len)
 		*len = max_len - *start;
+}
+
+char *
+xstrdup(const char *str)
+{
+	char *ret = strdup(str);
+	if (!ret)
+		perror("strdup");
+
+	return ret;
+}
+
+char *
+xstrdup_nofail(const char *str)
+{
+	char *ret = xstrdup(str);
+	if (!ret)
+		exit(2);
+
+	return ret;
+}
+
+void *
+xmalloc(size_t count, size_t size)
+{
+	void *ret = malloc(count * size);
+	if (!ret)
+		perror("malloc");
+
+	return ret;
+}
+
+void *
+xmalloc_nofail(size_t count, size_t size)
+{
+	void *ret = xmalloc(count, size);
+	if (!ret)
+		exit(2);
+
+	return ret;
+}
+
+void *
+xrealloc(void *ptr, size_t count, size_t size)
+{
+	void *ret = realloc(ptr, count * size);
+	if (!ret)
+		perror("realloc");
+
+	return ret;
+}
+
+void *
+xrealloc_nofail(void *ptr, size_t count, size_t size)
+{
+	void *ret = xrealloc(ptr, count, size);
+	if (!ret)
+		exit(2);
+
+	return ret;
 }

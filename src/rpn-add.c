@@ -127,14 +127,11 @@ main(int argc, char *argv[])
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'e': {
-				expressions = realloc(expressions,
-						(nexpressions + 1) *
+				expressions = xrealloc_nofail(expressions,
+						nexpressions + 1,
 						sizeof(expressions[0]));
-				if (!expressions) {
-					perror("realloc");
-					exit(2);
-				}
-				expressions[nexpressions++] = strdup(optarg);
+				expressions[nexpressions++] =
+						xstrdup_nofail(optarg);
 
 				break;
 			}

@@ -135,11 +135,7 @@ static struct cb_params Params;
 void
 sql_stack_push(const struct rpn_token *token)
 {
-	Tokens = realloc(Tokens, (Ntokens + 1) * sizeof(Tokens[0]));
-	if (!Tokens) {
-		perror("realloc");
-		exit(2);
-	}
+	Tokens = xrealloc_nofail(Tokens, Ntokens + 1, sizeof(Tokens[0]));
 
 	Tokens[Ntokens++] = *token;
 }
@@ -203,20 +199,16 @@ sql_column_done(void)
 	exp.tokens = Tokens;
 	exp.count = Ntokens;
 
-	Params.columns = realloc(Params.columns,
-			(Params.columns_count + 1) * sizeof(Params.columns[0]));
+	Params.columns = xrealloc_nofail(Params.columns,
+			Params.columns_count + 1,
+			sizeof(Params.columns[0]));
 	struct column *col = &Params.columns[Params.columns_count];
 
 	col->expr = exp;
 	col->name = NULL;
 
-	if (Ntokens == 1 && Tokens[0].type == RPN_COLUMN) {
-		col->name = strdup(Headers[Tokens[0].colnum].name);
-		if (!col->name) {
-			perror("strdup");
-			exit(2);
-		}
-	}
+	if (Ntokens == 1 && Tokens[0].type == RPN_COLUMN)
+		col->name = xstrdup_nofail(Headers[Tokens[0].colnum].name);
 
 	Params.columns_count++;
 	Tokens = NULL;
@@ -230,8 +222,9 @@ sql_named_column_done(char *name)
 	exp.tokens = Tokens;
 	exp.count = Ntokens;
 
-	Params.columns = realloc(Params.columns,
-			(Params.columns_count + 1) * sizeof(Params.columns[0]));
+	Params.columns = xrealloc_nofail(Params.columns,
+			Params.columns_count + 1,
+			sizeof(Params.columns[0]));
 
 	struct column *col = &Params.columns[Params.columns_count];
 	col->expr = exp;
@@ -245,26 +238,14 @@ sql_named_column_done(char *name)
 void
 sql_all_columns(void)
 {
-	Params.columns = malloc(Nheaders * sizeof(Params.columns[0]));
-	if (!Params.columns) {
-		perror("malloc");
-		exit(2);
-	}
+	Params.columns = xmalloc_nofail(Nheaders, sizeof(Params.columns[0]));
 	Params.columns_count = Nheaders;
 
 	for (size_t i = 0; i < Nheaders; ++i) {
 		struct column *col = &Params.columns[i];
-		col->name = strdup(Headers[i].name);
-		if (!col->name) {
-			perror("strdup");
-			exit(2);
-		}
+		col->name = xstrdup_nofail(Headers[i].name);
 		col->expr.count = 1;
-		col->expr.tokens = malloc(sizeof(col->expr.tokens[0]));
-		if (!col->expr.tokens) {
-			perror("malloc");
-			exit(2);
-		}
+		col->expr.tokens = xmalloc_nofail(1, sizeof(col->expr.tokens[0]));
 		col->expr.tokens[0].type = RPN_COLUMN;
 		col->expr.tokens[0].colnum = i;
 	}
@@ -293,11 +274,7 @@ sql_where()
 void
 sql_end_of_conditions()
 {
-	struct rpn_expression *exp = malloc(sizeof(*exp));
-	if (!exp) {
-		perror("malloc");
-		exit(2);
-	}
+	struct rpn_expression *exp = xmalloc_nofail(1, sizeof(*exp));
 
 	exp->tokens = Tokens;
 	exp->count = Ntokens;

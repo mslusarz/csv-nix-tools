@@ -148,14 +148,12 @@ build_queries(const struct col_header *headers, size_t nheaders,
 	create_len -= 2; /* last ", " */
 	insert_len -= 4; /* last ", " x2 */
 
-	char *create = malloc(create_len + 1/*NUL*/);
-	if (!create) {
-		perror("malloc");
+	char *create = xmalloc(create_len + 1/*NUL*/, 1);
+	if (!create)
 		return -1;
-	}
-	char *insert = malloc(insert_len + 1/*NUL*/);
+
+	char *insert = xmalloc(insert_len + 1/*NUL*/, 1);
 	if (!insert) {
-		perror("malloc");
 		free(create);
 		return -1;
 	}
@@ -349,17 +347,11 @@ main(int argc, char *argv[])
 				print_header = false;
 				break;
 			case 'i':
-				inputs = realloc(inputs,
-						++ninputs * sizeof(inputs[0]));
-				if (!inputs) {
-					perror("realloc");
-					exit(2);
-				}
-				inputs[ninputs - 1].path = strdup(optarg);
-				if (!inputs[ninputs - 1].path) {
-					perror("strdup");
-					exit(2);
-				}
+				inputs = xrealloc_nofail(inputs,
+						++ninputs, sizeof(inputs[0]));
+
+				inputs[ninputs - 1].path =
+						xstrdup_nofail(optarg);
 				break;
 			case 's':
 				show = true;

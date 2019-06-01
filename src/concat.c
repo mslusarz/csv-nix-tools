@@ -91,11 +91,7 @@ next_row(const char *buf, const size_t *col_offs,
 			len += strlen(params->elements[i].str);
 	}
 
-	char *outbuf = malloc(len + 1);
-	if (!outbuf) {
-		perror("malloc");
-		exit(2);
-	}
+	char *outbuf = xmalloc_nofail(len + 1, 1);
 
 	size_t start = 0;
 	for (size_t i = 0; i < params->count; ++i) {
@@ -183,11 +179,7 @@ main(int argc, char *argv[])
 	}
 
 	params.count = argc - optind;
-	params.elements = malloc(params.count * sizeof(params.elements[0]));
-	if (!params.elements) {
-		perror("malloc");
-		exit(2);
-	}
+	params.elements = xmalloc_nofail(params.count, sizeof(params.elements[0]));
 
 	size_t i = 0;
 	while (optind < argc) {
