@@ -285,6 +285,7 @@ $ csv-ls -R -f full_path . | csv-rpn-add -e "new=%full_path -1 1 substr 'c' == %
 - switch to deal with new lines in shell-compatible way (see what coreutils' ls does)
 
 ## Random ideas
+- export as bash/python/etc script?
 - float support?
 - importing from other tools (lspci -mm?, strace?, lsof -F, ss, dpkg, rpm)?
 - tool for encoding strings in safe for transport way (base64? just hex?)

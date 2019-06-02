@@ -127,3 +127,6 @@ if (BISON_FOUND AND FLEX_FOUND)
 	target_link_libraries(csv-sql ${FLEX_LIBRARIES})
 	target_link_libraries(csv-sql csvrpn)
 endif()
+
+enable_testing()
+add_subdirectory(tests)

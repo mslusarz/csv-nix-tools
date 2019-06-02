@@ -32,4 +32,3 @@
 
 ./test-head.sh $1
 ./test-tail.sh $1
-./test-cut.sh $1

@@ -107,7 +107,7 @@ csv_read_header(struct csv_ctx *ctx)
 		if (errno)
 			fprintf(ctx->err, "getline: %s\n", strerror(errno));
 		else if (feof(ctx->in))
-			fprintf(ctx->err, "EOF\n");
+			fprintf(ctx->err, "EOF while reading header\n");
 		else
 			fprintf(ctx->err, "unrecognized error from getline: %ld\n", line_len);
 		return -1;
