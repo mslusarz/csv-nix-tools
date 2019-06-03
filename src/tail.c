@@ -121,7 +121,7 @@ main(int argc, char *argv[])
 	bool show = false;
 
 	params.count = 0;
-	params.nlines = 0;
+	params.nlines = 10;
 
 	while ((opt = getopt_long(argc, argv, "n:sv", long_options,
 			&longindex)) != -1) {

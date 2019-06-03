@@ -90,6 +90,7 @@ main(int argc, char *argv[])
 	bool print_header = true;
 	bool show = false;
 
+	params.lines = 10;
 	params.printed = 0;
 
 	while ((opt = getopt_long(argc, argv, "n:sv", long_options,
