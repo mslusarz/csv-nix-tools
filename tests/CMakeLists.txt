@@ -48,6 +48,8 @@ function(test cmd input stdout stderr expected_res name)
 			ENVIRONMENT "LC_ALL=C;PATH=${CMAKE_CURRENT_BINARY_DIR}/..:$ENV{PATH};")
 endfunction()
 
+################################### CUT ########################################
+
 test("csv-cut" empty.txt empty.csv eof.txt 2
 	cut-empty_input)
 
@@ -124,3 +126,79 @@ test("csv-cut --fields name,id,something" 3-different-order-columns-3-rows.csv 3
 
 test("csv-cut --fields=name,id,something" 3-different-order-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
 	cut-3_fields_in_different_order_using_--fields_with_=)
+
+################################### HEAD #######################################
+
+test("csv-head" empty.csv empty.csv eof.txt 2
+	csv-head_empty_input)
+
+test("csv-head" one-column-one-row.csv one-column-one-row.csv empty.txt 0
+	csv-head_simple_pass_through)
+
+test("csv-head --lines=0" one-column-one-row.csv zero-lines.csv empty.txt 0
+	csv-head_--lines=0)
+
+test("csv-head -n 0" one-column-one-row.csv zero-lines.csv empty.txt 0
+	csv-head_-n_0)
+
+test("csv-head --lines 1" one-column-one-row.csv one-column-one-row.csv empty.txt 0
+	csv-head_--lines=1)
+
+test("csv-head -n 1" one-column-one-row.csv one-column-one-row.csv empty.txt 0
+	csv-head_-n_1)
+
+test("csv-head --lines 2" one-column-one-row.csv one-column-one-row.csv empty.txt 0
+	csv-head_--lines=2_but_there's_only_1_line_in_input)
+
+test("csv-head -n 2" one-column-one-row.csv one-column-one-row.csv empty.txt 0
+	"csv-head_-n_2_but_there's_only_1_line_in_input")
+
+test("csv-head --lines=2" 3-columns-3-rows.csv 3-columns-2-first-rows.csv empty.txt 0
+	"csv-head_--lines=2_and_there_are_3_lines_in_input")
+
+test("csv-head -n 2" 3-columns-3-rows.csv 3-columns-2-first-rows.csv empty.txt 0
+	"csv-head_-n_2_and_there_are_3_lines_in_input")
+
+test("csv-head --lines=3" 3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
+	"csv-head_--lines=3_and_there_are_3_lines_in_input")
+
+test("csv-head -n 3" 3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
+	"csv-head_-n_3_and_there_are_3_lines_in_input")
+
+################################## TAIL ########################################
+
+test("csv-tail" empty.csv empty.csv eof.txt 2
+	csv-tail_empty_input)
+
+test("csv-tail" one-column-one-row.csv one-column-one-row.csv empty.txt 0
+	csv-tail_simple_pass_through)
+
+test("csv-tail --lines=0" one-column-one-row.csv zero-lines.csv empty.txt 0
+	csv-tail_--lines=0)
+
+test("csv-tail -n 0" one-column-one-row.csv zero-lines.csv empty.txt 0
+	csv-tail_-n_0)
+
+test("csv-tail --lines=1" one-column-one-row.csv one-column-one-row.csv empty.txt 0
+	csv-tail_--lines=1)
+
+test("csv-tail -n 1" one-column-one-row.csv one-column-one-row.csv empty.txt 0
+	csv-tail_-n_1)
+
+test("csv-tail --lines 2" one-column-one-row.csv one-column-one-row.csv empty.txt 0
+	csv-tail_--lines=2_but_there's_only_1_line_in_input)
+
+test("csv-tail -n 2" one-column-one-row.csv one-column-one-row.csv empty.txt 0
+	csv-tail_-n_2_but_there's_only_1_line_in_input)
+
+test("csv-tail --lines=2" 3-columns-3-rows.csv 3-columns-2-last-rows.csv empty.txt 0
+	csv-tail_--lines=2_but_there_are_3_lines_in_input)
+
+test("csv-tail -n 2" 3-columns-3-rows.csv 3-columns-2-last-rows.csv empty.txt 0
+	csv-tail_-n_2_but_there_are_3_lines_in_input)
+
+test("csv-tail --lines=3" 3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
+	csv-tail_--lines=3_and_there_are_3_lines_in_input)
+
+test("csv-tail -n 3" 3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
+	csv-tail_-n_3_and_there_are_3_lines_in_input)

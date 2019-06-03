@@ -55,6 +55,8 @@ if (STDOUT)
 		file(READ ${SRC_DIR}/${STDOUT} DATA)
 		message(STATUS "Expected stdout:\n${DATA}\nEnd of expected stdout")
 
+		execute_process(COMMAND diff -u ${SRC_DIR}/${STDOUT} ${TMP_DIR}/${NAME}.stdout)
+
 		message(FATAL_ERROR "stdout differ")
 	endif()
 endif()
@@ -70,6 +72,8 @@ if (STDERR)
 
 		file(READ ${SRC_DIR}/${STDERR} DATA)
 		message(STATUS "Expected stderr:\n${DATA}\nEnd of expected stderr")
+
+		execute_process(COMMAND diff -u ${SRC_DIR}/${STDERR} ${TMP_DIR}/${NAME}.stderr)
 
 		message(FATAL_ERROR "stderr differ")
 	endif()
