@@ -40,6 +40,12 @@ execute_process(COMMAND sh -c "${CMD}"
 		ERROR_FILE ${TMP_DIR}/${NAME}.stderr
 		RESULT_VARIABLE res)
 if (NOT res EQUAL ${EXPECTED_RES})
+	file(READ ${TMP_DIR}/${NAME}.stdout DATA)
+	message(STATUS "Stdout:\n${DATA}\nEnd of stdout")
+
+	file(READ ${TMP_DIR}/${NAME}.stderr DATA)
+	message(STATUS "Stderr:\n${DATA}\nEnd of stderr")
+
 	message(FATAL_ERROR "Unexpected exit code: ${res} != ${EXPECTED_RES}")
 endif()
 

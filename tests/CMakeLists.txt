@@ -48,6 +48,26 @@ function(test cmd input stdout stderr expected_res name)
 			ENVIRONMENT "LC_ALL=C;PATH=${CMAKE_CURRENT_BINARY_DIR}/..:$ENV{PATH};")
 endfunction()
 
+############################### CSV PARSING ####################################
+
+test("csv-cat" empty.txt empty.csv eof.txt 2
+	cat-empty_input)
+
+test("csv-cat" one-column-one-row.csv one-column-one-row.csv empty.txt 0
+	cat-one-column-one-row)
+
+test("csv-cat" 3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
+	cat-3-columns-3-rows)
+
+test("csv-cat" commas.csv commas.csv empty.txt 0
+	cat-commas)
+
+test("csv-cat" newlines.csv newlines.csv empty.txt 0
+	cat-newlines)
+
+test("csv-cat" quotes.csv quotes.csv empty.txt 0
+	cat-quotes)
+
 ################################### CUT ########################################
 
 test("csv-cut" empty.txt empty.csv eof.txt 2
