@@ -68,6 +68,9 @@ char *xstrdup_nofail(const char *str);
 void *xmalloc(size_t count, size_t size);
 void *xmalloc_nofail(size_t count, size_t size);
 
+void *xcalloc(size_t count, size_t size);
+void *xcalloc_nofail(size_t count, size_t size);
+
 void *xrealloc(void *ptr, size_t count, size_t size);
 void *xrealloc_nofail(void *ptr, size_t count, size_t size);
 

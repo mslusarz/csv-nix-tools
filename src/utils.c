@@ -402,6 +402,26 @@ xmalloc_nofail(size_t count, size_t size)
 }
 
 void *
+xcalloc(size_t count, size_t size)
+{
+	void *ret = calloc(count, size);
+	if (!ret)
+		perror("calloc");
+
+	return ret;
+}
+
+void *
+xcalloc_nofail(size_t count, size_t size)
+{
+	void *ret = xcalloc(count, size);
+	if (!ret)
+		exit(2);
+
+	return ret;
+}
+
+void *
 xrealloc(void *ptr, size_t count, size_t size)
 {
 	void *ret = realloc(ptr, count * size);

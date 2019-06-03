@@ -155,8 +155,8 @@ main(int argc, char *argv[])
 	}
 
 	params.first_empty = 0;
-	params.lines = calloc(params.nlines, sizeof(params.lines[0]));
-	params.sizes = calloc(params.nlines, sizeof(params.sizes[0]));
+	params.lines = xcalloc_nofail(params.nlines, sizeof(params.lines[0]));
+	params.sizes = xcalloc_nofail(params.nlines, sizeof(params.sizes[0]));
 
 	if (show)
 		csv_show();

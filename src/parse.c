@@ -37,6 +37,7 @@
 #include <string.h>
 
 #include "parse.h"
+#include "utils.h"
 
 struct csv_ctx {
 	FILE *in;
@@ -52,7 +53,7 @@ struct csv_ctx {
 struct csv_ctx *
 csv_create_ctx(FILE *in, FILE *err)
 {
-	struct csv_ctx *s = calloc(1, sizeof(*s));
+	struct csv_ctx *s = xcalloc(1, sizeof(*s));
 	if (!s)
 		return NULL;
 	s->in = in;

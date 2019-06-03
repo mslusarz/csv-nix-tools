@@ -184,7 +184,7 @@ main(int argc, char *argv[])
 
 	free(cols);
 
-	params.sums = calloc(params.ncolumns, sizeof(params.sums[0]));
+	params.sums = xcalloc_nofail(params.ncolumns, sizeof(params.sums[0]));
 
 	if (print_header) {
 		for (size_t i = 0; i < params.ncolumns - 1; ++i)

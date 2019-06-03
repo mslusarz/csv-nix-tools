@@ -429,11 +429,7 @@ main(int argc, char *argv[])
 		load_group_members_into_db(db);
 
 	if (ninputs == 0) {
-		inputs = calloc(1, sizeof(inputs[0]));
-		if (!inputs) {
-			perror("malloc");
-			exit(2);
-		}
+		inputs = xcalloc_nofail(1, sizeof(inputs[0]));
 		ninputs++;
 
 		add_file(stdin, SIZE_MAX, db, &inputs[0]);

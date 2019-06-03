@@ -236,11 +236,7 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
-	params.max_lengths = calloc(nheaders, sizeof(params.max_lengths[0]));
-	if (!params.max_lengths) {
-		perror("calloc");
-		exit(2);
-	}
+	params.max_lengths = xcalloc_nofail(nheaders, sizeof(params.max_lengths[0]));
 
 	if (print_header) {
 		for (size_t i = 0; i < nheaders; ++i) {

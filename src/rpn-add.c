@@ -177,11 +177,7 @@ main(int argc, char *argv[])
 	size_t nheaders = csv_get_headers(s, &headers);
 
 	params.count = nexpressions;
-	params.expressions = calloc(nexpressions, sizeof(params.expressions[0]));
-	if (!params.expressions) {
-		perror("calloc");
-		exit(2);
-	}
+	params.expressions = xcalloc_nofail(nexpressions, sizeof(params.expressions[0]));
 
 	for (size_t i = 0; i < nexpressions; ++i) {
 		char *expstr = expressions[i];

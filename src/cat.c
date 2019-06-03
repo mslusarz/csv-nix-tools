@@ -183,7 +183,7 @@ main(int argc, char *argv[])
 		use_stdin_only = true;
 	}
 
-	struct input *inputs = calloc(ninputs, sizeof(inputs[0]));
+	struct input *inputs = xcalloc_nofail(ninputs, sizeof(inputs[0]));
 
 	if (use_stdin_only) {
 		add_input(stdin, &inputs[0], 1);
