@@ -128,8 +128,10 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show();
 
-	if (!columns && !rows)
-		return 0;
+	if (!columns && !rows) {
+		usage(stderr);
+		exit(2);
+	}
 
 	struct csv_ctx *s = csv_create_ctx(stdin, stderr);
 	if (!s)
