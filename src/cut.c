@@ -51,16 +51,16 @@ static const struct option long_options[] = {
 };
 
 static void
-usage(void)
+usage(FILE *out)
 {
-	printf("Usage: csv-cut [OPTION]...\n");
-	printf("Options:\n");
-	printf("  -f, --fields=name1[,name2...]\n");
-	printf("  -r, --reverse\n");
-	printf("  -s, --show\n");
-	printf("      --no-header\n");
-	printf("      --help\n");
-	printf("      --version\n");
+	fprintf(out, "Usage: csv-cut [OPTION]...\n");
+	fprintf(out, "Options:\n");
+	fprintf(out, "  -f, --fields=name1[,name2...]\n");
+	fprintf(out, "  -r, --reverse\n");
+	fprintf(out, "  -s, --show\n");
+	fprintf(out, "      --no-header\n");
+	fprintf(out, "      --help\n");
+	fprintf(out, "      --version\n");
 }
 
 struct cb_params {
@@ -121,13 +121,13 @@ main(int argc, char *argv[])
 					case 0:
 					case 1:
 					default:
-						usage();
+						usage(stderr);
 						return 2;
 				}
 				break;
 			case 'h':
 			default:
-				usage();
+				usage(stdout);
 				return 2;
 		}
 	}
@@ -144,7 +144,7 @@ main(int argc, char *argv[])
 	size_t nheaders = csv_get_headers(s, &headers);
 
 	if (cols == NULL) {
-		usage();
+		usage(stderr);
 		return 2;
 	}
 

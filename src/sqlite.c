@@ -51,16 +51,16 @@ static const struct option long_options[] = {
 };
 
 static void
-usage(void)
+usage(FILE *out)
 {
-	printf("Usage: csv-sqlite [OPTION] sql-query\n");
-	printf("Options:\n");
-	printf("  -i path\n");
-	printf("  -l table (users / groups / group_members)\n");
-	printf("  -s, --show\n");
-	printf("      --no-header\n");
-	printf("      --help\n");
-	printf("      --version\n");
+	fprintf(out, "Usage: csv-sqlite [OPTION] sql-query\n");
+	fprintf(out, "Options:\n");
+	fprintf(out, "  -i path\n");
+	fprintf(out, "  -l table (users / groups / group_members)\n");
+	fprintf(out, "  -s, --show\n");
+	fprintf(out, "      --no-header\n");
+	fprintf(out, "      --help\n");
+	fprintf(out, "      --version\n");
 }
 
 struct input {
@@ -389,19 +389,19 @@ main(int argc, char *argv[])
 					case 0:
 					case 1:
 					default:
-						usage();
+						usage(stderr);
 						return 2;
 				}
 				break;
 			case 'h':
 			default:
-				usage();
+				usage(stdout);
 				return 2;
 		}
 	}
 
 	if (optind != argc - 1) {
-		usage();
+		usage(stderr);
 		exit(2);
 	}
 

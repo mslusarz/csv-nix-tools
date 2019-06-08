@@ -49,18 +49,18 @@ static const struct option long_options[] = {
 };
 
 static void
-usage(void)
+usage(FILE *out)
 {
-	printf("Usage: csv-substring [OPTION]...\n");
-	printf("Options:\n");
-	printf("  -f name\n");
-	printf("  -n new-name\n");
-	printf("  -p start-pos\n");
-	printf("  -s, --show\n");
-	printf("  -l length\n");
-	printf("      --no-header\n");
-	printf("      --help\n");
-	printf("      --version\n");
+	fprintf(out, "Usage: csv-substring [OPTION]...\n");
+	fprintf(out, "Options:\n");
+	fprintf(out, "  -f name\n");
+	fprintf(out, "  -n new-name\n");
+	fprintf(out, "  -p start-pos\n");
+	fprintf(out, "  -s, --show\n");
+	fprintf(out, "  -l length\n");
+	fprintf(out, "      --no-header\n");
+	fprintf(out, "      --help\n");
+	fprintf(out, "      --version\n");
 }
 
 struct cb_params {
@@ -142,19 +142,19 @@ main(int argc, char *argv[])
 					case 0:
 					case 1:
 					default:
-						usage();
+						usage(stderr);
 						return 2;
 				}
 				break;
 			case 'h':
 			default:
-				usage();
+				usage(stdout);
 				return 2;
 		}
 	}
 
 	if (!input_col || !new_name) {
-		usage();
+		usage(stderr);
 		exit(2);
 	}
 

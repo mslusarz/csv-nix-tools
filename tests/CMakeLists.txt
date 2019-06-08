@@ -73,7 +73,7 @@ test("csv-cat" quotes.csv quotes.csv empty.txt 0
 test("csv-cut" empty.txt empty.csv eof.txt 2
 	cut-empty_input)
 
-test("csv-cut" one-column-one-row.csv cut-usage.txt empty.txt 2
+test("csv-cut" one-column-one-row.csv empty.txt cut-usage.txt 2
 	cut-simple_pass_through)
 
 test("csv-cut -f" one-column-one-row.csv cut-usage.txt cut-no-fields-error.txt 2

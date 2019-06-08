@@ -50,15 +50,15 @@ static const struct option long_options[] = {
 };
 
 static void
-usage(void)
+usage(FILE *out)
 {
-	printf("Usage: csv-exec-add [OPTION]... -- command\n");
-	printf("Options:\n");
-	printf("  -f, --field=name\n");
-	printf("  -n, --new-name=name\n");
-	printf("      --no-header\n");
-	printf("      --help\n");
-	printf("      --version\n");
+	fprintf(out, "Usage: csv-exec-add [OPTION]... -- command\n");
+	fprintf(out, "Options:\n");
+	fprintf(out, "  -f, --field=name\n");
+	fprintf(out, "  -n, --new-name=name\n");
+	fprintf(out, "      --no-header\n");
+	fprintf(out, "      --help\n");
+	fprintf(out, "      --version\n");
 }
 
 struct subst {
@@ -289,13 +289,13 @@ main(int argc, char *argv[])
 					case 0:
 					case 1:
 					default:
-						usage();
+						usage(stderr);
 						return 2;
 				}
 				break;
 			case 'h':
 			default:
-				usage();
+				usage(stdout);
 				return 2;
 		}
 	}
@@ -307,7 +307,7 @@ main(int argc, char *argv[])
 
 	size_t args = argc - optind;
 	if (args == 0) {
-		usage();
+		usage(stderr);
 		exit(2);
 	}
 

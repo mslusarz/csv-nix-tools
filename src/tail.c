@@ -50,15 +50,15 @@ static const struct option long_options[] = {
 };
 
 static void
-usage(void)
+usage(FILE *out)
 {
-	printf("Usage: csv-tail [OPTION]...\n");
-	printf("Options:\n");
-	printf("  -n, --lines=count\n");
-	printf("  -s, --show\n");
-	printf("      --no-header\n");
-	printf("      --help\n");
-	printf("      --version\n");
+	fprintf(out, "Usage: csv-tail [OPTION]...\n");
+	fprintf(out, "Options:\n");
+	fprintf(out, "  -n, --lines=count\n");
+	fprintf(out, "  -s, --show\n");
+	fprintf(out, "      --no-header\n");
+	fprintf(out, "      --help\n");
+	fprintf(out, "      --version\n");
 }
 
 struct cb_params {
@@ -143,13 +143,13 @@ main(int argc, char *argv[])
 					case 0:
 					case 1:
 					default:
-						usage();
+						usage(stderr);
 						return 2;
 				}
 				break;
 			case 'h':
 			default:
-				usage();
+				usage(stdout);
 				return 2;
 		}
 	}

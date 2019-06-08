@@ -67,15 +67,15 @@ static const struct option long_options[] = {
 };
 
 static void
-usage(void)
+usage(FILE *out)
 {
-	printf("Usage: csv-users [OPTION]...\n");
-	printf("Options:\n");
-	printf("  -f, --fields=name1[,name2...]\n");
-	printf("  -s, --show\n");
-	printf("      --no-header\n");
-	printf("      --help\n");
-	printf("      --version\n");
+	fprintf(out, "Usage: csv-users [OPTION]...\n");
+	fprintf(out, "Options:\n");
+	fprintf(out, "  -f, --fields=name1[,name2...]\n");
+	fprintf(out, "  -s, --show\n");
+	fprintf(out, "      --no-header\n");
+	fprintf(out, "      --help\n");
+	fprintf(out, "      --version\n");
 }
 
 static void
@@ -196,13 +196,13 @@ main(int argc, char *argv[])
 				switch (longindex) {
 					case 0:
 					default:
-						usage();
+						usage(stderr);
 						return 2;
 				}
 				break;
 			case 'h':
 			default:
-				usage();
+				usage(stdout);
 				return 2;
 		}
 	}

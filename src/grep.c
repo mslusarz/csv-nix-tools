@@ -52,18 +52,18 @@ static const struct option long_options[] = {
 };
 
 static void
-usage(void)
+usage(FILE *out)
 {
-	printf("Usage: csv-grep [OPTION]...\n");
-	printf("Options:\n");
-	printf("  -e column=value\n");
-	printf("  -E, --extended-regexp\n");
-	printf("  -i, --ignore-case\n");
-	printf("  -s, --show\n");
-	printf("  -v\n");
-	printf("      --no-header\n");
-	printf("      --help\n");
-	printf("      --version\n");
+	fprintf(out, "Usage: csv-grep [OPTION]...\n");
+	fprintf(out, "Options:\n");
+	fprintf(out, "  -e column=value\n");
+	fprintf(out, "  -E, --extended-regexp\n");
+	fprintf(out, "  -i, --ignore-case\n");
+	fprintf(out, "  -s, --show\n");
+	fprintf(out, "  -v\n");
+	fprintf(out, "      --no-header\n");
+	fprintf(out, "      --help\n");
+	fprintf(out, "      --version\n");
 }
 
 struct condition {
@@ -215,13 +215,13 @@ main(int argc, char *argv[])
 					case 0:
 					case 1:
 					default:
-						usage();
+						usage(stderr);
 						return 2;
 				}
 				break;
 			case 'h':
 			default:
-				usage();
+				usage(stdout);
 				return 2;
 		}
 	}

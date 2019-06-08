@@ -51,19 +51,19 @@ static const struct option long_options[] = {
 };
 
 static void
-usage(void)
+usage(FILE *out)
 {
-	printf("Usage: csv-split [OPTION]...\n");
-	printf("Options:\n");
-	printf("  -e separator\n");
-	printf("  -f name\n");
-	printf("  -n name1,name2\n");
-	printf("  -r, --reverse\n");
-	printf("  -p  --print-separator=yes/no/auto\n");
-	printf("  -s, --show\n");
-	printf("      --no-header\n");
-	printf("      --help\n");
-	printf("      --version\n");
+	fprintf(out, "Usage: csv-split [OPTION]...\n");
+	fprintf(out, "Options:\n");
+	fprintf(out, "  -e separator\n");
+	fprintf(out, "  -f name\n");
+	fprintf(out, "  -n name1,name2\n");
+	fprintf(out, "  -r, --reverse\n");
+	fprintf(out, "  -p  --print-separator=yes/no/auto\n");
+	fprintf(out, "  -s, --show\n");
+	fprintf(out, "      --no-header\n");
+	fprintf(out, "      --help\n");
+	fprintf(out, "      --version\n");
 }
 
 struct cb_params {
@@ -163,13 +163,13 @@ main(int argc, char *argv[])
 				char *comma = index(optarg, ',');
 				if (!comma) {
 					fprintf(stderr, "Invalid format for -n option\n");
-					usage();
+					usage(stderr);
 					exit(2);
 				}
 				name1 = strndup(optarg, comma - optarg);
 				if (index(comma + 1, ',')) {
 					fprintf(stderr, "Invalid format for -n option\n");
-					usage();
+					usage(stderr);
 					exit(2);
 				}
 				name2 = xstrdup_nofail(comma + 1);
@@ -184,7 +184,7 @@ main(int argc, char *argv[])
 					print_separators = -1;
 				else {
 					fprintf(stderr, "Invalid value for --print-separators option\n");
-					usage();
+					usage(stderr);
 					exit(2);
 				}
 				break;
@@ -205,19 +205,19 @@ main(int argc, char *argv[])
 					case 0:
 					case 1:
 					default:
-						usage();
+						usage(stderr);
 						return 2;
 				}
 				break;
 			case 'h':
 			default:
-				usage();
+				usage(stdout);
 				return 2;
 		}
 	}
 
 	if (!col || !name1 || !name2 || !params.separators) {
-		usage();
+		usage(stderr);
 		exit(2);
 	}
 

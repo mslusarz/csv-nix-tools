@@ -49,15 +49,15 @@ static const struct option long_options[] = {
 };
 
 static void
-usage(void)
+usage(FILE *out)
 {
-	printf("Usage: csv-rpn-add [OPTION]...\n");
-	printf("Options:\n");
-	printf("  -e name=\"RPN expression\"\n");
-	printf("  -s, --show\n");
-	printf("      --no-header\n");
-	printf("      --help\n");
-	printf("      --version\n");
+	fprintf(out, "Usage: csv-rpn-add [OPTION]...\n");
+	fprintf(out, "Options:\n");
+	fprintf(out, "  -e name=\"RPN expression\"\n");
+	fprintf(out, "  -s, --show\n");
+	fprintf(out, "      --no-header\n");
+	fprintf(out, "      --help\n");
+	fprintf(out, "      --version\n");
 }
 
 struct cb_params {
@@ -149,19 +149,19 @@ main(int argc, char *argv[])
 					case 0:
 					case 1:
 					default:
-						usage();
+						usage(stderr);
 						return 2;
 				}
 				break;
 			case 'h':
 			default:
-				usage();
+				usage(stdout);
 				return 2;
 		}
 	}
 
 	if (nexpressions == 0) {
-		usage();
+		usage(stderr);
 		exit(2);
 	}
 
@@ -184,7 +184,7 @@ main(int argc, char *argv[])
 		char *cur = index(expstr, '=');
 		if (!cur) {
 			fprintf(stderr, "invalid expression\n");
-			usage();
+			usage(stderr);
 			exit(2);
 		}
 		*cur = 0;

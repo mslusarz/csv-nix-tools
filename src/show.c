@@ -53,16 +53,16 @@ static const struct option long_options[] = {
 };
 
 static void
-usage(void)
+usage(FILE *out)
 {
-	printf("Usage: csv-show [OPTION]...\n");
-	printf("Options:\n");
-	printf("  -p, --pager yes/no/auto\n");
-	printf("  -s, --spacing NUM\n");
-	printf("      --with-types\n");
-	printf("      --no-header\n");
-	printf("      --help\n");
-	printf("      --version\n");
+	fprintf(out, "Usage: csv-show [OPTION]...\n");
+	fprintf(out, "Options:\n");
+	fprintf(out, "  -p, --pager yes/no/auto\n");
+	fprintf(out, "  -s, --spacing NUM\n");
+	fprintf(out, "      --with-types\n");
+	fprintf(out, "      --no-header\n");
+	fprintf(out, "      --help\n");
+	fprintf(out, "      --version\n");
 }
 
 struct line {
@@ -193,7 +193,7 @@ main(int argc, char *argv[])
 					pager = -1;
 				else {
 					fprintf(stderr, "Invalid value for --pager option\n");
-					usage();
+					usage(stderr);
 					exit(2);
 				}
 				break;
@@ -215,13 +215,13 @@ main(int argc, char *argv[])
 					case 0:
 					case 1:
 					default:
-						usage();
+						usage(stderr);
 						return 2;
 				}
 				break;
 			case 'h':
 			default:
-				usage();
+				usage(stdout);
 				return 2;
 		}
 	}
