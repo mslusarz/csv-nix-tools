@@ -170,12 +170,6 @@ rpn_parse(struct rpn_expression *exp, char *str,
 				tkn.operator = RPN_EQ;
 			else if (strcmp(token, "!=") == 0)
 				tkn.operator = RPN_NE;
-			else if (strcmp(token, "&&") == 0)
-				tkn.operator = RPN_LOGIC_AND;
-			else if (strcmp(token, "||") == 0)
-				tkn.operator = RPN_LOGIC_OR;
-			else if (strcmp(token, "!") == 0)
-				tkn.operator = RPN_LOGIC_NOT;
 			else if (strcmp(token, "?") == 0)
 				tkn.operator = RPN_IF;
 			else if (strcmp(token, "substr") == 0 ||
