@@ -58,6 +58,54 @@ usage(FILE *out)
 	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
+	fprintf(out, "\n");
+	fprintf(out, "                    description                     examples\n");
+	fprintf(out, "-----------------------------------------------------------------------\n");
+	fprintf(out, "Variables:\n");
+	fprintf(out, "  %%[^ ]*            value of column                 %%name\n");
+	fprintf(out, "\n");
+	fprintf(out, "Constants:\n");
+	fprintf(out, "  [-][1-9][0-9]*    decimal integer                 1, 1294, -89\n");
+	fprintf(out, "  [-]0x[0-9a-fA-F]+ hexadecimal integer             0x1, 0x1A34, -0x8A\n");
+	fprintf(out, "  [-]0[0-9]+        octal integer                   01, 01234, -067\n");
+// not supported yet
+//	fprintf(out, "  [-]0b[01]+        binary integer                  0b1, 0b1101, -0b10\n");
+	fprintf(out, "  '[^']*'           string                          'text'\n");
+//	fprintf(out, "  \"[^\"]*\"           string                          \"text\"\n");
+	fprintf(out, "\n");
+	fprintf(out, "Operators/functions:\n");
+	fprintf(out, "  +                 addition                        %%num 5 +\n");
+	fprintf(out, "  -                 subtraction                     %%num 5 -\n");
+	fprintf(out, "  *                 multiplication                  %%num 5 *\n");
+	fprintf(out, "  /                 division                        %%num 5 /\n");
+	fprintf(out, "  %%                 remainder                       %%num 5 %%\n");
+	fprintf(out, "  |                 bitwise or                      %%num 5 |\n");
+	fprintf(out, "  &                 bitwise and                     %%num 5 &\n");
+	fprintf(out, "  ~                 bitwise negation                %%num ~\n");
+	fprintf(out, "  ^                 bitwise xor                     %%num 5 ^\n");
+	fprintf(out, "  <<                bitwise left shift              %%num 5 <<\n");
+	fprintf(out, "  >>                bitwise right shift             %%num 5 >>\n");
+	fprintf(out, "  lt, <             less                            %%num 5 lt, %%num 5 <\n");
+	fprintf(out, "  le, <=            less or equal                   %%num 5 le, %%num 5 <=\n");
+	fprintf(out, "  gt, >             greater                         %%num 5 gt, %%num 5 >\n");
+	fprintf(out, "  ge, >=            greater or equal                %%num 5 ge, %%num 5 >=\n");
+	fprintf(out, "  eq, ==            equal                           %%num 5 eq, %%num 5 ==\n");
+	fprintf(out, "  ne, !=            not equal                       %%num 5 ne, %%num 5 !=\n");
+	fprintf(out, "  and               logical and                     %%bool1 %%bool2 and\n");
+	fprintf(out, "  or                logical or                      %%bool1 %%bool2 or\n");
+	fprintf(out, "  xor               logical exclusive or            %%bool1 %%bool2 xor\n");
+	fprintf(out, "  not               logical negation                %%bool1 not\n");
+	fprintf(out, "  if                if first then second else third %%bool %%val1 %%val2 if\n");
+	fprintf(out, "  substr            substring                       %%str 1 3 substr\n");
+	fprintf(out, "  strlen            string length                   %%str strlen\n");
+	fprintf(out, "  concat            concatenation                   %%str1 %%str2 concat\n");
+	fprintf(out, "  like              match pattern                   %%str 'patt%%' like\n");
+	fprintf(out, "  tostring          convert to decimal notation     %%num tostring\n");
+	fprintf(out, "  tostring_base2    convert to binary notation      %%num tostring_base2\n");
+	fprintf(out, "  tostring_base8    convert to octal notation       %%num tostring_base8\n");
+	fprintf(out, "  tostring_base10   convert to decimal notation     %%num tostring_base10\n");
+	fprintf(out, "  tostring_base16   convert to hexadecimal notation %%num tostring_base16\n");
+	fprintf(out, "  toint             convert to integer              %%str toint\n");
 }
 
 struct cb_params {
