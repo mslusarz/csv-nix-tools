@@ -68,6 +68,11 @@ configure_file(
 	"${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
 	IMMEDIATE @ONLY)
 
+option(COVERAGE "Code coverage tracking" OFF)
+if(COVERAGE)
+       set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -coverage")
+endif()
+
 add_library(csvshared STATIC src/parse.c src/utils.c)
 add_library(csvrpn STATIC src/rpn_eval.c src/rpn_parse.c)
 
