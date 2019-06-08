@@ -67,7 +67,7 @@ size:int,type:int,mode:int,owner_id:int,group_id:int,nlink:int,mtime_sec:int,mti
 
 all Makefiles in current directory and below
 ```
-$ csv-ls -R . | csv-grep -e name=Makefile | csv-cut -f size,parent,name
+$ csv-ls -R . | csv-grep -f name -x -F Makefile | csv-cut -f size,parent,name
 size:int,parent:string,name:string
 18746,./build,Makefile
 ```
@@ -97,18 +97,18 @@ size:int,name:string
 
 files owned by user=1000
 ```
-$ csv-ls -R / 2>/dev/null | csv-grep -e owner_id=1000 | csv-cut -f parent,name
+$ csv-ls -R / 2>/dev/null | csv-grep -f owner_id -x -F 1000 | csv-cut -f parent,name
 ...
 ```
 or by name
 ```
-$ csv-ls -lR / 2>/dev/null | csv-grep -e owner_name=marcin | csv-cut -f parent,name
+$ csv-ls -lR / 2>/dev/null | csv-grep -f owner_name -x -F marcin | csv-cut -f parent,name
 ...
 ```
 
 files anyone can read
 ```
-$ csv-ls -lR / 2>/dev/null | csv-grep -e other_read=1 | csv-cut -f parent,name
+$ csv-ls -lR / 2>/dev/null | csv-grep -f other_read -x -F 1 | csv-cut -f parent,name
 ...
 ```
 
@@ -143,7 +143,7 @@ size:int,name:string,base:string,ext:string
 sum of sizes of all files with "png" extension
 ```
 $ csv-ls . | csv-split -f name -e . -n base,ext -r | \
-csv-grep -e ext=png | csv-sum -f size --no-header
+csv-grep -f ext -x -F png | csv-sum -f size --no-header
 94877
 ```
 
@@ -164,7 +164,7 @@ csv-show -s 1 -p no --no-header
 
 list of files whose 2nd character is 'o'
 ```
-$ csv-ls | csv-grep -e 'name=^.o' | csv-cut -f name --no-header
+$ csv-ls | csv-grep -f name -e '^.o' | csv-cut -f name --no-header
 concat.c
 sort.c
 ```
@@ -173,7 +173,7 @@ or
 
 ```
 $ csv-ls | csv-substring -f name -n 2nd-char -p 2 -l 1 | \
-csv-grep -e 2nd-char=o | csv-cut -f name --no-header
+csv-grep -f 2nd-char -F o | csv-cut -f name --no-header
 concat.c
 sort.c
 ```
@@ -200,7 +200,7 @@ list of files whose size is between 2000 and 3000 bytes
 ```
 $ csv-ls -f size,name | \
 csv-rpn-add -e "range2k-3k=%size 2000 >= %size 3000 < and" | \
-csv-grep -e range2k-3k=1 | csv-cut -f size,name
+csv-grep -f range2k-3k -F 1 | csv-cut -f size,name
 size:int,name:string
 2204,parse.h
 ```
@@ -253,7 +253,7 @@ mode:string,strmode:string,name:string
 
 remove all temporary files (ending with "~"), even if path contains spaces or line breaks
 ```
-$ csv-ls -R -f full_path . | csv-grep -e 'full_path=~$' | csv-exec -- rm -f %full_path
+$ csv-ls -R -f full_path . | csv-grep -f full_path -e '~$' | csv-exec -- rm -f %full_path
 ```
 
 if file has .c extension, then replace it with .o, otherwise leave it as is
@@ -290,7 +290,7 @@ $ csv-ls -R -f full_path . | csv-rpn-add -e "new=%full_path -1 1 substr 'c' == %
 - importing from other tools (lspci -mm?, strace?, lsof -F, ss, dpkg, rpm)?
 - tool for encoding strings in safe for transport way (base64? just hex?)
 - loops and temporary variables in rpn?
-- built-in pipes? (csv "ls | grep -e size=0 | cut -f name")
+- built-in pipes? (csv "ls | grep -f size -F 0 | cut -f name")
 - what about unicode?
 - one multicommand binary? (csv ls, csv grep, ...)
 - csv-show: column separators? header separator? number formatter? (see what csvlook from csvkit does)

@@ -30,6 +30,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/*
+ * for:
+ * - strcasestr
+ * - asprintf
+ */
+#define _GNU_SOURCE
+
 #include <getopt.h>
 #include <regex.h>
 #include <stdbool.h>
@@ -42,11 +49,12 @@
 #include "utils.h"
 
 static const struct option long_options[] = {
-	{"extended-regexp",	no_argument,	NULL, 'E'},
 	{"no-header",		no_argument,	NULL, 'H'},
 	{"ignore-case",		no_argument,	NULL, 'i'},
 	{"show",		no_argument,	NULL, 's'},
+	{"invert",		no_argument,	NULL, 'v'},
 	{"version",		no_argument,	NULL, 'V'},
+	{"whole",		no_argument,	NULL, 'x'},
 	{"help",		no_argument,	NULL, 'h'},
 	{NULL,			0,		NULL, 0},
 };
@@ -56,11 +64,14 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-grep [OPTION]...\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -e column=value\n");
-	fprintf(out, "  -E, --extended-regexp\n");
+	fprintf(out, "  -f column\n");
+	fprintf(out, "  -e regexp\n");
+	fprintf(out, "  -E ext_regexp\n");
+	fprintf(out, "  -F string\n");
 	fprintf(out, "  -i, --ignore-case\n");
 	fprintf(out, "  -s, --show\n");
-	fprintf(out, "  -v\n");
+	fprintf(out, "  -v, --invert\n");
+	fprintf(out, "  -x, --whole\n");
 	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
@@ -69,6 +80,9 @@ usage(FILE *out)
 struct condition {
 	char *column;
 	char *value;
+	bool ignore_case;
+	bool whole;
+	enum {csv_match_regexp, csv_match_eregexp, csv_match_string} type;
 	size_t col_num;
 	regex_t preg;
 };
@@ -78,6 +92,30 @@ struct cb_params {
 	size_t nconditions;
 	bool invert;
 };
+
+static bool
+matches(const char *str, const struct condition *c)
+{
+	if (c->type != csv_match_string)
+		return regexec(&c->preg, str, 0, NULL, 0) == 0;
+
+	bool ret;
+	if (c->whole) {
+		if (c->ignore_case) {
+			ret = strcasecmp(str, c->value) == 0;
+		} else {
+			ret = strcmp(str, c->value) == 0;
+		}
+	} else {
+		if (c->ignore_case) {
+			ret = strcasestr(str, c->value) != NULL;
+		} else {
+			ret = strstr(str, c->value) != NULL;
+		}
+	}
+
+	return ret;
+}
 
 static int
 next_row(const char *buf, const size_t *col_offs,
@@ -90,18 +128,17 @@ next_row(const char *buf, const size_t *col_offs,
 	bool invert = params->invert;
 
 	if (invert) {
-		// !AA && !BB && !CC -> AA || BB || CCC
+		// !AA && !BB && !CC -> AA || BB || CC
 		for (size_t i = 0; i < nconditions; ++i) {
-			const char *val = &buf[col_offs[conditions[i].col_num]];
+			const struct condition *c = &conditions[i];
+			const char *val = &buf[col_offs[c->col_num]];
 			const char *unquoted = val;
-			bool omit = false;
+			bool omit;
 
 			if (val[0] == '"')
 				unquoted = csv_unquot(val);
 
-			if (regexec(&conditions[i].preg, unquoted, 0, NULL, 0)
-					== 0)
-				omit = true;
+			omit = matches(unquoted, c);
 
 			if (val[0] == '"')
 				free((char *)unquoted);
@@ -113,14 +150,14 @@ next_row(const char *buf, const size_t *col_offs,
 		// AA || BB || CC -> !AA && !BB && !CC
 		size_t numfalse = 0;
 		for (size_t i = 0; i < nconditions; ++i) {
-			const char *val = &buf[col_offs[conditions[i].col_num]];
+			const struct condition *c = &conditions[i];
+			const char *val = &buf[col_offs[c->col_num]];
 			const char *unquoted = val;
 
 			if (val[0] == '"')
 				unquoted = csv_unquot(val);
 
-			if (regexec(&conditions[i].preg, unquoted, 0, NULL, 0)
-					== REG_NOMATCH)
+			if (!matches(unquoted, c))
 				numfalse++;
 
 			if (val[0] == '"')
@@ -137,6 +174,23 @@ next_row(const char *buf, const size_t *col_offs,
 	return 0;
 }
 
+static void
+add_condition(struct condition **pconditions, size_t *pnconditions,
+		const struct condition *cond)
+{
+	struct condition *conditions = *pconditions;
+	size_t nconditions = *pnconditions;
+
+	nconditions++;
+	conditions = xrealloc_nofail(conditions, nconditions,
+			sizeof(conditions[0]));
+
+	memcpy(&conditions[nconditions - 1], cond, sizeof(*cond));
+
+	*pnconditions = nconditions;
+	*pconditions = conditions;
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -147,54 +201,74 @@ main(int argc, char *argv[])
 	size_t nconditions = 0;
 	bool print_header = true;
 	bool show = false;
-	bool extended_regexp = false;
 	bool ignore_case = false;
+	char *current_column = NULL;
+	bool whole = false;
 
-	while ((opt = getopt_long(argc, argv, "e:Eisv", long_options,
+	while ((opt = getopt_long(argc, argv, "e:E:f:F:isvx", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'e': {
-				const char *eq = strchr(optarg, '=');
-				if (!eq) {
-					fprintf(stderr, "incorrect -e syntax\n");
-					exit(2);
-				}
 				struct condition cond;
-				cond.column = strndup(optarg, (uintptr_t)eq -
-						(uintptr_t)optarg);
-				if (!cond.column) {
-					perror("strndup");
+
+				if (!current_column) {
+					fprintf(stderr, "Missing column name!\n");
+					usage(stderr);
 					exit(2);
 				}
 
-				const char *start;
-				size_t len;
-				if (eq[1] == '\"') {
-					start = eq + 2;
-					len = strlen(start) - 1;
-				} else {
-					start = eq + 1;
-					len = strlen(start);
-				}
-				cond.value = strndup(start, len);
-				if (!cond.value) {
-					perror("strndup");
-					exit(2);
-				}
+				cond.type = csv_match_regexp;
+				cond.ignore_case = ignore_case;
+				cond.whole = whole;
+				cond.column = xstrdup_nofail(current_column);
+				cond.value = xstrdup_nofail(optarg);
 
-				nconditions++;
-				conditions = xrealloc_nofail(conditions,
-						nconditions,
-						sizeof(conditions[0]));
-
-				memcpy(&conditions[nconditions - 1], &cond,
-						sizeof(cond));
+				add_condition(&conditions, &nconditions, &cond);
 
 				break;
 			}
-			case 'E':
-				extended_regexp = true;
+			case 'E': {
+				struct condition cond;
+
+				if (!current_column) {
+					fprintf(stderr, "Missing column name!\n");
+					usage(stderr);
+					exit(2);
+				}
+
+				cond.type = csv_match_eregexp;
+				cond.ignore_case = ignore_case;
+				cond.whole = whole;
+				cond.column = xstrdup_nofail(current_column);
+				cond.value = xstrdup_nofail(optarg);
+
+				add_condition(&conditions, &nconditions, &cond);
+
 				break;
+			}
+			case 'f':
+				free(current_column);
+				current_column = xstrdup_nofail(optarg);
+				break;
+			case 'F': {
+				struct condition cond;
+
+				if (!current_column) {
+					fprintf(stderr, "Missing column name!\n");
+					usage(stderr);
+					exit(2);
+				}
+
+				cond.type = csv_match_string;
+				cond.ignore_case = ignore_case;
+				cond.whole = whole;
+				cond.column = xstrdup_nofail(current_column);
+				cond.value = xstrdup_nofail(optarg);
+
+				add_condition(&conditions, &nconditions, &cond);
+
+				break;
+			}
 			case 'H':
 				print_header = false;
 				break;
@@ -210,6 +284,9 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
+			case 'x':
+				whole = true;
+				break;
 			case 0:
 				switch (longindex) {
 					case 0:
@@ -226,6 +303,13 @@ main(int argc, char *argv[])
 		}
 	}
 
+	if (nconditions == 0) {
+		usage(stderr);
+		exit(2);
+	}
+
+	free(current_column);
+
 	if (show)
 		csv_show();
 
@@ -238,29 +322,41 @@ main(int argc, char *argv[])
 	size_t nheaders = csv_get_headers(s, &headers);
 
 	for (size_t i = 0; i < nconditions; ++i) {
-		conditions[i].col_num =
-			csv_find(headers, nheaders, conditions[i].column);
-
-		if (conditions[i].col_num == CSV_NOT_FOUND) {
+		struct condition *c = &conditions[i];
+		c->col_num = csv_find(headers, nheaders, c->column);
+		if (c->col_num == CSV_NOT_FOUND) {
 			fprintf(stderr, "column '%s' not found in input\n",
-					conditions[i].column);
+					c->column);
 			exit(2);
 		}
+		if (c->type == csv_match_string)
+			continue;
 
-		int ret = regcomp(&conditions[i].preg, conditions[i].value,
+		char *pattern = c->value;
+		if (c->whole) {
+			if (asprintf(&pattern, "^%s$", c->value) == -1) {
+				perror("asprintf");
+				exit(2);
+			}
+		}
+
+		int ret = regcomp(&c->preg, pattern,
 				REG_NOSUB |
-				(ignore_case ? REG_ICASE : 0) |
-				(extended_regexp ? REG_EXTENDED : 0));
+				(c->ignore_case ? REG_ICASE : 0) |
+				(c->type == csv_match_eregexp ? REG_EXTENDED : 0));
 		if (ret) {
-			size_t len = regerror(ret, &conditions[i].preg, NULL, 0);
+			size_t len = regerror(ret, &c->preg, NULL, 0);
 			char *errbuf = xmalloc_nofail(len, 1);
-			regerror(ret, &conditions[i].preg, errbuf, len);
+			regerror(ret, &c->preg, errbuf, len);
 			fprintf(stderr,
 				"compilation of expression '%s' failed: %s\n",
-				conditions[i].value, errbuf);
+				pattern, errbuf);
 			free(errbuf);
 			exit(2);
 		}
+
+		if (c->whole)
+			free(pattern);
 	}
 
 	if (print_header)
@@ -275,9 +371,12 @@ main(int argc, char *argv[])
 		exit(2);
 
 	for (size_t i = 0; i < nconditions; ++i) {
-		free(conditions[i].column);
-		free(conditions[i].value);
-		regfree(&conditions[i].preg);
+		struct condition *c = &conditions[i];
+
+		free(c->column);
+		free(c->value);
+		if (c->type != csv_match_string)
+			regfree(&conditions[i].preg);
 	}
 
 	free(conditions);
