@@ -1,4 +1,4 @@
-name                   id   something   
-lorem ipsum            1    1           
-not all that is gold   2    0           
-something else         3    1           
+name                   id   something
+lorem ipsum            1    1
+not all that is gold   2    0
+something else         3    1

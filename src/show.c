@@ -157,8 +157,9 @@ print_line(struct line *line, size_t *max_lengths, size_t columns,
 		if (buf[0] == '"')
 			free(unquoted);
 
-		while (len++ < max_lengths[i] + spacing)
-			fputc(' ', stdout);
+		if (i < columns - 1)
+			while (len++ < max_lengths[i] + spacing)
+				fputc(' ', stdout);
 	}
 	fputc('\n', stdout);
 
@@ -310,8 +311,9 @@ main(int argc, char *argv[])
 				written = printf("%s", headers[i].name);
 			}
 
-			while (written++ < params.max_lengths[i] + spacing)
-				fputc(' ', stdout);
+			if (i < nheaders - 1)
+				while (written++ < params.max_lengths[i] + spacing)
+					fputc(' ', stdout);
 		}
 		fputc('\n', stdout);
 	}
