@@ -142,10 +142,11 @@ build_queries(const struct col_header *headers, size_t nheaders,
 	size_t insert_len = strlen("insert into () values();") + strlen(table_name);
 
 	for (size_t i = 0; i < nheaders; ++i) {
-		create_len += strlen(headers[i].name) + strlen(" ") +
-			strlen(type(headers[i].type)) + strlen(", ");
+		create_len += strlen(headers[i].name) + strlen(" '") +
+			strlen(type(headers[i].type)) + strlen("', ");
 
-		insert_len += strlen(headers[i].name) + strlen(", ") + strlen("?, ");
+		insert_len += strlen("'") + strlen(headers[i].name) +
+				strlen("', ") + strlen("?, ");
 	}
 
 	create_len -= 2; /* last ", " */
@@ -164,18 +165,18 @@ build_queries(const struct col_header *headers, size_t nheaders,
 	int cr_written = sprintf(create, "create table %s(", table_name);
 	int ins_written = sprintf(insert, "insert into %s(", table_name);
 	for (size_t i = 0; i < nheaders - 1; ++i) {
-		cr_written += sprintf(&create[cr_written], "%s %s, ",
+		cr_written += sprintf(&create[cr_written], "'%s' %s, ",
 				headers[i].name, type(headers[i].type));
 
-		ins_written += sprintf(&insert[ins_written], "%s, ",
+		ins_written += sprintf(&insert[ins_written], "'%s', ",
 				headers[i].name);
 	}
 
-	cr_written += sprintf(&create[cr_written], "%s %s);",
+	cr_written += sprintf(&create[cr_written], "'%s' %s);",
 			headers[nheaders - 1].name,
 			type(headers[nheaders - 1].type));
 
-	ins_written += sprintf(&insert[ins_written], "%s) values(",
+	ins_written += sprintf(&insert[ins_written], "'%s') values(",
 			headers[nheaders - 1].name);
 
 	for (size_t i = 0; i < nheaders - 1; ++i) {
@@ -264,7 +265,7 @@ add_file(FILE *f, size_t num, sqlite3 *db, struct input *input)
 		exit(2);
 
 	if (sqlite3_exec(db, create, NULL, NULL, NULL) != SQLITE_OK) {
-		fprintf(stderr, "sqlite3_exec(create): %s\n",
+		fprintf(stderr, "sqlite3_exec(create='%s'): %s\n", create,
 				sqlite3_errmsg(db));
 		exit(2);
 	}
@@ -273,8 +274,8 @@ add_file(FILE *f, size_t num, sqlite3 *db, struct input *input)
 	struct cb_params params;
 	if (sqlite3_prepare_v2(db, insert, -1, &params.insert, NULL) !=
 			SQLITE_OK) {
-		fprintf(stderr, "sqlite3_prepare_v2(insert): %s\n",
-				sqlite3_errmsg(db));
+		fprintf(stderr, "sqlite3_prepare_v2(insert='%s'): %s\n",
+				insert, sqlite3_errmsg(db));
 		exit(2);
 	}
 
