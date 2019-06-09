@@ -82,6 +82,7 @@ literal2 \"[^"]*\"
 "<>"		{ dbg_printf("LEX: matching NE\n"); return NE; }
 "<="		{ dbg_printf("LEX: matching LE\n"); return LE; }
 ">="		{ dbg_printf("LEX: matching GE\n"); return GE; }
+"=="		{ dbg_printf("LEX: matching EQ\n"); return EQ; }
 "="		{ dbg_printf("LEX: matching EQ\n"); return EQ; }
 "<"		{ dbg_printf("LEX: matching LT\n"); return LT; }
 ">"		{ dbg_printf("LEX: matching GT\n"); return GT; }
