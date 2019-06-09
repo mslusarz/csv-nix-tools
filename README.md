@@ -266,31 +266,36 @@ $ csv-ls -R -f full_path . | csv-rpn-add -f new -e "%full_path -1 1 substr 'c' =
 ```
 
 # TODO (high level)
-- better name!
+- better name! (SDP-Structured Data Processor?, System Data Processor, WIZ - System Data Processing Wizard, TAB - Table Data Processor, table-data-tools)
 - more processing tools (tr, sed, uniq, rev, drop, paste?, etc)
 - more data collection tools (ps, find, df, netstat, ifconfig/ip?, lsattr, lsusb, readlink, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, w/who?, etc)
 - more rpn operators/functions (split, rev, base64enc/dec, timestamp conversion, now, regex, sed, tr)
 - exporting tools (to-xml, to-json, to-sql)
 - importing tools (from-xml, from-json)
 - export as much as possible as a library(ies)
-- tests
-- CI
+- moar tests
+- CI (circleci?)
+- code coverage (coveralls?)
 - documentation
 - i18n
 
 # TODO (low level)
 - sql/sqlite: load /proc/mounts, /sys/devices, ps, netstat or any other tool output (ls)
-- rpn: binary number parsing
+- rpn/sql: binary number parsing
 - tool for header ops (add/remove/change/detect types)
 - switch to deal with new lines in shell-compatible way (see what coreutils' ls does)
+- make naming of rpn/sql functions consistent (if->case?, strlen->length, toint->cast)
+- write down data format spec
+- strict column names verification
 
 ## Random ideas
-- export as bash/python/etc script?
+- export data as bash/python/etc script?
 - float support?
 - importing from other tools (lspci -mm?, strace?, lsof -F, ss, dpkg, rpm)?
 - tool for encoding strings in safe for transport way (base64? just hex?)
 - loops and temporary variables in rpn?
 - built-in pipes? (csv "ls | grep -f size -F 0 | cut -f name")
+- shell?
 - what about unicode?
 - one multicommand binary? (csv ls, csv grep, ...)
 - csv-show: column separators? header separator? number formatter? (see what csvlook from csvkit does)
