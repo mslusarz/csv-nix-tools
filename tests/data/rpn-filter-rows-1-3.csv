@@ -1,0 +1,3 @@
+name:string,id:int,something:bool
+lorem ipsum,1,true
+something else,3,true

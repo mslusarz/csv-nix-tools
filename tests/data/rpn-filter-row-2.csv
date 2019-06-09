@@ -1,0 +1,2 @@
+name:string,id:int,something:bool
+not all that is gold,2,false

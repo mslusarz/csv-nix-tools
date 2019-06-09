@@ -1,0 +1,5 @@
+column1:string,column2:string,column3:string,before:string,after:string
+"lorem,ipsum",dolor sit amet,consectetur adipiscing elit,consectetur adipiscing elit,
+sed do eiusmod,"tempor,incididunt ut",labore et dolore,labore et dolore,
+ magna aliqua., Ut enim ad ,"minim veniam, quis",minim veniam, quis
+"nostrud,exercitation","ullamco,laboris","nisi,ut,aliquip","nisi,ut",aliquip

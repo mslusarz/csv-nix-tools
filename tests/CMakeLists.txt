@@ -89,6 +89,9 @@ test("csv-cat ${DATA_DIR}/one-column-one-row.csv" empty.csv one-column-one-row.c
 test("csv-cat ${DATA_DIR}/one-column-one-row.csv ${DATA_DIR}/one-column-one-row.csv" empty.csv cat-2-files.csv empty.txt 0
 	cat_two_files)
 
+test("csv-cat ${DATA_DIR}/3-different-order-columns-3-rows.csv ${DATA_DIR}/3-columns-2-last-rows.csv" empty.csv cat-2-different-files.csv empty.txt 0
+	cat_two_different_files)
+
 test("csv-cat ${DATA_DIR}/one-column-one-row.csv ${DATA_DIR}/2-columns-3-rows.csv" empty.csv empty.csv cat-2-files-different-num-columns.txt 2
 	cat_two_files_different_columns)
 
@@ -251,6 +254,9 @@ test("csv-grep -f name -F or.m | csv-count -r --no-header" 3-columns-3-rows.csv 
 	grep_-f_name_-F_or.m_count)
 
 ################################## GROUPS ######################################
+
+test("csv-groups -f name | csv-grep -f name -F root | csv-count -c --no-header" empty.txt 1.txt empty.txt 0
+	groups)
 
 ################################### HEAD #######################################
 
@@ -430,11 +436,88 @@ test("csv-rpn-add -f str_to_int -e '%str toint'\
 
 ################################ RPN-FILTER ####################################
 
+test("csv-rpn-filter -e '%id 2 =='" 3-columns-3-rows.csv rpn-filter-row-2.csv empty.txt 0
+	rpn-filter-eq)
+
+test("csv-rpn-filter -e '%id 2 !='" 3-columns-3-rows.csv rpn-filter-rows-1-3.csv empty.txt 0
+	rpn-filter-ne)
+
+test("csv-rpn-filter -e '%id 2 >'" 3-columns-3-rows.csv rpn-filter-row-3.csv empty.txt 0
+	rpn-filter-gt)
+
+test("csv-rpn-filter -e '%id 3 >='" 3-columns-3-rows.csv rpn-filter-row-3.csv empty.txt 0
+	rpn-filter-ge)
+
+test("csv-rpn-filter -e '%id 2 <'" 3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
+	rpn-filter-lt)
+
+test("csv-rpn-filter -e '%id 1 <='" 3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
+	rpn-filter-le)
+
+test("csv-rpn-filter -e '%id 1 == %id 3 == or'" 3-columns-3-rows.csv rpn-filter-rows-1-3.csv empty.txt 0
+	rpn-filter-or)
+
+test("csv-rpn-filter -e '%id 2 == not'" 3-columns-3-rows.csv rpn-filter-rows-1-3.csv empty.txt 0
+	rpn-filter-not)
+
+test("csv-rpn-filter -e '%id 1 == %id 3 == xor'" 3-columns-3-rows.csv rpn-filter-rows-1-3.csv empty.txt 0
+	rpn-filter-xor)
+
+test("csv-rpn-filter -e '%id 1 + 3 =='" 3-columns-3-rows.csv rpn-filter-row-2.csv empty.txt 0
+	rpn-filter-add)
+
+test("csv-rpn-filter -e '%id 1 - 2 =='" 3-columns-3-rows.csv rpn-filter-row-3.csv empty.txt 0
+	rpn-filter-sub)
+
+test("csv-rpn-filter -e '%id 2 * 2 =='" 3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
+	rpn-filter-mul)
+
+test("csv-rpn-filter -e '%id 2 / 1 =='" 3-columns-3-rows.csv rpn-filter-rows-2-3.csv empty.txt 0
+	rpn-filter-div)
+
+test("csv-rpn-filter -e '%name strlen 11 =='" 3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
+	rpn-filter-strlen)
+
+test("csv-rpn-filter -e \"%name 3 1 substr 'r' ==\"" 3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
+	rpn-filter-substr)
+
+test("csv-rpn-filter -e \"%name '%th%' like\"" 3-columns-3-rows.csv rpn-filter-rows-2-3.csv empty.txt 0
+	rpn-filter-like)
+
+test("csv-rpn-filter -e \"%name '.suffix' concat 'lorem ipsum.suffix' ==\"" 3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
+	rpn-filter-concat)
+
+test("csv-rpn-filter -e \"%id tostring '2' ==\"" 3-columns-3-rows.csv rpn-filter-row-2.csv empty.txt 0
+	rpn-filter-tostring)
+
 ################################### SHOW #######################################
+
+test("csv-show" 3-columns-3-rows.csv show-3-columns-3-rows.txt empty.txt 0
+	show-3-cols)
 
 ################################### SORT #######################################
 
+test("csv-sort -f id" id-column-3-rows.csv id-column-3-rows.csv empty.txt 0
+	sort-sorted)
+
+test("csv-sort -f id -r" id-column-3-rows.csv sort-rsorted.csv empty.txt 0
+	sort-rsorted)
+
+test("csv-sort -f id,name" sort-2-cols.csv sort-2-cols-sorted.csv empty.txt 0
+	sort-2-cols)
+
+test("csv-sort -f id,name -r" sort-2-cols.csv sort-2-cols-rsorted.csv empty.txt 0
+	sort-2-cols-rsorted)
+
 ################################## SPLIT #######################################
+
+test("csv-split -f column3 -n before,after -e,"
+	commas.csv split-commas.csv empty.txt 0
+	split-commas)
+
+test("csv-split -f column3 -n before,after -e, -r"
+	commas.csv split-commas-reverse.csv empty.txt 0
+	split-commas-reverse)
 
 ################################### SQL ########################################
 
@@ -442,9 +525,32 @@ test("csv-rpn-add -f str_to_int -e '%str toint'\
 
 ################################ SUBSTRING #####################################
 
+test("csv-substring -f name -n substr2 -p 2"
+	3-columns-3-rows.csv substring-p2.csv empty.txt 0
+	substring-p2)
+
+test("csv-substring -f name -n last_char -p -1 -l 1"
+	3-columns-3-rows.csv substring-p-1.csv empty.txt 0
+	substring-p-1)
+
 ################################### SUM ########################################
 
+test("csv-sum -f id" id-column-3-rows.csv sum-id.csv empty.txt 0
+	sum)
+
 ################################### TAC ########################################
+
+test("csv-tac ${DATA_DIR}/one-column-one-row.csv" empty.csv one-column-one-row.csv empty.txt 0
+	tac_one_file)
+
+test("csv-tac ${DATA_DIR}/one-column-one-row.csv ${DATA_DIR}/one-column-one-row.csv" empty.csv cat-2-files.csv empty.txt 0
+	tac_two_files)
+
+test("csv-tac ${DATA_DIR}/3-different-order-columns-3-rows.csv ${DATA_DIR}/3-columns-2-last-rows.csv" empty.csv tac-2-different-files.csv empty.txt 0
+	tac_two_different_files)
+
+test("csv-tac ${DATA_DIR}/one-column-one-row.csv ${DATA_DIR}/2-columns-3-rows.csv" empty.csv empty.csv cat-2-files-different-num-columns.txt 2
+	tac_two_files_different_columns)
 
 ################################### TAIL #######################################
 
@@ -485,3 +591,6 @@ test("csv-tail -n 3" 3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
 	tail_-n_3_and_there_are_3_lines_in_input)
 
 ################################### USERS ######################################
+
+test("csv-users -f name | csv-grep -f name -F root | csv-count -c --no-header" empty.txt 1.txt empty.txt 0
+	users)
