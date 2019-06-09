@@ -53,7 +53,8 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-rpn-add [OPTION]...\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -e name=\"RPN expression\"\n");
+	fprintf(out, "  -f new_column_name\n");
+	fprintf(out, "  -e RPN_expression\n");
 	fprintf(out, "  -s, --show\n");
 	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
@@ -78,7 +79,7 @@ usage(FILE *out)
 	fprintf(out, "  -                 subtraction                     %%num 5 -\n");
 	fprintf(out, "  *                 multiplication                  %%num 5 *\n");
 	fprintf(out, "  /                 division                        %%num 5 /\n");
-	fprintf(out, "  %%                 remainder                       %%num 5 %%\n");
+	fprintf(out, "  %%                 modulo                          %%num 5 %%\n");
 	fprintf(out, "  |                 bitwise or                      %%num 5 |\n");
 	fprintf(out, "  &                 bitwise and                     %%num 5 &\n");
 	fprintf(out, "  ~                 bitwise negation                %%num ~\n");
@@ -166,15 +167,26 @@ main(int argc, char *argv[])
 	bool print_header = true;
 	size_t nexpressions = 0;
 	char **expressions = NULL;
+	char **names = NULL;
 	struct cb_params params;
 	bool show = false;
+	char *new_column = NULL;
 
 	memset(&params, 0, sizeof(params));
 
-	while ((opt = getopt_long(argc, argv, "e:s", long_options,
+	while ((opt = getopt_long(argc, argv, "e:f:s", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'e': {
+				if (!new_column) {
+					fprintf(stderr, "missing column name\n");
+					exit(2);
+				}
+				names = xrealloc_nofail(names, nexpressions + 1,
+						sizeof(names[0]));
+				names[nexpressions] = new_column;
+				new_column = NULL;
+
 				expressions = xrealloc_nofail(expressions,
 						nexpressions + 1,
 						sizeof(expressions[0]));
@@ -183,6 +195,10 @@ main(int argc, char *argv[])
 
 				break;
 			}
+			case 'f':
+				free(new_column);
+				new_column = xstrdup_nofail(optarg);
+				break;
 			case 'H':
 				print_header = false;
 				break;
@@ -208,6 +224,8 @@ main(int argc, char *argv[])
 		}
 	}
 
+	free(new_column);
+
 	if (nexpressions == 0) {
 		usage(stderr);
 		exit(2);
@@ -228,25 +246,14 @@ main(int argc, char *argv[])
 	params.expressions = xcalloc_nofail(nexpressions, sizeof(params.expressions[0]));
 
 	for (size_t i = 0; i < nexpressions; ++i) {
-		char *expstr = expressions[i];
-		char *cur = index(expstr, '=');
-		if (!cur) {
-			fprintf(stderr, "invalid expression\n");
-			usage(stderr);
-			exit(2);
-		}
-		*cur = 0;
-
-		if (csv_find(headers, nheaders, expstr) != CSV_NOT_FOUND) {
+		if (csv_find(headers, nheaders, names[i]) != CSV_NOT_FOUND) {
 			fprintf(stderr, "column '%s' already exists in input\n",
-					expstr);
+					names[i]);
 			exit(2);
 		}
-
-		cur++;
 
 		struct rpn_expression *exp = &params.expressions[i];
-		if (rpn_parse(exp, cur, headers, nheaders))
+		if (rpn_parse(exp, expressions[i], headers, nheaders))
 			exit(2);
 	}
 
@@ -254,25 +261,30 @@ main(int argc, char *argv[])
 		for (size_t i = 0; i < nheaders; ++i)
 			printf("%s:%s,", headers[i].name, headers[i].type);
 		for (size_t i = 0; i < nexpressions - 1; ++i)
-			printf("%s:%s,", expressions[i],
+			printf("%s:%s,", names[i],
 				rpn_expression_type(&params.expressions[i],
 						headers));
-		printf("%s:%s\n", expressions[nexpressions - 1],
+		printf("%s:%s\n", names[nexpressions - 1],
 			rpn_expression_type(&params.expressions[nexpressions - 1],
 						headers));
 	}
+
+	for (size_t i = 0; i < nexpressions; ++i) {
+		free(expressions[i]);
+		free(names[i]);
+	}
+
+	free(expressions);
+	free(names);
 
 	if (csv_read_all(s, &next_row, &params))
 		exit(2);
 
 	csv_destroy_ctx(s);
 
-	for (size_t i = 0; i < nexpressions; ++i) {
+	for (size_t i = 0; i < nexpressions; ++i)
 		rpn_free(&params.expressions[i]);
-		free(expressions[i]);
-	}
 
-	free(expressions);
 	free(params.expressions);
 
 	return 0;
