@@ -437,87 +437,87 @@ test("csv-rpn-add -f str_to_int -e '%str toint'\
 ################################ RPN-FILTER ####################################
 
 test("csv-rpn-filter -e '%id 2 =='" 3-columns-3-rows.csv rpn-filter-row-2.csv empty.txt 0
-	rpn-filter-eq)
+	rpn-filter_eq)
 
 test("csv-rpn-filter -e '%id 2 !='" 3-columns-3-rows.csv rpn-filter-rows-1-3.csv empty.txt 0
-	rpn-filter-ne)
+	rpn-filter_ne)
 
 test("csv-rpn-filter -e '%id 2 >'" 3-columns-3-rows.csv rpn-filter-row-3.csv empty.txt 0
-	rpn-filter-gt)
+	rpn-filter_gt)
 
 test("csv-rpn-filter -e '%id 3 >='" 3-columns-3-rows.csv rpn-filter-row-3.csv empty.txt 0
-	rpn-filter-ge)
+	rpn-filter_ge)
 
 test("csv-rpn-filter -e '%id 2 <'" 3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
-	rpn-filter-lt)
+	rpn-filter_lt)
 
 test("csv-rpn-filter -e '%id 1 <='" 3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
-	rpn-filter-le)
+	rpn-filter_le)
 
 test("csv-rpn-filter -e '%id 1 == %id 3 == or'" 3-columns-3-rows.csv rpn-filter-rows-1-3.csv empty.txt 0
-	rpn-filter-or)
+	rpn-filter_or)
 
 test("csv-rpn-filter -e '%id 2 == not'" 3-columns-3-rows.csv rpn-filter-rows-1-3.csv empty.txt 0
-	rpn-filter-not)
+	rpn-filter_not)
 
 test("csv-rpn-filter -e '%id 1 == %id 3 == xor'" 3-columns-3-rows.csv rpn-filter-rows-1-3.csv empty.txt 0
-	rpn-filter-xor)
+	rpn-filter_xor)
 
 test("csv-rpn-filter -e '%id 1 + 3 =='" 3-columns-3-rows.csv rpn-filter-row-2.csv empty.txt 0
-	rpn-filter-add)
+	rpn-filter_add)
 
 test("csv-rpn-filter -e '%id 1 - 2 =='" 3-columns-3-rows.csv rpn-filter-row-3.csv empty.txt 0
-	rpn-filter-sub)
+	rpn-filter_sub)
 
 test("csv-rpn-filter -e '%id 2 * 2 =='" 3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
-	rpn-filter-mul)
+	rpn-filter_mul)
 
 test("csv-rpn-filter -e '%id 2 / 1 =='" 3-columns-3-rows.csv rpn-filter-rows-2-3.csv empty.txt 0
-	rpn-filter-div)
+	rpn-filter_div)
 
 test("csv-rpn-filter -e '%name strlen 11 =='" 3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
-	rpn-filter-strlen)
+	rpn-filter_strlen)
 
 test("csv-rpn-filter -e \"%name 3 1 substr 'r' ==\"" 3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
-	rpn-filter-substr)
+	rpn-filter_substr)
 
 test("csv-rpn-filter -e \"%name '%th%' like\"" 3-columns-3-rows.csv rpn-filter-rows-2-3.csv empty.txt 0
-	rpn-filter-like)
+	rpn-filter_like)
 
 test("csv-rpn-filter -e \"%name '.suffix' concat 'lorem ipsum.suffix' ==\"" 3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
-	rpn-filter-concat)
+	rpn-filter_concat)
 
 test("csv-rpn-filter -e \"%id tostring '2' ==\"" 3-columns-3-rows.csv rpn-filter-row-2.csv empty.txt 0
-	rpn-filter-tostring)
+	rpn-filter_tostring)
 
 ################################### SHOW #######################################
 
 test("csv-show" 3-columns-3-rows.csv show-3-columns-3-rows.txt empty.txt 0
-	show-3-cols)
+	show_3_cols)
 
 ################################### SORT #######################################
 
 test("csv-sort -f id" id-column-3-rows.csv id-column-3-rows.csv empty.txt 0
-	sort-sorted)
+	sort_sorted)
 
 test("csv-sort -f id -r" id-column-3-rows.csv sort-rsorted.csv empty.txt 0
-	sort-rsorted)
+	sort_rsorted)
 
 test("csv-sort -f id,name" sort-2-cols.csv sort-2-cols-sorted.csv empty.txt 0
-	sort-2-cols)
+	sort_2_cols)
 
 test("csv-sort -f id,name -r" sort-2-cols.csv sort-2-cols-rsorted.csv empty.txt 0
-	sort-2-cols-rsorted)
+	sort_2_cols_rsorted)
 
 ################################## SPLIT #######################################
 
 test("csv-split -f column3 -n before,after -e,"
 	commas.csv split-commas.csv empty.txt 0
-	split-commas)
+	split_commas)
 
 test("csv-split -f column3 -n before,after -e, -r"
 	commas.csv split-commas-reverse.csv empty.txt 0
-	split-commas-reverse)
+	split_commas_reverse)
 
 ################################### SQL ########################################
 
@@ -527,11 +527,11 @@ test("csv-split -f column3 -n before,after -e, -r"
 
 test("csv-substring -f name -n substr2 -p 2"
 	3-columns-3-rows.csv substring-p2.csv empty.txt 0
-	substring-p2)
+	substring_p2)
 
 test("csv-substring -f name -n last_char -p -1 -l 1"
 	3-columns-3-rows.csv substring-p-1.csv empty.txt 0
-	substring-p-1)
+	substring_p_1)
 
 ################################### SUM ########################################
 
