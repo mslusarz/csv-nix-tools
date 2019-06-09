@@ -186,13 +186,13 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 	case RPN_LOGIC_AND:
 	case RPN_LOGIC_OR:
 	case RPN_LOGIC_XOR:
-		if (stack[height - 1].llong != 0 && stack[height - 1].llong != 1) {
+		if (stack[height].llong != 0 && stack[height].llong != 1) {
 			fprintf(stderr, "logic operators can operate only on 0/1 values\n");
 			return -1;
 		}
 		/* fall through */
 	case RPN_LOGIC_NOT:
-		if (stack[height].llong != 0 && stack[height].llong != 1) {
+		if (stack[height - 1].llong != 0 && stack[height - 1].llong != 1) {
 			fprintf(stderr, "logic operators can operate only on 0/1 values\n");
 			return -1;
 		}
