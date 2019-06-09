@@ -212,6 +212,10 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		stack[height - 1].llong *= stack[height].llong;
 		break;
 	case RPN_DIV:
+		if (stack[height].llong == 0) {
+			fprintf(stderr, "division by 0\n");
+			return -1;
+		}
 		stack[height - 1].llong /= stack[height].llong;
 		break;
 	case RPN_MOD:
