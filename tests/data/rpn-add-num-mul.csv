@@ -1,4 +1,4 @@
-num:int,num2:int,num3:int,num*2:int
+num:int,num2:int,num3:int,num_mul_2:int
 0,10,-5,0
 1,100,-50,2
 2,1000,-500,4

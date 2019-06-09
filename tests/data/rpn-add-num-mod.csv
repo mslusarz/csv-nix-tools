@@ -1,4 +1,4 @@
-num:int,num2:int,num3:int,num2%num3:int,num2%num+1:int
+num:int,num2:int,num3:int,num2_mod_num3:int,num2_mod_num_add_1:int
 0,10,-5,0,0
 1,100,-50,0,0
 2,1000,-500,0,1

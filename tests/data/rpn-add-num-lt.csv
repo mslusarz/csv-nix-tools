@@ -1,4 +1,4 @@
-num:int,num2:int,num3:int,num2*2:int,num2_dup:int,num2<num3:int,num2<num2_dup:int,num2<num2*2:int
+num:int,num2:int,num3:int,num2_mul_2:int,num2_dup:int,num2_lt_num3:int,num2_lt_num2_dup:int,num2_lt_num2_mul_2:int
 0,10,-5,20,10,0,0,1
 1,100,-50,200,100,0,0,1
 2,1000,-500,2000,1000,0,0,1

@@ -300,86 +300,86 @@ test("csv-head -n 3" 3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
 
 ################################# RPN-ADD ######################################
 
-test("csv-rpn-add -f 'num*2' -e '%num 2 *'"
+test("csv-rpn-add -f 'num_mul_2' -e '%num 2 *'"
 	rpn-add-num-dec.csv rpn-add-num-mul.csv empty.txt 0
 	rpn-add_num_mul)
 
-test("csv-rpn-add -f 'num+num2' -e '%num %num2 +'"
+test("csv-rpn-add -f 'num_add_num2' -e '%num %num2 +'"
 	rpn-add-num-dec.csv rpn-add-num-sum.csv empty.txt 0
 	rpn-add_num_sum)
 
-test("csv-rpn-add -f 'num2/num3' -e '%num2 %num3 /'\
-		  -f 'num2/num+1' -e '%num2 %num 1 + /'"
+test("csv-rpn-add -f 'num2_div_num3' -e '%num2 %num3 /'\
+		  -f 'num2_div_num_add_1' -e '%num2 %num 1 + /'"
 	rpn-add-num-dec.csv rpn-add-num-div.csv empty.txt 0
 	rpn-add_num_div)
 
-test("csv-rpn-add -f 'num2/num' -e '%num2 %num /'"
+test("csv-rpn-add -f 'num2_div_num' -e '%num2 %num /'"
 	rpn-add-num-dec.csv rpn-add-num-div0.csv rpn-add-num-div0.txt 2
 	rpn-add_num_div0)
 
-test("csv-rpn-add -f 'num2-num' -e '%num2 %num -'"
+test("csv-rpn-add -f 'num2_sub_num' -e '%num2 %num -'"
 	rpn-add-num-dec.csv rpn-add-num-sub.csv empty.txt 0
 	rpn-add_num_sub)
 
-test("csv-rpn-add -f 'num2%num3' -e '%num2 %num3 %'\
-		  -f 'num2%num+1' -e '%num2 %num 1 + %'"
+test("csv-rpn-add -f 'num2_mod_num3' -e '%num2 %num3 %'\
+		  -f 'num2_mod_num_add_1' -e '%num2 %num 1 + %'"
 	rpn-add-num-dec.csv rpn-add-num-mod.csv empty.txt 0
 	rpn-add_num_mod)
 
 
-test("csv-rpn-add -f 'num2&num3' -e '%num2 %num3 & tostring_base16'"
+test("csv-rpn-add -f 'num2_bit_and_num3' -e '%num2 %num3 & tostring_base16'"
 	rpn-add-num-hex.csv rpn-add-num-bit-and.csv empty.txt 0
 	rpn-add_num_bit_and)
 
-test("csv-rpn-add -f 'num2|num' -e '%num2 %num | tostring_base16'"
+test("csv-rpn-add -f 'num2_bit_or_num' -e '%num2 %num | tostring_base16'"
 	rpn-add-num-hex.csv rpn-add-num-bit-or.csv empty.txt 0
 	rpn-add_num_bit_or)
 
-test("csv-rpn-add -f 'num2^num' -e '%num2 %num ^ tostring_base16'"
+test("csv-rpn-add -f 'num2_bit_xor_num' -e '%num2 %num ^ tostring_base16'"
 	rpn-add-num-hex.csv rpn-add-num-bit-xor.csv empty.txt 0
 	rpn-add_num_bit_xor)
 
-test("csv-rpn-add -f '~num2' -e '%num2 ~ tostring_base16'"
+test("csv-rpn-add -f 'bit_neg_num2' -e '%num2 ~ tostring_base16'"
 	rpn-add-num-hex.csv rpn-add-num-bit-neg.csv empty.txt 0
 	rpn-add_num_bit_neg)
 
-test("csv-rpn-add -f 'num2<<num' -e '%num2 %num << tostring_base16'"
+test("csv-rpn-add -f 'num2_lshift_num' -e '%num2 %num << tostring_base16'"
 	rpn-add-num-hex.csv rpn-add-num-bit-lshift.csv empty.txt 0
 	rpn-add_num_bit_lshift)
 
-test("csv-rpn-add -f 'num2>>num' -e '%num2 %num >> tostring_base16'"
+test("csv-rpn-add -f 'num2_rshift_num' -e '%num2 %num >> tostring_base16'"
 	rpn-add-num-hex.csv rpn-add-num-bit-rshift.csv empty.txt 0
 	rpn-add_num_bit_rshift)
 
 
-test("csv-rpn-add -f 'num2>num3' -e '%num2 %num3 >'  -f 'num2>num2_dup' -e '%num2 %num2_dup >'  -f 'num2>num2*2' -e '%num %num2*2 >'"  rpn-add-num-compare.csv rpn-add-num-gt.csv empty.txt 0
+test("csv-rpn-add -f num2_gt_num3 -e '%num2 %num3 >'  -f num2_gt_num2_dup -e '%num2 %num2_dup >'  -f num2_gt_num2_mul_2 -e '%num %num2_mul_2 >'"  rpn-add-num-compare.csv rpn-add-num-gt.csv empty.txt 0
 	rpn-add_num_>)
-test("csv-rpn-add -f 'num2>num3' -e '%num2 %num3 gt' -f 'num2>num2_dup' -e '%num2 %num2_dup gt' -f 'num2>num2*2' -e '%num %num2*2 gt'" rpn-add-num-compare.csv rpn-add-num-gt.csv empty.txt 0
+test("csv-rpn-add -f num2_gt_num3 -e '%num2 %num3 gt' -f num2_gt_num2_dup -e '%num2 %num2_dup gt' -f num2_gt_num2_mul_2 -e '%num %num2_mul_2 gt'" rpn-add-num-compare.csv rpn-add-num-gt.csv empty.txt 0
 	rpn-add_num_gt)
 
-test("csv-rpn-add -f 'num2>=num3' -e '%num2 %num3 >=' -f 'num2>=num2_dup' -e '%num2 %num2_dup >=' -f 'num2>=num2*2' -e '%num %num2*2 >='" rpn-add-num-compare.csv rpn-add-num-ge.csv empty.txt 0
+test("csv-rpn-add -f num2_ge_num3 -e '%num2 %num3 >=' -f num2_ge_num2_dup -e '%num2 %num2_dup >=' -f num2_ge_num2_mul_2 -e '%num %num2_mul_2 >='" rpn-add-num-compare.csv rpn-add-num-ge.csv empty.txt 0
 	rpn-add_num_>=)
-test("csv-rpn-add -f 'num2>=num3' -e '%num2 %num3 ge' -f 'num2>=num2_dup' -e '%num2 %num2_dup ge' -f 'num2>=num2*2' -e '%num %num2*2 ge'" rpn-add-num-compare.csv rpn-add-num-ge.csv empty.txt 0
+test("csv-rpn-add -f num2_ge_num3 -e '%num2 %num3 ge' -f num2_ge_num2_dup -e '%num2 %num2_dup ge' -f num2_ge_num2_mul_2 -e '%num %num2_mul_2 ge'" rpn-add-num-compare.csv rpn-add-num-ge.csv empty.txt 0
 	rpn-add_num_ge)
 
-test("csv-rpn-add -f 'num2<num3' -e '%num2 %num3 <'  -f 'num2<num2_dup' -e '%num2 %num2_dup <'  -f 'num2<num2*2' -e '%num %num2*2 <'"  rpn-add-num-compare.csv rpn-add-num-lt.csv empty.txt 0
+test("csv-rpn-add -f num2_lt_num3 -e '%num2 %num3 <'  -f num2_lt_num2_dup -e '%num2 %num2_dup <'  -f num2_lt_num2_mul_2 -e '%num %num2_mul_2 <'"  rpn-add-num-compare.csv rpn-add-num-lt.csv empty.txt 0
 	rpn-add_num_<)
-test("csv-rpn-add -f 'num2<num3' -e '%num2 %num3 lt' -f 'num2<num2_dup' -e '%num2 %num2_dup lt' -f 'num2<num2*2' -e '%num %num2*2 lt'" rpn-add-num-compare.csv rpn-add-num-lt.csv empty.txt 0
+test("csv-rpn-add -f num2_lt_num3 -e '%num2 %num3 lt' -f num2_lt_num2_dup -e '%num2 %num2_dup lt' -f num2_lt_num2_mul_2 -e '%num %num2_mul_2 lt'" rpn-add-num-compare.csv rpn-add-num-lt.csv empty.txt 0
 	rpn-add_num_lt)
 
-test("csv-rpn-add -f 'num2<=num3' -e '%num2 %num3 <=' -f 'num2<=num2_dup' -e '%num2 %num2_dup <=' -f 'num2<=num2*2' -e '%num %num2*2 <='" rpn-add-num-compare.csv rpn-add-num-le.csv empty.txt 0
+test("csv-rpn-add -f num2_le_num3 -e '%num2 %num3 <=' -f num2_le_num2_dup -e '%num2 %num2_dup <=' -f num2_le_num2_mul_2 -e '%num %num2_mul_2 <='" rpn-add-num-compare.csv rpn-add-num-le.csv empty.txt 0
 	rpn-add_num_<=)
-test("csv-rpn-add -f 'num2<=num3' -e '%num2 %num3 le' -f 'num2<=num2_dup' -e '%num2 %num2_dup le' -f 'num2<=num2*2' -e '%num %num2*2 le'" rpn-add-num-compare.csv rpn-add-num-le.csv empty.txt 0
+test("csv-rpn-add -f num2_le_num3 -e '%num2 %num3 le' -f num2_le_num2_dup -e '%num2 %num2_dup le' -f num2_le_num2_mul_2 -e '%num %num2_mul_2 le'" rpn-add-num-compare.csv rpn-add-num-le.csv empty.txt 0
 	rpn-add_num_le)
 
-test("csv-rpn-add -f 'num2==num2_dup' -e '%num2 %num2_dup ==' -f 'num2==num2*2' -e '%num2 %num2*2 =='" rpn-add-num-compare.csv rpn-add-num-eq.csv empty.txt 0
+test("csv-rpn-add -f num2_eq_num2_dup -e '%num2 %num2_dup ==' -f num2_eq_num2_mul_2 -e '%num2 %num2_mul_2 =='" rpn-add-num-compare.csv rpn-add-num-eq.csv empty.txt 0
 	rpn-add_num_==)
-test("csv-rpn-add -f 'num2==num2_dup' -e '%num2 %num2_dup eq' -f 'num2==num2*2' -e '%num2 %num2*2 eq'" rpn-add-num-compare.csv rpn-add-num-eq.csv empty.txt 0
+test("csv-rpn-add -f num2_eq_num2_dup -e '%num2 %num2_dup eq' -f num2_eq_num2_mul_2 -e '%num2 %num2_mul_2 eq'" rpn-add-num-compare.csv rpn-add-num-eq.csv empty.txt 0
 	rpn-add_num_eq)
 
-test("csv-rpn-add -f 'num2!=num2_dup' -e '%num2 %num2_dup !=' -f 'num2!=num2*2' -e '%num2 %num2*2 !='" rpn-add-num-compare.csv rpn-add-num-ne.csv empty.txt 0
+test("csv-rpn-add -f num2_ne_num2_dup -e '%num2 %num2_dup !=' -f num2_ne_num2_mul_2 -e '%num2 %num2_mul_2 !='" rpn-add-num-compare.csv rpn-add-num-ne.csv empty.txt 0
 	rpn-add_num_!=)
-test("csv-rpn-add -f 'num2!=num2_dup' -e '%num2 %num2_dup ne' -f 'num2!=num2*2' -e '%num2 %num2*2 ne'" rpn-add-num-compare.csv rpn-add-num-ne.csv empty.txt 0
+test("csv-rpn-add -f num2_ne_num2_dup -e '%num2 %num2_dup ne' -f num2_ne_num2_mul_2 -e '%num2 %num2_mul_2 ne'" rpn-add-num-compare.csv rpn-add-num-ne.csv empty.txt 0
 	rpn-add_num_ne)
 
 

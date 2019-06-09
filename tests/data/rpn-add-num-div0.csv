@@ -1,2 +1,2 @@
-num:int,num2:int,num3:int,num2/num:int
+num:int,num2:int,num3:int,num2_div_num:int
 0,10,-5,
