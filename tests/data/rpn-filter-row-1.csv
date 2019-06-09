@@ -1,2 +1,2 @@
-name:string,id:int,something:bool
-lorem ipsum,1,true
+name:string,id:int,something:int
+lorem ipsum,1,1

@@ -1,4 +1,4 @@
-name:string,id:int,something:bool,new_column:string
-lorem ipsum,1,true,lorem ipsum - 1
-not all that is gold,2,false,not all that is gold - 2
-something else,3,true,something else - 3
+name:string,id:int,something:int,new_column:string
+lorem ipsum,1,1,lorem ipsum - 1
+not all that is gold,2,0,not all that is gold - 2
+something else,3,1,something else - 3

@@ -1,3 +1,3 @@
-name:string,id:int,something:bool
-not all that is gold,2,false
-something else,3,true
+name:string,id:int,something:int
+not all that is gold,2,0
+something else,3,1

@@ -1,4 +1,4 @@
-name:string,something:bool
-lorem ipsum,true
-not all that is gold,false
-something else,true
+name:string,something:int
+lorem ipsum,1
+not all that is gold,0
+something else,1

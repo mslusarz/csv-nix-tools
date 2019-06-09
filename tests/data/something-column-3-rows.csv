@@ -1,4 +1,4 @@
-something:bool
-true
-false
-true
+something:int
+1
+0
+1

@@ -1,6 +1,6 @@
-id:int,name:string,something:bool
-3,something else,true
-2,not all that is gold,false
-1,lorem ipsum,true
-3,something else,true
-2,not all that is gold,false
+id:int,name:string,something:int
+3,something else,1
+2,not all that is gold,0
+1,lorem ipsum,1
+3,something else,1
+2,not all that is gold,0

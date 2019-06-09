@@ -1,4 +1,4 @@
-name:string,id:int,something:bool,last_char:string
-lorem ipsum,1,true,m
-not all that is gold,2,false,d
-something else,3,true,e
+name:string,id:int,something:int,last_char:string
+lorem ipsum,1,1,m
+not all that is gold,2,0,d
+something else,3,1,e

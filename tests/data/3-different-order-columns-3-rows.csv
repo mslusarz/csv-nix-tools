@@ -1,4 +1,4 @@
-id:int,name:string,something:bool
-1,lorem ipsum,true
-2,not all that is gold,false
-3,something else,true
+id:int,name:string,something:int
+1,lorem ipsum,1
+2,not all that is gold,0
+3,something else,1
