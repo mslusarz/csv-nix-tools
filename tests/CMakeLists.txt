@@ -521,7 +521,437 @@ test("csv-split -f column3 -n before,after -e, -r"
 
 ################################### SQL ########################################
 
+test("csv-sql 'select * from input'"
+	3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
+	sql_select_all_from_input)
+
+test("csv-sql 'select * from input where id == 2'"
+	3-columns-3-rows.csv rpn-filter-row-2.csv empty.txt 0
+	sql_select_all_from_input_where_id==2)
+
+test("csv-sql 'select * from input where id != 2'"
+	3-columns-3-rows.csv rpn-filter-rows-1-3.csv empty.txt 0
+	sql_select_all_from_input_where_id!=2)
+
+test("csv-sql 'select * from input where id > 2'"
+	3-columns-3-rows.csv rpn-filter-row-3.csv empty.txt 0
+	sql_select_all_from_input_where_id>2)
+
+test("csv-sql 'select * from input where id >= 3'"
+	3-columns-3-rows.csv rpn-filter-row-3.csv empty.txt 0
+	sql_select_all_from_input_where_id>=3)
+
+test("csv-sql 'select * from input where id < 2'"
+	3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
+	sql_select_all_from_input_where_id<2)
+
+test("csv-sql 'select * from input where id <= 1'"
+	3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
+	sql_select_all_from_input_where_id<=1)
+
+test("csv-sql 'select * from input where id == 1 or id == 3'"
+	3-columns-3-rows.csv rpn-filter-rows-1-3.csv empty.txt 0
+	sql_select_all_from_input_where_id==1_or_id==3)
+
+test("csv-sql 'select * from input where not id == 2'"
+	3-columns-3-rows.csv rpn-filter-rows-1-3.csv empty.txt 0
+	sql_select_all_from_input_where_not_id==2)
+
+# sql supports xor
+test("csv-sql 'select * from input where id == 1 xor id == 3'"
+	3-columns-3-rows.csv rpn-filter-rows-1-3.csv empty.txt 0
+	sql_select_all_from_input_where_id==1_xor_id==3)
+
+test("csv-sql 'select * from input where id + 1 == 3'"
+	3-columns-3-rows.csv rpn-filter-row-2.csv empty.txt 0
+	sql_select_all_from_input_where_id+1==3)
+
+test("csv-sql 'select * from input where id - 1 == 2'"
+	3-columns-3-rows.csv rpn-filter-row-3.csv empty.txt 0
+	sql_select_all_from_input_where_id-1==2)
+
+test("csv-sql 'select * from input where id * 2 == 2'"
+	3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
+	sql_select_all_from_input_where_id*2==2)
+
+test("csv-sql 'select * from input where id / 2 == 1'"
+	3-columns-3-rows.csv rpn-filter-rows-2-3.csv empty.txt 0
+	sql_select_all_from_input_where_id_div_2==1)
+
+test("csv-sql 'select * from input where length(name) == 11'"
+	3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
+	sql_select_all_from_input_where_length_name==11)
+
+test("csv-sql \"select * from input where substr(name, 3, 1) == 'r'\""
+	3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
+	sql_select_all_from_input_where_substr_name-3-1==r)
+
+test("csv-sql \"select * from input where name like '%th%'\""
+	3-columns-3-rows.csv rpn-filter-rows-2-3.csv empty.txt 0
+	sql_select_all_from_input_where_name_like_%th%)
+
+test("csv-sql \"select * from input where name || '.suffix' == 'lorem ipsum.suffix'\""
+	3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
+	sql_select_all_from_input_where_name||.suffix==loremipsum.suffix)
+
+# cast needed
+test("csv-sql \"select * from input where tostring(id) == '2'\""
+	3-columns-3-rows.csv rpn-filter-row-2.csv empty.txt 0
+	sql_select_all_from_input_where_tostring_id==string2)
+
+
+test("csv-sql 'select num, num2, num3, num * 2 as num_mul_2 from input'"
+	rpn-add-num-dec.csv rpn-add-num-mul.csv empty.txt 0
+	sql_num_mul)
+
+test("csv-sql 'select num, num2, num3, num + num2 as num_add_num2 from input'"
+	rpn-add-num-dec.csv rpn-add-num-sum.csv empty.txt 0
+	sql_num_sum)
+
+test("csv-sql 'select num, num2, num3, num2 / num3 as num2_div_num3, num2 / (num + 1) as num2_div_num_add_1 from input'"
+	rpn-add-num-dec.csv rpn-add-num-div.csv empty.txt 0
+	sql_num_div)
+
+# 1/0 is invalid in sql
+test("csv-sql 'select num, num2, num3, num2 / num as num2_div_num from input'"
+	rpn-add-num-dec.csv rpn-add-num-div0.csv rpn-add-num-div0.txt 2
+	sql_num_div0)
+
+test("csv-sql 'select num, num2, num3, num2 - num as num2_sub_num from input'"
+	rpn-add-num-dec.csv rpn-add-num-sub.csv empty.txt 0
+	sql_num_sub)
+
+test("csv-sql 'select num, num2, num3, num2 % num3 as num2_mod_num3, num2 % (num + 1) as num2_mod_num_add_1 from input'"
+	rpn-add-num-dec.csv rpn-add-num-mod.csv empty.txt 0
+	sql_num_mod)
+
+# original encoding is lost
+#test("csv-sql 'select num, num2, num3, fmt_hex(num2 & num3) as num2_bit_and_num3 from input'"
+#	rpn-add-num-hex.csv rpn-add-num-bit-and.csv empty.txt 0
+#	sql_num_bit_and)
+
+#test("csv-sql 'select num, num2, num3, fmt_hex(num2 | num) as num2_bit_or_num from input'"
+#	rpn-add-num-hex.csv rpn-add-num-bit-or.csv empty.txt 0
+#	sql_num_bit_or)
+
+#test("csv-sql 'select num, num2, num3, fmt_hex(num2 ^ num) as num2_bit_xor_num from input'"
+#	rpn-add-num-hex.csv rpn-add-num-bit-xor.csv empty.txt 0
+#	sql_num_bit_xor)
+
+#test("csv-sql 'select num, num2, num3, fmt_hex(~num2) as bit_neg_num2 from input'"
+#	rpn-add-num-hex.csv rpn-add-num-bit-neg.csv empty.txt 0
+#	sql_num_bit_neg)
+
+#test("csv-sql 'select num, num2, num3, fmt_hex(num2 << num) as num2_lshift_num from input'"
+#	rpn-add-num-hex.csv rpn-add-num-bit-lshift.csv empty.txt 0
+#	sql_num_bit_lshift)
+
+#test("csv-sql 'select num, num2, num3, fmt_hex(num2 >> num) as num2_rshift_num from input'"
+#	rpn-add-num-hex.csv rpn-add-num-bit-rshift.csv empty.txt 0
+#	sql_num_bit_rshift)
+
+
+# sql doesn't support gt, lt, ge, le, eq, ne
+test("csv-sql 'select num, num2, num3, num2_mul_2, num2_dup, num2 > num3 as num2_gt_num3, num2 > num2_dup as num2_gt_num2_dup, num2 > num2_mul_2 as num2_gt_num2_mul_2 from input'"
+	rpn-add-num-compare.csv rpn-add-num-gt.csv empty.txt 0
+	sql_num_>)
+
+test("csv-sql 'select num, num2, num3, num2_mul_2, num2_dup, num2 >= num3 as num2_ge_num3, num2 >= num2_dup as num2_ge_num2_dup, num2 >= num2_mul_2 as num2_ge_num2_mul_2 from input'"
+	rpn-add-num-compare.csv rpn-add-num-ge.csv empty.txt 0
+	sql_num_>=)
+
+test("csv-sql 'select num, num2, num3, num2_mul_2, num2_dup, num2 < num3 as num2_lt_num3, num2 < num2_dup as num2_lt_num2_dup, num2 < num2_mul_2 as num2_lt_num2_mul_2 from input'"
+	rpn-add-num-compare.csv rpn-add-num-lt.csv empty.txt 0
+	sql_num_<)
+
+test("csv-sql 'select num, num2, num3, num2_mul_2, num2_dup, num2 <= num3 as num2_le_num3, num2 <= num2_dup as num2_le_num2_dup, num2 <= num2_mul_2 as num2_le_num2_mul_2 from input'"
+	rpn-add-num-compare.csv rpn-add-num-le.csv empty.txt 0
+	sql_num_<=)
+
+test("csv-sql 'select num, num2, num3, num2_mul_2, num2_dup, num2 == num2_dup as num2_eq_num2_dup, num2 == num2_mul_2 as num2_eq_num2_mul_2 from input'"
+	rpn-add-num-compare.csv rpn-add-num-eq.csv empty.txt 0
+	sql_num_==)
+
+test("csv-sql 'select num, num2, num3, num2_mul_2, num2_dup, num2 != num2_dup as num2_ne_num2_dup, num2 != num2_mul_2 as num2_ne_num2_mul_2 from input'"
+	rpn-add-num-compare.csv rpn-add-num-ne.csv empty.txt 0
+	sql_num_!=)
+
+test("csv-sql 'select num1, num2, num1 or num2 as num1_or_num2 from input'"
+	rpn-add-num-logic.csv rpn-add-num-logic-or.csv empty.txt 0
+	sql_num_logic_or)
+
+test("csv-sql 'select num1, num2, num1 and num2 as num1_and_num2 from input'"
+	rpn-add-num-logic.csv rpn-add-num-logic-and.csv empty.txt 0
+	sql_num_logic_and)
+
+# sql supports logic xor operator
+test("csv-sql 'select num1, num2, num1 xor num2 as num1_xor_num2 from input'"
+	rpn-add-num-logic.csv rpn-add-num-logic-xor.csv empty.txt 0
+	sql_num_logic_xor)
+
+test("csv-sql 'select num1, num2, not num1 as not_num1 from input'"
+	rpn-add-num-logic.csv rpn-add-num-logic-not.csv empty.txt 0
+	sql_num_logic_not)
+
+# sql supports if operator, XXX rename if to case in rpn?
+test("csv-sql 'select num1, num2, if(num1, \"one\", \"zero\") as desc_num1 from input'"
+	rpn-add-num-logic.csv rpn-add-num-logic-if.csv empty.txt 0
+	sql_num_logic_if)
+
+#test("csv-sql 'select num1, num2, case when num1 then \"one\" else \"zero\" end as desc_num1 from input'"
+#	rpn-add-num-logic.csv rpn-add-num-logic-if.csv empty.txt 0
+#	sql_num_logic_if)
+
+test("csv-sql 'select str1, str2, substr(str1, 2, 100) as substr2, substr(str1, -1, 1) as last_char from input'"
+	rpn-add-str.csv rpn-add-str-substr.csv empty.txt 0
+	sql_str_substr)
+
+# XXX rename strlen to length in rpn?
+test("csv-sql 'select str1, str2, length(str1) as len1, length(str2) as len2 from input'"
+	rpn-add-str.csv rpn-add-str-strlen.csv empty.txt 0
+	sql_str_length)
+
+test("csv-sql 'select str1, str2, str1||str2 as concat1, str1||\" - \"||str2 as concat2 from input'"
+	rpn-add-str.csv rpn-add-str-concat.csv empty.txt 0
+	sql_str_concat)
+
+test("csv-sql 'select str1, str2, str1 like \"%12\" as \"str1_like_%12\", str1 like \"%1%\" as \"str1_like_%1%\" from input'"
+	rpn-add-str.csv rpn-add-str-like.csv empty.txt 0
+	sql_str_like)
+
+# toint doesn't exists in sql, XXX implement CAST?
+#test("csv-sql 'select num, str, toint(str) as str_to_int,\
+#			 tostring(num) as num_to_string,\
+#			 tostring_base2(num) as num_to_string2,\
+#			 tostring_base8(num) as num_to_string8,\
+#			 tostring_base10(num) as num_to_string10,\
+#			 tostring_base16(num) as num_to_string16\
+#		    from input'"
+#	rpn-add-num-base.csv rpn-add-convert.csv empty.txt 0
+#	sql_str_to_int)
+
 ################################## SQLITE ######################################
+
+test("csv-sqlite 'select * from input'"
+	3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
+	sqlite_select_all_from_input)
+
+test("csv-sqlite 'select * from input where id == 2'"
+	3-columns-3-rows.csv rpn-filter-row-2.csv empty.txt 0
+	sqlite_select_all_from_input_where_id==2)
+
+test("csv-sqlite 'select * from input where id != 2'"
+	3-columns-3-rows.csv rpn-filter-rows-1-3.csv empty.txt 0
+	sqlite_select_all_from_input_where_id!=2)
+
+test("csv-sqlite 'select * from input where id > 2'"
+	3-columns-3-rows.csv rpn-filter-row-3.csv empty.txt 0
+	sqlite_select_all_from_input_where_id>2)
+
+test("csv-sqlite 'select * from input where id >= 3'"
+	3-columns-3-rows.csv rpn-filter-row-3.csv empty.txt 0
+	sqlite_select_all_from_input_where_id>=3)
+
+test("csv-sqlite 'select * from input where id < 2'"
+	3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
+	sqlite_select_all_from_input_where_id<2)
+
+test("csv-sqlite 'select * from input where id <= 1'"
+	3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
+	sqlite_select_all_from_input_where_id<=1)
+
+test("csv-sqlite 'select * from input where id == 1 or id == 3'"
+	3-columns-3-rows.csv rpn-filter-rows-1-3.csv empty.txt 0
+	sqlite_select_all_from_input_where_id==1_or_id==3)
+
+test("csv-sqlite 'select * from input where not id == 2'"
+	3-columns-3-rows.csv rpn-filter-rows-1-3.csv empty.txt 0
+	sqlite_select_all_from_input_where_not_id==2)
+
+# sqlite doesn't support xor
+#test("csv-sqlite 'select * from input where id == 1 xor id == 3'"
+#	3-columns-3-rows.csv rpn-filter-rows-1-3.csv empty.txt 0
+#	sqlite_select_all_from_input_where_id==1_xor_id==3)
+
+test("csv-sqlite 'select * from input where id + 1 == 3'"
+	3-columns-3-rows.csv rpn-filter-row-2.csv empty.txt 0
+	sqlite_select_all_from_input_where_id+1==3)
+
+test("csv-sqlite 'select * from input where id - 1 == 2'"
+	3-columns-3-rows.csv rpn-filter-row-3.csv empty.txt 0
+	sqlite_select_all_from_input_where_id-1==2)
+
+test("csv-sqlite 'select * from input where id * 2 == 2'"
+	3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
+	sqlite_select_all_from_input_where_id*2==2)
+
+test("csv-sqlite 'select * from input where id / 2 == 1'"
+	3-columns-3-rows.csv rpn-filter-rows-2-3.csv empty.txt 0
+	sqlite_select_all_from_input_where_id_div_2==1)
+
+test("csv-sqlite 'select * from input where length(name) == 11'"
+	3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
+	sqlite_select_all_from_input_where_length_name==11)
+
+test("csv-sqlite \"select * from input where substr(name, 3, 1) == 'r'\""
+	3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
+	sqlite_select_all_from_input_where_substr_name_3_1==r)
+
+test("csv-sqlite \"select * from input where name like '%th%'\""
+	3-columns-3-rows.csv rpn-filter-rows-2-3.csv empty.txt 0
+	sqlite_select_all_from_input_where_name_like_%th%)
+
+test("csv-sqlite \"select * from input where name || '.suffix' == 'lorem ipsum.suffix'\""
+	3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
+	sqlite_select_all_from_input_where_name||.suffix==loremipsum.suffix)
+
+# no cast needed
+test("csv-sqlite \"select * from input where id == '2'\""
+	3-columns-3-rows.csv rpn-filter-row-2.csv empty.txt 0
+	sqlite_select_all_from_input_where_id==string2)
+
+
+test("csv-sqlite 'select num, num2, num3, num * 2 as num_mul_2 from input'"
+	rpn-add-num-dec.csv rpn-add-num-mul.csv empty.txt 0
+	sqlite_num_mul)
+
+test("csv-sqlite 'select num, num2, num3, num + num2 as num_add_num2 from input'"
+	rpn-add-num-dec.csv rpn-add-num-sum.csv empty.txt 0
+	sqlite_num_sum)
+
+test("csv-sqlite 'select num, num2, num3, num2 / num3 as num2_div_num3, num2 / (num + 1) as num2_div_num_add_1 from input'"
+	rpn-add-num-dec.csv rpn-add-num-div.csv empty.txt 0
+	sqlite_num_div)
+
+# 1/0 is NULL in sqlite
+#test("csv-sqlite 'select num, num2, num3, num2 / num as num2_div_num from input'"
+#	rpn-add-num-dec.csv rpn-add-num-div0.csv rpn-add-num-div0.txt 2
+#	sqlite_num_div0)
+
+test("csv-sqlite 'select num, num2, num3, num2 - num as num2_sub_num from input'"
+	rpn-add-num-dec.csv rpn-add-num-sub.csv empty.txt 0
+	sqlite_num_sub)
+
+test("csv-sqlite 'select num, num2, num3, num2 % num3 as num2_mod_num3, num2 % (num + 1) as num2_mod_num_add_1 from input'"
+	rpn-add-num-dec.csv rpn-add-num-mod.csv empty.txt 0
+	sqlite_num_mod)
+
+# original encoding is lost
+#test("csv-sqlite 'select printf(\"0x%x\", num) as num, printf(\"0x%x\", num2) as num2, printf(\"0x%x\", num3) as num3, printf(\"0x%x\", num2 & num3) as num2_bit_and_num3 from input'"
+#	rpn-add-num-hex.csv rpn-add-num-bit-and.csv empty.txt 0
+#	sqlite_num_bit_and)
+
+#test("csv-sqlite 'select printf(\"0x%x\", num) as num, printf(\"0x%x\", num2) as num2, printf(\"0x%x\", num3) as num3, printf(\"0x%x\", num2 | num) as num2_bit_or_num from input'"
+#	rpn-add-num-hex.csv rpn-add-num-bit-or.csv empty.txt 0
+#	sqlite_num_bit_or)
+
+# + no support for bit xor
+#test("csv-sqlite 'select printf(\"0x%x\", num) as num, printf(\"0x%x\", num2) as num2, printf(\"0x%x\", num3) as num3, printf(\"0x%x\", num2 ^ num) as num2_bit_xor_num from input'"
+#	rpn-add-num-hex.csv rpn-add-num-bit-xor.csv empty.txt 0
+#	sqlite_num_bit_xor)
+
+#test("csv-sqlite 'select printf(\"0x%x\", num) as num, printf(\"0x%x\", num2) as num2, printf(\"0x%x\", num3) as num3, printf(\"0x%x\", ~num2) as bit_neg_num2 from input'"
+#	rpn-add-num-hex.csv rpn-add-num-bit-neg.csv empty.txt 0
+#	sqlite_num_bit_neg)
+
+#test("csv-sqlite 'select printf(\"0x%x\", num) as num, printf(\"0x%x\", num2) as num2, printf(\"0x%x\", num3) as num3, printf(\"0x%x\", num2 << num) as num2_lshift_num from input'"
+#	rpn-add-num-hex.csv rpn-add-num-bit-lshift.csv empty.txt 0
+#	sqlite_num_bit_lshift)
+
+#test("csv-sqlite 'select printf(\"0x%x\", num) as num, printf(\"0x%x\", num2) as num2, printf(\"0x%x\", num3) as num3, printf(\"0x%x\", num2 >> num) as num2_rshift_num from input'"
+#	rpn-add-num-hex.csv rpn-add-num-bit-rshift.csv empty.txt 0
+#	sqlite_num_bit_rshift)
+
+
+# sqlite doesn't support gt, lt, ge, le, eq, ne
+test("csv-sqlite 'select num, num2, num3, num2_mul_2, num2_dup, num2 > num3 as num2_gt_num3, num2 > num2_dup as num2_gt_num2_dup, num2 > num2_mul_2 as num2_gt_num2_mul_2 from input'"
+	rpn-add-num-compare.csv rpn-add-num-gt.csv empty.txt 0
+	sqlite_num_>)
+
+test("csv-sqlite 'select num, num2, num3, num2_mul_2, num2_dup, num2 >= num3 as num2_ge_num3, num2 >= num2_dup as num2_ge_num2_dup, num2 >= num2_mul_2 as num2_ge_num2_mul_2 from input'"
+	rpn-add-num-compare.csv rpn-add-num-ge.csv empty.txt 0
+	sqlite_num_>=)
+
+test("csv-sqlite 'select num, num2, num3, num2_mul_2, num2_dup, num2 < num3 as num2_lt_num3, num2 < num2_dup as num2_lt_num2_dup, num2 < num2_mul_2 as num2_lt_num2_mul_2 from input'"
+	rpn-add-num-compare.csv rpn-add-num-lt.csv empty.txt 0
+	sqlite_num_<)
+
+test("csv-sqlite 'select num, num2, num3, num2_mul_2, num2_dup, num2 <= num3 as num2_le_num3, num2 <= num2_dup as num2_le_num2_dup, num2 <= num2_mul_2 as num2_le_num2_mul_2 from input'"
+	rpn-add-num-compare.csv rpn-add-num-le.csv empty.txt 0
+	sqlite_num_<=)
+
+test("csv-sqlite 'select num, num2, num3, num2_mul_2, num2_dup, num2 == num2_dup as num2_eq_num2_dup, num2 == num2_mul_2 as num2_eq_num2_mul_2 from input'"
+	rpn-add-num-compare.csv rpn-add-num-eq.csv empty.txt 0
+	sqlite_num_==)
+
+test("csv-sqlite 'select num, num2, num3, num2_mul_2, num2_dup, num2 != num2_dup as num2_ne_num2_dup, num2 != num2_mul_2 as num2_ne_num2_mul_2 from input'"
+	rpn-add-num-compare.csv rpn-add-num-ne.csv empty.txt 0
+	sqlite_num_!=)
+
+test("csv-sqlite 'select num1, num2, num1 or num2 as num1_or_num2 from input'"
+	rpn-add-num-logic.csv rpn-add-num-logic-or.csv empty.txt 0
+	sqlite_num_logic_or)
+
+test("csv-sqlite 'select num1, num2, num1 and num2 as num1_and_num2 from input'"
+	rpn-add-num-logic.csv rpn-add-num-logic-and.csv empty.txt 0
+	sqlite_num_logic_and)
+
+# sqlite doesn't support logic xor operator
+#test("csv-sqlite 'select num1, num2, num1 xor num2 as num1_xor_num2 from input'"
+#	rpn-add-num-logic.csv rpn-add-num-logic-xor.csv empty.txt 0
+#	sqlite_num_logic_xor)
+
+test("csv-sqlite 'select num1, num2, not num1 as not_num1 from input'"
+	rpn-add-num-logic.csv rpn-add-num-logic-not.csv empty.txt 0
+	sqlite_num_logic_not)
+
+# sqlite doesn't support if operator, but supports case, XXX rename if to case in rpn?
+#test("csv-sqlite 'select num1, num2, num1 ? \"one\" : \"zero\" as desc_num1 from input'"
+#	rpn-add-num-logic.csv rpn-add-num-logic-if.csv empty.txt 0
+#	sqlite_num_logic_if)
+
+test("csv-sqlite 'select num1, num2, case when num1 then \"one\" else \"zero\" end as desc_num1 from input'"
+	rpn-add-num-logic.csv rpn-add-num-logic-if.csv empty.txt 0
+	sqlite_num_logic_if)
+
+test("csv-sqlite 'select str1, str2, substr(str1, 2, 100) as substr2, substr(str1, -1, 1) as last_char from input'"
+	rpn-add-str.csv rpn-add-str-substr.csv empty.txt 0
+	sqlite_str_substr)
+
+# XXX rename strlen to length in rpn?
+test("csv-sqlite 'select str1, str2, length(str1) as len1, length(str2) as len2 from input'"
+	rpn-add-str.csv rpn-add-str-strlen.csv empty.txt 0
+	sqlite_str_length)
+
+test("csv-sqlite 'select str1, str2, str1||str2 as concat1, str1||\" - \"||str2 as concat2 from input'"
+	rpn-add-str.csv rpn-add-str-concat.csv empty.txt 0
+	sqlite_str_concat)
+
+test("csv-sqlite 'select str1, str2, str1 like \"%12\" as \"str1_like_%12\", str1 like \"%1%\" as \"str1_like_%1%\" from input'"
+	rpn-add-str.csv rpn-add-str-like.csv empty.txt 0
+	sqlite_str_like)
+
+# no such functions in sqlite
+#test("csv-sqlite 'select num, str, toint(str) as str_to_int,\
+#			 tostring(num) as num_to_string,\
+#			 tostring_base2(num) as num_to_string2,\
+#			 tostring_base8(num) as num_to_string8,\
+#			 tostring_base10(num) as num_to_string10,\
+#			 tostring_base16(num) as num_to_string16\
+#		    from input'"
+#	rpn-add-num-base.csv rpn-add-convert.csv empty.txt 0
+#	sqlite_str_to_int)
+
+# no binary formatting; original encoding is lost
+#test("csv-sqlite 'select num, str, cast(str as int) as str_to_int,\
+#			 printf(\"%d\", num) as num_to_string,\
+#			 printf(\"0b%b\", num) as num_to_string2,\
+#			 printf(\"0%o\", num) as num_to_string8,\
+#			 printf(\"%d\", num) as num_to_string10,\
+#			 printf(\"0x%x\", num) as num_to_string16\
+#		    from input'"
+#	rpn-add-num-base.csv rpn-add-convert.csv empty.txt 0
+#	sqlite_str_to_int)
 
 ################################ SUBSTRING #####################################
 
