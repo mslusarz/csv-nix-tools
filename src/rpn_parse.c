@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <assert.h>
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
@@ -70,21 +71,32 @@ token_next(struct str_tokens *ctx)
 				exit(2);
 			}
 
+			assert(*in_it == '\'');
+
+			// quoting?
 			if (in_it[1] != '\'')
 				break;
 
+			// copy '
 			*out_it++ = *in_it++;
+
+			// and skip the next one
 			in_it++;
 		}
 
-		if (in_it[1] == ' ' || in_it[1] == 0) {
-			*out_it++ = *in_it++;
+		// copy terminating '
+		*out_it++ = *in_it++;
+
+		if (in_it[0] == 0) {
+			*out_it++ = 0;
+			ctx->in_it = in_it;
+		} else if (in_it[0] == ' ') {
 			*out_it++ = 0;
 			ctx->in_it = ++in_it;
 		} else {
 			fprintf(stderr,
 				"unrecognized character after end of string: '%c'\n",
-				in_it[1]);
+				in_it[0]);
 			exit(2);
 		}
 	} else {
@@ -117,7 +129,7 @@ rpn_parse(struct rpn_expression *exp, char *str,
 			if (tkn.colnum == CSV_NOT_FOUND) {
 				fprintf(stderr,
 					"column '%s' not found in input\n",
-					token);
+					token + 1);
 				goto fail;
 			}
 		} else if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1]))) {
