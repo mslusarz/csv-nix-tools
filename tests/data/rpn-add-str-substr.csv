@@ -1,0 +1,7 @@
+str1:string,str2:string,substr2:string,last_char:string
+qwertyuiop12,123,wertyuiop12,2
+asd fgh jkl21,qwe,sd fgh jkl21,1
+"zxc, vbn, m,.",asd,"xc, vbn, m,.",.
+"1234
+5678",zxc,"234
+5678",8

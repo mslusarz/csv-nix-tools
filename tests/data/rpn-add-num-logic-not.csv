@@ -1,0 +1,5 @@
+num1:int,num2:int,not_num1:int
+0,0,1
+0,1,1
+1,0,0
+1,1,0

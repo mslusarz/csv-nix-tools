@@ -1,0 +1,8 @@
+str1:string,str2:string,concat1:string,concat2:string
+qwertyuiop12,123,qwertyuiop12123,qwertyuiop12 - 123
+asd fgh jkl21,qwe,asd fgh jkl21qwe,asd fgh jkl21 - qwe
+"zxc, vbn, m,.",asd,"zxc, vbn, m,.asd","zxc, vbn, m,. - asd"
+"1234
+5678",zxc,"1234
+5678zxc","1234
+5678 - zxc"

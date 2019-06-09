@@ -1,0 +1,6 @@
+str1:string,str2:string,str1_like_%12:int,str1_like_%1%:int
+qwertyuiop12,123,1,1
+asd fgh jkl21,qwe,0,1
+"zxc, vbn, m,.",asd,0,0
+"1234
+5678",zxc,0,1
