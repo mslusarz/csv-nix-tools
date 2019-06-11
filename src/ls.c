@@ -337,10 +337,20 @@ print_stat(const char *dirpath, const char *path, struct stat *st,
 
 	if (visinfo->cols.base.size)
 		stat_printf(&ctx, "%ld", st->st_size);
-	if (visinfo->cols.base.type)
-		stat_printf(&ctx, "0%o", st->st_mode & S_IFMT);
-	if (visinfo->cols.base.mode)
-		stat_printf(&ctx, "0%o", st->st_mode & (S_IRWXU | S_IRWXG | S_IRWXO | S_ISUID | S_ISGID | S_ISVTX));
+	if (visinfo->cols.base.type) {
+		mode_t v = st->st_mode & S_IFMT;
+		if (v)
+			stat_printf(&ctx, "0%o", v);
+		else
+			stat_printf(&ctx, "0");
+	}
+	if (visinfo->cols.base.mode) {
+		mode_t v = st->st_mode & (S_IRWXU | S_IRWXG | S_IRWXO | S_ISUID | S_ISGID | S_ISVTX);
+		if (v)
+			stat_printf(&ctx, "0%o", v);
+		else
+			stat_printf(&ctx, "0");
+	}
 	if (visinfo->cols.base.owner_id)
 		stat_printf(&ctx, "%d", st->st_uid);
 	if (visinfo->cols.base.group_id)
