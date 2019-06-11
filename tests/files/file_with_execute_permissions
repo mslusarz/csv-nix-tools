@@ -1,0 +1,2 @@
+#!/bin/sh
+echo file_with_execute_permissions
