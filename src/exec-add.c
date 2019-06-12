@@ -44,6 +44,7 @@ static const struct option long_options[] = {
 	{"field",	required_argument,	NULL, 'f'},
 	{"no-header",	no_argument,		NULL, 'H'},
 	{"new-name",	required_argument,	NULL, 'n'},
+	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -56,6 +57,7 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -f, --field=name\n");
 	fprintf(out, "  -n, --new-name=name\n");
+	fprintf(out, "  -s, --show\n");
 	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
@@ -266,10 +268,11 @@ main(int argc, char *argv[])
 	char *stdin_colname = NULL;
 	char *new_colname = NULL;
 	bool print_header = true;
+	bool show = false;
 
 	memset(&params, 0, sizeof(params));
 
-	while ((opt = getopt_long(argc, argv, "f:n:", long_options,
+	while ((opt = getopt_long(argc, argv, "f:n:s", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'f':
@@ -277,6 +280,9 @@ main(int argc, char *argv[])
 				break;
 			case 'n':
 				new_colname = xstrdup_nofail(optarg);
+				break;
+			case 's':
+				show = true;
 				break;
 			case 'H':
 				print_header = false;
@@ -352,6 +358,9 @@ main(int argc, char *argv[])
 	} else {
 		params.stdin_col = SIZE_MAX;
 	}
+
+	if (show)
+		csv_show();
 
 	if (print_header) {
 		for (size_t i = 0; i < nheaders; ++i)
