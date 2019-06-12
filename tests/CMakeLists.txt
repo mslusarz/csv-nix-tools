@@ -204,7 +204,13 @@ test("csv-cut --fields=name,id,something" 3-different-order-columns-3-rows.csv 3
 
 ################################### EXEC #######################################
 
+test("cd \"${CMAKE_SOURCE_DIR}/tests/files/\" && csv-exec -- csv-ls -f size %name" files.csv sizes.txt empty.txt 0
+	exec_csv-ls_-f_size)
+
 ################################# EXEC-ADD #####################################
+
+test("csv-exec-add -n name2 -f name -- sed 's/file/name/g'" files.csv exec-add-names.csv empty.txt 0
+	exec-add_sed)
 
 ################################### GREP #######################################
 
@@ -297,6 +303,10 @@ test("csv-head -n 3" 3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
 	head_-n_3_and_there_are_3_lines_in_input)
 
 #################################### LS ########################################
+
+test("cd ${CMAKE_SOURCE_DIR}/tests/files && csv-ls -f name"
+	empty.txt files_and_dirs.csv empty.txt 0
+	ls-files)
 
 ################################# RPN-ADD ######################################
 

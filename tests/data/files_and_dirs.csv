@@ -1,0 +1,20 @@
+name:string
+dir with spaces
+"dir,with,commas"
+dir.with.dots
+"dir_with_
+_newline"
+dir_with_backslash_\n_here
+"dir_with_double_""_quote"
+dir_with_single_'_quote
+dir_without_execute_permissions
+file with spaces
+"file,with,commas"
+file.with.dots
+"file_with_
+_newline"
+file_with_backslash_\n_here
+"file_with_double_""_quote"
+file_with_execute_permissions
+file_with_single_'_quote
+symlink_file
