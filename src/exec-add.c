@@ -308,6 +308,7 @@ main(int argc, char *argv[])
 
 	if (!new_colname) {
 		fprintf(stderr, "missing -n/--new-name argument\n");
+		usage(stderr);
 		exit(2);
 	}
 
