@@ -7,7 +7,6 @@ _newline"
 dir_with_backslash_\n_here
 "dir_with_double_""_quote"
 dir_with_single_'_quote
-dir_without_execute_permissions
 file with spaces
 "file,with,commas"
 file.with.dots
