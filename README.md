@@ -273,9 +273,10 @@ $ csv-ls -R -f full_path . | csv-rpn-add -f new -e "%full_path -1 1 substr 'c' =
 - exporting tools (to-xml, to-json, to-sql)
 - importing tools (from-xml, from-json)
 - export as much as possible as a library(ies)
-- moar tests
+- moar tests, fuzzing, Valgrind
 - CI (circleci?)
 - code coverage (coveralls?)
+- Coverity
 - documentation
 - i18n
 
