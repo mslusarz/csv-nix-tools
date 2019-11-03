@@ -53,6 +53,7 @@ Sink tools:
 # Examples
 
 raw data about one file
+
 ```
 $ csv-ls build/Makefile
 size:int,type:int,mode:int,owner_id:int,group_id:int,nlink:int,mtime_sec:int,mtime_nsec:int,ctime_sec:int,ctime_nsec:int,atime_sec:int,atime_nsec:int,dev:int,ino:int,rdev:int,blksize:int,blocks:int,symlink:string,parent:string,name:string
@@ -60,6 +61,7 @@ size:int,type:int,mode:int,owner_id:int,group_id:int,nlink:int,mtime_sec:int,mti
 ```
 
 raw and processed data about one file
+
 ```
 $ csv-ls -l build/Makefile
 size:int,type:int,mode:int,owner_id:int,group_id:int,nlink:int,mtime_sec:int,mtime_nsec:int,ctime_sec:int,ctime_nsec:int,atime_sec:int,atime_nsec:int,dev:int,ino:int,rdev:int,blksize:int,blocks:int,type:string,owner_name:string,group_name:string,owner_read:int,owner_write:int,owner_execute:int,group_read:int,group_write:int,group_execute:int,other_read:int,other_write:int,other_execute:int,setuid:int,setgid:int,sticky:int,mtime:string,ctime:string,atime:string,symlink:string,parent:string,name:string,full_path:string
@@ -67,6 +69,7 @@ size:int,type:int,mode:int,owner_id:int,group_id:int,nlink:int,mtime_sec:int,mti
 ```
 
 all Makefiles in current directory and below
+
 ```
 $ csv-ls -R . | csv-grep -f name -x -F Makefile | csv-cut -f size,parent,name
 size:int,parent:string,name:string
@@ -74,6 +77,7 @@ size:int,parent:string,name:string
 ```
 
 files and their sizes sorted by size and name, in descending order
+
 ```
 $ csv-ls | csv-sort -r -f size,name | csv-cut -f size,name
 size:int,name:string
@@ -97,23 +101,28 @@ size:int,name:string
 ```
 
 files owned by user=1000
+
 ```
 $ csv-ls -R / 2>/dev/null | csv-grep -f owner_id -x -F 1000 | csv-cut -f parent,name
 ...
 ```
+
 or by name
+
 ```
 $ csv-ls -lR / 2>/dev/null | csv-grep -f owner_name -x -F marcin | csv-cut -f parent,name
 ...
 ```
 
 files anyone can read
+
 ```
 $ csv-ls -lR / 2>/dev/null | csv-grep -f other_read -x -F 1 | csv-cut -f parent,name
 ...
 ```
 
 sum of sizes of all files in the current directory
+
 ```
 $ csv-ls . | csv-sum -f size
 sum(size):int
@@ -121,6 +130,7 @@ sum(size):int
 ```
 
 4 biggest files in the current directory
+
 ```
 $ csv-ls . | csv-sort -r -f size | csv-head -n 4 | csv-cut -f size,name
 size:int,name:string
@@ -133,6 +143,7 @@ $ csv-ls . | csv-sort -f size | csv-tail -n 4 | csv-cut -f size,name
 ```
 
 files with names splitted into base and extension
+
 ```
 $ csv-ls -f size,name | csv-split -f name -e . -n base,ext -r
 size:int,name:string,base:string,ext:string
@@ -142,6 +153,7 @@ size:int,name:string,base:string,ext:string
 ```
 
 sum of sizes of all files with "png" extension
+
 ```
 $ csv-ls . | csv-split -f name -e . -n base,ext -r | \
 csv-grep -f ext -x -F png | csv-sum -f size --no-header
@@ -149,12 +161,14 @@ csv-grep -f ext -x -F png | csv-sum -f size --no-header
 ```
 
 number of files in the current directory, without header
+
 ```
 $ csv-ls . | csv-count --rows --no-header
 19
 ```
 
 list of files formatted in human-readable format (similar to ls -l) with disabled pager
+
 ```
 $ csv-ls -l | csv-cut -f mode,nlink,owner_name,group_name,size,mtime,name | \
 csv-show -s 1 -p no --no-header
@@ -164,6 +178,7 @@ csv-show -s 1 -p no --no-header
 ```
 
 list of files whose 2nd character is 'o'
+
 ```
 $ csv-ls | csv-grep -f name -e '^.o' | csv-cut -f name --no-header
 concat.c
@@ -180,16 +195,19 @@ sort.c
 ```
 
 full paths of all files in current directory and below
+
 ```
 $ csv-ls -R -f parent,name . | csv-concat full_path = %parent / %name | csv-cut -f full_path
 ....
 ```
 or
+
 ```
 $ csv-ls -R -f full_path .
 ```
 
 sum of file sizes and real allocated blocks in the current directory
+
 ```
 $ csv-ls | csv-cut -f size,blocks | csv-rpn-add -f space_used -e "%blocks 512 *" | \
 csv-sum -f size,blocks,space_used
@@ -198,6 +216,7 @@ sum(size):int,sum(blocks):int,sum(space_used):int
 ```
 
 list of files whose size is between 2000 and 3000 bytes
+
 ```
 $ csv-ls -f size,name | \
 csv-rpn-add -f range2k-3k -e "%size 2000 >= %size 3000 < and" | \
@@ -206,18 +225,21 @@ size:int,name:string
 2204,parse.h
 ```
 or
+
 ```
 $ csv-ls -f size,name | csv-rpn-filter -e "%size 2000 >= %size 3000 < and"
 size:int,name:string
 2204,parse.h
 ```
 or
+
 ```
 $ csv-ls | csv-sqlite "select size, name from input where size > 2000 and size < 3000"
 size:int,name:string
 2204,parse.h
 ```
 or
+
 ```
 $ csv-ls | csv-sql "select size, name from input where size > 2000 and size < 3000"
 size:int,name:string
@@ -226,6 +248,7 @@ size:int,name:string
 
 
 files and their permissions printed in human-readable format
+
 ```
 $ csv-ls -f mode,name | csv-rpn-add -f strmode -e "\
 %mode 0400 & 'r' '-' if        %mode 0200 & 'w' '-' if concat %mode 0100 & 'x' '-' if concat \
@@ -240,6 +263,7 @@ mode:int,strmode:string,name:string
 ...
 ```
 or
+
 ```
 $ csv-ls -f mode,name | csv-sql "select fmt_oct(mode) as 'mode',\
 if (mode & 0400, 'r', '-') || if (mode & 0200, 'w', '-') || if (mode & 0100, 'x', '-') ||\
@@ -253,19 +277,23 @@ mode:string,strmode:string,name:string
 ```
 
 remove all temporary files (ending with "~"), even if path contains spaces or line breaks
+
 ```
 $ csv-ls -R -f full_path . | csv-grep -f full_path -e '~$' | csv-exec -- rm -f %full_path
 ```
 
 if file has .c extension, then replace it with .o, otherwise leave it as is
+
 ```
 $ csv-ls -R -f full_path . | csv-exec-add -f full_path -n new -- sed 's/.c$/.o/'
 ```
 or 130x faster:
+
 ```
 $ csv-ls -R -f full_path . | csv-replace -f full_path -E '(.*)\.c$' -r '%1.o' -n new
 ```
 or 400x faster (3.1x faster than csv-replace):
+
 ```
 $ csv-ls -R -f full_path . | csv-rpn-add -f new -e "%full_path -1 1 substr 'c' == %full_path 1 %full_path strlen 1 - substr 'o' concat %full_path if"
 ```
