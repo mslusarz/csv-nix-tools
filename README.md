@@ -34,6 +34,7 @@ Filtering/processing tools:
 - csv-exec-add - creates new column by executing external tool and storing its output
 - csv-grep - filters rows matching a (regex) pattern
 - csv-head - outputs the first part of input
+- csv-replace - transforms column into another one by string substitution (similar to sed s/$str/$str/)
 - csv-rpn-add - creates new column from RPN expression
 - csv-rpn-filter - filters rows using RPN expression
 - csv-sort - sorts input by column(s)
@@ -260,14 +261,18 @@ if file has .c extension, then replace it with .o, otherwise leave it as is
 ```
 $ csv-ls -R -f full_path . | csv-exec-add -f full_path -n new -- sed 's/.c$/.o/'
 ```
-or 400x faster:
+or 130x faster:
+```
+$ csv-ls -R -f full_path . | csv-replace -f full_path -E '(.*)\.c$' -r '%1.o' -n new
+```
+or 400x faster (3.1x faster than csv-replace):
 ```
 $ csv-ls -R -f full_path . | csv-rpn-add -f new -e "%full_path -1 1 substr 'c' == %full_path 1 %full_path strlen 1 - substr 'o' concat %full_path if"
 ```
 
 # TODO (high level)
 - better name! (SDP-Structured Data Processor?, System Data Processor, WIZ - System Data Processing Wizard, TAB - Table Data Processor, table-data-tools)
-- more processing tools (tr, sed, uniq, rev, drop, paste?, etc)
+- more processing tools (tr, uniq, rev, drop, paste?, etc)
 - more data collection tools (ps, find, df, netstat, ifconfig/ip?, lsattr, lsusb, readlink, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, w/who?, etc)
 - more rpn operators/functions (split, rev, base64enc/dec, timestamp conversion, now, regex, sed, tr)
 - exporting tools (to-xml, to-json, to-sql)

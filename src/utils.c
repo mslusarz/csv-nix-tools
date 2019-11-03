@@ -381,6 +381,26 @@ xstrdup_nofail(const char *str)
 	return ret;
 }
 
+char *
+xstrndup(const char *str, size_t n)
+{
+	char *ret = strndup(str, n);
+	if (!ret)
+		perror("strndup");
+
+	return ret;
+}
+
+char *
+xstrndup_nofail(const char *str, size_t n)
+{
+	char *ret = xstrndup(str, n);
+	if (!ret)
+		exit(2);
+
+	return ret;
+}
+
 void *
 xmalloc(size_t count, size_t size)
 {

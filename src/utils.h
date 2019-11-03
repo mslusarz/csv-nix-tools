@@ -65,6 +65,9 @@ size_t csv_find(const struct col_header *headers,
 char *xstrdup(const char *str);
 char *xstrdup_nofail(const char *str);
 
+char *xstrndup(const char *str, size_t n);
+char *xstrndup_nofail(const char *str, size_t n);
+
 void *xmalloc(size_t count, size_t size);
 void *xmalloc_nofail(size_t count, size_t size);
 

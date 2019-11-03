@@ -308,6 +308,17 @@ test("cd ${CMAKE_SOURCE_DIR}/tests/files && csv-ls -f name"
 	empty.txt files_and_dirs.csv empty.txt 0
 	ls-files)
 
+################################# REPLACE ######################################
+
+test("csv-replace -f name -F ' i' -r 'STRING' -n new-col" 3-columns-3-rows.csv replace-string.csv empty.txt 0
+	replace_string)
+
+test("csv-replace -f name -e '\\(.*\\)\\( i\\)\\(.*\\)' -r '%3 STRING %1' -n new-col" 3-columns-3-rows.csv replace-regex.csv empty.txt 0
+	replace_regex)
+
+test("csv-replace -f name -E '(.*)( i)(.*)' -r '%3 STRING %1' -n new-col" 3-columns-3-rows.csv replace-regex.csv empty.txt 0
+	replace_eregex)
+
 ################################# RPN-ADD ######################################
 
 test("csv-rpn-add -f 'num_mul_2' -e '%num 2 *'"
