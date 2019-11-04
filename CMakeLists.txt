@@ -60,6 +60,16 @@ if(NOT SQLITE3_FOUND)
 	message(WARNING "SQLite3 not found. csv-sqlite won't be built.")
 endif()
 
+if(PKG_CONFIG_FOUND)
+	pkg_check_modules(LIBPROCPS libprocps)
+else()
+	find_package(LIBPROCPS)
+endif()
+
+if(NOT LIBPROCPS_FOUND)
+	message(WARNING "libprocps not found. csv-ps won't be built.")
+endif()
+
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 
@@ -132,6 +142,14 @@ if (BISON_FOUND AND FLEX_FOUND)
 
 	target_link_libraries(csv-sql ${FLEX_LIBRARIES})
 	target_link_libraries(csv-sql csvrpn)
+endif()
+
+if(LIBPROCPS_FOUND)
+	build_tool(csv-ps src/ps.c src/usr-grp.c)
+	if (LIBPROCPS_INCLUDE_DIRS)
+		target_include_directories(csv-ps ${LIBPROCPS_INCLUDE_DIRS})
+	endif()
+	target_link_libraries(csv-ps ${LIBPROCPS_LIBRARIES})
 endif()
 
 enable_testing()
