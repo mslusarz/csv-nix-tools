@@ -11,6 +11,7 @@ This project is in early prototyping stage.
 - sqlite >= 3 (optional, required by csv-sqlite)
 - flex (optional, required by csv-sql)
 - bison (optional, required by csv-sql)
+- libprocps (optional, required by csv-ps)
 
 # How to build
 ```sh
@@ -24,6 +25,7 @@ sudo make install
 Source tools:
 - csv-groups - lists system groups
 - csv-ls - lists files
+- csv-ps - lists processes (WIP)
 - csv-users - lists system users
 
 Filtering/processing tools:
@@ -299,7 +301,6 @@ $ csv-ls -R -f full_path . | csv-rpn-add -f new -e "%full_path -1 1 substr 'c' =
 ```
 
 # TODO (high level)
-- better name! (SDP-Structured Data Processor?, System Data Processor, WIZ - System Data Processing Wizard, TAB - Table Data Processor, table-data-tools)
 - more processing tools (tr, uniq, rev, drop, paste?, etc)
 - more data collection tools (find, df, netstat, ifconfig/ip?, lsattr, lsusb, readlink, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, w/who?, etc)
 - more rpn operators/functions (split, rev, base64enc/dec, timestamp conversion, now, regex, sed, tr)
@@ -314,6 +315,7 @@ $ csv-ls -R -f full_path . | csv-rpn-add -f new -e "%full_path -1 1 substr 'c' =
 - i18n
 
 # TODO (low level)
+- ps: lots of work, detailed in ps.c
 - sql/sqlite: load /proc/mounts, /sys/devices, ps, netstat or any other tool output (ls)
 - rpn/sql: binary number parsing
 - tool for header ops (add/remove/change/detect types)
