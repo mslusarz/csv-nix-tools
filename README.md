@@ -12,6 +12,7 @@ This project is in early prototyping stage.
 - flex (optional, required by csv-sql)
 - bison (optional, required by csv-sql)
 - libprocps (optional, required by csv-ps)
+- ncurses (optional, used by csv-show)
 
 # How to build
 ```sh
