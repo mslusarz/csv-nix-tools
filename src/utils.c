@@ -272,6 +272,27 @@ csv_unquot(const char *str)
 	return n;
 }
 
+#if 0
+void
+csv_unquot_in_place(char *str)
+{
+	size_t len = strlen(str);
+	size_t idx = 0;
+
+	if (str[0] != '"' || str[len - 1] != '"') {
+		fprintf(stderr, "internal error - can't unquot string that is not quoted\n");
+		abort();
+	}
+
+	for (size_t i = 1; i < len - 1; ++i) {
+		str[idx++] = str[i];
+		if (str[i] == '"')
+			++i;
+	}
+	str[idx] = 0;
+}
+#endif
+
 size_t
 csv_find(const struct col_header *headers, size_t nheaders, const char *name)
 {

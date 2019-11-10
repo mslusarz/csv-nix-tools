@@ -56,6 +56,10 @@ void csv_show(void);
 void csv_substring_sanitize(const char *str, ssize_t *start, size_t *len);
 
 char *csv_unquot(const char *str);
+#if 0
+/* currently not used */
+void csv_unquot_in_place(char *str);
+#endif
 
 #define CSV_NOT_FOUND SIZE_MAX
 size_t csv_find(const struct col_header *headers,

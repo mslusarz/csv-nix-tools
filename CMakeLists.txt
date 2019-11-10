@@ -70,6 +70,16 @@ if(NOT LIBPROCPS_FOUND)
 	message(WARNING "libprocps not found. csv-ps won't be built.")
 endif()
 
+if(PKG_CONFIG_FOUND)
+	pkg_check_modules(NCURSES ncurses)
+else()
+	find_package(NCURSES)
+endif()
+
+if(NOT NCURSES_FOUND)
+	message(WARNING "ncurses not found. csv-show won't support curses UI.")
+endif()
+
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 
@@ -117,6 +127,14 @@ build_tool(csv-users		src/users.c src/usr-grp.c)
 
 target_link_libraries(csv-rpn-add	csvrpn)
 target_link_libraries(csv-rpn-filter	csvrpn)
+
+if(NCURSES_FOUND)
+	target_compile_definitions(csv-show PRIVATE NCURSES_ENABLED)
+	if (NCURSES_INCLUDE_DIRS)
+		target_include_directories(csv-show ${NCURSES_INCLUDE_DIRS})
+	endif()
+	target_link_libraries(csv-show ${NCURSES_LIBRARIES})
+endif()
 
 if(SQLITE3_FOUND)
 	build_tool(csv-sqlite src/sqlite.c src/usr-grp.c src/sqlite-usr-grp.c)
