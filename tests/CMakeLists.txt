@@ -516,6 +516,18 @@ test("csv-rpn-filter -e \"%id tostring '2' ==\"" 3-columns-3-rows.csv rpn-filter
 test("csv-show" 3-columns-3-rows.csv show-3-columns-3-rows.txt empty.txt 0
 	show_3_cols)
 
+test("csv-show" newlines.csv show-newlines.txt empty.txt 0
+	show_newlines)
+
+test("csv-show" quotes.csv show-quotes.txt empty.txt 0
+	show_quotes)
+
+test("csv-show" commas.csv show-commas.txt empty.txt 0
+	show_commas)
+
+test("csv-show" control-characters.csv show-control-characters.txt empty.txt 0
+	show_control_characters)
+
 ################################### SORT #######################################
 
 test("csv-sort -f id" id-column-3-rows.csv id-column-3-rows.csv empty.txt 0

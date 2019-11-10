@@ -1,0 +1,5 @@
+name:string,id:int,something:int
+lorem	ipsum,1,1
+notallthatisgold,2,0
+somethingelse,3,1
+fourth\rowcontainsgarbage,4,2
