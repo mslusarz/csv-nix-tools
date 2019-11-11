@@ -881,24 +881,26 @@ print_proc(proc_t *proc, struct visible_columns *vis,
 		cprint(&ctx, "%s", get_group(proc->fgid));
 
 	if (vis->supgid_names) {
-		char *gid_str = strtok(proc->supgid, ",");
+		if (strcmp(proc->supgid, "-") != 0) {
+			char *gid_str = strtok(proc->supgid, ",");
 
-		fputc('"', stdout);
-		while (gid_str) {
-			gid_t gid;
-			if (strtou_safe(gid_str, &gid, 0)) {
-				fprintf(stderr,
-					"gid '%s' is not a number\n",
-					gid_str);
-				abort();
+			fputc('"', stdout);
+			while (gid_str) {
+				gid_t gid;
+				if (strtou_safe(gid_str, &gid, 0)) {
+					fprintf(stderr,
+						"gid '%s' is not a number\n",
+						gid_str);
+					abort();
+				}
+				fprintf(stdout, "%s", get_group(gid));
+
+				gid_str = strtok(NULL, ",");
+				if (gid_str)
+					fputc(',', stdout);
 			}
-			fprintf(stdout, "%s", get_group(gid));
-
-			gid_str = strtok(NULL, ",");
-			if (gid_str)
-				fputc(',', stdout);
+			fputc('"', stdout);
 		}
-		fputc('"', stdout);
 
 		cprint(&ctx, "");
 	}
