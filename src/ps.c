@@ -640,59 +640,6 @@ time_in_ms(unsigned long long t)
 	return t * 1000 / get_hz();
 }
 
-#if 0
-/* missing sub-second precision */
-static unsigned long long
-get_boottime()
-{
-	static unsigned long long boottime = ULLONG_MAX;
-	if (boottime != ULLONG_MAX)
-		return boottime;
-
-	FILE *fp = fopen("/proc/stat", "r");
-	if (!fp) {
-		fprintf(stderr,
-			"unable to determine boot time (%d, %s), assuming 1.1.1970\n",
-			errno, strerror(errno));
-		boottime = 0;
-		return boottime;
-	}
-
-	char *buf = NULL;
-	size_t bufsize = 0;
-
-	ssize_t nread;
-	while ((nread = getline(&buf, &bufsize, fp)) != -1) {
-		if (nread < strlen("btime ") + 1)
-			continue;
-		if (strncmp(buf, "btime ", strlen("btime ")) != 0)
-			continue;
-
-		if (buf[nread - 1] == '\n')
-			buf[nread - 1] = 0;
-
-		if (strtoull_safe(buf + strlen("btime "), &boottime, 0)) {
-			fprintf(stderr,
-				"unable to determine boot time (strtoull failed), assuming 1.1.1970\n");
-			boottime = 0;
-		}
-
-		break;
-	}
-
-	free(buf);
-	fclose(fp);
-
-	if (boottime == ULLONG_MAX) {
-		fprintf(stderr,
-			"unable to determine boot time (btime not found), assuming 1.1.1970\n");
-		boottime = 0;
-	}
-
-	return boottime;
-}
-#endif
-
 static struct timespec boottime;
 
 #define NSECS_IN_SEC 1000000000
