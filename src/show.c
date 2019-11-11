@@ -327,9 +327,7 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 	size_t first_line = 0;
 	size_t nlines;
 	int xoff = 0;
-	int step = 20;
-	if (step > COLS / 2)
-		step = COLS / 2;
+#define STEP (COLS / 2)
 
 	size_t max_line = 0;
 	for (size_t i = 0; i < nheaders; ++i)
@@ -370,12 +368,12 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 				beep();
 		} else if (ch == KEY_RIGHT) {
 			if (xoff + COLS < max_line)
-				xoff += step;
+				xoff += STEP;
 			else
 				beep();
 		} else if (ch == KEY_LEFT) {
-			if (xoff >= step)
-				xoff -= step;
+			if (xoff >= STEP)
+				xoff -= STEP;
 			else if (xoff == 0)
 				beep();
 			else
