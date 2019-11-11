@@ -90,7 +90,10 @@ add_header(struct csv_ctx *ctx, char *start)
 
 	*pipe = 0;
 
-	if (strcmp(pipe + 1, "int") != 0 && strcmp(pipe + 1, "string") != 0) {
+	if (strcmp(pipe + 1, "int") != 0 &&
+			strcmp(pipe + 1, "int[]") != 0 &&
+			strcmp(pipe + 1, "string") != 0 &&
+			strcmp(pipe + 1, "string[]") != 0) {
 		fprintf(ctx->err, "unsupported type '%s'\n", pipe + 1);
 		return -1;
 	}

@@ -84,7 +84,7 @@ next_row(const char *buf, const size_t *col_offs,
 
 	for (size_t i = 0; i < nheaders; ++i) {
 		int ret;
-		if (headers[i].type[0] == 'i') {
+		if (strcmp(headers[i].type, "int") == 0) {
 			long long val;
 			if (strtoll_safe(&buf[col_offs[i]], &val, 0) < 0)
 				exit(2);
