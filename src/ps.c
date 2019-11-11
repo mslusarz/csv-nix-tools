@@ -180,6 +180,9 @@ struct visible_columns {
 	char fgid_name;
 
 	char supgid_names;
+
+	char time_ms;
+	char time;
 };
 
 static const struct option long_options[] = {
@@ -366,6 +369,9 @@ compute_visibility(char *cols, struct visible_columns *vis)
 		{ "fgid_name", &vis->fgid_name },
 
 		{ "supgid_names", &vis->supgid_names },
+
+		{ "time_ms", &vis->time_ms },
+		{ "time", &vis->time },
 	};
 
 	char *name = strtok(cols, ",");
@@ -553,6 +559,9 @@ eval_visibility(const struct visible_columns *vis, bool print_header,
 
 		eval_col(vis->supgid_names, "supgid_names:string", &d, STATUS);
 
+		eval_col(vis->time_ms, "time_ms:int", &d, STAT);
+		eval_col(vis->time, "time:string", &d, STAT);
+
 		d.count = d.visible_count;
 		d.visible_count = 0;
 		if (print_header)
@@ -605,6 +614,12 @@ get_hz(void)
 	return hz;
 }
 
+static inline unsigned long long
+time_in_ms(unsigned long long t)
+{
+	return t * 1000 / get_hz();
+}
+
 static void
 print_proc(proc_t *proc, struct visible_columns *vis,
 		struct col_summary *summary)
@@ -647,13 +662,13 @@ print_proc(proc_t *proc, struct visible_columns *vis,
 		cprint(&ctx, "%d", proc->session);
 
 	if (vis->user_time_ms)
-		cprint(&ctx, "%llu", proc->utime * 1000 / get_hz());
+		cprint(&ctx, "%llu", time_in_ms(proc->utime));
 	if (vis->system_time_ms)
-		cprint(&ctx, "%llu", proc->stime * 1000 / get_hz());
+		cprint(&ctx, "%llu", time_in_ms(proc->stime));
 	if (vis->cumulative_user_time_ms)
-		cprint(&ctx, "%llu", proc->cutime * 1000 / get_hz());
+		cprint(&ctx, "%llu", time_in_ms(proc->cutime));
 	if (vis->cumulative_system_time_ms)
-		cprint(&ctx, "%llu", proc->cstime * 1000 / get_hz());
+		cprint(&ctx, "%llu", time_in_ms(proc->cstime));
 	if (vis->start_time)
 		cprint(&ctx, "%llu", proc->start_time);
 
@@ -922,6 +937,38 @@ print_proc(proc_t *proc, struct visible_columns *vis,
 		}
 
 		cprint(&ctx, "");
+	}
+
+	if (vis->time_ms) {
+		cprint(&ctx, "%llu", time_in_ms(proc->utime + proc->stime));
+	}
+
+	if (vis->time) {
+		unsigned long long time = time_in_ms(proc->utime + proc->stime);
+
+		unsigned ms = time % 1000;
+		time /= 1000;
+		unsigned s = time % 60;
+		time /= 60;
+		unsigned m = time % 60;
+		time /= 60;
+		unsigned h = time % 24;
+		time /= 24;
+		unsigned long long d = time;
+
+		if (d > 0)
+			cprint(&ctx, "%llud:%02uh:%02um:%02u.%03us",
+					d, h, m, s, ms);
+		else if (h > 0)
+			cprint(&ctx, "%uh:%02um:%02u.%03us", h, m, s, ms);
+		else if (m > 0)
+			cprint(&ctx, "%um:%02u.%03us", m, s, ms);
+		else if (s > 0)
+			cprint(&ctx, "%u.%03us", s, ms);
+		else if (ms > 0)
+			cprint(&ctx, "0.%03us", ms);
+		else
+			cprint(&ctx, "0s");
 	}
 }
 
