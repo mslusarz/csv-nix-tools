@@ -32,11 +32,9 @@
 
 /*
  * TODO:
- * - compute dates/times
  * - better default list of columns (ps-like or top-like?)
  * - better column names
  * - verify units/mults (pages/mb/kb/b)
- * - figure out what to do about chrome insane cmdlist
  * - tree view?
  * - threads?
  * - figure out what to do with these columns:
@@ -46,6 +44,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <getopt.h>
+#include <limits.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -54,6 +53,7 @@
 #include <unistd.h>
 
 #include <proc/readproc.h>
+#include <sys/time.h>
 
 #include "usr-grp-query.h"
 #include "utils.h"
@@ -80,7 +80,8 @@ struct visible_columns {
 	char system_time_ms;
 	char cumulative_user_time_ms;
 	char cumulative_system_time_ms;
-	char start_time;
+	char start_time_sec;
+	char start_time_msec;
 
 	char start_code;
 	char end_code;
@@ -183,6 +184,11 @@ struct visible_columns {
 
 	char time_ms;
 	char time;
+
+	char start_time;
+	char age_sec;
+	char age_msec;
+	char age;
 };
 
 static const struct option long_options[] = {
@@ -267,7 +273,8 @@ compute_visibility(char *cols, struct visible_columns *vis)
 		{ "system_time_ms", &vis->system_time_ms },
 		{ "system_time_ms", &vis->cumulative_user_time_ms },
 		{ "cumulative_system_time_ms", &vis->cumulative_system_time_ms },
-		{ "start_time", &vis->start_time },
+		{ "start_time_sec", &vis->start_time_sec },
+		{ "start_time_msec", &vis->start_time_msec },
 
 		{ "start_code", &vis->start_code },
 		{ "end_code", &vis->end_code },
@@ -372,6 +379,11 @@ compute_visibility(char *cols, struct visible_columns *vis)
 
 		{ "time_ms", &vis->time_ms },
 		{ "time", &vis->time },
+
+		{ "start_time", &vis->start_time },
+		{ "age_sec", &vis->age_sec },
+		{ "age_msec", &vis->age_msec },
+		{ "age", &vis->age },
 	};
 
 	char *name = strtok(cols, ",");
@@ -458,7 +470,8 @@ eval_visibility(const struct visible_columns *vis, bool print_header,
 		eval_col(vis->system_time_ms, "system_time_ms:int", &d, STAT);
 		eval_col(vis->cumulative_user_time_ms, "cumulative_user_time_ms:int", &d, STAT);
 		eval_col(vis->cumulative_system_time_ms, "cumulative_system_time_ms:int", &d, STAT);
-		eval_col(vis->start_time, "start_time:int", &d, STAT);
+		eval_col(vis->start_time_sec, "start_time_sec:int", &d, STAT);
+		eval_col(vis->start_time_msec, "start_time_msec:int", &d, STAT);
 
 		eval_col(vis->start_code, "start_code:int", &d, STAT);
 		eval_col(vis->end_code, "end_code:int", &d, STAT);
@@ -562,6 +575,11 @@ eval_visibility(const struct visible_columns *vis, bool print_header,
 		eval_col(vis->time_ms, "time_ms:int", &d, STAT);
 		eval_col(vis->time, "time:string", &d, STAT);
 
+		eval_col(vis->start_time, "start_time:string", &d, STAT);
+		eval_col(vis->age_sec, "age_sec:int", &d, STAT);
+		eval_col(vis->age_msec, "age_msec:int", &d, STAT);
+		eval_col(vis->age, "age:string", &d, STAT);
+
 		d.count = d.visible_count;
 		d.visible_count = 0;
 		if (print_header)
@@ -597,18 +615,20 @@ cprint(struct print_ctx *ctx, const char *format, ...)
 		fputc('\n', stdout);
 }
 
-static long
+static unsigned long
 get_hz(void)
 {
-	static long hz = 0;
+	static unsigned long hz = 0;
 	if (hz)
 		return hz;
-	hz = sysconf(_SC_CLK_TCK);
-	if (hz <= 0) {
+	long ret = sysconf(_SC_CLK_TCK);
+	if (ret <= 0) {
 		fprintf(stderr,
 			"unable to determine HZ value (%ld %d), assuming 100\n",
-			hz, errno);
+			ret, errno);
 		hz = 100;
+	} else {
+		hz = (unsigned long)ret;
 	}
 
 	return hz;
@@ -619,6 +639,100 @@ time_in_ms(unsigned long long t)
 {
 	return t * 1000 / get_hz();
 }
+
+#if 0
+/* missing sub-second precision */
+static unsigned long long
+get_boottime()
+{
+	static unsigned long long boottime = ULLONG_MAX;
+	if (boottime != ULLONG_MAX)
+		return boottime;
+
+	FILE *fp = fopen("/proc/stat", "r");
+	if (!fp) {
+		fprintf(stderr,
+			"unable to determine boot time (%d, %s), assuming 1.1.1970\n",
+			errno, strerror(errno));
+		boottime = 0;
+		return boottime;
+	}
+
+	char *buf = NULL;
+	size_t bufsize = 0;
+
+	ssize_t nread;
+	while ((nread = getline(&buf, &bufsize, fp)) != -1) {
+		if (nread < strlen("btime ") + 1)
+			continue;
+		if (strncmp(buf, "btime ", strlen("btime ")) != 0)
+			continue;
+
+		if (buf[nread - 1] == '\n')
+			buf[nread - 1] = 0;
+
+		if (strtoull_safe(buf + strlen("btime "), &boottime, 0)) {
+			fprintf(stderr,
+				"unable to determine boot time (strtoull failed), assuming 1.1.1970\n");
+			boottime = 0;
+		}
+
+		break;
+	}
+
+	free(buf);
+	fclose(fp);
+
+	if (boottime == ULLONG_MAX) {
+		fprintf(stderr,
+			"unable to determine boot time (btime not found), assuming 1.1.1970\n");
+		boottime = 0;
+	}
+
+	return boottime;
+}
+#endif
+
+static struct timespec boottime;
+
+#define NSECS_IN_SEC 1000000000
+
+static void
+get_start_time(proc_t *proc, struct timespec *ts)
+{
+	unsigned long long ms = time_in_ms(proc->start_time);
+
+	memcpy(ts, &boottime, sizeof(boottime));
+	ts->tv_sec += ms / 1000;
+	ts->tv_nsec += 1000000 * (ms % 1000);
+	if (ts->tv_nsec >= NSECS_IN_SEC) {
+		ts->tv_sec++;
+		ts->tv_nsec -= NSECS_IN_SEC;
+	}
+}
+
+static bool
+subtract_timespecs(const struct timespec *ts_later,
+		const struct timespec *ts_earlier,
+		struct timespec *ts)
+{
+	if (ts_later->tv_sec < ts_earlier->tv_sec)
+		return false;
+	if (ts_later->tv_sec == ts_earlier->tv_sec &&
+			ts_later->tv_nsec < ts_earlier->tv_nsec)
+		return false;
+
+	unsigned long long diff =
+			(ts_later->tv_sec - ts_earlier->tv_sec) * NSECS_IN_SEC +
+			ts_later->tv_nsec - ts_earlier->tv_nsec;
+	ts->tv_sec = diff / NSECS_IN_SEC;
+	ts->tv_nsec = diff % NSECS_IN_SEC;
+
+	return true;
+}
+
+/* static point in time from which ages are calculated */
+static struct timespec ref_time;
 
 static void
 print_proc(proc_t *proc, struct visible_columns *vis,
@@ -669,8 +783,16 @@ print_proc(proc_t *proc, struct visible_columns *vis,
 		cprint(&ctx, "%llu", time_in_ms(proc->cutime));
 	if (vis->cumulative_system_time_ms)
 		cprint(&ctx, "%llu", time_in_ms(proc->cstime));
-	if (vis->start_time)
-		cprint(&ctx, "%llu", proc->start_time);
+
+	struct timespec start_time_ts;
+	if (vis->start_time_sec || vis->start_time_msec || vis->start_time ||
+			vis->age_sec || vis->age_msec || vis->age)
+		get_start_time(proc, &start_time_ts);
+
+	if (vis->start_time_sec)
+		cprint(&ctx, "%llu", start_time_ts.tv_sec);
+	if (vis->start_time_msec)
+		cprint(&ctx, "%llu", start_time_ts.tv_nsec / 1000000);
 
 	if (vis->start_code)
 		cprint(&ctx, "0x%lx", proc->start_code);
@@ -970,6 +1092,106 @@ print_proc(proc_t *proc, struct visible_columns *vis,
 		else
 			cprint(&ctx, "0s");
 	}
+
+	if (vis->start_time) {
+		print_timespec(&start_time_ts, false);
+		cprint(&ctx, "");
+	}
+
+	struct timespec age_ts;
+	if (vis->age_sec || vis->age_msec || vis->age) {
+		if (!subtract_timespecs(&ref_time, &start_time_ts, &age_ts)) {
+			/* if process was created after csv-ps, then pretend
+			 * it was created at the same time */
+			age_ts.tv_sec = 0;
+			age_ts.tv_nsec = 0;
+		}
+	}
+
+	if (vis->age_sec)
+		cprint(&ctx, "%llu", age_ts.tv_sec);
+
+	if (vis->age_msec)
+		cprint(&ctx, "%llu", age_ts.tv_nsec / 1000000);
+
+	if (vis->age) {
+		unsigned long long age = age_ts.tv_sec;
+		unsigned ms = age_ts.tv_nsec / 1000000;
+
+		unsigned s = age % 60;
+		age /= 60;
+		unsigned m = age % 60;
+		age /= 60;
+		unsigned h = age % 24;
+		age /= 24;
+		unsigned long long d = age;
+
+		if (d > 0)
+			cprint(&ctx, "%llud:%02uh:%02um:%02u.%03us",
+					d, h, m, s, ms);
+		else if (h > 0)
+			cprint(&ctx, "%uh:%02um:%02u.%03us", h, m, s, ms);
+		else if (m > 0)
+			cprint(&ctx, "%um:%02u.%03us", m, s, ms);
+		else
+			cprint(&ctx, "%u.%03us", s, ms);
+	}
+}
+
+static void
+calibrate_boottime(void)
+{
+	/*
+	 * It's impossible to get boot time with sub-second precision from
+	 * the Linux kernel. Infer boot time from current process start_time
+	 * and current time.
+	 */
+
+	struct timeval start;
+	if (gettimeofday(&start, NULL)) {
+		perror("gettimeofday");
+		abort();
+	}
+
+	pid_t pids[2] = { getpid(), 0 };
+	PROCTAB *pt = openproc(PROC_FILLSTAT | PROC_PID, pids);
+	if (!pt) {
+		perror("openproc");
+		exit(2);
+	}
+
+	proc_t *proc = readproc(pt, NULL);
+
+	unsigned long long ms = time_in_ms(proc->start_time);
+	boottime.tv_sec = start.tv_sec - ms / 1000;
+	if (start.tv_usec * 1000 >= (ms % 1000) * 1000000)
+		boottime.tv_nsec = start.tv_usec * 1000 - (ms % 1000) * 1000000;
+	else {
+		boottime.tv_nsec = NSECS_IN_SEC + start.tv_usec * 1000 - (ms % 1000) * 1000000;
+		boottime.tv_sec--;
+	}
+
+#ifndef NDEBUG
+	/* verify */
+	struct timespec start_time;
+	get_start_time(proc, &start_time);
+
+	struct timespec start_ts;
+	start_ts.tv_sec = start.tv_sec;
+	start_ts.tv_nsec = start.tv_usec * 1000;
+
+	struct timespec diff;
+	assert(subtract_timespecs(&start_ts, &start_time, &diff) == true);
+	assert(diff.tv_sec == 0);
+	assert(diff.tv_nsec == 0);
+#endif
+
+	freeproc(proc);
+
+	closeproc(pt);
+
+	ref_time.tv_sec = start.tv_sec;
+	ref_time.tv_nsec = start.tv_usec * 1000;
 }
 
 int
@@ -983,6 +1205,8 @@ main(int argc, char *argv[])
 	bool show = false;
 	pid_t *pids = NULL;
 	size_t npids = 0;
+
+	calibrate_boottime();
 
 	PageSize = sysconf(_SC_PAGESIZE);
 

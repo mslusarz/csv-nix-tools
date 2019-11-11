@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "utils.h"
@@ -248,6 +249,33 @@ strnchr(const char *str, int c, size_t len)
 	if (nul && r > nul)
 		return NULL;
 	return r;
+}
+
+void
+print_timespec(struct timespec *ts, bool nsec)
+{
+	int ret;
+	struct tm t;
+
+	if (localtime_r(&ts->tv_sec, &t) == NULL)
+		goto fallback;
+
+	char buf[50];
+	ret = strftime(buf, 30, "%F %T", &t);
+	if (ret == 0)
+		goto fallback;
+
+	if (nsec)
+		printf("%s.%09ld", buf, ts->tv_nsec);
+	else
+		printf("%s.%03ld", buf, ts->tv_nsec / 1000000);
+
+	return;
+fallback:
+	if (nsec)
+		printf("%lu.%09lu", ts->tv_sec, ts->tv_nsec);
+	else
+		printf("%lu.%03lu", ts->tv_sec, ts->tv_nsec / 1000000);
 }
 
 bool

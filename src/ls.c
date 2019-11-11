@@ -131,26 +131,6 @@ get_file_type_long(mode_t m)
 	abort();
 }
 
-static void
-print_timespec(struct timespec *ts)
-{
-	int ret;
-	struct tm t;
-
-	if (localtime_r(&ts->tv_sec, &t) == NULL)
-		goto fallback;
-
-	char buf[50];
-	ret = strftime(buf, 30, "%F %T", &t);
-	if (ret == 0)
-		goto fallback;
-
-	printf("%s.%09ld", buf, ts->tv_nsec);
-	return;
-fallback:
-	printf("%lu.%09lu", ts->tv_sec, ts->tv_nsec);
-}
-
 struct stat_ctx {
 	size_t printed;
 	const struct visibility_info *visinfo;
@@ -258,17 +238,17 @@ print_stat(const char *dirpath, const char *path, struct stat *st,
 		stat_printf(&ctx, "%s", (st->st_mode & S_ISVTX) ? "1" : "0");
 
 	if (visinfo->cols.ext.mtime) {
-		print_timespec(&st->st_mtim);
+		print_timespec(&st->st_mtim, true);
 		stat_printf(&ctx, "");
 	}
 
 	if (visinfo->cols.ext.ctime) {
-		print_timespec(&st->st_ctim);
+		print_timespec(&st->st_ctim, true);
 		stat_printf(&ctx, "");
 	}
 
 	if (visinfo->cols.ext.atime) {
-		print_timespec(&st->st_atim);
+		print_timespec(&st->st_atim, true);
 		stat_printf(&ctx, "");
 	}
 

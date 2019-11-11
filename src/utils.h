@@ -53,6 +53,7 @@ int strtoi_safe(const char *str, int *val, int base);
 int strtou_safe(const char *str, unsigned *val, int base);
 
 char *strnchr(const char *str, int c, size_t len);
+void print_timespec(struct timespec *ts, bool nsec);
 
 bool csv_requires_quoting(const char *str, size_t len);
 void csv_print_quoted(const char *str, size_t len);
