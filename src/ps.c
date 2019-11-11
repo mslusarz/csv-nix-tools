@@ -32,7 +32,6 @@
 
 /*
  * TODO:
- * - --pid
  * - compute dates/times
  * - translate uids & gids
  * - better default list of columns (ps-like or top-like?)
@@ -178,6 +177,7 @@ struct visibility_info {
 static const struct option long_options[] = {
 	{"fields",	required_argument,	NULL, 'f'},
 	{"no-header",	no_argument,		NULL, 'H'},
+	{"pid",		required_argument,	NULL, 'p'},
 	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
@@ -192,6 +192,7 @@ usage(FILE *out)
 	fprintf(out, "Usage: csv-ps [OPTION]...\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -f, --fields=name1[,name2...]\n");
+	fprintf(out, "  -p, --pid=pid1[,pid2...]\n");
 	fprintf(out, "  -s, --show\n");
 	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
@@ -277,12 +278,14 @@ main(int argc, char *argv[])
 	struct visible_columns vis;
 	bool print_header = true;
 	bool show = false;
+	pid_t *pids = NULL;
+	size_t npids = 0;
 
 	PageSize = sysconf(_SC_PAGESIZE);
 
 	memset(&vis, 1, sizeof(vis));
 
-	while ((opt = getopt_long(argc, argv, "f:s", long_options,
+	while ((opt = getopt_long(argc, argv, "f:p:s", long_options,
 			&longindex)) != -1) {
 		switch (opt) {
 			case 'f':
@@ -291,6 +294,22 @@ main(int argc, char *argv[])
 			case 'H':
 				print_header = false;
 				break;
+			case 'p': {
+				char *pid = strtok(optarg, ",");
+				while (pid) {
+					pids = xrealloc_nofail(pids, npids + 2,
+							sizeof(pids[0]));
+
+					if (strtoi_safe(pid, &pids[npids], 0))
+						exit(2);
+					npids++;
+
+					pid = strtok(NULL, ",");
+				}
+				pids[npids] = 0;
+
+				break;
+			}
 			case 's':
 				show = true;
 				break;
@@ -619,9 +638,10 @@ main(int argc, char *argv[])
 		flags |= PROC_FILLSYSTEMD;
 	if (d.mask & LXC)
 		flags |= PROC_FILL_LXC;
+	if (npids)
+		flags |= PROC_PID;
 
-	pid_t l[] = {3209, 0};
-	PROCTAB *pt = openproc(flags /*| PROC_PID*/, l);
+	PROCTAB *pt = openproc(flags, pids);
 	if (!pt) {
 		perror("openproc");
 		exit(2);

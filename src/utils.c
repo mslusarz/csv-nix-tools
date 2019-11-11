@@ -195,6 +195,49 @@ strtoul_safe(const char *str, unsigned long *val, int base)
 	return 0;
 }
 
+int
+strtoi_safe(const char *str, int *val, int base)
+{
+	long l;
+	if (strtol_safe(str, &l, base))
+		return -1;
+
+	if (l < INT_MIN) {
+		fprintf(stderr,
+			"value '%s' is too big to be held in %ld-bit signed integer\n",
+			str, 8 * sizeof(*val));
+		return -1;
+	}
+
+	if (l > INT_MAX) {
+		fprintf(stderr,
+			"value '%s' is too big to be held in %ld-bit signed integer\n",
+			str, 8 * sizeof(*val));
+		return -1;
+	}
+
+	*val = (int)l;
+	return 0;
+}
+
+int
+strtou_safe(const char *str, unsigned *val, int base)
+{
+	unsigned long l;
+	if (strtoul_safe(str, &l, base))
+		return -1;
+
+	if (l > UINT_MAX) {
+		fprintf(stderr,
+			"value '%s' is too big to be held in %ld-bit unsigned integer\n",
+			str, 8 * sizeof(*val));
+		return -1;
+	}
+
+	*val = (unsigned)l;
+	return 0;
+}
+
 char *
 strnchr(const char *str, int c, size_t len)
 {

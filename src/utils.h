@@ -49,6 +49,8 @@ int strtoll_safe(const char *str, long long *val, int base);
 int strtoull_safe(const char *str, unsigned long long *val, int base);
 int strtol_safe(const char *str, long *val, int base);
 int strtoul_safe(const char *str, unsigned long *val, int base);
+int strtoi_safe(const char *str, int *val, int base);
+int strtou_safe(const char *str, unsigned *val, int base);
 
 char *strnchr(const char *str, int c, size_t len);
 
