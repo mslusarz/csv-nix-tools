@@ -390,7 +390,7 @@ struct eval_col_data {
 	int print;
 	size_t visible_count;
 	size_t count;
-	int mask;
+	int sources;
 };
 
 static void
@@ -403,7 +403,7 @@ eval_col(char vis, const char *str, struct eval_col_data *d, int source)
 		return;
 
 	fputs(str, stdout);
-	d->mask |= source;
+	d->sources |= source;
 
 	if (d->visible_count < d->count)
 		fputc(',', stdout);
@@ -413,143 +413,152 @@ enum { DEF = 0, STAT = 1, STATUS = 2, STAT_OR_STATUS = 4, STATM = 8,
 	CMDLINE = 16, ENVIRON = 32, CGROUP = 64, OOM = 128, NS = 256,
 	SD = 512, LXC = 1024 };
 
+struct col_summary {
+	size_t count;
+	int sources;
+};
+
 static void
 eval_visibility(const struct visible_columns *vis, bool print_header,
-		struct eval_col_data *d)
+		struct col_summary *summary)
 {
-	d->print = 0;
-	d->visible_count = 0;
-	d->count = sizeof(vis) + 1;
-	d->mask = 0;
+	struct eval_col_data d;
+	d.print = 0;
+	d.visible_count = 0;
+	d.count = sizeof(*vis) + 1;
+	d.sources = 0;
 
 	do {
 		/* always available */
-		eval_col(vis->tid, "tid:int", d, DEF);
-		eval_col(vis->tgid, "tgid:int", d, DEF);
-		eval_col(vis->euid, "euid:int", d, DEF);
-		eval_col(vis->egid, "egid:int", d, DEF);
+		eval_col(vis->tid, "tid:int", &d, DEF);
+		eval_col(vis->tgid, "tgid:int", &d, DEF);
+		eval_col(vis->euid, "euid:int", &d, DEF);
+		eval_col(vis->egid, "egid:int", &d, DEF);
 
 		/* from stat or status */
-		eval_col(vis->ppid, "ppid:int", d, STAT_OR_STATUS);
-		eval_col(vis->state, "state:string", d, STAT_OR_STATUS);
-		eval_col(vis->cmd, "cmd:string", d, STAT_OR_STATUS);
-		eval_col(vis->nlwp, "nlwp:int", d, STAT_OR_STATUS);
-		eval_col(vis->wchan, "wchan:int", d, STAT_OR_STATUS);
+		eval_col(vis->ppid, "ppid:int", &d, STAT_OR_STATUS);
+		eval_col(vis->state, "state:string", &d, STAT_OR_STATUS);
+		eval_col(vis->cmd, "cmd:string", &d, STAT_OR_STATUS);
+		eval_col(vis->nlwp, "nlwp:int", &d, STAT_OR_STATUS);
+		eval_col(vis->wchan, "wchan:int", &d, STAT_OR_STATUS);
 
 		/* from stat */
-		eval_col(vis->pgrp, "pgrp:int", d, STAT);
-		eval_col(vis->session, "session:int", d, STAT);
+		eval_col(vis->pgrp, "pgrp:int", &d, STAT);
+		eval_col(vis->session, "session:int", &d, STAT);
 
-		eval_col(vis->utime, "utime:int", d, STAT);
-		eval_col(vis->stime, "stime:int", d, STAT);
-		eval_col(vis->cutime, "cutime:int", d, STAT);
-		eval_col(vis->cstime, "cstime:int", d, STAT);
-		eval_col(vis->start_time, "start_time:int", d, STAT);
+		eval_col(vis->utime, "utime:int", &d, STAT);
+		eval_col(vis->stime, "stime:int", &d, STAT);
+		eval_col(vis->cutime, "cutime:int", &d, STAT);
+		eval_col(vis->cstime, "cstime:int", &d, STAT);
+		eval_col(vis->start_time, "start_time:int", &d, STAT);
 
-		eval_col(vis->start_code, "start_code:int", d, STAT);
-		eval_col(vis->end_code, "end_code:int", d, STAT);
-		eval_col(vis->start_stack, "start_stack:int", d, STAT);
-		eval_col(vis->kstk_esp, "kstk_esp:int", d, STAT);
-		eval_col(vis->kstk_eip, "kstk_eip:int", d, STAT);
+		eval_col(vis->start_code, "start_code:int", &d, STAT);
+		eval_col(vis->end_code, "end_code:int", &d, STAT);
+		eval_col(vis->start_stack, "start_stack:int", &d, STAT);
+		eval_col(vis->kstk_esp, "kstk_esp:int", &d, STAT);
+		eval_col(vis->kstk_eip, "kstk_eip:int", &d, STAT);
 
-		eval_col(vis->priority, "priority:int", d, STAT);
-		eval_col(vis->nice, "nice:int", d, STAT);
-		eval_col(vis->rss, "rss:int", d, STAT);
-		eval_col(vis->alarm, "alarm:int", d, STAT);
+		eval_col(vis->priority, "priority:int", &d, STAT);
+		eval_col(vis->nice, "nice:int", &d, STAT);
+		eval_col(vis->rss, "rss:int", &d, STAT);
+		eval_col(vis->alarm, "alarm:int", &d, STAT);
 
-		eval_col(vis->rtprio, "rtprio:int", d, STAT);
-		eval_col(vis->sched, "sched:int", d, STAT);
-		eval_col(vis->vsize, "vsize:int", d, STAT);
-		eval_col(vis->rss_rlim, "rss_rlim:int", d, STAT);
-		eval_col(vis->flags, "flags:int", d, STAT);
-		eval_col(vis->min_flt, "min_flt:int", d, STAT);
-		eval_col(vis->maj_flt, "maj_flt:int", d, STAT);
-		eval_col(vis->cmin_flt, "cmin_flt:int", d, STAT);
-		eval_col(vis->cmaj_flt, "cmaj_flt:int", d, STAT);
+		eval_col(vis->rtprio, "rtprio:int", &d, STAT);
+		eval_col(vis->sched, "sched:int", &d, STAT);
+		eval_col(vis->vsize, "vsize:int", &d, STAT);
+		eval_col(vis->rss_rlim, "rss_rlim:int", &d, STAT);
+		eval_col(vis->flags, "flags:int", &d, STAT);
+		eval_col(vis->min_flt, "min_flt:int", &d, STAT);
+		eval_col(vis->maj_flt, "maj_flt:int", &d, STAT);
+		eval_col(vis->cmin_flt, "cmin_flt:int", &d, STAT);
+		eval_col(vis->cmaj_flt, "cmaj_flt:int", &d, STAT);
 
-		eval_col(vis->tty, "tty:int", d, STAT);
-		eval_col(vis->tpgid, "tpgid:int", d, STAT);
-		eval_col(vis->exit_signal, "exit_signal:int", d, STAT);
-		eval_col(vis->processor, "processor:int", d, STAT);
+		eval_col(vis->tty, "tty:int", &d, STAT);
+		eval_col(vis->tpgid, "tpgid:int", &d, STAT);
+		eval_col(vis->exit_signal, "exit_signal:int", &d, STAT);
+		eval_col(vis->processor, "processor:int", &d, STAT);
 
 		/* from status */
-		eval_col(vis->pending_signals, "pending_signals:string", d, STATUS);
-		eval_col(vis->blocked_signals, "blocked_signals:string", d, STATUS);
-		eval_col(vis->ignored_signals, "ignored_signals:string", d, STATUS);
-		eval_col(vis->caught_signals, "caught_signals:string", d, STATUS);
-		eval_col(vis->pending_signals_per_task, "pending_signals_per_task:string", d, STATUS);
+		eval_col(vis->pending_signals, "pending_signals:string", &d, STATUS);
+		eval_col(vis->blocked_signals, "blocked_signals:string", &d, STATUS);
+		eval_col(vis->ignored_signals, "ignored_signals:string", &d, STATUS);
+		eval_col(vis->caught_signals, "caught_signals:string", &d, STATUS);
+		eval_col(vis->pending_signals_per_task, "pending_signals_per_task:string", &d, STATUS);
 
-		eval_col(vis->vm_size, "vm_size:int", d, STATUS);
-		eval_col(vis->vm_lock, "vm_lock:int", d, STATUS);
-		eval_col(vis->vm_rss, "vm_rss:int", d, STATUS);
-		eval_col(vis->vm_rss_anon, "vm_rss_anon:int", d, STATUS);
-		eval_col(vis->vm_rss_file, "vm_rss_file:int", d, STATUS);
-		eval_col(vis->vm_rss_shared, "vm_rss_shared:int", d, STATUS);
-		eval_col(vis->vm_data, "vm_data:int", d, STATUS);
-		eval_col(vis->vm_stack, "vm_stack:int", d, STATUS);
-		eval_col(vis->vm_swap, "vm_swap:int", d, STATUS);
-		eval_col(vis->vm_exe, "vm_exe:int", d, STATUS);
-		eval_col(vis->vm_lib, "vm_lib:int", d, STATUS);
+		eval_col(vis->vm_size, "vm_size:int", &d, STATUS);
+		eval_col(vis->vm_lock, "vm_lock:int", &d, STATUS);
+		eval_col(vis->vm_rss, "vm_rss:int", &d, STATUS);
+		eval_col(vis->vm_rss_anon, "vm_rss_anon:int", &d, STATUS);
+		eval_col(vis->vm_rss_file, "vm_rss_file:int", &d, STATUS);
+		eval_col(vis->vm_rss_shared, "vm_rss_shared:int", &d, STATUS);
+		eval_col(vis->vm_data, "vm_data:int", &d, STATUS);
+		eval_col(vis->vm_stack, "vm_stack:int", &d, STATUS);
+		eval_col(vis->vm_swap, "vm_swap:int", &d, STATUS);
+		eval_col(vis->vm_exe, "vm_exe:int", &d, STATUS);
+		eval_col(vis->vm_lib, "vm_lib:int", &d, STATUS);
 
-		eval_col(vis->ruid, "ruid:int", d, STATUS);
-		eval_col(vis->rgid, "rgid:int", d, STATUS);
-		eval_col(vis->suid, "suid:int", d, STATUS);
-		eval_col(vis->sgid, "sgid:int", d, STATUS);
-		eval_col(vis->fuid, "fuid:int", d, STATUS);
-		eval_col(vis->fgid, "fgid:int", d, STATUS);
+		eval_col(vis->ruid, "ruid:int", &d, STATUS);
+		eval_col(vis->rgid, "rgid:int", &d, STATUS);
+		eval_col(vis->suid, "suid:int", &d, STATUS);
+		eval_col(vis->sgid, "sgid:int", &d, STATUS);
+		eval_col(vis->fuid, "fuid:int", &d, STATUS);
+		eval_col(vis->fgid, "fgid:int", &d, STATUS);
 
-		eval_col(vis->supgid, "supgid:string", d, STATUS);
+		eval_col(vis->supgid, "supgid:string", &d, STATUS);
 
 		/* from tatm */
-		eval_col(vis->size, "size:int", d, STATM);
-		eval_col(vis->resident, "resident:int", d, STATM);
-		eval_col(vis->share, "share:int", d, STATM);
-		eval_col(vis->trs, "trs:int", d, STATM);
-		eval_col(vis->drs, "drs:int", d, STATM);
+		eval_col(vis->size, "size:int", &d, STATM);
+		eval_col(vis->resident, "resident:int", &d, STATM);
+		eval_col(vis->share, "share:int", &d, STATM);
+		eval_col(vis->trs, "trs:int", &d, STATM);
+		eval_col(vis->drs, "drs:int", &d, STATM);
 
 		/* other */
-		eval_col(vis->cmdline, "cmdline:string[]", d, CMDLINE);
-		eval_col(vis->cgroup, "cgroup:string[]", d, CGROUP);
+		eval_col(vis->cmdline, "cmdline:string[]", &d, CMDLINE);
+		eval_col(vis->cgroup, "cgroup:string[]", &d, CGROUP);
 
-		eval_col(vis->oom_score, "oom_score:int", d, OOM);
-		eval_col(vis->oom_adj, "oom_adj:int", d, OOM);
+		eval_col(vis->oom_score, "oom_score:int", &d, OOM);
+		eval_col(vis->oom_adj, "oom_adj:int", &d, OOM);
 
-		eval_col(vis->ns_ipc, "ns_ipc:int", d, NS);
-		eval_col(vis->ns_mnt, "ns_mnt:int", d, NS);
-		eval_col(vis->ns_net, "ns_net:int", d, NS);
-		eval_col(vis->ns_pid, "ns_pid:int", d, NS);
-		eval_col(vis->ns_user, "ns_user:int", d, NS);
-		eval_col(vis->ns_uts, "ns_uts:int", d, NS);
+		eval_col(vis->ns_ipc, "ns_ipc:int", &d, NS);
+		eval_col(vis->ns_mnt, "ns_mnt:int", &d, NS);
+		eval_col(vis->ns_net, "ns_net:int", &d, NS);
+		eval_col(vis->ns_pid, "ns_pid:int", &d, NS);
+		eval_col(vis->ns_user, "ns_user:int", &d, NS);
+		eval_col(vis->ns_uts, "ns_uts:int", &d, NS);
 
-		eval_col(vis->sd_mach, "sd_mach:string", d, SD);
-	        eval_col(vis->sd_ouid, "sd_ouid:string", d, SD);
-	        eval_col(vis->sd_seat, "sd_seat:string", d, SD);
-	        eval_col(vis->sd_sess, "sd_sess:string", d, SD);
-	        eval_col(vis->sd_slice, "sd_slice:string", d, SD);
-	        eval_col(vis->sd_unit, "sd_unit:string", d, SD);
-	        eval_col(vis->sd_uunit, "sd_uunit:string", d, SD);
+		eval_col(vis->sd_mach, "sd_mach:string", &d, SD);
+	        eval_col(vis->sd_ouid, "sd_ouid:string", &d, SD);
+	        eval_col(vis->sd_seat, "sd_seat:string", &d, SD);
+	        eval_col(vis->sd_sess, "sd_sess:string", &d, SD);
+	        eval_col(vis->sd_slice, "sd_slice:string", &d, SD);
+	        eval_col(vis->sd_unit, "sd_unit:string", &d, SD);
+	        eval_col(vis->sd_uunit, "sd_uunit:string", &d, SD);
 
-	        eval_col(vis->lxcname, "lxcname:string", d, LXC);
+	        eval_col(vis->lxcname, "lxcname:string", &d, LXC);
 
-		eval_col(vis->environ, "environ:string", d, ENVIRON);
+		eval_col(vis->environ, "environ:string", &d, ENVIRON);
 
-		eval_col(vis->euid_name, "euid_name:string", d, DEF);
-		eval_col(vis->egid_name, "egid_name:string", d, DEF);
+		eval_col(vis->euid_name, "euid_name:string", &d, DEF);
+		eval_col(vis->egid_name, "egid_name:string", &d, DEF);
 
-		eval_col(vis->ruid_name, "ruid_name:string", d, STATUS);
-		eval_col(vis->rgid_name, "rgid_name:string", d, STATUS);
-		eval_col(vis->suid_name, "suid_name:string", d, STATUS);
-		eval_col(vis->sgid_name, "sgid_name:string", d, STATUS);
-		eval_col(vis->fuid_name, "fuid_name:string", d, STATUS);
-		eval_col(vis->fgid_name, "fgid_name:string", d, STATUS);
+		eval_col(vis->ruid_name, "ruid_name:string", &d, STATUS);
+		eval_col(vis->rgid_name, "rgid_name:string", &d, STATUS);
+		eval_col(vis->suid_name, "suid_name:string", &d, STATUS);
+		eval_col(vis->sgid_name, "sgid_name:string", &d, STATUS);
+		eval_col(vis->fuid_name, "fuid_name:string", &d, STATUS);
+		eval_col(vis->fgid_name, "fgid_name:string", &d, STATUS);
 
-		eval_col(vis->supgid_names, "supgid_names:string", d, STATUS);
+		eval_col(vis->supgid_names, "supgid_names:string", &d, STATUS);
 
-		d->count = d->visible_count;
-		d->visible_count = 0;
+		d.count = d.visible_count;
+		d.visible_count = 0;
 		if (print_header)
-			d->print++;
-	} while (d->print == 1);
+			d.print++;
+	} while (d.print == 1);
+
+	summary->count = d.count;
+	summary->sources = d.sources;
 }
 
 struct visibility_info {
@@ -578,9 +587,10 @@ cprint(struct print_ctx *ctx, const char *format, ...)
 }
 
 static void
-print_proc(proc_t *proc, struct visible_columns *vis, struct eval_col_data *d)
+print_proc(proc_t *proc, struct visible_columns *vis,
+		struct col_summary *summary)
 {
-	struct visibility_info visinfo = {vis, d->count};
+	struct visibility_info visinfo = {vis, summary->count};
 	struct print_ctx ctx = {0, &visinfo};
 
 	/* always */
@@ -964,8 +974,8 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show();
 
-	struct eval_col_data d;
-	eval_visibility(&vis, print_header, &d);
+	struct col_summary summary;
+	eval_visibility(&vis, print_header, &summary);
 
 	if (print_header)
 		printf("\n");
@@ -979,30 +989,30 @@ main(int argc, char *argv[])
 
 	int flags = 0;
 
-	if (d.mask & STAT)
+	if (summary.sources & STAT)
 		flags |= PROC_FILLSTAT;
-	if (d.mask & STATUS)
+	if (summary.sources & STATUS)
 		flags |= PROC_FILLSTATUS;
-	if (d.mask & STAT_OR_STATUS) {
+	if (summary.sources & STAT_OR_STATUS) {
 		if ((flags & (PROC_FILLSTAT | PROC_FILLSTATUS)) == 0)
 			/* stat seems easier to parse */
 			flags |= PROC_FILLSTAT;
 	}
-	if (d.mask & STATM)
+	if (summary.sources & STATM)
 		flags |= PROC_FILLMEM;
-	if (d.mask & CMDLINE)
+	if (summary.sources & CMDLINE)
 		flags |= PROC_FILLCOM;
-	if (d.mask & ENVIRON)
+	if (summary.sources & ENVIRON)
 		flags |= PROC_FILLENV | PROC_EDITENVRCVT;
-	if (d.mask & CGROUP)
+	if (summary.sources & CGROUP)
 		flags |= PROC_FILLCGROUP;
-	if (d.mask & OOM)
+	if (summary.sources & OOM)
 		flags |= PROC_FILLOOM;
-	if (d.mask & NS)
+	if (summary.sources & NS)
 		flags |= PROC_FILLNS;
-	if (d.mask & SD)
+	if (summary.sources & SD)
 		flags |= PROC_FILLSYSTEMD;
-	if (d.mask & LXC)
+	if (summary.sources & LXC)
 		flags |= PROC_FILL_LXC;
 	if (npids)
 		flags |= PROC_PID;
@@ -1015,9 +1025,8 @@ main(int argc, char *argv[])
 
 	proc_t *proc;
 
-	while ((proc = readproc(pt, NULL)) != NULL) {
-		print_proc(proc, &vis, &d);
-	}
+	while ((proc = readproc(pt, NULL)) != NULL)
+		print_proc(proc, &vis, &summary);
 
 	closeproc(pt);
 
