@@ -33,7 +33,6 @@
 /*
  * TODO:
  * - compute dates/times
- * - translate uids & gids
  * - better default list of columns (ps-like or top-like?)
  * - better column names
  * - verify units/mults (pages/mb/kb/b)
@@ -54,7 +53,7 @@
 
 #include <proc/readproc.h>
 
-#include "usr-grp.h"
+#include "usr-grp-query.h"
 #include "utils.h"
 
 struct visible_columns {
@@ -167,6 +166,18 @@ struct visible_columns {
         char lxcname;
 
 	char environ;
+
+	char euid_name;
+	char egid_name;
+
+	char ruid_name;
+	char rgid_name;
+	char suid_name;
+	char sgid_name;
+	char fuid_name;
+	char fgid_name;
+
+	char supgid_names;
 };
 
 struct visibility_info {
@@ -447,6 +458,20 @@ main(int argc, char *argv[])
 				{ "lxcname", &vis.lxcname },
 
 				{ "environ", &vis.environ },
+
+				/* always available */
+				{ "euid_name", &vis.euid_name },
+				{ "egid_name", &vis.egid_name },
+
+				/* from status */
+				{ "ruid_name", &vis.ruid_name },
+				{ "rgid_name", &vis.rgid_name },
+				{ "suid_name", &vis.suid_name },
+				{ "sgid_name", &vis.sgid_name },
+				{ "fuid_name", &vis.fuid_name },
+				{ "fgid_name", &vis.fgid_name },
+
+				{ "supgid_names", &vis.supgid_names },
 		};
 
 		char *name = strtok(cols, ",");
@@ -595,6 +620,18 @@ main(int argc, char *argv[])
 
 		eval_col(vis.environ, "environ:string", &d, ENVIRON);
 
+		eval_col(vis.euid_name, "euid_name:string", &d, DEF);
+		eval_col(vis.egid_name, "egid_name:string", &d, DEF);
+
+		eval_col(vis.ruid_name, "ruid_name:string", &d, STATUS);
+		eval_col(vis.rgid_name, "rgid_name:string", &d, STATUS);
+		eval_col(vis.suid_name, "suid_name:string", &d, STATUS);
+		eval_col(vis.sgid_name, "sgid_name:string", &d, STATUS);
+		eval_col(vis.fuid_name, "fuid_name:string", &d, STATUS);
+		eval_col(vis.fgid_name, "fgid_name:string", &d, STATUS);
+
+		eval_col(vis.supgid_names, "supgid_names:string", &d, STATUS);
+
 		d.count = d.visible_count;
 		d.visible_count = 0;
 		if (print_header)
@@ -606,10 +643,12 @@ main(int argc, char *argv[])
 
 	struct visibility_info visinfo = {vis, d.count};
 
-#if 0
-	load_groups();
-	load_users();
-#endif
+	if (vis.euid_name || vis.egid_name ||
+			vis.ruid_name || vis.rgid_name ||
+			vis.suid_name || vis.sgid_name ||
+			vis.fuid_name || vis.fgid_name ||
+			vis.supgid_names)
+		usr_grp_query_init();
 
 	int flags = 0;
 
@@ -920,12 +959,57 @@ main(int argc, char *argv[])
 				csv_print_quoted(proc->environ[0], strlen(proc->environ[0]));
 			cprint(&ctx, "");
 		}
+
+		if (vis.euid_name)
+			cprint(&ctx, "%s", get_user(proc->euid));
+		if (vis.egid_name)
+			cprint(&ctx, "%s", get_group(proc->egid));
+
+		if (vis.ruid_name)
+			cprint(&ctx, "%s", get_user(proc->ruid));
+		if (vis.rgid_name)
+			cprint(&ctx, "%s", get_group(proc->rgid));
+		if (vis.suid_name)
+			cprint(&ctx, "%s", get_user(proc->suid));
+		if (vis.sgid_name)
+			cprint(&ctx, "%s", get_group(proc->sgid));
+		if (vis.fuid_name)
+			cprint(&ctx, "%s", get_user(proc->fuid));
+		if (vis.fgid_name)
+			cprint(&ctx, "%s", get_group(proc->fgid));
+
+		if (vis.supgid_names) {
+			char *gid_str = strtok(proc->supgid, ",");
+
+			fputc('"', stdout);
+			while (gid_str) {
+				gid_t gid;
+				if (strtou_safe(gid_str, &gid, 0)) {
+					fprintf(stderr,
+						"gid '%s' is not a number\n",
+						gid_str);
+					abort();
+				}
+				fprintf(stdout, "%s", get_group(gid));
+
+				gid_str = strtok(NULL, ",");
+				if (gid_str)
+					fputc(',', stdout);
+			}
+			fputc('"', stdout);
+
+			cprint(&ctx, "");
+		}
 	}
 
 	closeproc(pt);
 
-	free_users();
-	free_groups();
+	if (vis.euid_name || vis.egid_name ||
+			vis.ruid_name || vis.rgid_name ||
+			vis.suid_name || vis.sgid_name ||
+			vis.fuid_name || vis.fgid_name ||
+			vis.supgid_names)
+		usr_grp_query_fini();
 
 	return 0;
 }

@@ -163,7 +163,7 @@ if (BISON_FOUND AND FLEX_FOUND)
 endif()
 
 if(LIBPROCPS_FOUND)
-	build_tool(csv-ps src/ps.c src/usr-grp.c)
+	build_tool(csv-ps src/ps.c src/usr-grp-query.c)
 	if (LIBPROCPS_INCLUDE_DIRS)
 		target_include_directories(csv-ps ${LIBPROCPS_INCLUDE_DIRS})
 	endif()
