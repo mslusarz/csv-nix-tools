@@ -33,10 +33,6 @@
 /*
  * required to get:
  *  O_PATH
- *  hcreate_r
- *  hdestroy_t
- *  hsearch_r
- *  asprintf
  *  scandirat
  */
 #define _GNU_SOURCE
@@ -45,9 +41,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <getopt.h>
-#include <grp.h>
-#include <pwd.h>
-#include <search.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -60,16 +53,8 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "usr-grp-query.h"
 #include "utils.h"
-
-struct ht {
-	size_t keys_max;
-	struct hsearch_data ht;
-
-	ENTRY *table;
-	size_t table_size;
-	size_t inserted;
-};
 
 struct visible_columns {
 	struct {
@@ -123,149 +108,6 @@ struct visibility_info {
 	struct visible_columns cols;
 	size_t count;
 };
-
-static struct ht users_ht;
-static struct ht groups_ht;
-
-static int
-ht_init(struct ht *ht)
-{
-	memset(ht, 0, sizeof(*ht));
-	ht->keys_max = 4;
-	ht->table_size = 4;
-
-	ht->table = xmalloc(ht->table_size, sizeof(ht->table[0]));
-	if (!ht->table)
-		return 2;
-
-	if (hcreate_r(ht->keys_max, &ht->ht) == 0) {
-		perror("hcreate_r");
-		free(ht->table);
-		ht->table = NULL;
-		return 2;
-	}
-
-	return 0;
-}
-
-static void
-ht_destroy(struct ht *ht)
-{
-	hdestroy_r(&ht->ht);
-	for (size_t u = 0; u < ht->inserted; ++u) {
-		free(ht->table[u].key);
-		free(ht->table[u].data);
-	}
-	free(ht->table);
-}
-
-static const char *
-get_value(struct ht *ht, char *key, void *(*cb)(void *), void *cb_data)
-{
-	ENTRY e;
-	ENTRY *entry = NULL;
-
-	e.key = key;
-	e.data = NULL;
-
-	if (hsearch_r(e, ENTER, &entry, &ht->ht) == 0) {
-		/* hash map too small, recreate it */
-		hdestroy_r(&ht->ht);
-		memset(&ht->ht, 0, sizeof(ht->ht));
-		ht->keys_max *= 2;
-
-		if (hcreate_r(ht->keys_max, &ht->ht) == 0) {
-			perror("hcreate_r");
-			exit(2); /* no sane way to handle */
-		}
-
-		for (size_t u = 0; u < ht->inserted; ++u) {
-			e.key = ht->table[u].key;
-			e.data = NULL;
-
-			if (hsearch_r(e, ENTER, &entry, &ht->ht) == 0)
-				exit(2); /* impossible */
-
-			entry->key = ht->table[u].key;
-			entry->data = ht->table[u].data;
-		}
-
-		return get_value(ht, key, cb, cb_data);
-	}
-
-	if (entry->data != NULL)
-		return entry->data;
-
-	if (ht->inserted == ht->table_size) {
-		ht->table_size *= 2;
-		ht->table = xrealloc_nofail(ht->table, ht->table_size,
-				sizeof(ht->table[0]));
-	}
-
-	entry->key = xstrdup_nofail(key);
-
-	entry->data = cb(cb_data);
-	if (!entry->data)
-		exit(2); /* no sane way to handle */
-
-	ht->table[ht->inserted].key = entry->key;
-	ht->table[ht->inserted].data = entry->data;
-	ht->inserted++;
-
-	return entry->data;
-}
-
-static void *
-get_user_slow(void *uidp)
-{
-	char *ret;
-	uid_t uid = *(uid_t *)uidp;
-	struct passwd *passwd = getpwuid(uid);
-	if (passwd)
-		return xstrdup(passwd->pw_name);
-
-	if (asprintf(&ret, "%d", uid) < 0) {
-		perror("asprintf");
-		ret = NULL;
-	}
-
-	return ret;
-}
-
-static const char *
-get_user(uid_t uid)
-{
-	char key[30];
-	sprintf(key, "%d", uid);
-
-	return get_value(&users_ht, key, get_user_slow, &uid);
-}
-
-static void *
-get_group_slow(void *gidp)
-{
-	char *ret;
-	gid_t gid = *(uid_t *)gidp;
-	struct group *gr = getgrgid(gid);
-	if (gr)
-		return xstrdup(gr->gr_name);
-
-	if (asprintf(&ret, "%d", gid) < 0) {
-		perror("asprintf");
-		ret = NULL;
-	}
-
-	return ret;
-}
-
-static const char *
-get_group(gid_t gid)
-{
-	char key[30];
-	sprintf(key, "%d", gid);
-
-	return get_value(&groups_ht, key, get_group_slow, &gid);
-}
 
 static const char *
 get_file_type_long(mode_t m)
@@ -725,13 +567,9 @@ main(int argc, char *argv[])
 
 	tzset();
 
-	if (ht_init(&users_ht))
-		return 2;
-
-	if (ht_init(&groups_ht)) {
-		ht_destroy(&users_ht);
-		return 2;
-	}
+	ret = usr_grp_query_init();
+	if (ret)
+		return ret;
 
 	if (optind == argc) {
 		argv[optind] = ".";
@@ -936,8 +774,7 @@ restart_readlink:
 		}
 	}
 
-	ht_destroy(&users_ht);
-	ht_destroy(&groups_ht);
+	usr_grp_query_fini();
 
 	if (ret & 2)
 		return 2;
