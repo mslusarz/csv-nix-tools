@@ -407,6 +407,40 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 				beep();
 			else
 				xoff = newxoff;
+		} else if (ch == '[') {
+			/* move by one column left */
+			int old_xoff = xoff;
+			int new_off = 0;
+
+			for (size_t i = 0; i < nheaders; ++i) {
+				size_t len = params->max_lengths[i] + spacing;
+
+				if (new_off + len >= xoff) {
+					xoff = new_off;
+					break;
+				}
+
+				new_off += len;
+			}
+
+			if (old_xoff == xoff)
+				beep();
+		} else if (ch == ']') {
+			/* move by one column right */
+			int old_xoff = xoff;
+			int new_off = 0;
+
+			for (size_t i = 0; i < nheaders - 1; ++i) {
+				new_off += params->max_lengths[i] + spacing;
+
+				if (new_off > xoff) {
+					xoff = new_off;
+					break;
+				}
+			}
+
+			if (old_xoff == xoff)
+				beep();
 		} else if (ch == '/') {
 			// TODO implement search
 		} else if (ch == 'h') {
