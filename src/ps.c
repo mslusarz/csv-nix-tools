@@ -1030,6 +1030,9 @@ main(int argc, char *argv[])
 
 	closeproc(pt);
 
+	if (pids)
+		free(pids);
+
 	if (vis.euid_name || vis.egid_name ||
 			vis.ruid_name || vis.rgid_name ||
 			vis.suid_name || vis.sgid_name ||
