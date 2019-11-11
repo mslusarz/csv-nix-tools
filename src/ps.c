@@ -538,11 +538,11 @@ main(int argc, char *argv[])
 		eval_col(vis.processor, "processor:int", &d, STAT);
 
 		/* from status */
-		eval_col(vis.pending_signals, "pending_signals:int", &d, STATUS);
-		eval_col(vis.blocked_signals, "blocked_signals:int", &d, STATUS);
-		eval_col(vis.ignored_signals, "ignored_signals:int", &d, STATUS);
-		eval_col(vis.caught_signals, "caught_signals:int", &d, STATUS);
-		eval_col(vis.pending_signals_per_task, "pending_signals_per_task:int", &d, STATUS);
+		eval_col(vis.pending_signals, "pending_signals:string", &d, STATUS);
+		eval_col(vis.blocked_signals, "blocked_signals:string", &d, STATUS);
+		eval_col(vis.ignored_signals, "ignored_signals:string", &d, STATUS);
+		eval_col(vis.caught_signals, "caught_signals:string", &d, STATUS);
+		eval_col(vis.pending_signals_per_task, "pending_signals_per_task:string", &d, STATUS);
 
 		eval_col(vis.vm_size, "vm_size:int", &d, STATUS);
 		eval_col(vis.vm_lock, "vm_lock:int", &d, STATUS);
@@ -696,8 +696,12 @@ main(int argc, char *argv[])
 		}
 		if (vis.nlwp)
 			cprint(&ctx, "%d", proc->nlwp);
-		if (vis.wchan)
-			cprint(&ctx, "0x%lx", proc->wchan);
+		if (vis.wchan) {
+			if (proc->wchan == -1)
+				cprint(&ctx, "-1");
+			else
+				cprint(&ctx, "0x%lx", proc->wchan);
+		}
 
 		/* stat */
 		if (vis.pgrp)
@@ -743,7 +747,7 @@ main(int argc, char *argv[])
 		if (vis.vsize)
 			cprint(&ctx, "%lu", proc->vsize);
 		if (vis.rss_rlim)
-			cprint(&ctx, "0x%lx", proc->rss_rlim);
+			cprint(&ctx, "%ld", proc->rss_rlim);
 		if (vis.flags)
 			cprint(&ctx, "0x%lx", proc->flags);
 		if (vis.min_flt)
