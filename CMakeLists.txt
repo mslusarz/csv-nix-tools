@@ -116,7 +116,6 @@ build_tool(csv-ls		src/ls.c src/usr-grp-query.c)
 build_tool(csv-replace		src/replace.c)
 build_tool(csv-rpn-add		src/rpn-add.c)
 build_tool(csv-rpn-filter	src/rpn-filter.c)
-build_tool(csv-show		src/show.c)
 build_tool(csv-sort		src/sort.c)
 build_tool(csv-split		src/split.c)
 build_tool(csv-substring	src/substring.c)
@@ -129,18 +128,41 @@ target_link_libraries(csv-rpn-add	csvrpn)
 target_link_libraries(csv-rpn-filter	csvrpn)
 
 if(NCURSES_FOUND)
+	if(${CMAKE_VERSION} VERSION_LESS "3.13.0")
+		link_directories(${NCURSES_LIBRARY_DIRS})
+	endif()
+
+	build_tool(csv-show src/show.c)
 	target_compile_definitions(csv-show PRIVATE NCURSES_ENABLED)
+
 	if (NCURSES_INCLUDE_DIRS)
 		target_include_directories(csv-show ${NCURSES_INCLUDE_DIRS})
 	endif()
+
+	if(NOT ${CMAKE_VERSION} VERSION_LESS "3.13.0")
+		target_link_directories(csv-show PRIVATE ${NCURSES_LIBRARY_DIRS})
+	endif()
+
 	target_link_libraries(csv-show ${NCURSES_LIBRARIES})
+else()
+	build_tool(csv-show src/show.c)
 endif()
 
 if(SQLITE3_FOUND)
+	if(${CMAKE_VERSION} VERSION_LESS "3.13.0")
+		link_directories(${SQLITE3_LIBRARY_DIRS})
+	endif()
+
 	build_tool(csv-sqlite src/sqlite.c src/usr-grp.c src/sqlite-usr-grp.c)
+
 	if (SQLITE3_INCLUDE_DIRS)
 		target_include_directories(csv-sqlite ${SQLITE3_INCLUDE_DIRS})
 	endif()
+
+	if(NOT ${CMAKE_VERSION} VERSION_LESS "3.13.0")
+		target_link_directories(csv-sqlite PRIVATE ${SQLITE3_LIBRARY_DIRS})
+	endif()
+
 	target_link_libraries(csv-sqlite ${SQLITE3_LIBRARIES})
 endif()
 
@@ -163,10 +185,19 @@ if (BISON_FOUND AND FLEX_FOUND)
 endif()
 
 if(LIBPROCPS_FOUND)
+	if(${CMAKE_VERSION} VERSION_LESS "3.13.0")
+		link_directories(${LIBPROCPS_LIBRARY_DIRS})
+	endif()
+
 	build_tool(csv-ps src/ps.c src/usr-grp-query.c)
 	if (LIBPROCPS_INCLUDE_DIRS)
 		target_include_directories(csv-ps PRIVATE ${LIBPROCPS_INCLUDE_DIRS})
 	endif()
+
+	if(NOT ${CMAKE_VERSION} VERSION_LESS "3.13.0")
+		target_link_directories(csv-ps PRIVATE ${LIBPROCPS_LIBRARY_DIRS})
+	endif()
+
 	target_link_libraries(csv-ps ${LIBPROCPS_LIBRARIES})
 endif()
 
