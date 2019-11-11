@@ -496,7 +496,7 @@ main(int argc, char *argv[])
 
 		/* from stat or status */
 		eval_col(vis.ppid, "ppid:int", &d, STAT_OR_STATUS);
-		eval_col(vis.state, "state:int", &d, STAT_OR_STATUS);
+		eval_col(vis.state, "state:string", &d, STAT_OR_STATUS);
 		eval_col(vis.cmd, "cmd:string", &d, STAT_OR_STATUS);
 		eval_col(vis.nlwp, "nlwp:int", &d, STAT_OR_STATUS);
 		eval_col(vis.wchan, "wchan:int", &d, STAT_OR_STATUS);
