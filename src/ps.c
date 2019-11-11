@@ -1025,8 +1025,10 @@ main(int argc, char *argv[])
 
 	proc_t *proc;
 
-	while ((proc = readproc(pt, NULL)) != NULL)
+	while ((proc = readproc(pt, NULL)) != NULL) {
 		print_proc(proc, &vis, &summary);
+		freeproc(proc);
+	}
 
 	closeproc(pt);
 
