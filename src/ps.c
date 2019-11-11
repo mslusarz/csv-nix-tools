@@ -32,7 +32,6 @@
 
 /*
  * TODO:
- * - cmdline & cgroup -> flatten & add support for csv in csv
  * - --pid
  * - compute dates/times
  * - translate uids & gids
@@ -145,11 +144,8 @@ struct visible_columns {
 	char drs;
 
 	/* other */
-	char ncmdline;
-	char cmdline[100];
-
-	char ncgroup;
-	char cgroup[100];
+	char cmdline;
+	char cgroup;
 
 	char oom_score;
 	char oom_adj;
@@ -245,23 +241,31 @@ eval_col(char vis, const char *str, struct eval_col_data *d, int source)
 		fputc(',', stdout);
 }
 
-static size_t
-get_array_size(char **arr, size_t *size)
+static void
+print_inside_quote(const char *str, size_t len)
 {
-	if (*size != SIZE_MAX)
-		return *size;
-
-	*size = 0;
-
-	if (!arr)
-		return *size;
-
-	while (*arr) {
-		arr++;
-		(*size)++;
+	const char *comma = strnchr(str, ',', len);
+	const char *nl = strnchr(str, '\n', len);
+	const char *quot = strnchr(str, '"', len);
+	if (!comma && !nl && !quot) {
+		fwrite(str, 1, len, stdout);
+		return;
+	}
+	if (!quot) {
+		fwrite(str, 1, len, stdout);
+		return;
 	}
 
-	return *size;
+	do {
+		size_t curlen = (uintptr_t)quot - (uintptr_t)str + 1;
+		fwrite(str, 1, curlen, stdout);
+		str += curlen;
+		fputc('"', stdout);
+		len -= curlen;
+		quot = strnchr(str, '"', len);
+	} while (quot);
+
+	fwrite(str, 1, len, stdout);
 }
 
 int
@@ -277,12 +281,6 @@ main(int argc, char *argv[])
 	PageSize = sysconf(_SC_PAGESIZE);
 
 	memset(&vis, 1, sizeof(vis));
-
-	memset(&vis.cmdline, 0, sizeof(vis.cmdline));
-	memset(&vis.cmdline, 1, 25);
-
-	memset(&vis.cgroup, 0, sizeof(vis.cmdline));
-	memset(&vis.cgroup, 1, 20);
 
 	while ((opt = getopt_long(argc, argv, "f:s", long_options,
 			&longindex)) != -1) {
@@ -406,11 +404,11 @@ main(int argc, char *argv[])
 				{ "drs", &vis.drs },
 
 				/* other */
+				{ "cmdline", &vis.cmdline },
+				{ "cgroup", &vis.cgroup },
+
 				{ "oom_score", &vis.oom_score },
 				{ "oom_adj", &vis.oom_adj },
-
-				{ "ncmdline", &vis.ncmdline },
-				{ "ncgroup", &vis.ncgroup },
 
 				{ "ns_ipc", &vis.ns_ipc },
 				{ "ns_mnt", &vis.ns_mnt },
@@ -441,26 +439,6 @@ main(int argc, char *argv[])
 					found = 1;
 					break;
 				}
-			}
-
-			if (!found && strncmp(name, "cmdline", strlen("cmdline")) == 0) {
-				int num = atoi(name + strlen("cmdline"));
-				if (num >= sizeof(vis.cmdline)) {
-					fprintf(stderr, "cmdline index above max\n");
-					exit(2);
-				}
-				vis.cmdline[num] = 1;
-				found = 1;
-			}
-
-			if (!found && strncmp(name, "cgroup", strlen("cgroup")) == 0) {
-				int num = atoi(name + strlen("cgroup"));
-				if (num >= sizeof(vis.cgroup)) {
-					fprintf(stderr, "cgroup index above max\n");
-					exit(2);
-				}
-				vis.cgroup[num] = 1;
-				found = 1;
 			}
 
 			if (!found) {
@@ -573,29 +551,8 @@ main(int argc, char *argv[])
 		eval_col(vis.drs, "drs:int", &d, STATM);
 
 		/* other */
-		eval_col(vis.ncmdline, "ncmdline:int", &d, CMDLINE);
-		for (int i = 0; i < sizeof(vis.cmdline); ++i) {
-			assert(sizeof(vis.cmdline) - 1 == 99);
-			char str[strlen("cmdline") + strlen("99") + strlen(":string") + 1];
-			if (vis.cmdline[i] && d.print)
-				sprintf(str, "cmdline%d:string", i);
-			else
-				str[0] = 0; /* doesn't matter*/
-
-			eval_col(vis.cmdline[i], str, &d, CMDLINE);
-		}
-
-		eval_col(vis.ncgroup, "ncgroup:int", &d, CGROUP);
-		for (int i = 0; i < sizeof(vis.cgroup); ++i) {
-			assert(sizeof(vis.cgroup) - 1 == 99);
-			char str[strlen("cgroup") + strlen("99") + strlen(":string") + 1];
-			if (vis.cgroup[i] && d.print)
-				sprintf(str, "cgroup%d:string", i);
-			else
-				str[0] = 0; /* doesn't matter*/
-
-			eval_col(vis.cgroup[i], str, &d, CGROUP);
-		}
+		eval_col(vis.cmdline, "cmdline:string[]", &d, CMDLINE);
+		eval_col(vis.cgroup, "cgroup:string[]", &d, CGROUP);
 
 		eval_col(vis.oom_score, "oom_score:int", &d, OOM);
 		eval_col(vis.oom_adj, "oom_adj:int", &d, OOM);
@@ -844,32 +801,40 @@ main(int argc, char *argv[])
 			cprint(&ctx, "%ld", proc->drs * PageSize);
 
 		/* other */
-		size_t ncmdline = SIZE_MAX;
-		if (vis.ncmdline)
-			cprint(&ctx, "%lu", get_array_size(proc->cmdline, &ncmdline));
+		if (vis.cmdline) {
+			fputc('"', stdout);
 
-		for (int i = 0; i < sizeof(vis.cmdline); ++i) {
-			if (vis.cmdline[i]) {
-				get_array_size(proc->cmdline, &ncmdline);
-				if (i < ncmdline)
-					csv_print_quoted(proc->cmdline[i],
-							strlen(proc->cmdline[i]));
-				cprint(&ctx, "");
+			char **cmd = proc->cmdline;
+
+			if (cmd) {
+				while (*cmd) {
+					print_inside_quote(*cmd, strlen(*cmd));
+					cmd++;
+					if (*cmd)
+						fputc(',', stdout);
+				}
 			}
+
+			fputc('"', stdout);
+			cprint(&ctx, "");
 		}
 
-		size_t ncgroup = SIZE_MAX;
-		if (vis.ncgroup)
-			cprint(&ctx, "%lu", get_array_size(proc->cgroup, &ncgroup));
+		if (vis.cgroup) {
+			fputc('"', stdout);
 
-		for (int i = 0; i < sizeof(vis.cgroup); ++i) {
-			if (vis.cgroup[i]) {
-				get_array_size(proc->cgroup, &ncgroup);
-				if (i < ncgroup)
-					csv_print_quoted(proc->cgroup[i],
-							strlen(proc->cgroup[i]));
-				cprint(&ctx, "");
+			char **cgroup = proc->cgroup;
+
+			if (cgroup) {
+				while (*cgroup) {
+					print_inside_quote(*cgroup, strlen(*cgroup));
+					cgroup++;
+					if (*cgroup)
+						fputc(',', stdout);
+				}
 			}
+
+			fputc('"', stdout);
+			cprint(&ctx, "");
 		}
 
 		if (vis.oom_score)

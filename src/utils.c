@@ -195,7 +195,7 @@ strtoul_safe(const char *str, unsigned long *val, int base)
 	return 0;
 }
 
-static char *
+char *
 strnchr(const char *str, int c, size_t len)
 {
 	char *r = memchr(str, c, len);
