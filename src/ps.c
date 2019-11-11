@@ -42,7 +42,9 @@
  * - figure out what to do with these columns:
  * 	wchan, tty, tpgid, exit_signal, *signals*, alarm, kstk*, flags
  */
+
 #include <assert.h>
+#include <errno.h>
 #include <getopt.h>
 #include <stdarg.h>
 #include <stdbool.h>
@@ -74,10 +76,10 @@ struct visible_columns {
 	char pgrp;
 	char session;
 
-	char utime;
-	char stime;
-	char cutime;
-	char cstime;
+	char user_time_ms;
+	char system_time_ms;
+	char cumulative_user_time_ms;
+	char cumulative_system_time_ms;
 	char start_time;
 
 	char start_code;
@@ -258,10 +260,10 @@ compute_visibility(char *cols, struct visible_columns *vis)
 		{ "pgrp", &vis->pgrp },
 		{ "session", &vis->session },
 
-		{ "utime", &vis->utime },
-		{ "stime", &vis->stime },
-		{ "cutime", &vis->cutime },
-		{ "cstime", &vis->cstime },
+		{ "user_time_ms", &vis->user_time_ms },
+		{ "system_time_ms", &vis->system_time_ms },
+		{ "system_time_ms", &vis->cumulative_user_time_ms },
+		{ "cumulative_system_time_ms", &vis->cumulative_system_time_ms },
 		{ "start_time", &vis->start_time },
 
 		{ "start_code", &vis->start_code },
@@ -446,10 +448,10 @@ eval_visibility(const struct visible_columns *vis, bool print_header,
 		eval_col(vis->pgrp, "pgrp:int", &d, STAT);
 		eval_col(vis->session, "session:int", &d, STAT);
 
-		eval_col(vis->utime, "utime:int", &d, STAT);
-		eval_col(vis->stime, "stime:int", &d, STAT);
-		eval_col(vis->cutime, "cutime:int", &d, STAT);
-		eval_col(vis->cstime, "cstime:int", &d, STAT);
+		eval_col(vis->user_time_ms, "user_time_ms:int", &d, STAT);
+		eval_col(vis->system_time_ms, "system_time_ms:int", &d, STAT);
+		eval_col(vis->cumulative_user_time_ms, "cumulative_user_time_ms:int", &d, STAT);
+		eval_col(vis->cumulative_system_time_ms, "cumulative_system_time_ms:int", &d, STAT);
 		eval_col(vis->start_time, "start_time:int", &d, STAT);
 
 		eval_col(vis->start_code, "start_code:int", &d, STAT);
@@ -586,6 +588,23 @@ cprint(struct print_ctx *ctx, const char *format, ...)
 		fputc('\n', stdout);
 }
 
+static long
+get_hz(void)
+{
+	static long hz = 0;
+	if (hz)
+		return hz;
+	hz = sysconf(_SC_CLK_TCK);
+	if (hz <= 0) {
+		fprintf(stderr,
+			"unable to determine HZ value (%ld %d), assuming 100\n",
+			hz, errno);
+		hz = 100;
+	}
+
+	return hz;
+}
+
 static void
 print_proc(proc_t *proc, struct visible_columns *vis,
 		struct col_summary *summary)
@@ -627,14 +646,14 @@ print_proc(proc_t *proc, struct visible_columns *vis,
 	if (vis->session)
 		cprint(&ctx, "%d", proc->session);
 
-	if (vis->utime)
-		cprint(&ctx, "%llu", proc->utime);
-	if (vis->stime)
-		cprint(&ctx, "%llu", proc->stime);
-	if (vis->cutime)
-		cprint(&ctx, "%llu", proc->cutime);
-	if (vis->cstime)
-		cprint(&ctx, "%llu", proc->cstime);
+	if (vis->user_time_ms)
+		cprint(&ctx, "%llu", proc->utime * 1000 / get_hz());
+	if (vis->system_time_ms)
+		cprint(&ctx, "%llu", proc->stime * 1000 / get_hz());
+	if (vis->cumulative_user_time_ms)
+		cprint(&ctx, "%llu", proc->cutime * 1000 / get_hz());
+	if (vis->cumulative_system_time_ms)
+		cprint(&ctx, "%llu", proc->cstime * 1000 / get_hz());
 	if (vis->start_time)
 		cprint(&ctx, "%llu", proc->start_time);
 
