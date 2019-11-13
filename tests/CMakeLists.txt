@@ -43,6 +43,7 @@ function(test_with_cwd cmd input stdout stderr expected_res name cwd)
 			-DSRC_DIR=${CMAKE_CURRENT_SOURCE_DIR}
 			-DBIN_DIR=${CMAKE_CURRENT_BINARY_DIR}/..
 			-DCWD=${cwd}
+			-DTEST_UNDER_MEMCHECK=${TEST_UNDER_MEMCHECK}
 			-P ${CMAKE_CURRENT_SOURCE_DIR}/test.cmake)
 
 	set_tests_properties(${name} PROPERTIES

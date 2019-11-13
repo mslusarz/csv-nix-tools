@@ -201,5 +201,7 @@ if(LIBPROCPS_FOUND)
 	target_link_libraries(csv-ps ${LIBPROCPS_LIBRARIES})
 endif()
 
+option(TEST_UNDER_MEMCHECK "Run tests under Valgrind memcheck" OFF)
+
 enable_testing()
 add_subdirectory(tests)

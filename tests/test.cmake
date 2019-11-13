@@ -37,6 +37,10 @@ if (CWD STREQUAL "")
 	set(CWD ${TMP_DIR})
 endif()
 
+if (TEST_UNDER_MEMCHECK)
+	set(CMD "valgrind --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=all --error-exitcode=123 --log-file='${TMP_DIR}/${NAME}.memcheck' ${CMD}")
+endif()
+
 execute_process(COMMAND sh -c "${CMD}"
 		WORKING_DIRECTORY "${CWD}"
 		INPUT_FILE ${SRC_DIR}/data/${INPUT}
@@ -49,6 +53,11 @@ if (NOT res EQUAL ${EXPECTED_RES})
 
 	file(READ ${TMP_DIR}/${NAME}.stderr DATA)
 	message(STATUS "Stderr:\n${DATA}\nEnd of stderr")
+
+	if (TEST_UNDER_MEMCHECK AND res EQUAL 123)
+		file(READ ${TMP_DIR}/${NAME}.memcheck DATA)
+		message(STATUS "Memcheck:\n${DATA}\nEnd of memcheck")
+	endif()
 
 	message(FATAL_ERROR "Unexpected exit code: ${res} != ${EXPECTED_RES}")
 endif()
