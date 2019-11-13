@@ -203,5 +203,8 @@ main(int argc, char *argv[])
 		printf("%lld,", params.sums[i]);
 	printf("%lld\n", params.sums[params.ncolumns - 1]);
 
+	free(params.columns);
+	free(params.sums);
+
 	return 0;
 }

@@ -143,9 +143,11 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
+	int ret = 0;
 	if (cols == NULL) {
 		usage(stderr);
-		return 2;
+		ret = 2;
+		goto end;
 	}
 
 	params.columns = xmalloc_nofail(nheaders, sizeof(params.columns[0]));
@@ -187,7 +189,8 @@ main(int argc, char *argv[])
 
 	if (params.ncolumns == 0) {
 		fprintf(stderr, "no columns left\n");
-		exit(2);
+		ret = 2;
+		goto cleanup;
 	}
 
 	if (print_header) {
@@ -199,9 +202,12 @@ main(int argc, char *argv[])
 	}
 
 	if (csv_read_all(s, &next_row, &params))
-		exit(2);
+		ret = 2;
 
+cleanup:
+	free(params.columns);
+end:
 	csv_destroy_ctx(s);
 
-	return 0;
+	return ret;
 }

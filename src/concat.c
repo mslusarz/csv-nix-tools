@@ -234,5 +234,7 @@ main(int argc, char *argv[])
 
 	csv_destroy_ctx(s);
 
+	free(params.elements);
+
 	return 0;
 }
