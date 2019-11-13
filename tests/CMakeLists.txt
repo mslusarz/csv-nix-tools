@@ -30,7 +30,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-function(test cmd input stdout stderr expected_res name)
+function(test_with_cwd cmd input stdout stderr expected_res name cwd)
 	add_test(NAME ${name}
 			COMMAND ${CMAKE_COMMAND}
 			--trace-expand
@@ -42,10 +42,15 @@ function(test cmd input stdout stderr expected_res name)
 			-DEXPECTED_RES=${expected_res}
 			-DSRC_DIR=${CMAKE_CURRENT_SOURCE_DIR}
 			-DBIN_DIR=${CMAKE_CURRENT_BINARY_DIR}/..
+			-DCWD=${cwd}
 			-P ${CMAKE_CURRENT_SOURCE_DIR}/test.cmake)
 
 	set_tests_properties(${name} PROPERTIES
 			ENVIRONMENT "LC_ALL=C;PATH=${CMAKE_CURRENT_BINARY_DIR}/..:$ENV{PATH};")
+endfunction()
+
+function(test cmd input stdout stderr expected_res name)
+	test_with_cwd(${cmd} ${input} ${stdout} ${stderr} ${expected_res} ${name} "")
 endfunction()
 
 set(DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data")
@@ -204,8 +209,9 @@ test("csv-cut --fields=name,id,something" 3-different-order-columns-3-rows.csv 3
 
 ################################### EXEC #######################################
 
-test("cd \"${CMAKE_SOURCE_DIR}/tests/files/\" && csv-exec -- csv-ls -f size %name" files.csv sizes.txt empty.txt 0
-	exec_csv-ls_-f_size)
+test_with_cwd("csv-exec -- csv-ls -f size %name" files.csv sizes.txt empty.txt 0
+	exec_csv-ls_-f_size
+	${CMAKE_SOURCE_DIR}/tests/files/)
 
 ################################# EXEC-ADD #####################################
 
@@ -304,9 +310,10 @@ test("csv-head -n 3" 3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
 
 #################################### LS ########################################
 
-test("cd ${CMAKE_SOURCE_DIR}/tests/files && csv-ls -f name"
+test_with_cwd("csv-ls -f name"
 	empty.txt files_and_dirs.csv empty.txt 0
-	ls-files)
+	ls-files
+	${CMAKE_SOURCE_DIR}/tests/files)
 
 ################################# REPLACE ######################################
 

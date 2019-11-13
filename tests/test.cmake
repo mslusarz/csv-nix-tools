@@ -33,8 +33,12 @@ set(TMP_DIR ${BIN_DIR}/tests/${NAME})
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E remove_directory ${TMP_DIR})
 execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${TMP_DIR})
+if (CWD STREQUAL "")
+	set(CWD ${TMP_DIR})
+endif()
 
 execute_process(COMMAND sh -c "${CMD}"
+		WORKING_DIRECTORY "${CWD}"
 		INPUT_FILE ${SRC_DIR}/data/${INPUT}
 		OUTPUT_FILE ${TMP_DIR}/${NAME}.stdout
 		ERROR_FILE ${TMP_DIR}/${NAME}.stderr
