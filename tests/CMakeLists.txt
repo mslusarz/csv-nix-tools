@@ -285,10 +285,10 @@ test("csv-head -n 1" one-column-one-row.csv one-column-one-row.csv empty.txt 0
 	head_-n_1)
 
 test("csv-head --lines 2" one-column-one-row.csv one-column-one-row.csv empty.txt 0
-	head_--lines=2_but_there's_only_1_line_in_input)
+	head_--lines=2_but_there_is_only_1_line_in_input)
 
 test("csv-head -n 2" one-column-one-row.csv one-column-one-row.csv empty.txt 0
-	head_-n_2_but_there's_only_1_line_in_input)
+	head_-n_2_but_there_is_only_1_line_in_input)
 
 test("csv-head --lines=2" 3-columns-3-rows.csv 3-columns-2-first-rows.csv empty.txt 0
 	head_--lines=2_and_there_are_3_lines_in_input)
@@ -622,7 +622,7 @@ test("csv-sql \"select * from input where substr(name, 3, 1) == 'r'\""
 
 test("csv-sql \"select * from input where name like '%th%'\""
 	3-columns-3-rows.csv rpn-filter-rows-2-3.csv empty.txt 0
-	sql_select_all_from_input_where_name_like_%th%)
+	sql_select_all_from_input_where_name_like_th)
 
 test("csv-sql \"select * from input where name || '.suffix' == 'lorem ipsum.suffix'\""
 	3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
@@ -836,7 +836,7 @@ test("csv-sqlite \"select * from input where substr(name, 3, 1) == 'r'\""
 
 test("csv-sqlite \"select * from input where name like '%th%'\""
 	3-columns-3-rows.csv rpn-filter-rows-2-3.csv empty.txt 0
-	sqlite_select_all_from_input_where_name_like_%th%)
+	sqlite_select_all_from_input_where_name_like_th)
 
 test("csv-sqlite \"select * from input where name || '.suffix' == 'lorem ipsum.suffix'\""
 	3-columns-3-rows.csv rpn-filter-row-1.csv empty.txt 0
@@ -1042,10 +1042,10 @@ test("csv-tail -n 1" one-column-one-row.csv one-column-one-row.csv empty.txt 0
 	tail_-n_1)
 
 test("csv-tail --lines 2" one-column-one-row.csv one-column-one-row.csv empty.txt 0
-	tail_--lines=2_but_there's_only_1_line_in_input)
+	tail_--lines=2_but_there_is_only_1_line_in_input)
 
 test("csv-tail -n 2" one-column-one-row.csv one-column-one-row.csv empty.txt 0
-	tail_-n_2_but_there's_only_1_line_in_input)
+	tail_-n_2_but_there_is_only_1_line_in_input)
 
 test("csv-tail --lines=2" 3-columns-3-rows.csv 3-columns-2-last-rows.csv empty.txt 0
 	tail_--lines=2_but_there_are_3_lines_in_input)
