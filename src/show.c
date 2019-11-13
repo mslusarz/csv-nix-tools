@@ -32,7 +32,6 @@
 
 #include <assert.h>
 #include <ctype.h>
-#include <curses.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <getopt.h>
@@ -44,6 +43,10 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#ifdef NCURSES_ENABLED
+#include <curses.h>
+#endif
 
 #include "parse.h"
 #include "utils.h"
