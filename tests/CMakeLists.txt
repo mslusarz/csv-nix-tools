@@ -553,6 +553,7 @@ test("csv-split -f column3 -n before,after -e, -r"
 	split_commas_reverse)
 
 ################################### SQL ########################################
+if (BISON_FOUND AND FLEX_FOUND)
 
 test("csv-sql 'select * from input'"
 	3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
@@ -763,7 +764,10 @@ test("csv-sql 'select str1, str2, str1 like \"%12\" as \"str1_like_%12\", str1 l
 #	rpn-add-num-base.csv rpn-add-convert.csv empty.txt 0
 #	sql_str_to_int)
 
+endif(BISON_FOUND AND FLEX_FOUND)
+
 ################################## SQLITE ######################################
+if(SQLITE3_FOUND)
 
 test("csv-sqlite 'select * from input'"
 	3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
@@ -985,6 +989,8 @@ test("csv-sqlite 'select str1, str2, str1 like \"%12\" as \"str1_like_%12\", str
 #		    from input'"
 #	rpn-add-num-base.csv rpn-add-convert.csv empty.txt 0
 #	sqlite_str_to_int)
+
+endif(SQLITE3_FOUND)
 
 ################################ SUBSTRING #####################################
 
