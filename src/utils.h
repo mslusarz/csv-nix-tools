@@ -166,4 +166,21 @@ const char *rpn_expression_type(const struct rpn_expression *exp,
 
 void rpn_free(struct rpn_expression *exp);
 
+typedef void (*print_fn)(const void *ptr);
+
+enum output_types { TYPE_STRING, TYPE_INT, TYPE_STRING_ARR, TYPE_INT_ARR };
+
+struct column_info {
+	bool vis;
+	size_t order;
+	const char *name;
+	enum output_types type;
+	print_fn print;
+};
+
+int csvci_parse_cols(char *cols, struct column_info *columns, size_t *ncolumns);
+void csvci_print_header(struct column_info *columns, size_t ncolumns);
+void csvci_print_row(const void *row, const struct column_info *columns,
+		size_t ncolumns);
+
 #endif

@@ -552,3 +552,85 @@ xrealloc_nofail(void *ptr, size_t count, size_t size)
 
 	return ret;
 }
+
+static int
+compare_columns(const void *p1, const void *p2)
+{
+	const struct column_info *c1 = p1;
+	const struct column_info *c2 = p2;
+	if (c1->order < c2->order)
+		return -1;
+	if (c1->order > c2->order)
+		return 1;
+	return 0;
+}
+
+int
+csvci_parse_cols(char *cols, struct column_info *columns, size_t *ncolumns)
+{
+	int ret = 0;
+	char *name = strtok(cols, ",");
+	size_t order = 0;
+
+	for (size_t i = 0; i < *ncolumns; ++i) {
+		columns[i].vis = false;
+		columns[i].order = SIZE_MAX;
+	}
+
+	while (name) {
+		int found = 0;
+		for (size_t i = 0; i < *ncolumns; ++i) {
+			if (strcmp(name, columns[i].name) == 0) {
+				columns[i].vis = true;
+				columns[i].order = order++;
+				found = 1;
+				break;
+			}
+		}
+
+		if (!found) {
+			fprintf(stderr, "column %s not found\n", name);
+			ret++;
+		}
+
+		name = strtok(NULL, ",");
+	}
+
+	if (ret == 0) {
+		qsort(columns, *ncolumns, sizeof(columns[0]), compare_columns);
+		memset(&columns[order], 0, sizeof(columns[0]) * (*ncolumns - order));
+		*ncolumns = order;
+	}
+
+	return ret;
+}
+
+/* order must match the one in enum output_types */
+static const char *output_types_str[] = {
+	"string", "int", "string[]", "int[]",
+};
+
+void
+csvci_print_header(struct column_info *columns, size_t ncolumns)
+{
+	for (size_t i = 0; i < ncolumns - 1; ++i) {
+		printf("%s:%s,", columns[i].name,
+				output_types_str[columns[i].type]);
+	}
+
+	printf("%s:%s\n", columns[ncolumns - 1].name,
+			output_types_str[columns[ncolumns - 1].type]);
+}
+
+void
+csvci_print_row(const void *row, const struct column_info *columns,
+		size_t ncolumns)
+{
+	for (size_t i = 0; i < ncolumns - 1; ++i) {
+		columns[i].print(row);
+		putc(',', stdout);
+	}
+
+	columns[ncolumns - 1].print(row);
+	putc('\n', stdout);
+}
