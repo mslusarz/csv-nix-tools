@@ -31,27 +31,12 @@
  */
 
 #include <getopt.h>
-#include <stdarg.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "usr-grp.h"
 #include "utils.h"
-
-struct visible_columns {
-	char name;
-	char passwd;
-	char gid;
-	char user_ids;
-	char user_names;
-};
-
-struct visibility_info {
-	struct visible_columns cols;
-	size_t count;
-};
 
 static const struct option long_options[] = {
 	{"fields",	required_argument,	NULL, 'f'},
@@ -129,39 +114,61 @@ merge_users_into_groups(void)
 	}
 }
 
-struct print_ctx {
-	size_t printed;
-	const struct visibility_info *visinfo;
-};
-
 static void
-cprint(struct print_ctx *ctx, const char *format, ...)
+print_name(const void *p)
 {
-	va_list ap;
-
-	va_start(ap, format);
-	vprintf(format, ap);
-	va_end(ap);
-
-	if (++ctx->printed < ctx->visinfo->count)
-		fputc(',', stdout);
-	else
-		fputc('\n', stdout);
+	const struct csv_group *g = p;
+	csv_print_quoted(g->name, strlen(g->name));
 }
 
 static void
-eval_col(char vis, const char *str, int print, size_t *visible_count, size_t count)
+print_passwd(const void *p)
 {
-	if (!vis)
-		return;
-	(*visible_count)++;
-	if (!print)
-		return;
+	const struct csv_group *g = p;
+	csv_print_quoted(g->passwd, strlen(g->passwd));
+}
 
-	fputs(str, stdout);
+static void
+print_gid(const void *p)
+{
+	const struct csv_group *g = p;
+	printf("%u", g->gid);
+}
 
-	if (*visible_count < count)
-		fputc(',', stdout);
+static void
+print_user_ids(const void *p)
+{
+	const struct csv_group *g = p;
+	if (g->nmembers) {
+		if (g->nmembers > 1)
+			putc('"', stdout);
+
+		for (size_t j = 0; j < g->nmembers - 1; ++j)
+			printf("%u,", g->users[j]->uid);
+
+		printf("%u", g->users[g->nmembers - 1]->uid);
+
+		if (g->nmembers > 1)
+			putc('"', stdout);
+	}
+}
+
+static void
+print_user_names(const void *p)
+{
+	const struct csv_group *g = p;
+	if (g->nmembers) {
+		if (g->nmembers > 1)
+			putc('"', stdout);
+
+		for (size_t j = 0; j < g->nmembers - 1; ++j)
+			printf("%s,", g->users[j]->name);
+
+		printf("%s", g->users[g->nmembers - 1]->name);
+
+		if (g->nmembers > 1)
+			putc('"', stdout);
+	}
 }
 
 int
@@ -170,11 +177,18 @@ main(int argc, char *argv[])
 	int opt;
 	int longindex;
 	char *cols = NULL;
-	struct visible_columns vis;
 	bool print_header = true;
 	bool show = false;
 
-	memset(&vis, 1, sizeof(vis));
+	struct column_info columns[] = {
+			{ true, 0, "name",        TYPE_STRING, print_name },
+			{ true, 0, "passwd",      TYPE_STRING, print_passwd },
+			{ true, 0, "gid",         TYPE_INT,    print_gid },
+			{ true, 0, "user_ids",    TYPE_STRING, print_user_ids },
+			{ true, 0, "user_names",  TYPE_STRING, print_user_names },
+	};
+
+	size_t ncolumns = ARRAY_SIZE(columns);
 
 	while ((opt = getopt_long(argc, argv, "f:s", long_options,
 			&longindex)) != -1) {
@@ -207,122 +221,35 @@ main(int argc, char *argv[])
 	}
 
 	if (cols) {
-		memset(&vis, 0, sizeof(vis));
-
-		const struct {
-			const char *name;
-			char *vis;
-		} map[] = {
-				{ "name", &vis.name },
-				{ "passwd", &vis.passwd },
-				{ "gid", &vis.gid },
-				{ "user_ids", &vis.user_ids },
-				{ "user_names", &vis.user_names },
-		};
-
-		char *name = strtok(cols, ",");
-		while (name) {
-			int found = 0;
-			for (size_t i = 0; i < sizeof(map) / sizeof(map[0]); ++i) {
-				if (strcmp(name, map[i].name) == 0) {
-					*map[i].vis = 1;
-					found = 1;
-					break;
-				}
-			}
-
-			if (!found) {
-				fprintf(stderr, "column %s not found\n", name);
-				exit(2);
-			}
-
-			name = strtok(NULL, ",");
-		}
+		int r = csvci_parse_cols(cols, columns, &ncolumns);
 
 		free(cols);
+
+		if (r)
+			exit(2);
+	} else {
+		for (size_t i = 0; i < ncolumns; ++i)
+			columns[i].order = i;
 	}
 
 	if (show)
 		csv_show();
 
-	size_t visible = 0;
-	size_t count = sizeof(vis) + 1;
-	int print = 0;
-
-	do {
-		eval_col(vis.name, "name:string", print, &visible, count);
-		eval_col(vis.passwd, "passwd:string", print, &visible, count);
-		eval_col(vis.gid, "gid:int", print, &visible, count);
-		eval_col(vis.user_ids, "user_ids:string", print, &visible, count);
-		eval_col(vis.user_names, "user_names:string", print, &visible, count);
-
-		count = visible;
-		visible = 0;
-		if (print_header)
-			print++;
-	} while (print == 1);
-
 	if (print_header)
-		printf("\n");
-
-	struct visibility_info visinfo = {vis, count};
+		csvci_print_header(columns, ncolumns);
 
 	load_groups();
-	if (vis.user_ids || vis.user_names) {
+	for (size_t i = 0; i < ncolumns; ++i) {
+		if (strcmp(columns[i].name, "user_ids") != 0 &&
+				strcmp(columns[i].name, "user_names") != 0)
+			continue;
+
 		load_users();
 		merge_users_into_groups();
 	}
 
-	for (size_t i = 0; i < ngroups; ++i) {
-		const struct csv_group *g = &groups[i];
-		struct print_ctx ctx = {0, &visinfo};
-		if (vis.name) {
-			csv_print_quoted(g->name, strlen(g->name));
-			cprint(&ctx, "");
-		}
-
-		if (vis.passwd) {
-			csv_print_quoted(g->passwd, strlen(g->passwd));
-			cprint(&ctx, "");
-		}
-
-		if (vis.gid)
-			cprint(&ctx, "%lu", g->gid);
-
-		if (vis.user_ids) {
-			if (g->nmembers) {
-				if (g->nmembers > 1)
-					putc('"', stdout);
-
-				for (size_t j = 0; j < g->nmembers - 1; ++j)
-					printf("%u,", g->users[j]->uid);
-
-				printf("%u", g->users[g->nmembers - 1]->uid);
-
-				if (g->nmembers > 1)
-					putc('"', stdout);
-			}
-
-			cprint(&ctx, "");
-		}
-
-		if (vis.user_names) {
-			if (g->nmembers) {
-				if (g->nmembers > 1)
-					putc('"', stdout);
-
-				for (size_t j = 0; j < g->nmembers - 1; ++j)
-					printf("%s,", g->users[j]->name);
-
-				printf("%s", g->users[g->nmembers - 1]->name);
-
-				if (g->nmembers > 1)
-					putc('"', stdout);
-			}
-
-			cprint(&ctx, "");
-		}
-	}
+	for (size_t i = 0; i < ngroups; ++i)
+		csvci_print_row(&groups[i], columns, ncolumns);
 
 	free_users();
 	free_groups();
