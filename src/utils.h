@@ -55,7 +55,7 @@ int strtoi_safe(const char *str, int *val, int base);
 int strtou_safe(const char *str, unsigned *val, int base);
 
 char *strnchr(const char *str, int c, size_t len);
-void print_timespec(struct timespec *ts, bool nsec);
+void print_timespec(const struct timespec *ts, bool nsec);
 
 bool csv_requires_quoting(const char *str, size_t len);
 void csv_print_quoted(const char *str, size_t len);
@@ -178,6 +178,7 @@ struct column_info {
 	const char *name;
 	enum output_types type;
 	print_fn print;
+	uint64_t data; /* tool-specific data */
 };
 
 int csvci_parse_cols(char *cols, struct column_info *columns, size_t *ncolumns);

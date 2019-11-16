@@ -45,8 +45,6 @@
 #include <errno.h>
 #include <getopt.h>
 #include <limits.h>
-#include <stdarg.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -57,139 +55,6 @@
 
 #include "usr-grp-query.h"
 #include "utils.h"
-
-struct visible_columns {
-	/* always available */
-	char tid;
-	char tgid;
-	char euid;
-	char egid;
-
-	/* from stat or status */
-	char ppid;
-	char state;
-	char cmd;
-	char nlwp;
-	char wchan;
-
-	/* from stat */
-	char pgrp;
-	char session;
-
-	char user_time_ms;
-	char system_time_ms;
-	char cumulative_user_time_ms;
-	char cumulative_system_time_ms;
-	char start_time_sec;
-	char start_time_msec;
-
-	char start_code;
-	char end_code;
-	char start_stack;
-	char kstk_esp;
-	char kstk_eip;
-
-	char priority;
-	char nice;
-	char rss;
-	char alarm;
-
-	char rtprio;
-	char sched;
-	char vsize;
-	char rss_rlim;
-	char flags;
-	char min_flt;
-	char maj_flt;
-	char cmin_flt;
-	char cmaj_flt;
-
-	char tty;
-	char tpgid;
-	char exit_signal;
-	char processor;
-
-	/* from status */
-	char pending_signals;
-	char blocked_signals;
-	char ignored_signals;
-	char caught_signals;
-	char pending_signals_per_task;
-
-	char vm_size;
-	char vm_lock;
-	char vm_rss;
-	char vm_rss_anon;
-	char vm_rss_file;
-	char vm_rss_shared;
-	char vm_data;
-	char vm_stack;
-	char vm_swap;
-	char vm_exe;
-	char vm_lib;
-
-	char ruid;
-	char rgid;
-	char suid;
-	char sgid;
-	char fuid;
-	char fgid;
-
-	char supgid;
-
-	/* from statm */
-	char size;
-	char resident;
-	char share;
-	char trs;
-	char drs;
-
-	/* other */
-	char cmdline;
-	char cgroup;
-
-	char oom_score;
-	char oom_adj;
-
-	char ns_ipc;
-	char ns_mnt;
-	char ns_net;
-	char ns_pid;
-	char ns_user;
-	char ns_uts;
-
-	char sd_mach;
-        char sd_ouid;
-        char sd_seat;
-        char sd_sess;
-        char sd_slice;
-        char sd_unit;
-        char sd_uunit;
-
-        char lxcname;
-
-	char environ;
-
-	char euid_name;
-	char egid_name;
-
-	char ruid_name;
-	char rgid_name;
-	char suid_name;
-	char sgid_name;
-	char fuid_name;
-	char fgid_name;
-
-	char supgid_names;
-
-	char time_ms;
-	char time;
-
-	char start_time;
-	char age_sec;
-	char age_msec;
-	char age;
-};
 
 static const struct option long_options[] = {
 	{"fields",	required_argument,	NULL, 'f'},
@@ -241,378 +106,6 @@ print_inside_quote(const char *str, size_t len)
 	} while (quot);
 
 	fwrite(str, 1, len, stdout);
-}
-
-static void
-compute_visibility(char *cols, struct visible_columns *vis)
-{
-	memset(vis, 0, sizeof(*vis));
-
-	const struct {
-		const char *name;
-		char *vis;
-	} map[] = {
-		/* always available */
-		{ "tid", &vis->tid },
-		{ "tgid", &vis->tgid },
-		{ "euid", &vis->euid },
-		{ "egid", &vis->egid },
-
-		/* from stat or status */
-		{ "ppid", &vis->ppid },
-		{ "state", &vis->state },
-		{ "cmd", &vis->cmd },
-		{ "nlwp", &vis->nlwp },
-		{ "wchan", &vis->wchan },
-
-		/* from stat */
-		{ "pgrp", &vis->pgrp },
-		{ "session", &vis->session },
-
-		{ "user_time_ms", &vis->user_time_ms },
-		{ "system_time_ms", &vis->system_time_ms },
-		{ "system_time_ms", &vis->cumulative_user_time_ms },
-		{ "cumulative_system_time_ms", &vis->cumulative_system_time_ms },
-		{ "start_time_sec", &vis->start_time_sec },
-		{ "start_time_msec", &vis->start_time_msec },
-
-		{ "start_code", &vis->start_code },
-		{ "end_code", &vis->end_code },
-		{ "start_stack", &vis->start_stack },
-		{ "kstk_esp", &vis->kstk_esp },
-		{ "kstk_eip", &vis->kstk_eip },
-
-		{ "priority", &vis->priority },
-		{ "nice", &vis->nice },
-		{ "rss", &vis->rss },
-		{ "alarm", &vis->alarm },
-
-		{ "rtprio", &vis->rtprio },
-		{ "sched", &vis->sched },
-		{ "vsize", &vis->vsize },
-		{ "rss_rlim", &vis->rss_rlim },
-		{ "flags", &vis->flags },
-		{ "min_flt", &vis->min_flt },
-		{ "maj_flt", &vis->maj_flt },
-		{ "cmin_flt", &vis->cmin_flt },
-		{ "cmaj_flt", &vis->cmaj_flt },
-
-		{ "tty", &vis->tty },
-		{ "tpgid", &vis->tpgid },
-		{ "exit_signal", &vis->exit_signal },
-		{ "processor", &vis->processor },
-
-		/* from status */
-		{ "pending_signals", &vis->pending_signals },
-		{ "blocked_signals", &vis->blocked_signals },
-		{ "ignored_signals", &vis->ignored_signals },
-		{ "caught_signals", &vis->caught_signals },
-		{ "pending_signals_per_task", &vis->pending_signals_per_task },
-
-		{ "vm_size", &vis->vm_size },
-		{ "vm_lock", &vis->vm_lock },
-		{ "vm_rss", &vis->vm_rss },
-		{ "vm_rss_anon", &vis->vm_rss_anon },
-		{ "vm_rss_file", &vis->vm_rss_file },
-		{ "vm_rss_shared", &vis->vm_rss_shared },
-		{ "vm_data", &vis->vm_data },
-		{ "vm_stack", &vis->vm_stack },
-		{ "vm_swap", &vis->vm_swap },
-		{ "vm_exe", &vis->vm_exe },
-		{ "vm_lib", &vis->vm_lib },
-
-		{ "ruid", &vis->ruid },
-		{ "rgid", &vis->rgid },
-		{ "suid", &vis->suid },
-		{ "sgid", &vis->sgid },
-		{ "fuid", &vis->fuid },
-		{ "fgid", &vis->fgid },
-
-		{ "supgid", &vis->supgid },
-
-		/* from statm */
-		{ "size", &vis->size },
-		{ "resident", &vis->resident },
-		{ "share", &vis->share },
-		{ "trs", &vis->trs },
-		{ "drs", &vis->drs },
-
-		/* other */
-		{ "cmdline", &vis->cmdline },
-		{ "cgroup", &vis->cgroup },
-
-		{ "oom_score", &vis->oom_score },
-		{ "oom_adj", &vis->oom_adj },
-
-		{ "ns_ipc", &vis->ns_ipc },
-		{ "ns_mnt", &vis->ns_mnt },
-		{ "ns_net", &vis->ns_net },
-		{ "ns_pid", &vis->ns_pid },
-		{ "ns_user", &vis->ns_user },
-		{ "ns_uts", &vis->ns_uts },
-
-		{ "sd_mach", &vis->sd_mach },
-		{ "sd_ouid", &vis->sd_ouid },
-		{ "sd_seat", &vis->sd_seat },
-		{ "sd_sess", &vis->sd_sess },
-		{ "sd_slice", &vis->sd_slice },
-		{ "sd_unit", &vis->sd_unit },
-		{ "sd_uunit", &vis->sd_uunit },
-
-		{ "lxcname", &vis->lxcname },
-
-		{ "environ", &vis->environ },
-
-		/* always available */
-		{ "euid_name", &vis->euid_name },
-		{ "egid_name", &vis->egid_name },
-
-		/* from status */
-		{ "ruid_name", &vis->ruid_name },
-		{ "rgid_name", &vis->rgid_name },
-		{ "suid_name", &vis->suid_name },
-		{ "sgid_name", &vis->sgid_name },
-		{ "fuid_name", &vis->fuid_name },
-		{ "fgid_name", &vis->fgid_name },
-
-		{ "supgid_names", &vis->supgid_names },
-
-		{ "time_ms", &vis->time_ms },
-		{ "time", &vis->time },
-
-		{ "start_time", &vis->start_time },
-		{ "age_sec", &vis->age_sec },
-		{ "age_msec", &vis->age_msec },
-		{ "age", &vis->age },
-	};
-
-	char *name = strtok(cols, ",");
-	while (name) {
-		int found = 0;
-		for (size_t i = 0; i < sizeof(map) / sizeof(map[0]); ++i) {
-			if (strcmp(name, map[i].name) == 0) {
-				*map[i].vis = 1;
-				found = 1;
-				break;
-			}
-		}
-
-		if (!found) {
-			fprintf(stderr, "column %s not found\n", name);
-			exit(2);
-		}
-
-		name = strtok(NULL, ",");
-	}
-}
-
-struct eval_col_data {
-	int print;
-	size_t visible_count;
-	size_t count;
-	int sources;
-};
-
-static void
-eval_col(char vis, const char *str, struct eval_col_data *d, int source)
-{
-	if (!vis)
-		return;
-	(d->visible_count)++;
-	if (!d->print)
-		return;
-
-	fputs(str, stdout);
-	d->sources |= source;
-
-	if (d->visible_count < d->count)
-		fputc(',', stdout);
-}
-
-enum { DEF = 0, STAT = 1, STATUS = 2, STAT_OR_STATUS = 4, STATM = 8,
-	CMDLINE = 16, ENVIRON = 32, CGROUP = 64, OOM = 128, NS = 256,
-	SD = 512, LXC = 1024 };
-
-struct col_summary {
-	size_t count;
-	int sources;
-};
-
-static void
-eval_visibility(const struct visible_columns *vis, bool print_header,
-		struct col_summary *summary)
-{
-	struct eval_col_data d;
-	d.print = 0;
-	d.visible_count = 0;
-	d.count = sizeof(*vis) + 1;
-	d.sources = 0;
-
-	do {
-		/* always available */
-		eval_col(vis->tid, "tid:int", &d, DEF);
-		eval_col(vis->tgid, "tgid:int", &d, DEF);
-		eval_col(vis->euid, "euid:int", &d, DEF);
-		eval_col(vis->egid, "egid:int", &d, DEF);
-
-		/* from stat or status */
-		eval_col(vis->ppid, "ppid:int", &d, STAT_OR_STATUS);
-		eval_col(vis->state, "state:string", &d, STAT_OR_STATUS);
-		eval_col(vis->cmd, "cmd:string", &d, STAT_OR_STATUS);
-		eval_col(vis->nlwp, "nlwp:int", &d, STAT_OR_STATUS);
-		eval_col(vis->wchan, "wchan:int", &d, STAT_OR_STATUS);
-
-		/* from stat */
-		eval_col(vis->pgrp, "pgrp:int", &d, STAT);
-		eval_col(vis->session, "session:int", &d, STAT);
-
-		eval_col(vis->user_time_ms, "user_time_ms:int", &d, STAT);
-		eval_col(vis->system_time_ms, "system_time_ms:int", &d, STAT);
-		eval_col(vis->cumulative_user_time_ms, "cumulative_user_time_ms:int", &d, STAT);
-		eval_col(vis->cumulative_system_time_ms, "cumulative_system_time_ms:int", &d, STAT);
-		eval_col(vis->start_time_sec, "start_time_sec:int", &d, STAT);
-		eval_col(vis->start_time_msec, "start_time_msec:int", &d, STAT);
-
-		eval_col(vis->start_code, "start_code:int", &d, STAT);
-		eval_col(vis->end_code, "end_code:int", &d, STAT);
-		eval_col(vis->start_stack, "start_stack:int", &d, STAT);
-		eval_col(vis->kstk_esp, "kstk_esp:int", &d, STAT);
-		eval_col(vis->kstk_eip, "kstk_eip:int", &d, STAT);
-
-		eval_col(vis->priority, "priority:int", &d, STAT);
-		eval_col(vis->nice, "nice:int", &d, STAT);
-		eval_col(vis->rss, "rss:int", &d, STAT);
-		eval_col(vis->alarm, "alarm:int", &d, STAT);
-
-		eval_col(vis->rtprio, "rtprio:int", &d, STAT);
-		eval_col(vis->sched, "sched:int", &d, STAT);
-		eval_col(vis->vsize, "vsize:int", &d, STAT);
-		eval_col(vis->rss_rlim, "rss_rlim:int", &d, STAT);
-		eval_col(vis->flags, "flags:int", &d, STAT);
-		eval_col(vis->min_flt, "min_flt:int", &d, STAT);
-		eval_col(vis->maj_flt, "maj_flt:int", &d, STAT);
-		eval_col(vis->cmin_flt, "cmin_flt:int", &d, STAT);
-		eval_col(vis->cmaj_flt, "cmaj_flt:int", &d, STAT);
-
-		eval_col(vis->tty, "tty:int", &d, STAT);
-		eval_col(vis->tpgid, "tpgid:int", &d, STAT);
-		eval_col(vis->exit_signal, "exit_signal:int", &d, STAT);
-		eval_col(vis->processor, "processor:int", &d, STAT);
-
-		/* from status */
-		eval_col(vis->pending_signals, "pending_signals:string", &d, STATUS);
-		eval_col(vis->blocked_signals, "blocked_signals:string", &d, STATUS);
-		eval_col(vis->ignored_signals, "ignored_signals:string", &d, STATUS);
-		eval_col(vis->caught_signals, "caught_signals:string", &d, STATUS);
-		eval_col(vis->pending_signals_per_task, "pending_signals_per_task:string", &d, STATUS);
-
-		eval_col(vis->vm_size, "vm_size:int", &d, STATUS);
-		eval_col(vis->vm_lock, "vm_lock:int", &d, STATUS);
-		eval_col(vis->vm_rss, "vm_rss:int", &d, STATUS);
-		eval_col(vis->vm_rss_anon, "vm_rss_anon:int", &d, STATUS);
-		eval_col(vis->vm_rss_file, "vm_rss_file:int", &d, STATUS);
-		eval_col(vis->vm_rss_shared, "vm_rss_shared:int", &d, STATUS);
-		eval_col(vis->vm_data, "vm_data:int", &d, STATUS);
-		eval_col(vis->vm_stack, "vm_stack:int", &d, STATUS);
-		eval_col(vis->vm_swap, "vm_swap:int", &d, STATUS);
-		eval_col(vis->vm_exe, "vm_exe:int", &d, STATUS);
-		eval_col(vis->vm_lib, "vm_lib:int", &d, STATUS);
-
-		eval_col(vis->ruid, "ruid:int", &d, STATUS);
-		eval_col(vis->rgid, "rgid:int", &d, STATUS);
-		eval_col(vis->suid, "suid:int", &d, STATUS);
-		eval_col(vis->sgid, "sgid:int", &d, STATUS);
-		eval_col(vis->fuid, "fuid:int", &d, STATUS);
-		eval_col(vis->fgid, "fgid:int", &d, STATUS);
-
-		eval_col(vis->supgid, "supgid:string", &d, STATUS);
-
-		/* from tatm */
-		eval_col(vis->size, "size:int", &d, STATM);
-		eval_col(vis->resident, "resident:int", &d, STATM);
-		eval_col(vis->share, "share:int", &d, STATM);
-		eval_col(vis->trs, "trs:int", &d, STATM);
-		eval_col(vis->drs, "drs:int", &d, STATM);
-
-		/* other */
-		eval_col(vis->cmdline, "cmdline:string[]", &d, CMDLINE);
-		eval_col(vis->cgroup, "cgroup:string[]", &d, CGROUP);
-
-		eval_col(vis->oom_score, "oom_score:int", &d, OOM);
-		eval_col(vis->oom_adj, "oom_adj:int", &d, OOM);
-
-		eval_col(vis->ns_ipc, "ns_ipc:int", &d, NS);
-		eval_col(vis->ns_mnt, "ns_mnt:int", &d, NS);
-		eval_col(vis->ns_net, "ns_net:int", &d, NS);
-		eval_col(vis->ns_pid, "ns_pid:int", &d, NS);
-		eval_col(vis->ns_user, "ns_user:int", &d, NS);
-		eval_col(vis->ns_uts, "ns_uts:int", &d, NS);
-
-		eval_col(vis->sd_mach, "sd_mach:string", &d, SD);
-	        eval_col(vis->sd_ouid, "sd_ouid:string", &d, SD);
-	        eval_col(vis->sd_seat, "sd_seat:string", &d, SD);
-	        eval_col(vis->sd_sess, "sd_sess:string", &d, SD);
-	        eval_col(vis->sd_slice, "sd_slice:string", &d, SD);
-	        eval_col(vis->sd_unit, "sd_unit:string", &d, SD);
-	        eval_col(vis->sd_uunit, "sd_uunit:string", &d, SD);
-
-	        eval_col(vis->lxcname, "lxcname:string", &d, LXC);
-
-		eval_col(vis->environ, "environ:string", &d, ENVIRON);
-
-		eval_col(vis->euid_name, "euid_name:string", &d, DEF);
-		eval_col(vis->egid_name, "egid_name:string", &d, DEF);
-
-		eval_col(vis->ruid_name, "ruid_name:string", &d, STATUS);
-		eval_col(vis->rgid_name, "rgid_name:string", &d, STATUS);
-		eval_col(vis->suid_name, "suid_name:string", &d, STATUS);
-		eval_col(vis->sgid_name, "sgid_name:string", &d, STATUS);
-		eval_col(vis->fuid_name, "fuid_name:string", &d, STATUS);
-		eval_col(vis->fgid_name, "fgid_name:string", &d, STATUS);
-
-		eval_col(vis->supgid_names, "supgid_names:string", &d, STATUS);
-
-		eval_col(vis->time_ms, "time_ms:int", &d, STAT);
-		eval_col(vis->time, "time:string", &d, STAT);
-
-		eval_col(vis->start_time, "start_time:string", &d, STAT);
-		eval_col(vis->age_sec, "age_sec:int", &d, STAT);
-		eval_col(vis->age_msec, "age_msec:int", &d, STAT);
-		eval_col(vis->age, "age:string", &d, STAT);
-
-		d.count = d.visible_count;
-		d.visible_count = 0;
-		if (print_header)
-			d.print++;
-	} while (d.print == 1);
-
-	summary->count = d.count;
-	summary->sources = d.sources;
-}
-
-struct visibility_info {
-	struct visible_columns *cols;
-	size_t count;
-};
-
-struct print_ctx {
-	size_t printed;
-	const struct visibility_info *visinfo;
-};
-
-static void
-cprint(struct print_ctx *ctx, const char *format, ...)
-{
-	va_list ap;
-
-	va_start(ap, format);
-	vprintf(format, ap);
-	va_end(ap);
-
-	if (++ctx->printed < ctx->visinfo->count)
-		fputc(',', stdout);
-	else
-		fputc('\n', stdout);
 }
 
 static unsigned long
@@ -681,408 +174,807 @@ subtract_timespecs(const struct timespec *ts_later,
 /* static point in time from which ages are calculated */
 static struct timespec ref_time;
 
-static void
-print_proc(proc_t *proc, struct visible_columns *vis,
-		struct col_summary *summary)
-{
-	struct visibility_info visinfo = {vis, summary->count};
-	struct print_ctx ctx = {0, &visinfo};
-
-	/* always */
-	if (vis->tid)
-		cprint(&ctx, "%d", proc->tid);
-	if (vis->tgid)
-		cprint(&ctx, "%d", proc->tgid);
-	if (vis->euid)
-		cprint(&ctx, "%d", proc->euid);
-	if (vis->egid)
-		cprint(&ctx, "%d", proc->egid);
-
-	/* stat, status */
-	if (vis->ppid)
-		cprint(&ctx, "%d", proc->ppid);
-	if (vis->state)
-		cprint(&ctx, "%c", proc->state);
-	if (vis->cmd) {
-		csv_print_quoted(proc->cmd, strlen(proc->cmd));
-		cprint(&ctx, "");
-	}
-	if (vis->nlwp)
-		cprint(&ctx, "%d", proc->nlwp);
-	if (vis->wchan) {
-		if (proc->wchan == -1)
-			cprint(&ctx, "-1");
-		else
-			cprint(&ctx, "0x%lx", proc->wchan);
-	}
-
-	/* stat */
-	if (vis->pgrp)
-		cprint(&ctx, "%d", proc->pgrp);
-	if (vis->session)
-		cprint(&ctx, "%d", proc->session);
-
-	if (vis->user_time_ms)
-		cprint(&ctx, "%llu", time_in_ms(proc->utime));
-	if (vis->system_time_ms)
-		cprint(&ctx, "%llu", time_in_ms(proc->stime));
-	if (vis->cumulative_user_time_ms)
-		cprint(&ctx, "%llu", time_in_ms(proc->cutime));
-	if (vis->cumulative_system_time_ms)
-		cprint(&ctx, "%llu", time_in_ms(proc->cstime));
+struct proc_data {
+	proc_t *proc;
 
 	struct timespec start_time_ts;
-	if (vis->start_time_sec || vis->start_time_msec || vis->start_time ||
-			vis->age_sec || vis->age_msec || vis->age)
-		get_start_time(proc, &start_time_ts);
-
-	if (vis->start_time_sec)
-		cprint(&ctx, "%llu", start_time_ts.tv_sec);
-	if (vis->start_time_msec)
-		cprint(&ctx, "%llu", start_time_ts.tv_nsec / 1000000);
-
-	if (vis->start_code)
-		cprint(&ctx, "0x%lx", proc->start_code);
-	if (vis->end_code)
-		cprint(&ctx, "0x%lx", proc->end_code);
-	if (vis->start_stack)
-		cprint(&ctx, "0x%lx", proc->start_stack);
-	if (vis->kstk_esp)
-		cprint(&ctx, "0x%lx", proc->kstk_esp);
-	if (vis->kstk_eip)
-		cprint(&ctx, "0x%lx", proc->kstk_eip);
-
-	if (vis->priority)
-		cprint(&ctx, "%ld", proc->priority);
-	if (vis->nice)
-		cprint(&ctx, "%ld", proc->nice);
-	if (vis->rss)
-		cprint(&ctx, "%ld", proc->rss * PageSize);
-	if (vis->alarm)
-		cprint(&ctx, "%ld", proc->alarm);
-
-	if (vis->rtprio)
-		cprint(&ctx, "%lu", proc->rtprio);
-	if (vis->sched)
-		cprint(&ctx, "%lu", proc->sched);
-	if (vis->vsize)
-		cprint(&ctx, "%lu", proc->vsize);
-	if (vis->rss_rlim)
-		cprint(&ctx, "%ld", proc->rss_rlim);
-	if (vis->flags)
-		cprint(&ctx, "0x%lx", proc->flags);
-	if (vis->min_flt)
-		cprint(&ctx, "%lu", proc->min_flt);
-	if (vis->maj_flt)
-		cprint(&ctx, "%lu", proc->maj_flt);
-	if (vis->cmin_flt)
-		cprint(&ctx, "%lu", proc->cmin_flt);
-	if (vis->cmaj_flt)
-		cprint(&ctx, "%lu", proc->cmaj_flt);
-
-	if (vis->tty)
-		cprint(&ctx, "%d", proc->tty);
-	if (vis->tpgid)
-		cprint(&ctx, "%d", proc->tpgid);
-	if (vis->exit_signal)
-		cprint(&ctx, "%d", proc->exit_signal);
-	if (vis->processor)
-		cprint(&ctx, "%d", proc->processor);
-
-	/* status */
-	if (vis->pending_signals) {
-		csv_print_quoted(proc->signal, strlen(proc->signal));
-		cprint(&ctx, "");
-	}
-	if (vis->blocked_signals) {
-		csv_print_quoted(proc->blocked, strlen(proc->blocked));
-		cprint(&ctx, "");
-	}
-	if (vis->ignored_signals) {
-		csv_print_quoted(proc->sigignore, strlen(proc->sigignore));
-		cprint(&ctx, "");
-	}
-	if (vis->caught_signals) {
-		csv_print_quoted(proc->sigcatch, strlen(proc->sigcatch));
-		cprint(&ctx, "");
-	}
-	if (vis->pending_signals_per_task) {
-		csv_print_quoted(proc->_sigpnd, strlen(proc->_sigpnd));
-		cprint(&ctx, "");
-	}
-
-	if (vis->vm_size)
-		cprint(&ctx, "%lu", proc->vm_size * 1024);
-	if (vis->vm_lock)
-		cprint(&ctx, "%lu", proc->vm_lock * 1024);
-	if (vis->vm_rss)
-		cprint(&ctx, "%lu", proc->vm_rss * 1024);
-	if (vis->vm_rss_anon)
-		cprint(&ctx, "%lu", proc->vm_rss_anon * 1024);
-	if (vis->vm_rss_file)
-		cprint(&ctx, "%lu", proc->vm_rss_file * 1024);
-	if (vis->vm_rss_shared)
-		cprint(&ctx, "%lu", proc->vm_rss_shared * 1024);
-	if (vis->vm_data)
-		cprint(&ctx, "%lu", proc->vm_data * 1024);
-	if (vis->vm_stack)
-		cprint(&ctx, "%lu", proc->vm_stack * 1024);
-	if (vis->vm_swap)
-		cprint(&ctx, "%lu", proc->vm_swap * 1024);
-	if (vis->vm_exe)
-		cprint(&ctx, "%lu", proc->vm_exe * 1024);
-	if (vis->vm_lib)
-		cprint(&ctx, "%lu", proc->vm_lib * 1024);
-
-	if (vis->ruid)
-		cprint(&ctx, "%d", proc->ruid);
-	if (vis->rgid)
-		cprint(&ctx, "%d", proc->rgid);
-	if (vis->suid)
-		cprint(&ctx, "%d", proc->suid);
-	if (vis->sgid)
-		cprint(&ctx, "%d", proc->sgid);
-	if (vis->fuid)
-		cprint(&ctx, "%d", proc->fuid);
-	if (vis->fgid)
-		cprint(&ctx, "%d", proc->fgid);
-
-	if (vis->supgid) {
-		csv_print_quoted(proc->supgid, strlen(proc->supgid));
-		cprint(&ctx, "");
-	}
-
-	/* statm */
-	if (vis->size)
-		cprint(&ctx, "%ld", proc->size * PageSize);
-	if (vis->resident)
-		cprint(&ctx, "%ld", proc->resident * PageSize);
-	if (vis->share)
-		cprint(&ctx, "%ld", proc->share * PageSize);
-	if (vis->trs)
-		cprint(&ctx, "%ld", proc->trs * PageSize);
-	if (vis->drs)
-		cprint(&ctx, "%ld", proc->drs * PageSize);
-
-	/* other */
-	if (vis->cmdline) {
-		fputc('"', stdout);
-
-		char **cmd = proc->cmdline;
-
-		if (cmd) {
-			while (*cmd) {
-				print_inside_quote(*cmd, strlen(*cmd));
-				cmd++;
-				if (*cmd)
-					fputc(',', stdout);
-			}
-		}
-
-		fputc('"', stdout);
-		cprint(&ctx, "");
-	}
-
-	if (vis->cgroup) {
-		fputc('"', stdout);
-
-		char **cgroup = proc->cgroup;
-
-		if (cgroup) {
-			while (*cgroup) {
-				print_inside_quote(*cgroup, strlen(*cgroup));
-				cgroup++;
-				if (*cgroup)
-					fputc(',', stdout);
-			}
-		}
-
-		fputc('"', stdout);
-		cprint(&ctx, "");
-	}
-
-	if (vis->oom_score)
-		cprint(&ctx, "%d", proc->oom_score);
-	if (vis->oom_adj)
-		cprint(&ctx, "%d", proc->oom_adj);
-
-        if (vis->ns_ipc)
-		cprint(&ctx, "0x%lx", proc->ns[IPCNS]);
-        if (vis->ns_mnt)
-		cprint(&ctx, "0x%lx", proc->ns[MNTNS]);
-        if (vis->ns_net)
-		cprint(&ctx, "0x%lx", proc->ns[NETNS]);
-        if (vis->ns_pid)
-		cprint(&ctx, "0x%lx", proc->ns[PIDNS]);
-        if (vis->ns_user)
-		cprint(&ctx, "0x%lx", proc->ns[USERNS]);
-        if (vis->ns_uts)
-		cprint(&ctx, "0x%lx", proc->ns[UTSNS]);
-
-        if (vis->sd_mach) {
-		csv_print_quoted(proc->sd_mach, strlen(proc->sd_mach));
-		cprint(&ctx, "");
-        }
-
-        if (vis->sd_ouid) {
-		csv_print_quoted(proc->sd_ouid, strlen(proc->sd_ouid));
-		cprint(&ctx, "");
-        }
-
-        if (vis->sd_seat) {
-		csv_print_quoted(proc->sd_seat, strlen(proc->sd_seat));
-		cprint(&ctx, "");
-        }
-
-        if (vis->sd_sess) {
-		csv_print_quoted(proc->sd_sess, strlen(proc->sd_sess));
-		cprint(&ctx, "");
-        }
-
-        if (vis->sd_slice) {
-		csv_print_quoted(proc->sd_slice, strlen(proc->sd_slice));
-		cprint(&ctx, "");
-        }
-
-        if (vis->sd_unit) {
-		csv_print_quoted(proc->sd_unit, strlen(proc->sd_unit));
-		cprint(&ctx, "");
-        }
-
-        if (vis->sd_uunit) {
-		csv_print_quoted(proc->sd_uunit, strlen(proc->sd_uunit));
-		cprint(&ctx, "");
-        }
-
-        if (vis->lxcname) {
-		csv_print_quoted(proc->lxcname, strlen(proc->lxcname));
-		cprint(&ctx, "");
-        }
-
-        if (vis->environ) {
-		if (proc->environ)
-			csv_print_quoted(proc->environ[0], strlen(proc->environ[0]));
-		cprint(&ctx, "");
-	}
-
-	if (vis->euid_name)
-		cprint(&ctx, "%s", get_user(proc->euid));
-	if (vis->egid_name)
-		cprint(&ctx, "%s", get_group(proc->egid));
-
-	if (vis->ruid_name)
-		cprint(&ctx, "%s", get_user(proc->ruid));
-	if (vis->rgid_name)
-		cprint(&ctx, "%s", get_group(proc->rgid));
-	if (vis->suid_name)
-		cprint(&ctx, "%s", get_user(proc->suid));
-	if (vis->sgid_name)
-		cprint(&ctx, "%s", get_group(proc->sgid));
-	if (vis->fuid_name)
-		cprint(&ctx, "%s", get_user(proc->fuid));
-	if (vis->fgid_name)
-		cprint(&ctx, "%s", get_group(proc->fgid));
-
-	if (vis->supgid_names) {
-		if (strcmp(proc->supgid, "-") != 0) {
-			char *gid_str = strtok(proc->supgid, ",");
-
-			fputc('"', stdout);
-			while (gid_str) {
-				gid_t gid;
-				if (strtou_safe(gid_str, &gid, 0)) {
-					fprintf(stderr,
-						"gid '%s' is not a number\n",
-						gid_str);
-					abort();
-				}
-				fprintf(stdout, "%s", get_group(gid));
-
-				gid_str = strtok(NULL, ",");
-				if (gid_str)
-					fputc(',', stdout);
-			}
-			fputc('"', stdout);
-		}
-
-		cprint(&ctx, "");
-	}
-
-	if (vis->time_ms) {
-		cprint(&ctx, "%llu", time_in_ms(proc->utime + proc->stime));
-	}
-
-	if (vis->time) {
-		unsigned long long time = time_in_ms(proc->utime + proc->stime);
-
-		unsigned ms = time % 1000;
-		time /= 1000;
-		unsigned s = time % 60;
-		time /= 60;
-		unsigned m = time % 60;
-		time /= 60;
-		unsigned h = time % 24;
-		time /= 24;
-		unsigned long long d = time;
-
-		if (d > 0)
-			cprint(&ctx, "%llud:%02uh:%02um:%02u.%03us",
-					d, h, m, s, ms);
-		else if (h > 0)
-			cprint(&ctx, "%uh:%02um:%02u.%03us", h, m, s, ms);
-		else if (m > 0)
-			cprint(&ctx, "%um:%02u.%03us", m, s, ms);
-		else if (s > 0)
-			cprint(&ctx, "%u.%03us", s, ms);
-		else if (ms > 0)
-			cprint(&ctx, "0.%03us", ms);
-		else
-			cprint(&ctx, "0s");
-	}
-
-	if (vis->start_time) {
-		print_timespec(&start_time_ts, false);
-		cprint(&ctx, "");
-	}
-
 	struct timespec age_ts;
-	if (vis->age_sec || vis->age_msec || vis->age) {
-		if (!subtract_timespecs(&ref_time, &start_time_ts, &age_ts)) {
-			/* if process was created after csv-ps, then pretend
-			 * it was created at the same time */
-			age_ts.tv_sec = 0;
-			age_ts.tv_nsec = 0;
+};
+
+static void
+print_tid(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->tid);
+}
+
+static void
+print_tgid(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->tgid);
+}
+
+static void
+print_euid(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->euid);
+}
+
+static void
+print_egid(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->egid);
+}
+
+static void
+print_ppid(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->ppid);
+}
+
+static void
+print_state(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%c", pd->proc->state);
+}
+
+static void
+print_cmd(const void *p)
+{
+	const struct proc_data *pd = p;
+	csv_print_quoted(pd->proc->cmd, strlen(pd->proc->cmd));
+}
+
+static void
+print_nlwp(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->nlwp);
+}
+
+static void
+print_wchan(const void *p)
+{
+	const struct proc_data *pd = p;
+	if (pd->proc->wchan == -1)
+		printf("-1");
+	else
+		printf("0x%lx", pd->proc->wchan);
+}
+
+static void
+print_pgrp(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->pgrp);
+}
+
+static void
+print_session(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->session);
+}
+
+static void
+print_user_time_ms(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%llu", time_in_ms(pd->proc->utime));
+}
+
+static void
+print_system_time_ms(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%llu", time_in_ms(pd->proc->stime));
+}
+
+static void
+print_cumulative_user_time_ms(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%llu", time_in_ms(pd->proc->cutime));
+}
+
+static void
+print_cumulative_system_time_ms(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%llu", time_in_ms(pd->proc->cstime));
+}
+
+static void
+print_start_time_sec(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->start_time_ts.tv_sec);
+}
+
+static void
+print_start_time_msec(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->start_time_ts.tv_nsec / 1000000);
+}
+
+static void
+print_start_code(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("0x%lx", pd->proc->start_code);
+}
+
+static void
+print_end_code(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("0x%lx", pd->proc->end_code);
+}
+
+static void
+print_start_stack(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("0x%lx", pd->proc->start_stack);
+}
+
+static void
+print_kstk_esp(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("0x%lx", pd->proc->kstk_esp);
+}
+
+static void
+print_kstk_eip(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("0x%lx", pd->proc->kstk_eip);
+}
+
+static void
+print_priority(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%ld", pd->proc->priority);
+}
+
+static void
+print_nice(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%ld", pd->proc->nice);
+}
+
+static void
+print_rss(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%ld", pd->proc->rss * PageSize);
+}
+
+static void
+print_alarm(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%ld", pd->proc->alarm);
+}
+
+static void
+print_rtprio(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->proc->rtprio);
+}
+
+static void
+print_sched(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->proc->sched);
+}
+
+static void
+print_vsize(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->proc->vsize);
+}
+
+static void
+print_rss_rlim(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%ld", pd->proc->rss_rlim);
+}
+
+static void
+print_flags(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("0x%lx", pd->proc->flags);
+}
+
+static void
+print_min_flt(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->proc->min_flt);
+}
+
+static void
+print_maj_flt(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->proc->maj_flt);
+}
+
+static void
+print_cmin_flt(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->proc->cmin_flt);
+}
+
+static void
+print_cmaj_flt(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->proc->cmaj_flt);
+}
+
+static void
+print_tty(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->tty);
+}
+
+static void
+print_tpgid(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->tpgid);
+}
+
+static void
+print_exit_signal(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->exit_signal);
+}
+
+static void
+print_processor(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->processor);
+}
+
+static void
+print_pending_signals(const void *p)
+{
+	const struct proc_data *pd = p;
+	csv_print_quoted(pd->proc->signal, strlen(pd->proc->signal));
+}
+
+static void
+print_blocked_signals(const void *p)
+{
+	const struct proc_data *pd = p;
+	csv_print_quoted(pd->proc->blocked, strlen(pd->proc->blocked));
+}
+
+static void
+print_ignored_signals(const void *p)
+{
+	const struct proc_data *pd = p;
+	csv_print_quoted(pd->proc->sigignore, strlen(pd->proc->sigignore));
+}
+
+static void
+print_caught_signals(const void *p)
+{
+	const struct proc_data *pd = p;
+	csv_print_quoted(pd->proc->sigcatch, strlen(pd->proc->sigcatch));
+}
+
+static void
+print_pending_signals_per_task(const void *p)
+{
+	const struct proc_data *pd = p;
+	csv_print_quoted(pd->proc->_sigpnd, strlen(pd->proc->_sigpnd));
+}
+
+static void
+print_vm_size(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->proc->vm_size * 1024);
+}
+
+static void
+print_vm_lock(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->proc->vm_lock * 1024);
+}
+
+static void
+print_vm_rss(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->proc->vm_rss * 1024);
+}
+
+static void
+print_vm_rss_anon(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->proc->vm_rss_anon * 1024);
+}
+
+static void
+print_vm_rss_file(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->proc->vm_rss_file * 1024);
+}
+
+static void
+print_vm_rss_shared(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->proc->vm_rss_shared * 1024);
+}
+
+static void
+print_vm_data(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->proc->vm_data * 1024);
+}
+
+static void
+print_vm_stack(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->proc->vm_stack * 1024);
+}
+
+static void
+print_vm_swap(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->proc->vm_swap * 1024);
+}
+
+static void
+print_vm_exe(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->proc->vm_exe * 1024);
+}
+
+static void
+print_vm_lib(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->proc->vm_lib * 1024);
+}
+
+static void
+print_ruid(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->ruid);
+}
+
+static void
+print_rgid(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->rgid);
+}
+
+static void
+print_suid(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->suid);
+}
+
+static void
+print_sgid(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->sgid);
+}
+
+static void
+print_fuid(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->fuid);
+}
+
+static void
+print_fgid(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->fgid);
+}
+
+static void
+print_supgid(const void *p)
+{
+	const struct proc_data *pd = p;
+	csv_print_quoted(pd->proc->supgid, strlen(pd->proc->supgid));
+}
+
+static void
+print_size(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%ld", pd->proc->size * PageSize);
+}
+
+static void
+print_resident(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%ld", pd->proc->resident * PageSize);
+}
+
+static void
+print_share(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%ld", pd->proc->share * PageSize);
+}
+
+static void
+print_trs(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%ld", pd->proc->trs * PageSize);
+}
+
+static void
+print_drs(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%ld", pd->proc->drs * PageSize);
+}
+
+static void
+print_cmdline(const void *p)
+{
+	const struct proc_data *pd = p;
+	putchar('"');
+
+	char **cmd = pd->proc->cmdline;
+
+	if (cmd) {
+		while (*cmd) {
+			print_inside_quote(*cmd, strlen(*cmd));
+			cmd++;
+			if (*cmd)
+				putchar(',');
 		}
 	}
 
-	if (vis->age_sec)
-		cprint(&ctx, "%llu", age_ts.tv_sec);
+	putchar('"');
+}
 
-	if (vis->age_msec)
-		cprint(&ctx, "%llu", age_ts.tv_nsec / 1000000);
+static void
+print_cgroup(const void *p)
+{
+	const struct proc_data *pd = p;
+	putchar('"');
 
-	if (vis->age) {
-		unsigned long long age = age_ts.tv_sec;
-		unsigned ms = age_ts.tv_nsec / 1000000;
+	char **cgroup = pd->proc->cgroup;
 
-		unsigned s = age % 60;
-		age /= 60;
-		unsigned m = age % 60;
-		age /= 60;
-		unsigned h = age % 24;
-		age /= 24;
-		unsigned long long d = age;
-
-		if (d > 0)
-			cprint(&ctx, "%llud:%02uh:%02um:%02u.%03us",
-					d, h, m, s, ms);
-		else if (h > 0)
-			cprint(&ctx, "%uh:%02um:%02u.%03us", h, m, s, ms);
-		else if (m > 0)
-			cprint(&ctx, "%um:%02u.%03us", m, s, ms);
-		else
-			cprint(&ctx, "%u.%03us", s, ms);
+	if (cgroup) {
+		while (*cgroup) {
+			print_inside_quote(*cgroup, strlen(*cgroup));
+			cgroup++;
+			if (*cgroup)
+				putchar(',');
+		}
 	}
+
+	putchar('"');
+}
+
+static void
+print_oom_score(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->oom_score);
+}
+
+static void
+print_oom_adj(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%d", pd->proc->oom_adj);
+}
+
+static void
+print_ns_ipc(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("0x%lx", pd->proc->ns[IPCNS]);
+}
+
+static void
+print_ns_mnt(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("0x%lx", pd->proc->ns[MNTNS]);
+}
+
+static void
+print_ns_net(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("0x%lx", pd->proc->ns[NETNS]);
+}
+
+static void
+print_ns_pid(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("0x%lx", pd->proc->ns[PIDNS]);
+}
+
+static void
+print_ns_user(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("0x%lx", pd->proc->ns[USERNS]);
+}
+
+static void
+print_ns_uts(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("0x%lx", pd->proc->ns[UTSNS]);
+}
+
+static void
+print_sd_mach(const void *p)
+{
+	const struct proc_data *pd = p;
+	csv_print_quoted(pd->proc->sd_mach, strlen(pd->proc->sd_mach));
+}
+
+static void
+print_sd_ouid(const void *p)
+{
+	const struct proc_data *pd = p;
+	csv_print_quoted(pd->proc->sd_ouid, strlen(pd->proc->sd_ouid));
+}
+
+static void
+print_sd_seat(const void *p)
+{
+	const struct proc_data *pd = p;
+	csv_print_quoted(pd->proc->sd_seat, strlen(pd->proc->sd_seat));
+}
+
+static void
+print_sd_sess(const void *p)
+{
+	const struct proc_data *pd = p;
+	csv_print_quoted(pd->proc->sd_sess, strlen(pd->proc->sd_sess));
+}
+
+static void
+print_sd_slice(const void *p)
+{
+	const struct proc_data *pd = p;
+	csv_print_quoted(pd->proc->sd_slice, strlen(pd->proc->sd_slice));
+}
+
+static void
+print_sd_unit(const void *p)
+{
+	const struct proc_data *pd = p;
+	csv_print_quoted(pd->proc->sd_unit, strlen(pd->proc->sd_unit));
+}
+
+static void
+print_sd_uunit(const void *p)
+{
+	const struct proc_data *pd = p;
+	csv_print_quoted(pd->proc->sd_uunit, strlen(pd->proc->sd_uunit));
+}
+
+static void
+print_lxcname(const void *p)
+{
+	const struct proc_data *pd = p;
+	csv_print_quoted(pd->proc->lxcname, strlen(pd->proc->lxcname));
+}
+
+static void
+print_environ(const void *p)
+{
+	const struct proc_data *pd = p;
+	if (pd->proc->environ)
+		csv_print_quoted(pd->proc->environ[0], strlen(pd->proc->environ[0]));
+}
+
+static void
+print_euid_name(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%s", get_user(pd->proc->euid));
+}
+
+static void
+print_egid_name(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%s", get_group(pd->proc->egid));
+}
+
+static void
+print_ruid_name(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%s", get_user(pd->proc->ruid));
+}
+
+static void
+print_rgid_name(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%s", get_group(pd->proc->rgid));
+}
+
+static void
+print_suid_name(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%s", get_user(pd->proc->suid));
+}
+
+static void
+print_sgid_name(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%s", get_group(pd->proc->sgid));
+}
+
+static void
+print_fuid_name(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%s", get_user(pd->proc->fuid));
+}
+
+static void
+print_fgid_name(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%s", get_group(pd->proc->fgid));
+}
+
+static void
+print_supgid_names(const void *p)
+{
+	const struct proc_data *pd = p;
+	if (strcmp(pd->proc->supgid, "-") == 0)
+		return;
+
+	char *gid_str = strtok(pd->proc->supgid, ",");
+
+	putchar('"');
+	while (gid_str) {
+		gid_t gid;
+		if (strtou_safe(gid_str, &gid, 0)) {
+			fprintf(stderr, "gid '%s' is not a number\n", gid_str);
+			abort();
+		}
+		printf("%s", get_group(gid));
+
+		gid_str = strtok(NULL, ",");
+		if (gid_str)
+			putchar(',');
+	}
+	putchar('"');
+}
+
+static void
+print_time_ms(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%llu", time_in_ms(pd->proc->utime + pd->proc->stime));
+}
+
+static void
+print_time(const void *p)
+{
+	const struct proc_data *pd = p;
+	unsigned long long time = time_in_ms(pd->proc->utime + pd->proc->stime);
+
+	unsigned ms = time % 1000;
+	time /= 1000;
+	unsigned s = time % 60;
+	time /= 60;
+	unsigned m = time % 60;
+	time /= 60;
+	unsigned h = time % 24;
+	time /= 24;
+	unsigned long long d = time;
+
+	if (d > 0)
+		printf("%llud:%02uh:%02um:%02u.%03us", d, h, m, s, ms);
+	else if (h > 0)
+		printf("%uh:%02um:%02u.%03us", h, m, s, ms);
+	else if (m > 0)
+		printf("%um:%02u.%03us", m, s, ms);
+	else if (s > 0)
+		printf("%u.%03us", s, ms);
+	else if (ms > 0)
+		printf("0.%03us", ms);
+	else
+		printf("0s");
+}
+
+static void
+print_start_time(const void *p)
+{
+	const struct proc_data *pd = p;
+	print_timespec(&pd->start_time_ts, false);
+}
+
+static void
+print_age_sec(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->age_ts.tv_sec);
+}
+
+static void
+print_age_msec(const void *p)
+{
+	const struct proc_data *pd = p;
+	printf("%lu", pd->age_ts.tv_nsec / 1000000);
+}
+
+static void
+print_age(const void *p)
+{
+	const struct proc_data *pd = p;
+	unsigned long long age = pd->age_ts.tv_sec;
+	unsigned ms = pd->age_ts.tv_nsec / 1000000;
+
+	unsigned s = age % 60;
+	age /= 60;
+	unsigned m = age % 60;
+	age /= 60;
+	unsigned h = age % 24;
+	age /= 24;
+	unsigned long long d = age;
+
+	if (d > 0)
+		printf("%llud:%02uh:%02um:%02u.%03us", d, h, m, s, ms);
+	else if (h > 0)
+		printf("%uh:%02um:%02u.%03us", h, m, s, ms);
+	else if (m > 0)
+		printf("%um:%02u.%03us", m, s, ms);
+	else
+		printf("%u.%03us", s, ms);
 }
 
 static void
@@ -1147,7 +1039,6 @@ main(int argc, char *argv[])
 	int opt;
 	int longindex;
 	char *cols = NULL;
-	struct visible_columns vis;
 	bool print_header = true;
 	bool show = false;
 	pid_t *pids = NULL;
@@ -1157,7 +1048,158 @@ main(int argc, char *argv[])
 
 	PageSize = sysconf(_SC_PAGESIZE);
 
-	memset(&vis, 1, sizeof(vis));
+	enum {
+		DEF            = 0,
+		STAT           = 1 << 0,
+		STATUS         = 1 << 1,
+		STAT_OR_STATUS = 1 << 2,
+		STATM          = 1 << 3,
+		CMDLINE        = 1 << 4,
+		ENVIRON        = 1 << 5,
+		CGROUP         = 1 << 6,
+		OOM            = 1 << 7,
+		NS             = 1 << 8,
+		SD             = 1 << 9,
+		LXC            = 1 << 10,
+		USR_GRP        = 1 << 11,
+		START_TIME     = 1 << 12,
+		AGE            = 1 << 13
+	};
+
+	struct column_info columns[] = {
+		/* always available */
+		{ true, 0, "tid",           TYPE_INT,    print_tid, DEF },
+		{ true, 0, "tgid",          TYPE_INT,    print_tgid, DEF },
+		{ true, 0, "euid",          TYPE_INT,    print_euid, DEF },
+		{ true, 0, "egid",          TYPE_INT,    print_egid, DEF },
+
+		/* from stat or status */
+		{ true, 0, "ppid",          TYPE_INT,    print_ppid, STAT_OR_STATUS },
+		{ true, 0, "state",         TYPE_STRING, print_state, STAT_OR_STATUS },
+		{ true, 0, "cmd",           TYPE_STRING, print_cmd, STAT_OR_STATUS },
+		{ true, 0, "nlwp",          TYPE_INT,    print_nlwp, STAT_OR_STATUS },
+		{ true, 0, "wchan",         TYPE_INT,    print_wchan, STAT_OR_STATUS },
+
+		/* from stat */
+		{ true, 0, "pgrp",          TYPE_INT,    print_pgrp, STAT },
+		{ true, 0, "session",       TYPE_INT,    print_session, STAT },
+
+		{ true, 0, "user_time_ms",              TYPE_INT, print_user_time_ms, STAT },
+		{ true, 0, "system_time_ms",            TYPE_INT, print_system_time_ms, STAT },
+		{ true, 0, "cumulative_user_time_ms",   TYPE_INT, print_cumulative_user_time_ms, STAT },
+		{ true, 0, "cumulative_system_time_ms", TYPE_INT, print_cumulative_system_time_ms, STAT },
+		{ true, 0, "start_time_sec",            TYPE_INT, print_start_time_sec, STAT | START_TIME },
+		{ true, 0, "start_time_msec",           TYPE_INT, print_start_time_msec, STAT | START_TIME },
+
+		{ true, 0, "start_code",    TYPE_INT, print_start_code, STAT },
+		{ true, 0, "end_code",      TYPE_INT, print_end_code, STAT },
+		{ true, 0, "start_stack",   TYPE_INT, print_start_stack, STAT },
+		{ true, 0, "kstk_esp",      TYPE_INT, print_kstk_esp, STAT },
+		{ true, 0, "kstk_eip",      TYPE_INT, print_kstk_eip, STAT },
+
+		{ true, 0, "priority",      TYPE_INT, print_priority, STAT },
+		{ true, 0, "nice",          TYPE_INT, print_nice, STAT },
+		{ true, 0, "rss",           TYPE_INT, print_rss, STAT },
+		{ true, 0, "alarm",         TYPE_INT, print_alarm, STAT },
+
+		{ true, 0, "rtprio",        TYPE_INT, print_rtprio, STAT },
+		{ true, 0, "sched",         TYPE_INT, print_sched, STAT },
+		{ true, 0, "vsize",         TYPE_INT, print_vsize, STAT },
+		{ true, 0, "rss_rlim",      TYPE_INT, print_rss_rlim, STAT },
+		{ true, 0, "flags",         TYPE_INT, print_flags, STAT },
+		{ true, 0, "min_flt",       TYPE_INT, print_min_flt, STAT },
+		{ true, 0, "maj_flt",       TYPE_INT, print_maj_flt, STAT },
+		{ true, 0, "cmin_flt",      TYPE_INT, print_cmin_flt, STAT },
+		{ true, 0, "cmaj_flt",      TYPE_INT, print_cmaj_flt, STAT },
+
+		{ true, 0, "tty",           TYPE_INT, print_tty, STAT },
+		{ true, 0, "tpgid",         TYPE_INT, print_tpgid, STAT },
+		{ true, 0, "exit_signal",   TYPE_INT, print_exit_signal, STAT },
+		{ true, 0, "processor",     TYPE_INT, print_processor, STAT },
+
+		/* from status */
+		{ true, 0, "pending_signals",          TYPE_STRING, print_pending_signals, STATUS },
+		{ true, 0, "blocked_signals",          TYPE_STRING, print_blocked_signals, STATUS },
+		{ true, 0, "ignored_signals",          TYPE_STRING, print_ignored_signals, STATUS },
+		{ true, 0, "caught_signals",           TYPE_STRING, print_caught_signals, STATUS },
+		{ true, 0, "pending_signals_per_task", TYPE_STRING, print_pending_signals_per_task, STATUS },
+
+		{ true, 0, "vm_size",       TYPE_INT, print_vm_size, STATUS },
+		{ true, 0, "vm_lock",       TYPE_INT, print_vm_lock, STATUS },
+		{ true, 0, "vm_rss",        TYPE_INT, print_vm_rss, STATUS },
+		{ true, 0, "vm_rss_anon",   TYPE_INT, print_vm_rss_anon, STATUS },
+		{ true, 0, "vm_rss_file",   TYPE_INT, print_vm_rss_file, STATUS },
+		{ true, 0, "vm_rss_shared", TYPE_INT, print_vm_rss_shared, STATUS },
+		{ true, 0, "vm_data",       TYPE_INT, print_vm_data, STATUS },
+		{ true, 0, "vm_stack",      TYPE_INT, print_vm_stack, STATUS },
+		{ true, 0, "vm_swap",       TYPE_INT, print_vm_swap, STATUS },
+		{ true, 0, "vm_exe",        TYPE_INT, print_vm_exe, STATUS },
+		{ true, 0, "vm_lib",        TYPE_INT, print_vm_lib, STATUS },
+
+		{ true, 0, "ruid",          TYPE_INT, print_ruid, STATUS },
+		{ true, 0, "rgid",          TYPE_INT, print_rgid, STATUS },
+		{ true, 0, "suid",          TYPE_INT, print_suid, STATUS },
+		{ true, 0, "sgid",          TYPE_INT, print_sgid, STATUS },
+		{ true, 0, "fuid",          TYPE_INT, print_fuid, STATUS },
+		{ true, 0, "fgid",          TYPE_INT, print_fgid, STATUS },
+
+		{ true, 0, "supgid",        TYPE_STRING, print_supgid, STATUS },
+
+		/* from statm */
+		{ true, 0, "size",          TYPE_INT, print_size, STATM },
+		{ true, 0, "resident",      TYPE_INT, print_resident, STATM },
+		{ true, 0, "share",         TYPE_INT, print_share, STATM },
+		{ true, 0, "trs",           TYPE_INT, print_trs, STATM },
+		{ true, 0, "drs",           TYPE_INT, print_drs, STATM },
+
+		/* other */
+		{ true, 0, "cmdline",       TYPE_STRING_ARR, print_cmdline, CMDLINE },
+		{ true, 0, "cgroup",        TYPE_STRING_ARR, print_cgroup, CGROUP },
+
+		{ true, 0, "oom_score",     TYPE_INT, print_oom_score, OOM },
+		{ true, 0, "oom_adj",       TYPE_INT, print_oom_adj, OOM },
+
+		{ true, 0, "ns_ipc",        TYPE_INT, print_ns_ipc, NS },
+		{ true, 0, "ns_mnt",        TYPE_INT, print_ns_mnt, NS },
+		{ true, 0, "ns_net",        TYPE_INT, print_ns_net, NS },
+		{ true, 0, "ns_pid",        TYPE_INT, print_ns_pid, NS },
+		{ true, 0, "ns_user",       TYPE_INT, print_ns_user, NS },
+		{ true, 0, "ns_uts",        TYPE_INT, print_ns_uts, NS },
+
+		{ true, 0, "sd_mach",       TYPE_STRING, print_sd_mach, SD },
+		{ true, 0, "sd_ouid",       TYPE_STRING, print_sd_ouid, SD },
+		{ true, 0, "sd_seat",       TYPE_STRING, print_sd_seat, SD },
+		{ true, 0, "sd_sess",       TYPE_STRING, print_sd_sess, SD },
+		{ true, 0, "sd_slice",      TYPE_STRING, print_sd_slice, SD },
+		{ true, 0, "sd_unit",       TYPE_STRING, print_sd_unit, SD },
+		{ true, 0, "sd_uunit",      TYPE_STRING, print_sd_uunit, SD },
+
+		{ true, 0, "lxcname",       TYPE_STRING, print_lxcname, LXC },
+
+		{ true, 0, "environ",       TYPE_STRING, print_environ, ENVIRON },
+
+		{ true, 0, "euid_name",     TYPE_STRING, print_euid_name, DEF | USR_GRP },
+		{ true, 0, "egid_name",     TYPE_STRING, print_egid_name, DEF | USR_GRP },
+
+		{ true, 0, "ruid_name",     TYPE_STRING, print_ruid_name, STATUS | USR_GRP },
+		{ true, 0, "rgid_name",     TYPE_STRING, print_rgid_name, STATUS | USR_GRP },
+		{ true, 0, "suid_name",     TYPE_STRING, print_suid_name, STATUS | USR_GRP },
+		{ true, 0, "sgid_name",     TYPE_STRING, print_sgid_name, STATUS | USR_GRP },
+		{ true, 0, "fuid_name",     TYPE_STRING, print_fuid_name, STATUS | USR_GRP },
+		{ true, 0, "fgid_name",     TYPE_STRING, print_fgid_name, STATUS | USR_GRP },
+
+		{ true, 0, "supgid_names",  TYPE_STRING, print_supgid_names, STATUS | USR_GRP },
+
+		{ true, 0, "time_ms",       TYPE_INT,    print_time_ms, STAT },
+		{ true, 0, "time",          TYPE_STRING, print_time, STAT },
+
+		{ true, 0, "start_time",    TYPE_STRING, print_start_time, STAT | START_TIME },
+		{ true, 0, "age_sec",       TYPE_INT,    print_age_sec, STAT | START_TIME | AGE },
+		{ true, 0, "age_msec",      TYPE_INT,    print_age_msec, STAT | START_TIME | AGE },
+		{ true, 0, "age",           TYPE_STRING, print_age, STAT | START_TIME | AGE },
+	};
+
+	size_t ncolumns = ARRAY_SIZE(columns);
 
 	while ((opt = getopt_long(argc, argv, "f:p:s", long_options,
 			&longindex)) != -1) {
@@ -1206,52 +1248,56 @@ main(int argc, char *argv[])
 	}
 
 	if (cols) {
-		compute_visibility(cols, &vis);
+		int r = csvci_parse_cols(cols, columns, &ncolumns);
+
 		free(cols);
+
+		if (r)
+			exit(2);
+	} else {
+		for (size_t i = 0; i < ncolumns; ++i)
+			columns[i].order = i;
 	}
 
 	if (show)
 		csv_show();
 
-	struct col_summary summary;
-	eval_visibility(&vis, print_header, &summary);
-
 	if (print_header)
-		printf("\n");
+		csvci_print_header(columns, ncolumns);
 
-	if (vis.euid_name || vis.egid_name ||
-			vis.ruid_name || vis.rgid_name ||
-			vis.suid_name || vis.sgid_name ||
-			vis.fuid_name || vis.fgid_name ||
-			vis.supgid_names)
+	uint64_t sources = 0;
+	for (size_t i = 0; i < ncolumns; ++i)
+		sources |= columns[i].data;
+
+	if (sources & USR_GRP)
 		usr_grp_query_init();
 
 	int flags = 0;
 
-	if (summary.sources & STAT)
+	if (sources & STAT)
 		flags |= PROC_FILLSTAT;
-	if (summary.sources & STATUS)
+	if (sources & STATUS)
 		flags |= PROC_FILLSTATUS;
-	if (summary.sources & STAT_OR_STATUS) {
+	if (sources & STAT_OR_STATUS) {
 		if ((flags & (PROC_FILLSTAT | PROC_FILLSTATUS)) == 0)
 			/* stat seems easier to parse */
 			flags |= PROC_FILLSTAT;
 	}
-	if (summary.sources & STATM)
+	if (sources & STATM)
 		flags |= PROC_FILLMEM;
-	if (summary.sources & CMDLINE)
+	if (sources & CMDLINE)
 		flags |= PROC_FILLCOM;
-	if (summary.sources & ENVIRON)
+	if (sources & ENVIRON)
 		flags |= PROC_FILLENV | PROC_EDITENVRCVT;
-	if (summary.sources & CGROUP)
+	if (sources & CGROUP)
 		flags |= PROC_FILLCGROUP;
-	if (summary.sources & OOM)
+	if (sources & OOM)
 		flags |= PROC_FILLOOM;
-	if (summary.sources & NS)
+	if (sources & NS)
 		flags |= PROC_FILLNS;
-	if (summary.sources & SD)
+	if (sources & SD)
 		flags |= PROC_FILLSYSTEMD;
-	if (summary.sources & LXC)
+	if (sources & LXC)
 		flags |= PROC_FILL_LXC;
 	if (npids)
 		flags |= PROC_PID;
@@ -1265,7 +1311,23 @@ main(int argc, char *argv[])
 	proc_t *proc;
 
 	while ((proc = readproc(pt, NULL)) != NULL) {
-		print_proc(proc, &vis, &summary);
+		struct proc_data pd;
+		pd.proc = proc;
+
+		if (sources & START_TIME)
+			get_start_time(proc, &pd.start_time_ts);
+		if (sources & AGE) {
+			if (!subtract_timespecs(&ref_time, &pd.start_time_ts,
+					&pd.age_ts)) {
+				/* if process was created after csv-ps, then
+				 * pretend it was created at the same time */
+				pd.age_ts.tv_sec = 0;
+				pd.age_ts.tv_nsec = 0;
+			}
+		}
+
+		csvci_print_row(&pd, columns, ncolumns);
+
 		freeproc(proc);
 	}
 
@@ -1274,11 +1336,7 @@ main(int argc, char *argv[])
 	if (pids)
 		free(pids);
 
-	if (vis.euid_name || vis.egid_name ||
-			vis.ruid_name || vis.rgid_name ||
-			vis.suid_name || vis.sgid_name ||
-			vis.fuid_name || vis.fgid_name ||
-			vis.supgid_names)
+	if (sources & USR_GRP)
 		usr_grp_query_fini();
 
 	return 0;

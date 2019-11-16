@@ -252,7 +252,7 @@ strnchr(const char *str, int c, size_t len)
 }
 
 void
-print_timespec(struct timespec *ts, bool nsec)
+print_timespec(const struct timespec *ts, bool nsec)
 {
 	int ret;
 	struct tm t;
