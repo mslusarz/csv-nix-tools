@@ -39,6 +39,8 @@
 #include <stddef.h>
 #include "parse.h"
 
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+
 void csv_print_header(FILE *out, const struct col_header *headers,
 		size_t nheaders);
 
