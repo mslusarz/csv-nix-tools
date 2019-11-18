@@ -41,8 +41,12 @@
  * 	wchan, tty, tpgid, exit_signal, *signals*, alarm, kstk*, flags
  */
 
+/* for asprintf */
+#define _GNU_SOURCE
+
 #include <assert.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <getopt.h>
 #include <limits.h>
 #include <stdio.h>
@@ -51,7 +55,10 @@
 #include <unistd.h>
 
 #include <proc/readproc.h>
+#include <sys/stat.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include "usr-grp-query.h"
 #include "utils.h"
@@ -978,7 +985,7 @@ print_age(const void *p)
 }
 
 static void
-calibrate_boottime(void)
+estimate_boottime_once(void)
 {
 	/*
 	 * It's impossible to get boot time with sub-second precision from
@@ -1033,6 +1040,211 @@ calibrate_boottime(void)
 	ref_time.tv_nsec = start.tv_usec * 1000;
 }
 
+/* missing sub-second precision */
+static unsigned long long
+get_coarse_boottime()
+{
+	unsigned long long boottime = ULLONG_MAX;
+	FILE *fp = fopen("/proc/stat", "r");
+	if (!fp) {
+		fprintf(stderr,
+			"unable to retrieve boot time from the kernel (%d, %s)\n",
+			errno, strerror(errno));
+		return 0;
+	}
+
+	char *buf = NULL;
+	size_t bufsize = 0;
+
+	ssize_t nread;
+	while ((nread = getline(&buf, &bufsize, fp)) != -1) {
+		if (nread < strlen("btime ") + 1)
+			continue;
+		if (strncmp(buf, "btime ", strlen("btime ")) != 0)
+			continue;
+
+		if (buf[nread - 1] == '\n')
+			buf[nread - 1] = 0;
+
+		if (strtoull_safe(buf + strlen("btime "), &boottime, 0)) {
+			fprintf(stderr,
+				"unable to retrieve boot time from the kernel (strtoull failed)\n");
+			boottime = 0;
+		}
+
+		break;
+	}
+
+	free(buf);
+	fclose(fp);
+
+	if (boottime == ULLONG_MAX) {
+		fprintf(stderr,
+			"unable to retrieve boot time from the kernel (btime not found)\n");
+		boottime = 0;
+	}
+
+	return boottime;
+}
+
+static void
+estimate_boottime()
+{
+	/*
+	 * Precise (< 1ms) estimation is costly (at least 40ms, but can take
+	 * much longer if system is loaded), so look up cached time first
+	 * (mtime of ~/.cache/csv-ps).
+	 */
+	char *path = NULL;
+	const char *cache = getenv("XDG_CACHE_HOME");
+	if (cache) {
+		if (asprintf(&path, "%s/csv-ps", cache) < 0) {
+			perror("asprintf");
+			return;
+		}
+	} else {
+		const char *home = getenv("HOME");
+		if (!home)
+			return;
+		if (asprintf(&path, "%s/.cache/csv-ps", home) < 0) {
+			perror("asprintf");
+			return;
+		}
+	}
+
+	unsigned long long coarse_bootime_sec = get_coarse_boottime();
+
+	struct stat st;
+	if (stat(path, &st) == 0) {
+		long long diff = ((st.st_mtim.tv_sec - boottime.tv_sec) * NSECS_IN_SEC
+				+ st.st_mtim.tv_nsec - boottime.tv_nsec);
+
+		bool ok = true;
+
+		/*
+		 * If the difference between cached boot time and estimated
+		 * boot time is positive, then the cached boot time is wrong
+		 * (it was probably estimated while the system was under load)
+		 *
+		 * If coarse_boottime is available, then it must match seconds
+		 * part of the cached boot time.
+		 *
+		 * If coarse_boottime is not available, then the difference
+		 * of more than one second means that the cached boot time was
+		 * probably calculated in a previous boot.
+		 *
+		 * Otherwise assume cached boot time is correct.
+		 */
+		if (diff > 0) {
+			ok = false;
+		} else if (coarse_bootime_sec != 0) {
+			if (st.st_mtim.tv_sec != coarse_bootime_sec)
+				ok = false;
+		} else {
+			if (-diff > NSECS_IN_SEC)
+				ok = false;
+		}
+
+		if (ok) {
+			boottime.tv_sec = st.st_mtim.tv_sec;
+			boottime.tv_nsec = st.st_mtim.tv_nsec;
+
+			goto end;
+		}
+	}
+
+	/*
+	 * If coarse_boottime is available and doesn't match seconds of
+	 * the estimated boot time, then set the estimated boot time to the last
+	 * nanosecond of coarse_boottime.
+	 */
+	if (coarse_bootime_sec && coarse_bootime_sec != boottime.tv_sec) {
+		boottime.tv_sec = coarse_bootime_sec;
+		boottime.tv_nsec = NSECS_IN_SEC - 1;
+	}
+
+// #define DEBUG_BOOTTIME 1
+
+#if DEBUG_BOOTTIME
+	struct timespec orig = boottime;
+#endif
+	/*
+	 * fork multiple times, estimate boot time in each subprocess, transfer
+	 * it to the parent process using a pipe and take the minimum value
+	 */
+	int iter = 0;
+	for (int i = 0; i < 50 && iter < 200; ++i, ++iter) {
+		int fd[2];
+		if (pipe(fd)) {
+			perror("pipe");
+			goto end;
+		}
+
+		pid_t p = fork();
+		if (p == 0) {
+			estimate_boottime_once();
+
+			(void)close(fd[0]);
+
+			if (write(fd[1], &boottime, sizeof(boottime)) < 0)
+				perror("write pipe");
+
+			(void)close(fd[1]);
+
+			exit(0);
+		} else if (p > 0) {
+			struct timespec t;
+
+			(void)close(fd[1]);
+
+			ssize_t r = read(fd[0], &t, sizeof(t));
+
+			if (r == sizeof(t)) {
+				/* find the minimum time */
+				if (t.tv_sec < boottime.tv_sec ||
+					(t.tv_sec == boottime.tv_sec &&
+					 t.tv_nsec < boottime.tv_nsec)) {
+					memcpy(&boottime, &t, sizeof(boottime));
+					i = 0;
+				}
+			} else {
+				fprintf(stderr, "read pipe: %ld %d %s\n", r,
+						errno, strerror(errno));
+			}
+
+			(void)close(fd[0]);
+
+			if (waitpid(p, NULL, 0) == -1)
+				perror("waitpid");
+		} else {
+			perror("fork");
+			goto end;
+		}
+	}
+
+#if DEBUG_BOOTTIME
+	fprintf(stderr, "loops: %d\n", iter);
+	fprintf(stderr, "diff: %ldus\n",
+			((orig.tv_sec - boottime.tv_sec) * NSECS_IN_SEC
+			+ orig.tv_nsec - boottime.tv_nsec) / 1000);
+	fprintf(stderr, "%ld.%ld\n", boottime.tv_sec, boottime.tv_nsec);
+#endif
+
+	/* it doesn't matter if directory already exists */
+	(void)mkdir(path, 0700);
+
+	/* store boot time as mtime of ~/.cache/csv-ps */
+	struct timespec times[2];
+	memcpy(&times[0], &ref_time, sizeof(times[0]));
+	memcpy(&times[1], &boottime, sizeof(times[1]));
+	if (utimensat(AT_FDCWD, path, times, 0)) {
+		fprintf(stderr, "utimensat %s failed: %s\n", path,
+				strerror(errno));
+	}
+end:
+	free(path);
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -1044,7 +1256,7 @@ main(int argc, char *argv[])
 	pid_t *pids = NULL;
 	size_t npids = 0;
 
-	calibrate_boottime();
+	estimate_boottime_once();
 
 	PageSize = sysconf(_SC_PAGESIZE);
 
@@ -1259,15 +1471,20 @@ main(int argc, char *argv[])
 			columns[i].order = i;
 	}
 
+	uint64_t sources = 0;
+	for (size_t i = 0; i < ncolumns; ++i)
+		sources |= columns[i].data;
+
+	/* estimate_boottime may fork, which means we have to call it before
+	 * anything goes to stdout, as stdout can be flushed in each process */
+	if (sources & START_TIME)
+		estimate_boottime();
+
 	if (show)
 		csv_show();
 
 	if (print_header)
 		csvci_print_header(columns, ncolumns);
-
-	uint64_t sources = 0;
-	for (size_t i = 0; i < ncolumns; ++i)
-		sources |= columns[i].data;
 
 	if (sources & USR_GRP)
 		usr_grp_query_init();
