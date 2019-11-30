@@ -565,6 +565,16 @@ compare_columns(const void *p1, const void *p2)
 	return 0;
 }
 
+static void
+csvci_sort_columns(struct column_info *columns, size_t *ncolumns,
+		size_t new_ncolumns)
+{
+	qsort(columns, *ncolumns, sizeof(columns[0]), compare_columns);
+	memset(&columns[new_ncolumns], 0,
+			sizeof(columns[0]) * (*ncolumns - new_ncolumns));
+	*ncolumns = new_ncolumns;
+}
+
 int
 csvci_parse_cols(char *cols, struct column_info *columns, size_t *ncolumns)
 {
@@ -596,13 +606,24 @@ csvci_parse_cols(char *cols, struct column_info *columns, size_t *ncolumns)
 		name = strtok(NULL, ",");
 	}
 
-	if (ret == 0) {
-		qsort(columns, *ncolumns, sizeof(columns[0]), compare_columns);
-		memset(&columns[order], 0, sizeof(columns[0]) * (*ncolumns - order));
-		*ncolumns = order;
-	}
+	if (ret == 0)
+		csvci_sort_columns(columns, ncolumns, order);
 
 	return ret;
+}
+
+void
+csvci_set_columns_order(struct column_info *columns, size_t *ncolumns)
+{
+	size_t order = 0;
+	for (size_t i = 0; i < *ncolumns; ++i) {
+		if (columns[i].vis)
+			columns[i].order = order++;
+		else
+			columns[i].order = SIZE_MAX;
+	}
+
+	csvci_sort_columns(columns, ncolumns, order);
 }
 
 /* order must match the one in enum output_types */

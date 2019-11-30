@@ -1467,8 +1467,7 @@ main(int argc, char *argv[])
 		if (r)
 			exit(2);
 	} else {
-		for (size_t i = 0; i < ncolumns; ++i)
-			columns[i].order = i;
+		csvci_set_columns_order(columns, &ncolumns);
 	}
 
 	uint64_t sources = 0;

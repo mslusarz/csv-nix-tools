@@ -316,6 +316,16 @@ test_with_cwd("csv-ls -f name"
 	ls-files
 	${CMAKE_SOURCE_DIR}/tests/files)
 
+test_with_cwd("csv-ls | csv-count -c"
+	empty.txt ls-count-columns.csv empty.txt 0
+	ls-count-columns
+	${CMAKE_SOURCE_DIR}/tests/files)
+
+test_with_cwd("csv-ls -l | csv-count -c"
+	empty.txt ls-l-count-columns.csv empty.txt 0
+	ls-l-count-columns
+	${CMAKE_SOURCE_DIR}/tests/files)
+
 ################################# REPLACE ######################################
 
 test("csv-replace -f name -F ' i' -r 'STRING' -n new-col" 3-columns-3-rows.csv replace-string.csv empty.txt 0

@@ -182,6 +182,8 @@ struct column_info {
 };
 
 int csvci_parse_cols(char *cols, struct column_info *columns, size_t *ncolumns);
+void csvci_set_columns_order(struct column_info *columns, size_t *ncolumns);
+
 void csvci_print_header(struct column_info *columns, size_t ncolumns);
 void csvci_print_row(const void *row, const struct column_info *columns,
 		size_t ncolumns);
