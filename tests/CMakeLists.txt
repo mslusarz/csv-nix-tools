@@ -326,6 +326,36 @@ test_with_cwd("csv-ls -l | csv-count -c"
 	ls-l-count-columns
 	${CMAKE_SOURCE_DIR}/tests/files)
 
+################################# NETSTAT ######################################
+
+if (LIBMNL_FOUND)
+
+test("csv-netstat | csv-count -c" empty.txt netstat-count-columns.csv empty.txt 0
+	netstat_count_columns)
+
+test("csv-netstat -e | csv-count -c" empty.txt netstat-e-count-columns.csv empty.txt 0
+	netstat_e_count_columns)
+
+test("csv-netstat -t | csv-count -c" empty.txt netstat-t-count-columns.csv empty.txt 0
+	netstat_t_count_columns)
+
+test("csv-netstat -u | csv-count -c" empty.txt netstat-u-count-columns.csv empty.txt 0
+	netstat_u_count_columns)
+
+test("csv-netstat -w | csv-count -c" empty.txt netstat-w-count-columns.csv empty.txt 0
+	netstat_w_count_columns)
+
+test("csv-netstat -x | csv-count -c" empty.txt netstat-x-count-columns.csv empty.txt 0
+	netstat_x_count_columns)
+
+test("csv-netstat -4 | csv-count -c" empty.txt netstat-4-count-columns.csv empty.txt 0
+	netstat_4_count_columns)
+
+test("csv-netstat -6 | csv-count -c" empty.txt netstat-6-count-columns.csv empty.txt 0
+	netstat_6_count_columns)
+
+endif(LIBMNL_FOUND)
+
 ################################# REPLACE ######################################
 
 test("csv-replace -f name -F ' i' -r 'STRING' -n new-col" 3-columns-3-rows.csv replace-string.csv empty.txt 0

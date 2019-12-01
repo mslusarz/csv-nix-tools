@@ -13,6 +13,7 @@ This project is in early prototyping stage.
 - bison (optional, required by csv-sql)
 - libprocps (optional, required by csv-ps)
 - ncurses (optional, used by csv-show)
+- libmnl (optional, required by csv-netstat)
 
 # How to build
 ```sh
@@ -26,6 +27,7 @@ sudo make install
 Source tools:
 - csv-groups - lists system groups
 - csv-ls - lists files
+- csv-netstat - lists network connections
 - csv-ps - lists processes (WIP)
 - csv-users - lists system users
 
@@ -319,6 +321,7 @@ $ csv-ls -R -f full_path . | csv-rpn-add -f new -e "%full_path -1 1 substr 'c' =
 - ps: lots of work, detailed in ps.c
 - sql/sqlite: load /proc/mounts, /sys/devices, ps, netstat or any other tool output (ls)
 - rpn/sql: binary number parsing
+- show: ability to lock columns (make them always visible)
 - tool for header ops (add/remove/change/detect types)
 - switch to deal with new lines in shell-compatible way (see what coreutils' ls does)
 - make naming of rpn/sql functions consistent (if->case?, strlen->length, toint->cast)

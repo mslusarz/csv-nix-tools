@@ -80,6 +80,16 @@ if(NOT NCURSES_FOUND)
 	message(WARNING "ncurses not found. csv-show won't support curses UI.")
 endif()
 
+if(PKG_CONFIG_FOUND)
+	pkg_check_modules(LIBMNL libmnl)
+else()
+	find_package(LIBMNL)
+endif()
+
+if(NOT LIBMNL_FOUND)
+	message(WARNING "libmnl not found. csv-netstat won't be built.")
+endif()
+
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 
@@ -199,6 +209,23 @@ if(LIBPROCPS_FOUND)
 	endif()
 
 	target_link_libraries(csv-ps ${LIBPROCPS_LIBRARIES})
+endif()
+
+if(LIBMNL_FOUND)
+	if(${CMAKE_VERSION} VERSION_LESS "3.13.0")
+		link_directories(${LIBMNL_LIBRARY_DIRS})
+	endif()
+
+	build_tool(csv-netstat src/netstat.c)
+	if (LIBMNL_INCLUDE_DIRS)
+		target_include_directories(csv-netstat PRIVATE ${LIBMNL_INCLUDE_DIRS})
+	endif()
+
+	if(NOT ${CMAKE_VERSION} VERSION_LESS "3.13.0")
+		target_link_directories(csv-netstat PRIVATE ${LIBMNL_LIBRARY_DIRS})
+	endif()
+
+	target_link_libraries(csv-netstat ${LIBMNL_LIBRARIES})
 endif()
 
 option(TEST_UNDER_MEMCHECK "Run tests under Valgrind memcheck" OFF)

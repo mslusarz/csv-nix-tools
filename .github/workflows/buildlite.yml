@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: remove optional deps
-      run: sudo apt remove flex bison libsqlite3-dev libprocps-dev libncurses5-dev
+      run: sudo apt remove flex bison libsqlite3-dev libprocps-dev libncurses5-dev libmnl-dev
     - name: mkdir
       run: mkdir build
     - name: cmake
