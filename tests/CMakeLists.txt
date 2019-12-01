@@ -1055,6 +1055,12 @@ test("csv-substring -f name -n last_char -p -1 -l 1"
 test("csv-sum -f id" id-column-3-rows.csv sum-id.csv empty.txt 0
 	sum)
 
+test("csv-sum -f col1,col2,col3" 3-numeric-columns-4-rows.csv sum-3-columns.csv empty.txt 0
+	sum-3-columns)
+
+test("csv-sum -f col3,col1" 3-numeric-columns-4-rows.csv sum-2-columns.csv empty.txt 0
+	sum-2-columns)
+
 ################################### TAC ########################################
 
 test("csv-tac ${DATA_DIR}/one-column-one-row.csv" empty.csv one-column-one-row.csv empty.txt 0
