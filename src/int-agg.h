@@ -30,67 +30,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <limits.h>
+#ifndef CSV_INT_AGG_H
+#define CSV_INT_AGG_H
+
 #include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
 
-#include "int-agg.h"
-#include "utils.h"
+typedef int (*int_agg_init_state)(void *state, size_t ncolumns);
+typedef int (*int_agg_new_data)(void *state, size_t col, long long val);
+typedef long long (*int_agg)(void *state, size_t col);
+typedef void (*int_agg_free_state)(void *state);
 
-struct state {
-	long long *sums;
-};
+int int_agg_main(int argc, char *argv[],
+		const char *name,
+		void *state,
+		int_agg_init_state init,
+		int_agg_new_data new_data,
+		int_agg aggregate,
+		int_agg_free_state free_state);
 
-int
-init_state(void *state, size_t ncolumns)
-{
-	struct state *st = state;
-	st->sums = xcalloc_nofail(ncolumns, sizeof(st->sums[0]));
-	return 0;
-}
-
-int
-new_data(void *state, size_t col, long long llval)
-{
-	struct state *st = state;
-
-	if (llval > 0 && st->sums[col] > LLONG_MAX - llval) {
-		fprintf(stderr, "integer overflow\n");
-		return -1;
-	}
-
-	if (llval < 0 && st->sums[col] < LLONG_MIN - llval) {
-		fprintf(stderr, "integer underflow\n");
-		return -1;
-	}
-
-	st->sums[col] += llval;
-
-	return 0;
-}
-
-long long
-aggregate(void *state, size_t col)
-{
-	struct state *st = state;
-
-	return st->sums[col];
-}
-
-void
-free_state(void *state)
-{
-	struct state *st = state;
-
-	free(st->sums);
-}
-
-int
-main(int argc, char *argv[])
-{
-	struct state state;
-
-	return int_agg_main(argc, argv, "sum", &state,
-			init_state, new_data, aggregate, free_state);
-}
+#endif

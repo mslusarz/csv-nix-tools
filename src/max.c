@@ -39,14 +39,17 @@
 #include "utils.h"
 
 struct state {
-	long long *sums;
+	long long *maxs;
 };
 
 int
 init_state(void *state, size_t ncolumns)
 {
 	struct state *st = state;
-	st->sums = xcalloc_nofail(ncolumns, sizeof(st->sums[0]));
+	st->maxs = xmalloc_nofail(ncolumns, sizeof(st->maxs[0]));
+	for (size_t i = 0; i < ncolumns; ++i)
+		st->maxs[i] = LLONG_MIN;
+
 	return 0;
 }
 
@@ -55,17 +58,8 @@ new_data(void *state, size_t col, long long llval)
 {
 	struct state *st = state;
 
-	if (llval > 0 && st->sums[col] > LLONG_MAX - llval) {
-		fprintf(stderr, "integer overflow\n");
-		return -1;
-	}
-
-	if (llval < 0 && st->sums[col] < LLONG_MIN - llval) {
-		fprintf(stderr, "integer underflow\n");
-		return -1;
-	}
-
-	st->sums[col] += llval;
+	if (llval > st->maxs[col])
+		st->maxs[col] = llval;
 
 	return 0;
 }
@@ -75,7 +69,7 @@ aggregate(void *state, size_t col)
 {
 	struct state *st = state;
 
-	return st->sums[col];
+	return st->maxs[col];
 }
 
 void
@@ -83,7 +77,7 @@ free_state(void *state)
 {
 	struct state *st = state;
 
-	free(st->sums);
+	free(st->maxs);
 }
 
 int
@@ -91,6 +85,6 @@ main(int argc, char *argv[])
 {
 	struct state state;
 
-	return int_agg_main(argc, argv, "sum", &state,
+	return int_agg_main(argc, argv, "max", &state,
 			init_state, new_data, aggregate, free_state);
 }

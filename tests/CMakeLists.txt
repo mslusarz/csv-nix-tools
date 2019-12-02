@@ -87,6 +87,17 @@ test("csv-cat" newlines.csv newlines.csv empty.txt 0
 test("csv-cat" quotes.csv quotes.csv empty.txt 0
 	cat_quotes)
 
+################################### AVG ########################################
+
+test("csv-avg -f id" id-column-3-rows.csv avg-id.csv empty.txt 0
+	avg)
+
+test("csv-avg -f col1,col2,col3" 3-numeric-columns-4-rows.csv avg-3-columns.csv empty.txt 0
+	avg-3-columns)
+
+test("csv-avg -f col3,col1" 3-numeric-columns-4-rows.csv avg-2-columns.csv empty.txt 0
+	avg-2-columns)
+
 ################################### CAT ########################################
 
 test("csv-cat ${DATA_DIR}/one-column-one-row.csv" empty.csv one-column-one-row.csv empty.txt 0
@@ -325,6 +336,28 @@ test_with_cwd("csv-ls -l | csv-count -c"
 	empty.txt ls-l-count-columns.csv empty.txt 0
 	ls-l-count-columns
 	${CMAKE_SOURCE_DIR}/tests/files)
+
+################################### MIN ########################################
+
+test("csv-min -f id" id-column-3-rows.csv min-id.csv empty.txt 0
+	min)
+
+test("csv-min -f col1,col2,col3" 3-numeric-columns-4-rows.csv min-3-columns.csv empty.txt 0
+	min-3-columns)
+
+test("csv-min -f col3,col1" 3-numeric-columns-4-rows.csv min-2-columns.csv empty.txt 0
+	min-2-columns)
+
+################################### MAX ########################################
+
+test("csv-max -f id" id-column-3-rows.csv max-id.csv empty.txt 0
+	max)
+
+test("csv-max -f col1,col2,col3" 3-numeric-columns-4-rows.csv max-3-columns.csv empty.txt 0
+	max-3-columns)
+
+test("csv-max -f col3,col1" 3-numeric-columns-4-rows.csv max-2-columns.csv empty.txt 0
+	max-2-columns)
 
 ################################# NETSTAT ######################################
 

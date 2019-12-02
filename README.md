@@ -32,6 +32,7 @@ Source tools:
 - csv-users - lists system users
 
 Filtering/processing tools:
+- csv-avg - takes an average of numerical column(s)
 - csv-cat - concatenates input files
 - csv-concat - creates new column by concatenation of columns and user-defined strings
 - csv-count - counts number of columns and/or rows
@@ -39,6 +40,8 @@ Filtering/processing tools:
 - csv-exec-add - creates new column by executing external tool and storing its output
 - csv-grep - filters rows matching a (regex) pattern
 - csv-head - outputs the first part of input
+- csv-max - takes a maximum value of numerical column(s)
+- csv-min - takes a minimum value of numerical column(s)
 - csv-replace - transforms column into another one by string substitution (similar to sed s/$str/$str/)
 - csv-rpn-add - creates new column from RPN expression
 - csv-rpn-filter - filters rows using RPN expression
@@ -47,7 +50,7 @@ Filtering/processing tools:
 - csv-sql - SQL-based frontend for other tools (WIP)
 - csv-sqlite - advanced processor using in-memory SQLite database (requires loading whole input before processing)
 - csv-substring - creates new column based on a substring of an existing one
-- csv-sum - sums column(s)
+- csv-sum - sums numerical column(s)
 - csv-tac - concatenate files in reverse
 - csv-tail - outputs the last part of input
 

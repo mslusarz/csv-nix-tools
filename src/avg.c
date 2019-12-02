@@ -40,6 +40,7 @@
 
 struct state {
 	long long *sums;
+	size_t rows;
 };
 
 int
@@ -47,6 +48,7 @@ init_state(void *state, size_t ncolumns)
 {
 	struct state *st = state;
 	st->sums = xcalloc_nofail(ncolumns, sizeof(st->sums[0]));
+	st->rows = 0;
 	return 0;
 }
 
@@ -67,6 +69,9 @@ new_data(void *state, size_t col, long long llval)
 
 	st->sums[col] += llval;
 
+	if (col == 0)
+		st->rows++;
+
 	return 0;
 }
 
@@ -75,7 +80,7 @@ aggregate(void *state, size_t col)
 {
 	struct state *st = state;
 
-	return st->sums[col];
+	return st->sums[col] / (long long)st->rows;
 }
 
 void
@@ -91,6 +96,6 @@ main(int argc, char *argv[])
 {
 	struct state state;
 
-	return int_agg_main(argc, argv, "sum", &state,
+	return int_agg_main(argc, argv, "avg", &state,
 			init_state, new_data, aggregate, free_state);
 }

@@ -37,6 +37,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stddef.h>
+#include <time.h>
+
 #include "parse.h"
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
