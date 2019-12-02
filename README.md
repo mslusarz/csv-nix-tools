@@ -33,29 +33,29 @@ Source tools:
 
 Filtering/processing tools:
 - csv-avg - takes an average of numerical column(s)
-- csv-cat - concatenates input files
-- csv-concat - creates new column by concatenation of columns and user-defined strings
-- csv-count - counts number of columns and/or rows
-- csv-cut - removes columns and changes their order
-- csv-exec-add - creates new column by executing external tool and storing its output
-- csv-grep - filters rows matching a (regex) pattern
-- csv-head - outputs the first part of input
+- csv-cat - concatenates multiple csv files
+- csv-concat - concatenates columns and user-defined strings
+- csv-count - counts the number of columns and/or rows
+- csv-cut - narows down columns and reorders them
+- csv-exec-add - pipes data to standard input of an external command and creates new column from its standard output
+- csv-grep - filters rows matching a pattern
+- csv-head - outputs the first N rows
 - csv-max - takes a maximum value of numerical column(s)
 - csv-min - takes a minimum value of numerical column(s)
-- csv-replace - transforms column into another one by string substitution (similar to sed s/$str/$str/)
+- csv-replace - does string substitution on column(s) (similar to sed s/$str/$str/)
 - csv-rpn-add - creates new column from RPN expression
 - csv-rpn-filter - filters rows using RPN expression
 - csv-sort - sorts input by column(s)
-- csv-split - creates two columns by splitting existing column using a delimiter
-- csv-sql - SQL-based frontend for other tools (WIP)
-- csv-sqlite - advanced processor using in-memory SQLite database (requires loading whole input before processing)
-- csv-substring - creates new column based on a substring of an existing one
-- csv-sum - sums numerical column(s)
+- csv-split - splits one column into two using a delimiter
+- csv-sql - processes input data using simplified (but very fast) SQL-based syntax (WIP)
+- csv-sqlite - processes input data using SQLite (requires loading the whole input before processing)
+- csv-substring - extracts part of a column
+- csv-sum - takes a sum of numerical column(s)
 - csv-tac - concatenate files in reverse
-- csv-tail - outputs the last part of input
+- csv-tail - outputs the last N rows
 
 Sink tools:
-- csv-exec - executes external command for each row
+- csv-exec - executes an external command for each row
 - csv-show - formats data in human-readable form
 
 # Examples
