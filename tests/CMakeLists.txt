@@ -1146,6 +1146,14 @@ test("csv-tail --lines=3" 3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
 test("csv-tail -n 3" 3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
 	tail_-n_3_and_there_are_3_lines_in_input)
 
+################################### UNIQ #######################################
+
+test("csv-uniq -f col1" uniq-input1.csv uniq-output1.csv empty.txt 0 uniq-1)
+
+test("csv-uniq -f col3,col2,col1" uniq-input2.csv uniq-output2.csv empty.txt 0 uniq-2)
+
+test("csv-uniq -f col3" uniq-input2.csv uniq-output3.csv empty.txt 0 uniq-3)
+
 ################################### USERS ######################################
 
 test("csv-users -f name | csv-grep -f name -F root | csv-count -c --no-header" empty.txt 1.txt empty.txt 0

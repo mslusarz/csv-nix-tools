@@ -135,6 +135,7 @@ build_tool(csv-substring	src/substring.c)
 build_tool(csv-sum		src/sum.c src/int-agg.c)
 build_tool(csv-tac		src/tac.c)
 build_tool(csv-tail		src/tail.c)
+build_tool(csv-uniq		src/uniq.c)
 build_tool(csv-users		src/users.c src/usr-grp.c)
 
 target_link_libraries(csv-rpn-add	csvrpn)

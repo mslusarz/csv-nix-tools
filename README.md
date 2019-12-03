@@ -53,6 +53,7 @@ Filtering/processing tools:
 - csv-sum - takes a sum of numerical column(s)
 - csv-tac - concatenate files in reverse
 - csv-tail - outputs the last N rows
+- csv-uniq - merges adjacent duplicate rows
 
 Sink tools:
 - csv-exec - executes an external command for each row
@@ -307,14 +308,13 @@ $ csv-ls -R -f full_path . | csv-rpn-add -f new -e "%full_path -1 1 substr 'c' =
 ```
 
 # TODO (high level)
-- more processing tools (tr, uniq, rev, drop, paste?, etc)
+- more processing tools (tr, rev, drop, paste?, etc)
 - more data collection tools (find, df, ifconfig/ip?, lsattr, lsusb, readlink, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, w/who?, etc)
 - more rpn operators/functions (split, rev, base64enc/dec, timestamp conversion, now, regex, sed, tr)
 - exporting tools (to-xml, to-json, to-sql)
 - importing tools (from-xml, from-json)
 - export as much as possible as a library(ies)
 - moar tests, fuzzing, Valgrind
-- CI (circleci?)
 - code coverage (coveralls?)
 - Coverity
 - documentation
