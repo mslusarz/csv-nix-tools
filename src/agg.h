@@ -30,22 +30,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef CSV_INT_AGG_H
-#define CSV_INT_AGG_H
+#ifndef CSV_AGG_H
+#define CSV_AGG_H
 
 #include <stddef.h>
 
-typedef int (*int_agg_init_state)(void *state, size_t ncolumns);
-typedef int (*int_agg_new_data)(void *state, size_t col, long long val);
-typedef long long (*int_agg)(void *state, size_t col);
-typedef void (*int_agg_free_state)(void *state);
+typedef int (*agg_init_state)(void *state, size_t ncolumns);
+typedef int (*agg_new_data_int)(void *state, size_t col, long long val);
+typedef long long (*agg_int)(void *state, size_t col);
+typedef void (*agg_free_state)(void *state);
 
-int int_agg_main(int argc, char *argv[],
+int agg_main(int argc, char *argv[],
 		const char *name,
 		void *state,
-		int_agg_init_state init,
-		int_agg_new_data new_data,
-		int_agg aggregate,
-		int_agg_free_state free_state);
+		agg_init_state init,
+		agg_new_data_int new_data,
+		agg_int aggregate,
+		agg_free_state free_state);
 
 #endif

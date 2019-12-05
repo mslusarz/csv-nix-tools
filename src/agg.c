@@ -40,7 +40,7 @@
 
 #include "parse.h"
 #include "utils.h"
-#include "int-agg.h"
+#include "agg.h"
 
 static const struct option long_options[] = {
 	{"fields",	required_argument,	NULL, 'f'},
@@ -67,7 +67,7 @@ struct cb_params {
 	size_t *columns;
 	size_t ncolumns;
 
-	int_agg_new_data cb;
+	agg_new_data_int cb;
 	void *state;
 };
 
@@ -93,13 +93,13 @@ next_row(const char *buf, const size_t *col_offs,
 }
 
 int
-int_agg_main(int argc, char *argv[],
+agg_main(int argc, char *argv[],
 		const char *name,
 		void *state,
-		int_agg_init_state init,
-		int_agg_new_data new_data,
-		int_agg aggregate,
-		int_agg_free_state free_state)
+		agg_init_state init,
+		agg_new_data_int new_data,
+		agg_int aggregate,
+		agg_free_state free_state)
 {
 	int opt;
 	int longindex;

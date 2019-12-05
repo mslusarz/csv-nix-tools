@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "int-agg.h"
+#include "agg.h"
 #include "utils.h"
 
 struct state {
@@ -85,6 +85,6 @@ main(int argc, char *argv[])
 {
 	struct state state;
 
-	return int_agg_main(argc, argv, "max", &state,
+	return agg_main(argc, argv, "max", &state,
 			init_state, new_data, aggregate, free_state);
 }
