@@ -34,50 +34,90 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "agg.h"
 #include "utils.h"
 
 struct state {
-	long long *mins;
+	long long *min_int;
+	char **min_str;
+	size_t *str_size;
+	size_t ncolumns;
 };
 
-int
+static int
 init_state(void *state, size_t ncolumns)
 {
 	struct state *st = state;
-	st->mins = xmalloc_nofail(ncolumns, sizeof(st->mins[0]));
-	for (size_t i = 0; i < ncolumns; ++i)
-		st->mins[i] = LLONG_MAX;
+	st->ncolumns = ncolumns;
+	st->min_int = xmalloc_nofail(ncolumns, sizeof(st->min_int[0]));
+	st->min_str = xmalloc_nofail(ncolumns, sizeof(st->min_str[0]));
+	st->str_size = xmalloc_nofail(ncolumns, sizeof(st->str_size[0]));
+	for (size_t i = 0; i < ncolumns; ++i) {
+		st->min_int[i] = LLONG_MAX;
+		st->min_str[i] = NULL;
+		st->str_size[i] = 0;
+	}
 
 	return 0;
 }
 
-int
-new_data(void *state, size_t col, long long llval)
+static int
+new_data_int(void *state, size_t col, long long llval)
 {
 	struct state *st = state;
 
-	if (llval < st->mins[col])
-		st->mins[col] = llval;
+	if (llval < st->min_int[col])
+		st->min_int[col] = llval;
 
 	return 0;
 }
 
-long long
-aggregate(void *state, size_t col)
+static long long
+aggregate_int(void *state, size_t col)
 {
 	struct state *st = state;
 
-	return st->mins[col];
+	return st->min_int[col];
 }
 
-void
+static void
 free_state(void *state)
 {
 	struct state *st = state;
 
-	free(st->mins);
+	free(st->min_int);
+	for (size_t i = 0; i < st->ncolumns; ++i)
+		free(st->min_str[i]);
+	free(st->min_str);
+	free(st->str_size);
+}
+
+static int
+new_data_str(void *state, size_t col, const char *str)
+{
+	struct state *st = state;
+
+	if (st->min_str[col] == NULL || strcmp(str, st->min_str[col]) < 0) {
+		size_t len = strlen(str);
+		if (len + 1 > st->str_size[col]) {
+			free(st->min_str[col]);
+			st->min_str[col] = malloc(len + 1);
+			st->str_size[col] = len + 1;
+		}
+		memcpy(st->min_str[col], str, len + 1);
+	}
+
+	return 0;
+}
+
+static void
+aggregate_str(void *state, size_t col)
+{
+	struct state *st = state;
+
+	csv_print_quoted(st->min_str[col], strlen(st->min_str[col]));
 }
 
 int
@@ -85,6 +125,6 @@ main(int argc, char *argv[])
 {
 	struct state state;
 
-	return agg_main(argc, argv, "min", &state, init_state, new_data,
-			aggregate, free_state, NULL, NULL);
+	return agg_main(argc, argv, "min", &state, init_state, new_data_int,
+			aggregate_int, free_state, new_data_str, aggregate_str);
 }
