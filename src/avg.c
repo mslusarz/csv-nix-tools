@@ -43,7 +43,7 @@ struct state {
 	size_t rows;
 };
 
-int
+static int
 init_state(void *state, size_t ncolumns)
 {
 	struct state *st = state;
@@ -52,8 +52,8 @@ init_state(void *state, size_t ncolumns)
 	return 0;
 }
 
-int
-new_data(void *state, size_t col, long long llval)
+static int
+new_data_int(void *state, size_t col, long long llval)
 {
 	struct state *st = state;
 
@@ -75,15 +75,15 @@ new_data(void *state, size_t col, long long llval)
 	return 0;
 }
 
-long long
-aggregate(void *state, size_t col)
+static long long
+aggregate_int(void *state, size_t col)
 {
 	struct state *st = state;
 
 	return st->sums[col] / (long long)st->rows;
 }
 
-void
+static void
 free_state(void *state)
 {
 	struct state *st = state;
@@ -96,6 +96,6 @@ main(int argc, char *argv[])
 {
 	struct state state;
 
-	return agg_main(argc, argv, "avg", &state, init_state, new_data,
-			aggregate, free_state, NULL, NULL);
+	return agg_main(argc, argv, "avg", &state, init_state, new_data_int,
+			aggregate_int, free_state, NULL, NULL);
 }
