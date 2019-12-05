@@ -85,6 +85,6 @@ main(int argc, char *argv[])
 {
 	struct state state;
 
-	return agg_main(argc, argv, "min", &state,
-			init_state, new_data, aggregate, free_state);
+	return agg_main(argc, argv, "min", &state, init_state, new_data,
+			aggregate, free_state, NULL, NULL);
 }

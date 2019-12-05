@@ -65,9 +65,11 @@ usage(FILE *out, const char *name)
 
 struct cb_params {
 	size_t *columns;
+	enum output_types *types;
 	size_t ncolumns;
 
-	agg_new_data_int cb;
+	agg_new_data_int cb_int;
+	agg_new_data_str cb_str;
 	void *state;
 };
 
@@ -81,15 +83,40 @@ next_row(const char *buf, const size_t *col_offs,
 	for (size_t i = 0; i < params->ncolumns; ++i) {
 		const char *val = &buf[col_offs[params->columns[i]]];
 
-		long long llval;
-		if (strtoll_safe(val, &llval, 0))
-			return -1;
+		if (params->types[i] == TYPE_INT) {
+			long long llval;
+			if (strtoll_safe(val, &llval, 0))
+				return -1;
 
-		if (params->cb(params->state, i, llval))
-			return -1;
+			if (params->cb_int(params->state, i, llval))
+				return -1;
+		} else {
+			const char *unquoted = val;
+			if (val[0] == '"')
+				unquoted = csv_unquot(val);
+
+			int ret = 0;
+			if (params->cb_str(params->state, i, unquoted))
+				ret = -1;
+
+			if (val[0] == '"')
+				free((char *)unquoted);
+
+			if (ret)
+				return ret;
+		}
 	}
 
 	return 0;
+}
+
+static void
+type_not_supported(const char *type, const char *col, const char *name)
+{
+	fprintf(stderr,
+		"Type '%s', used by column '%s', is not supported by csv-%s.\n",
+		type, col, name);
+	exit(2);
 }
 
 int
@@ -97,18 +124,22 @@ agg_main(int argc, char *argv[],
 		const char *name,
 		void *state,
 		agg_init_state init,
-		agg_new_data_int new_data,
-		agg_int aggregate,
-		agg_free_state free_state)
+		agg_new_data_int new_data_int,
+		agg_int aggregate_int,
+		agg_free_state free_state,
+		agg_new_data_str new_data_str,
+		agg_str aggregate_str)
 {
 	int opt;
 	int longindex;
 	struct cb_params params;
-	params.columns = NULL;
-	params.ncolumns = 0;
 	char *cols = NULL;
 	bool print_header = true;
 	bool show = false;
+
+	params.columns = NULL;
+	params.types = NULL;
+	params.ncolumns = 0;
 
 	while ((opt = getopt_long(argc, argv, "f:sv", long_options,
 			&longindex)) != -1) {
@@ -158,6 +189,7 @@ agg_main(int argc, char *argv[],
 	size_t nheaders = csv_get_headers(s, &headers);
 
 	params.columns = xmalloc_nofail(nheaders, sizeof(params.columns[0]));
+	params.types = xmalloc_nofail(nheaders, sizeof(params.types[0]));
 
 	char *col = strtok(cols, ",");
 	while (col) {
@@ -167,14 +199,24 @@ agg_main(int argc, char *argv[],
 			exit(2);
 		}
 
-		if (strcmp(headers[idx].type, "int") != 0) {
-			fprintf(stderr, "column %s is not an integer\n", col);
-			exit(2);
-		}
-
 		if (params.ncolumns == nheaders) {
 			fprintf(stderr, "duplicated columns\n");
 			exit(2);
+		}
+
+		const char *t = headers[idx].type;
+		if (strcmp(t, "int") == 0) {
+			if (new_data_int == NULL)
+				type_not_supported(t, col, name);
+
+			params.types[params.ncolumns] = TYPE_INT;
+		} else if (strcmp(t, "string") == 0) {
+			if (new_data_str == NULL)
+				type_not_supported(t, col, name);
+
+			params.types[params.ncolumns] = TYPE_STRING;
+		} else {
+			type_not_supported(t, col, name);
 		}
 
 		params.columns[params.ncolumns++] = idx;
@@ -196,18 +238,33 @@ agg_main(int argc, char *argv[],
 				headers[params.columns[params.ncolumns - 1]].type);
 	}
 
-	params.cb = new_data;
+	params.cb_int = new_data_int;
+	params.cb_str = new_data_str;
 	params.state = state;
 	if (csv_read_all(s, &next_row, &params))
 		exit(2);
 
 	csv_destroy_ctx(s);
 
-	for (size_t i = 0; i < params.ncolumns - 1; ++i)
-		printf("%lld,", aggregate(state, i));
-	printf("%lld\n", aggregate(state, params.ncolumns - 1));
+	for (size_t i = 0; i < params.ncolumns - 1; ++i) {
+		if (params.types[i] == TYPE_INT) {
+			printf("%lld,", aggregate_int(state, i));
+		} else {
+			aggregate_str(state, i);
+			putchar(',');
+		}
+	}
+
+	size_t idx = params.ncolumns - 1;
+	if (params.types[idx] == TYPE_INT)
+		printf("%lld", aggregate_int(state, idx));
+	else
+		aggregate_str(state, idx);
+
+	putchar('\n');
 
 	free(params.columns);
+	free(params.types);
 	free_state(state);
 
 	return 0;

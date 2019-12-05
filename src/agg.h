@@ -37,15 +37,19 @@
 
 typedef int (*agg_init_state)(void *state, size_t ncolumns);
 typedef int (*agg_new_data_int)(void *state, size_t col, long long val);
+typedef int (*agg_new_data_str)(void *state, size_t col, const char *str);
 typedef long long (*agg_int)(void *state, size_t col);
+typedef void (*agg_str)(void *state, size_t col);
 typedef void (*agg_free_state)(void *state);
 
 int agg_main(int argc, char *argv[],
 		const char *name,
 		void *state,
 		agg_init_state init,
-		agg_new_data_int new_data,
-		agg_int aggregate,
-		agg_free_state free_state);
+		agg_new_data_int new_data_int,
+		agg_int aggregate_int,
+		agg_free_state free_state,
+		agg_new_data_str new_data_str,
+		agg_str aggregate_str);
 
 #endif
