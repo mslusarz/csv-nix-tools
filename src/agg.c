@@ -43,6 +43,7 @@
 #include "agg.h"
 
 static const struct option long_options[] = {
+	{"separator",	required_argument,	NULL, 'e'},
 	{"fields",	required_argument,	NULL, 'f'},
 	{"no-header",	no_argument,		NULL, 'H'},
 	{"show",	no_argument,		NULL, 's'},
@@ -52,10 +53,12 @@ static const struct option long_options[] = {
 };
 
 static void
-usage(FILE *out, const char *name)
+usage(FILE *out, const char *name, bool read_sep)
 {
 	fprintf(out, "Usage: csv-%s [OPTION]...\n", name);
 	fprintf(out, "Options:\n");
+	if (read_sep)
+		fprintf(out, "  -e, --separator=str\n");
 	fprintf(out, "  -f, --fields=name1[,name2...]\n");
 	fprintf(out, "  -s, --show\n");
 	fprintf(out, "      --no-header\n");
@@ -128,7 +131,8 @@ agg_main(int argc, char *argv[],
 		agg_int aggregate_int,
 		agg_free_state free_state,
 		agg_new_data_str new_data_str,
-		agg_str aggregate_str)
+		agg_str aggregate_str,
+		bool read_sep)
 {
 	int opt;
 	int longindex;
@@ -136,14 +140,29 @@ agg_main(int argc, char *argv[],
 	char *cols = NULL;
 	bool print_header = true;
 	bool show = false;
+	char *sep = NULL;
 
 	params.columns = NULL;
 	params.types = NULL;
 	params.ncolumns = 0;
 
-	while ((opt = getopt_long(argc, argv, "f:sv", long_options,
+	const char *optstring;
+	if (read_sep)
+		optstring = "e:f:sv";
+	else
+		optstring = "f:sv";
+
+	while ((opt = getopt_long(argc, argv, optstring, long_options,
 			&longindex)) != -1) {
 		switch (opt) {
+			case 'e':
+				if (read_sep) {
+					sep = xstrdup_nofail(optarg);
+				} else {
+					usage(stdout, name, read_sep);
+					return 2;
+				}
+				break;
 			case 'f':
 				cols = xstrdup_nofail(optarg);
 				break;
@@ -161,19 +180,19 @@ agg_main(int argc, char *argv[],
 					case 0:
 					case 1:
 					default:
-						usage(stderr, name);
+						usage(stderr, name, read_sep);
 						return 2;
 				}
 				break;
 			case 'h':
 			default:
-				usage(stdout, name);
+				usage(stdout, name, read_sep);
 				return 2;
 		}
 	}
 
 	if (!cols) {
-		usage(stderr, name);
+		usage(stderr, name, read_sep);
 		exit(2);
 	}
 
@@ -226,7 +245,7 @@ agg_main(int argc, char *argv[],
 
 	free(cols);
 
-	init(state, params.ncolumns);
+	init(state, params.ncolumns, sep);
 
 	if (print_header) {
 		for (size_t i = 0; i < params.ncolumns - 1; ++i)
@@ -265,6 +284,7 @@ agg_main(int argc, char *argv[],
 
 	free(params.columns);
 	free(params.types);
+	free(sep);
 	free_state(state);
 
 	return 0;

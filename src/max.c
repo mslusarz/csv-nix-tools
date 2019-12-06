@@ -47,7 +47,7 @@ struct state {
 };
 
 static int
-init_state(void *state, size_t ncolumns)
+init_state(void *state, size_t ncolumns, const char *unused)
 {
 	struct state *st = state;
 	st->ncolumns = ncolumns;
@@ -103,7 +103,7 @@ new_data_str(void *state, size_t col, const char *str)
 		size_t len = strlen(str);
 		if (len + 1 > st->str_size[col]) {
 			free(st->max_str[col]);
-			st->max_str[col] = malloc(len + 1);
+			st->max_str[col] = xmalloc_nofail(len + 1, 1);
 			st->str_size[col] = len + 1;
 		}
 		memcpy(st->max_str[col], str, len + 1);
@@ -126,5 +126,6 @@ main(int argc, char *argv[])
 	struct state state;
 
 	return agg_main(argc, argv, "max", &state, init_state, new_data_int,
-			aggregate_int, free_state, new_data_str, aggregate_str);
+			aggregate_int, free_state, new_data_str, aggregate_str,
+			false);
 }

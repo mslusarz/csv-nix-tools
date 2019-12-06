@@ -34,56 +34,114 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "agg.h"
 #include "utils.h"
 
 struct state {
-	long long *sums;
+	long long *sums_int;
+	char **sums_str;
+	size_t *str_used;
+	size_t *str_sizes;
+	size_t ncolumns;
+	const char *sep;
+	size_t sep_len;
 };
 
-int
-init_state(void *state, size_t ncolumns)
+static int
+init_state(void *state, size_t ncolumns, const char *sep)
 {
 	struct state *st = state;
-	st->sums = xcalloc_nofail(ncolumns, sizeof(st->sums[0]));
+	st->ncolumns = ncolumns;
+	st->sums_int = xcalloc_nofail(ncolumns, sizeof(st->sums_int[0]));
+	st->sums_str = xcalloc_nofail(ncolumns, sizeof(st->sums_str[0]));
+	st->str_used = xcalloc_nofail(ncolumns, sizeof(st->str_used[0]));
+	st->str_sizes = xcalloc_nofail(ncolumns, sizeof(st->str_sizes[0]));
+	st->sep = sep;
+	if (sep)
+		st->sep_len = strlen(sep);
+	else
+		st->sep_len = 0;
 	return 0;
 }
 
-int
-new_data(void *state, size_t col, long long llval)
+static int
+new_data_int(void *state, size_t col, long long llval)
 {
 	struct state *st = state;
 
-	if (llval > 0 && st->sums[col] > LLONG_MAX - llval) {
+	if (llval > 0 && st->sums_int[col] > LLONG_MAX - llval) {
 		fprintf(stderr, "integer overflow\n");
 		return -1;
 	}
 
-	if (llval < 0 && st->sums[col] < LLONG_MIN - llval) {
+	if (llval < 0 && st->sums_int[col] < LLONG_MIN - llval) {
 		fprintf(stderr, "integer underflow\n");
 		return -1;
 	}
 
-	st->sums[col] += llval;
+	st->sums_int[col] += llval;
 
 	return 0;
 }
 
-long long
-aggregate(void *state, size_t col)
+static long long
+aggregate_int(void *state, size_t col)
 {
 	struct state *st = state;
 
-	return st->sums[col];
+	return st->sums_int[col];
 }
 
-void
+static void
 free_state(void *state)
 {
 	struct state *st = state;
 
-	free(st->sums);
+	free(st->sums_int);
+	for (size_t i = 0; i < st->ncolumns; ++i)
+		free(st->sums_str[i]);
+	free(st->sums_str);
+	free(st->str_used);
+	free(st->str_sizes);
+}
+
+static int
+new_data_str(void *state, size_t col, const char *str)
+{
+	struct state *st = state;
+
+	size_t len = strlen(str);
+
+	size_t req = st->sep_len + len + 1;
+	if (req > st->str_sizes[col] - st->str_used[col]) {
+		st->str_sizes[col] *= 2;
+		if (st->str_sizes[col] - st->str_used[col] < req)
+			st->str_sizes[col] += req;
+
+		st->sums_str[col] =
+			xrealloc_nofail(st->sums_str[col],
+					st->str_sizes[col], 1);
+	}
+
+	if (st->str_used[col] > 0 && st->sep_len) {
+		strcpy(&st->sums_str[col][st->str_used[col]], st->sep);
+		st->str_used[col] += st->sep_len;
+	}
+
+	memcpy(&st->sums_str[col][st->str_used[col]], str, len + 1);
+	st->str_used[col] += len;
+
+	return 0;
+}
+
+static void
+aggregate_str(void *state, size_t col)
+{
+	struct state *st = state;
+
+	csv_print_quoted(st->sums_str[col], st->str_used[col]);
 }
 
 int
@@ -91,6 +149,7 @@ main(int argc, char *argv[])
 {
 	struct state state;
 
-	return agg_main(argc, argv, "sum", &state, init_state, new_data,
-			aggregate, free_state, NULL, NULL);
+	return agg_main(argc, argv, "sum", &state, init_state, new_data_int,
+			aggregate_int, free_state, new_data_str, aggregate_str,
+			true);
 }

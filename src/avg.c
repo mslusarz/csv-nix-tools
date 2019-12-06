@@ -44,7 +44,7 @@ struct state {
 };
 
 static int
-init_state(void *state, size_t ncolumns)
+init_state(void *state, size_t ncolumns, const char *unused)
 {
 	struct state *st = state;
 	st->sums = xcalloc_nofail(ncolumns, sizeof(st->sums[0]));
@@ -97,5 +97,5 @@ main(int argc, char *argv[])
 	struct state state;
 
 	return agg_main(argc, argv, "avg", &state, init_state, new_data_int,
-			aggregate_int, free_state, NULL, NULL);
+			aggregate_int, free_state, NULL, NULL, false);
 }
