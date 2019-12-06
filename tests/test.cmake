@@ -41,6 +41,8 @@ if (TEST_UNDER_MEMCHECK)
 	set(CMD "valgrind --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=all --error-exitcode=123 --log-file='${TMP_DIR}/${NAME}.memcheck' ${CMD}")
 endif()
 
+set(ENV{XDG_CACHE_HOME} ${TMP_DIR})
+
 execute_process(COMMAND sh -c "${CMD}"
 		WORKING_DIRECTORY "${CWD}"
 		INPUT_FILE ${SRC_DIR}/data/${INPUT}
