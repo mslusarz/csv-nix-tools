@@ -300,7 +300,7 @@ test("csv-grep -f name -F or.m | csv-count -r --no-header" 3-columns-3-rows.csv 
 
 ################################## GROUPS ######################################
 
-test("csv-groups -f name | csv-grep -f name -F root | csv-count -c --no-header" empty.txt 1.txt empty.txt 0
+test("csv-groups | csv-grep -f name -x -F root | csv-count -c --no-header" empty.txt 5.txt empty.txt 0
 	groups)
 
 ################################### HEAD #######################################
@@ -409,6 +409,15 @@ test("csv-netstat -6 | csv-count -c" empty.txt netstat-6-count-columns.csv empty
 	netstat_6_count_columns)
 
 endif(LIBMNL_FOUND)
+
+################################### PS ########################################
+
+if (LIBPROCPS_FOUND)
+
+test("csv-ps | csv-count -c" empty.txt ps-columns.csv empty.txt 0
+	ps_columns)
+
+endif(LIBPROCPS_FOUND)
 
 ################################# REPLACE ######################################
 
@@ -617,6 +626,9 @@ test("csv-rpn-filter -e \"%id tostring '2' ==\"" 3-columns-3-rows.csv rpn-filter
 
 test("csv-show" 3-columns-3-rows.csv show-3-columns-3-rows.txt empty.txt 0
 	show_3_cols)
+
+test("csv-show --ui=less" 3-columns-3-rows.csv show-3-columns-3-rows.txt empty.txt 0
+	show_3_cols_less)
 
 test("csv-show" newlines.csv show-newlines.txt empty.txt 0
 	show_newlines)
@@ -1177,5 +1189,5 @@ test("csv-uniq -f col3" uniq-input2.csv uniq-output3.csv empty.txt 0 uniq-3)
 
 ################################### USERS ######################################
 
-test("csv-users -f name | csv-grep -f name -F root | csv-count -c --no-header" empty.txt 1.txt empty.txt 0
+test("csv-users | csv-grep -f name -x -F root | csv-count -c --no-header" empty.txt 9.txt empty.txt 0
 	users)
