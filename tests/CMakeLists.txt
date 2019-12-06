@@ -106,11 +106,32 @@ test("csv-cat ${DATA_DIR}/one-column-one-row.csv" empty.csv one-column-one-row.c
 test("csv-cat ${DATA_DIR}/one-column-one-row.csv ${DATA_DIR}/one-column-one-row.csv" empty.csv cat-2-files.csv empty.txt 0
 	cat_two_files)
 
+test("csv-cat - ${DATA_DIR}/one-column-one-row.csv" one-column-one-row.csv cat-2-files.csv empty.txt 0
+	cat_stdin_and_file)
+
 test("csv-cat ${DATA_DIR}/3-different-order-columns-3-rows.csv ${DATA_DIR}/3-columns-2-last-rows.csv" empty.csv cat-2-different-files.csv empty.txt 0
 	cat_two_different_files)
 
 test("csv-cat ${DATA_DIR}/one-column-one-row.csv ${DATA_DIR}/2-columns-3-rows.csv" empty.csv empty.csv cat-2-files-different-num-columns.txt 2
 	cat_two_files_different_columns)
+
+test("csv-cat --help" empty.csv cat-help.txt empty.txt 2
+	cat_help)
+
+test("csv-cat --version" empty.csv git-version.txt empty.txt 0
+	cat_version)
+
+test("csv-cat --no-header" 2-columns-3-rows.csv cat-no-headers.txt empty.txt 0
+	cat_no_header)
+
+test("csv-cat -s" 2-columns-3-rows.csv cat-show.txt empty.txt 0
+	cat_show)
+
+test("csv-cat - -" 2-columns-3-rows.csv empty.txt cat-stdin-twice.txt 2
+	cat_stdin_twice)
+
+test("csv-cat not-existing" empty.csv empty.txt cat-not-existing.txt 2
+	cat_not_existing)
 
 ################################# CONCAT #######################################
 
