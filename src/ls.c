@@ -543,7 +543,7 @@ dirs_alloc_fail:
 	return ret;
 }
 
-static const struct option long_options[] = {
+static const struct option opts[] = {
 	{"all",		no_argument, 		NULL, 'a'},
 	{"directory",	no_argument,		NULL, 'd'},
 	{"fields",	required_argument,	NULL, 'f'},
@@ -577,7 +577,6 @@ main(int argc, char *argv[])
 {
 	int opt, ret = 0;
 	int dir = 0, recursive = 0, all = 0, sort = 1;
-	int longindex;
 	char *cols = NULL;
 	bool print_header = true;
 	bool show = false;
@@ -628,8 +627,7 @@ main(int argc, char *argv[])
 
 	size_t ncolumns = ARRAY_SIZE(columns);
 
-	while ((opt = getopt_long(argc, argv, "adf:lRsU", long_options,
-			&longindex)) != -1) {
+	while ((opt = getopt_long(argc, argv, "adf:lRsU", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'a':
 				all = 1;
@@ -659,14 +657,6 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
-			case 0:
-				switch (longindex) {
-					case 0:
-					default:
-						usage(stderr);
-						return 2;
-				}
-				break;
 			case 'h':
 			default:
 				usage(stdout);

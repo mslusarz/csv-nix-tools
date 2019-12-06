@@ -53,7 +53,7 @@
 
 #define DEFAULT_SPACING 3
 
-static const struct option long_options[] = {
+static const struct option opts[] = {
 	{"no-header",	no_argument,		NULL, 'H'},
 	{"with-types",	no_argument, 		NULL, 't'},
 	{"ui",		required_argument,	NULL, 'u'},
@@ -561,7 +561,6 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	int longindex;
 	struct cb_params params;
 	bool print_header = true;
 	bool print_types = false;
@@ -575,8 +574,7 @@ main(int argc, char *argv[])
 	params.tmpbuf = NULL;
 	params.tmpbuf_size = 0;
 
-	while ((opt = getopt_long(argc, argv, "u:s:v", long_options,
-			&longindex)) != -1) {
+	while ((opt = getopt_long(argc, argv, "u:s:v", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'u':
 				if (strcmp(optarg, "curses") == 0)
@@ -604,15 +602,6 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
-			case 0:
-				switch (longindex) {
-					case 0:
-					case 1:
-					default:
-						usage(stderr);
-						return 2;
-				}
-				break;
 			case 'h':
 			default:
 				usage(stdout);

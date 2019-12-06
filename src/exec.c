@@ -40,7 +40,7 @@
 #include "parse.h"
 #include "utils.h"
 
-static const struct option long_options[] = {
+static const struct option opts[] = {
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -130,26 +130,15 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	int longindex;
 	struct cb_params params;
 
 	memset(&params, 0, sizeof(params));
 
-	while ((opt = getopt_long(argc, argv, "", long_options,
-			&longindex)) != -1) {
+	while ((opt = getopt_long(argc, argv, "", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'V':
 				printf("git\n");
 				return 0;
-			case 0:
-				switch (longindex) {
-					case 0:
-					case 1:
-					default:
-						usage(stderr);
-						return 2;
-				}
-				break;
 			case 'h':
 			default:
 				usage(stdout);

@@ -40,7 +40,7 @@
 #include "parse.h"
 #include "utils.h"
 
-static const struct option long_options[] = {
+static const struct option opts[] = {
 	{"fields",	required_argument,	NULL, 'f'},
 	{"no-header",	no_argument,		NULL, 'H'},
 	{"reverse",	no_argument,		NULL, 'r'},
@@ -89,7 +89,6 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	int longindex;
 	struct cb_params params;
 	params.columns = NULL;
 	params.ncolumns = 0;
@@ -98,8 +97,7 @@ main(int argc, char *argv[])
 	bool reverse = false;
 	bool show = false;
 
-	while ((opt = getopt_long(argc, argv, "f:rs", long_options,
-			&longindex)) != -1) {
+	while ((opt = getopt_long(argc, argv, "f:rs", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'f':
 				cols = xstrdup_nofail(optarg);
@@ -116,15 +114,6 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
-			case 0:
-				switch (longindex) {
-					case 0:
-					case 1:
-					default:
-						usage(stderr);
-						return 2;
-				}
-				break;
 			case 'h':
 			default:
 				usage(stdout);

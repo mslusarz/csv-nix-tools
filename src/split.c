@@ -40,7 +40,7 @@
 #include "parse.h"
 #include "utils.h"
 
-static const struct option long_options[] = {
+static const struct option opts[] = {
 	{"no-header",		no_argument,		NULL, 'H'},
 	{"print-separator",	required_argument,	NULL, 'p'},
 	{"reverse",		no_argument,		NULL, 'r'},
@@ -139,7 +139,6 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	int longindex;
 	bool print_header = true;
 	char *col = NULL;
 	struct cb_params params;
@@ -150,8 +149,8 @@ main(int argc, char *argv[])
 
 	memset(&params, 0, sizeof(params));
 
-	while ((opt = getopt_long(argc, argv, "e:f:p:sn:r", long_options,
-			&longindex)) != -1) {
+	while ((opt = getopt_long(argc, argv, "e:f:p:sn:r", opts,
+			NULL)) != -1) {
 		switch (opt) {
 			case 'e':
 				params.separators = xstrdup_nofail(optarg);
@@ -200,15 +199,6 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
-			case 0:
-				switch (longindex) {
-					case 0:
-					case 1:
-					default:
-						usage(stderr);
-						return 2;
-				}
-				break;
 			case 'h':
 			default:
 				usage(stdout);

@@ -40,7 +40,7 @@
 #include "parse.h"
 #include "utils.h"
 
-static const struct option long_options[] = {
+static const struct option opts[] = {
 	{"lines",	required_argument,	NULL, 'n'},
 	{"no-header",	no_argument,		NULL, 'H'},
 	{"show",	no_argument,		NULL, 's'},
@@ -115,7 +115,6 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	int longindex;
 	struct cb_params params;
 	bool print_header = true;
 	bool show = false;
@@ -123,8 +122,7 @@ main(int argc, char *argv[])
 	params.count = 0;
 	params.nlines = 10;
 
-	while ((opt = getopt_long(argc, argv, "n:sv", long_options,
-			&longindex)) != -1) {
+	while ((opt = getopt_long(argc, argv, "n:sv", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'n':
 				params.nlines = atoi(optarg);
@@ -138,15 +136,6 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
-			case 0:
-				switch (longindex) {
-					case 0:
-					case 1:
-					default:
-						usage(stderr);
-						return 2;
-				}
-				break;
 			case 'h':
 			default:
 				usage(stdout);

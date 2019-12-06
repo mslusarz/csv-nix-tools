@@ -63,7 +63,7 @@
 #include "usr-grp-query.h"
 #include "utils.h"
 
-static const struct option long_options[] = {
+static const struct option opts[] = {
 	{"fields",	required_argument,	NULL, 'f'},
 	{"no-header",	no_argument,		NULL, 'H'},
 	{"pid",		required_argument,	NULL, 'p'},
@@ -1249,7 +1249,6 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	int longindex;
 	char *cols = NULL;
 	bool print_header = true;
 	bool show = false;
@@ -1413,8 +1412,7 @@ main(int argc, char *argv[])
 
 	size_t ncolumns = ARRAY_SIZE(columns);
 
-	while ((opt = getopt_long(argc, argv, "f:p:s", long_options,
-			&longindex)) != -1) {
+	while ((opt = getopt_long(argc, argv, "f:p:s", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'f':
 				cols = xstrdup_nofail(optarg);
@@ -1444,14 +1442,6 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
-			case 0:
-				switch (longindex) {
-					case 0:
-					default:
-						usage(stderr);
-						return 2;
-				}
-				break;
 			case 'h':
 			default:
 				usage(stdout);

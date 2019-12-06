@@ -98,7 +98,7 @@
 
 #define REQUIRES_RESOLVING (1ULL << 31)
 
-static const struct option long_options[] = {
+static const struct option opts[] = {
 	{"extend",	no_argument,		NULL, 'e'},
 	{"fields",	required_argument,	NULL, 'f'},
 	{"no-header",	no_argument,		NULL, 'H'},
@@ -1529,7 +1529,6 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	int longindex;
 	char *cols = NULL;
 	bool print_header = true;
 	bool show = false;
@@ -1613,8 +1612,8 @@ main(int argc, char *argv[])
 
 	size_t ncolumns = ARRAY_SIZE(columns);
 
-	while ((opt = getopt_long(argc, argv, "ef:rSstUuwx46", long_options,
-			&longindex)) != -1) {
+	while ((opt = getopt_long(argc, argv, "ef:rSstUuwx46", opts,
+			NULL)) != -1) {
 		switch (opt) {
 			case 'e':
 				for (size_t i = 0; i < ncolumns; ++i)
@@ -1667,14 +1666,6 @@ main(int argc, char *argv[])
 				break;
 			case '6':
 				protocols |= INET6;
-				break;
-			case 0:
-				switch (longindex) {
-					case 0:
-					default:
-						usage(stderr);
-						return 2;
-				}
 				break;
 			case 'h':
 			default:

@@ -42,7 +42,7 @@
 #include "utils.h"
 #include "agg.h"
 
-static const struct option long_options[] = {
+static const struct option opts[] = {
 	{"separator",	required_argument,	NULL, 'e'},
 	{"fields",	required_argument,	NULL, 'f'},
 	{"no-header",	no_argument,		NULL, 'H'},
@@ -135,7 +135,6 @@ agg_main(int argc, char *argv[],
 		bool read_sep)
 {
 	int opt;
-	int longindex;
 	struct cb_params params;
 	char *cols = NULL;
 	bool print_header = true;
@@ -152,8 +151,7 @@ agg_main(int argc, char *argv[],
 	else
 		optstring = "f:sv";
 
-	while ((opt = getopt_long(argc, argv, optstring, long_options,
-			&longindex)) != -1) {
+	while ((opt = getopt_long(argc, argv, optstring, opts, NULL)) != -1) {
 		switch (opt) {
 			case 'e':
 				if (read_sep) {
@@ -175,15 +173,6 @@ agg_main(int argc, char *argv[],
 			case 'V':
 				printf("git\n");
 				return 0;
-			case 0:
-				switch (longindex) {
-					case 0:
-					case 1:
-					default:
-						usage(stderr, name, read_sep);
-						return 2;
-				}
-				break;
 			case 'h':
 			default:
 				usage(stdout, name, read_sep);

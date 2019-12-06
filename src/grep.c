@@ -48,7 +48,7 @@
 #include "parse.h"
 #include "utils.h"
 
-static const struct option long_options[] = {
+static const struct option opts[] = {
 	{"no-header",		no_argument,	NULL, 'H'},
 	{"ignore-case",		no_argument,	NULL, 'i'},
 	{"show",		no_argument,	NULL, 's'},
@@ -195,7 +195,6 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	int longindex;
 	bool invert = false;
 	struct condition *conditions = NULL;
 	size_t nconditions = 0;
@@ -205,8 +204,8 @@ main(int argc, char *argv[])
 	char *current_column = NULL;
 	bool whole = false;
 
-	while ((opt = getopt_long(argc, argv, "e:E:f:F:isvx", long_options,
-			&longindex)) != -1) {
+	while ((opt = getopt_long(argc, argv, "e:E:f:F:isvx", opts,
+			NULL)) != -1) {
 		switch (opt) {
 			case 'e': {
 				struct condition cond;
@@ -286,15 +285,6 @@ main(int argc, char *argv[])
 				return 0;
 			case 'x':
 				whole = true;
-				break;
-			case 0:
-				switch (longindex) {
-					case 0:
-					case 1:
-					default:
-						usage(stderr);
-						return 2;
-				}
 				break;
 			case 'h':
 			default:

@@ -45,7 +45,7 @@
 #include "parse.h"
 #include "utils.h"
 
-static const struct option long_options[] = {
+static const struct option opts[] = {
 	{"no-header",		no_argument,		NULL, 'H'},
 	{"ignore-case",		no_argument,		NULL, 'i'},
 	{"show",		no_argument,		NULL, 's'},
@@ -305,7 +305,6 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	int longindex;
 	bool print_header = true;
 	char *input_col = NULL;
 	char *new_name = NULL;
@@ -317,8 +316,8 @@ main(int argc, char *argv[])
 
 	memset(&params, 0, sizeof(params));
 
-	while ((opt = getopt_long(argc, argv, "e:E:F:f:ir:sn:", long_options,
-			&longindex)) != -1) {
+	while ((opt = getopt_long(argc, argv, "e:E:F:f:ir:sn:", opts,
+			NULL)) != -1) {
 		switch (opt) {
 			case 'f':
 				input_col = xstrdup_nofail(optarg);
@@ -354,15 +353,6 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
-			case 0:
-				switch (longindex) {
-					case 0:
-					case 1:
-					default:
-						usage(stderr);
-						return 2;
-				}
-				break;
 			case 'h':
 			default:
 				usage(stdout);
