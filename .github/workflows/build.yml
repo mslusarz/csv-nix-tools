@@ -9,6 +9,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - name: update package lists
+      run: sudo apt update
     - name: install deps
       run: sudo apt install flex bison libsqlite3-dev libprocps-dev libncurses5-dev libmnl-dev
     - name: mkdir
