@@ -1104,6 +1104,18 @@ test("csv-sqlite 'select str1, str2, str1 like \"%12\" as \"str1_like_%12\", str
 #	rpn-add-num-base.csv rpn-add-convert.csv empty.txt 0
 #	sqlite_str_to_int)
 
+test("csv-sqlite -l users 'select * from users' | csv-count -c --no-header"
+	one-column-one-row.csv 7.txt empty.txt 0
+	sqlite_users_count_columns)
+
+test("csv-sqlite -l groups 'select * from groups' | csv-count -c --no-header"
+	one-column-one-row.csv 3.txt empty.txt 0
+	sqlite_groups_count_columns)
+
+test("csv-sqlite -l group_members 'select * from group_members' | csv-count -c --no-header"
+	one-column-one-row.csv 2.txt empty.txt 0
+	sqlite_group_members_count_columns)
+
 endif(SQLITE3_FOUND)
 
 ################################ SUBSTRING #####################################
