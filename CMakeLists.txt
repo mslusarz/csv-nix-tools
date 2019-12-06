@@ -100,7 +100,7 @@ configure_file(
 
 option(COVERAGE "Code coverage tracking" OFF)
 if(COVERAGE)
-       set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -coverage")
+       set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage")
 endif()
 
 add_library(csvshared STATIC src/parse.c src/utils.c)

@@ -1,0 +1,27 @@
+name: Coverage
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: update package lists
+      run: sudo apt update
+    - name: install deps
+      run: sudo apt install flex bison libsqlite3-dev libprocps-dev libncurses5-dev libmnl-dev curl
+    - name: mkdir
+      run: mkdir build
+    - name: cmake
+      run: cd build && cmake .. -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON
+    - name: make
+      run: cd build && make
+    - name: ctest
+      run: cd build && ctest --output-on-failure
+    - name: upload
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
