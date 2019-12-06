@@ -1106,6 +1106,19 @@ estimate_boottime()
 		const char *home = getenv("HOME");
 		if (!home)
 			return;
+		if (asprintf(&path, "%s/.cache", home) < 0) {
+			perror("asprintf");
+			return;
+		}
+
+		struct stat statbuf;
+		if (stat(path, &statbuf)) {
+			perror("stat $HOME/.cache");
+			free(path);
+			return;
+		}
+		free(path);
+
 		if (asprintf(&path, "%s/.cache/csv-ps", home) < 0) {
 			perror("asprintf");
 			return;
@@ -1231,7 +1244,9 @@ estimate_boottime()
 #endif
 
 	/* it doesn't matter if directory already exists */
-	(void)mkdir(path, 0700);
+	if (mkdir(path, 0700))
+		if (errno != EEXIST)
+			perror("mkdir .cache/csv-ps");
 
 	/* store boot time as mtime of ~/.cache/csv-ps */
 	struct timespec times[2];
