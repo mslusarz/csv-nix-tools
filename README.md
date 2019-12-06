@@ -36,13 +36,13 @@ Filtering/processing tools:
 - csv-cat - concatenates multiple csv files
 - csv-concat - concatenates columns and user-defined strings
 - csv-count - counts the number of columns and/or rows
-- csv-cut - narows down columns and reorders them
+- csv-cut - narrows down columns and reorders them
 - csv-exec-add - pipes data to standard input of an external command and creates new column from its standard output
 - csv-grep - filters rows matching a pattern
 - csv-head - outputs the first N rows
-- csv-max - takes a maximum value of numerical column(s)
-- csv-min - takes a minimum value of numerical column(s)
-- csv-replace - does string substitution on column(s) (similar to sed s/$str/$str/)
+- csv-max - takes a maximum value of numerical or string column(s)
+- csv-min - takes a minimum value of numerical or string column(s)
+- csv-replace - performs string substitution on column(s) (similar to sed s/$str/$str/)
 - csv-rpn-add - creates new column from RPN expression
 - csv-rpn-filter - filters rows using RPN expression
 - csv-sort - sorts input by column(s)
@@ -50,8 +50,8 @@ Filtering/processing tools:
 - csv-sql - processes input data using simplified (but very fast) SQL-based syntax (WIP)
 - csv-sqlite - processes input data using SQLite (requires loading the whole input before processing)
 - csv-substring - extracts part of a column
-- csv-sum - takes a sum of numerical column(s)
-- csv-tac - concatenate files in reverse
+- csv-sum - takes a sum of numerical or string column(s)
+- csv-tac - concatenates files in reverse
 - csv-tail - outputs the last N rows
 - csv-uniq - merges adjacent duplicate rows
 
