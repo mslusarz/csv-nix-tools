@@ -494,10 +494,8 @@ test("csv-max --version" empty.csv git-version.txt empty.txt 0
 
 if (LIBMNL_FOUND)
 
-# tail -n 1 is for code coverage - it makes sure that netstat prints all data,
-# otherwise csv-count may interrupt it because it's interested only in
-# the number of columns
-test("csv-netstat | csv-tail -n 1 | csv-count -c" empty.txt netstat-count-columns.csv empty.txt 0
+# count -r + cut to let netstat finish printing data and contribute to code coverage
+test("csv-netstat | csv-count -c -r | csv-cut -f columns" empty.txt netstat-count-columns.csv empty.txt 0
 	netstat_count_columns)
 
 test("csv-netstat -e | csv-count -c" empty.txt netstat-e-count-columns.csv empty.txt 0
@@ -533,7 +531,8 @@ endif(LIBMNL_FOUND)
 
 if (LIBPROCPS_FOUND)
 
-test("csv-ps | csv-count -c" empty.txt ps-columns.csv empty.txt 0
+# count -r + cut to let ps finish printing data and contribute to code coverage
+test("csv-ps | csv-count -c -r | csv-cut -f columns" empty.txt ps-columns.csv empty.txt 0
 	ps_columns)
 
 test("csv-ps --help" empty.csv ps-help.txt empty.txt 2
