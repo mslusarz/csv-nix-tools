@@ -90,6 +90,11 @@ if(NOT LIBMNL_FOUND)
 	message(WARNING "libmnl not found. csv-netstat won't be built.")
 endif()
 
+find_program(TMUX tmux)
+if (NOT TMUX)
+	message(WARNING "tmux not found. csv-show's tmux-based test won't be executed.")
+endif()
+
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 

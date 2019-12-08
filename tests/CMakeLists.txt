@@ -642,6 +642,19 @@ test("csv-show" commas.csv show-commas.txt empty.txt 0
 test("csv-show" control-characters.csv show-control-characters.txt empty.txt 0
 	show_control_characters)
 
+if (TMUX)
+# crazy test using tmux
+add_test(NAME show_curses
+	COMMAND ${CMAKE_COMMAND} --trace-expand
+		-DSRC_DIR=${CMAKE_CURRENT_SOURCE_DIR}
+		-DBIN_DIR=${CMAKE_CURRENT_BINARY_DIR}/..
+		-DTMUX=${TMUX}
+		-P ${CMAKE_CURRENT_SOURCE_DIR}/show_curses.cmake)
+
+set_tests_properties(show_curses PROPERTIES
+		ENVIRONMENT "LC_ALL=C;PATH=${CMAKE_CURRENT_BINARY_DIR}/..:$ENV{PATH};")
+endif()
+
 ################################### SORT #######################################
 
 test("csv-sort -f id" id-column-3-rows.csv id-column-3-rows.csv empty.txt 0

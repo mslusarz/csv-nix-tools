@@ -60,6 +60,7 @@ static const struct option opts[] = {
 	{"spacing",	required_argument,	NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
+	{"debug",	required_argument,	NULL, 'D'},
 	{NULL,		0,			NULL, 0},
 };
 
@@ -84,6 +85,8 @@ struct cb_params {
 
 	char *tmpbuf;
 	size_t tmpbuf_size;
+
+	int logfd;
 };
 
 /* returns number of printed characters (NOT length of string) */
@@ -326,7 +329,7 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 	keypad(stdscr, TRUE);
 	curs_set(0);
 
-	int ch;
+	int ch = 0;
 	size_t first_line = 0;
 	size_t nlines;
 	int xoff = 0;
@@ -357,6 +360,9 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 			first_line, nlines,
 			xoff, spacing, print_header, print_types);
 		refresh();
+
+		if (params->logfd >= 0)
+			write(params->logfd, &ch, sizeof(ch));
 
 		ch = getch();
 		if (ch == KEY_DOWN || ch == 'j') {
@@ -451,6 +457,11 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 		}
 
 	} while (ch != 'q');
+
+	if (params->logfd >= 0) {
+		write(params->logfd, &ch, sizeof(ch));
+		close(params->logfd);
+	}
 
 	for (size_t i = 0; i < params->nlines; ++i)
 		free(params->lines[i]);
@@ -574,8 +585,21 @@ main(int argc, char *argv[])
 	params.tmpbuf = NULL;
 	params.tmpbuf_size = 0;
 
+	params.logfd = -1;
+
 	while ((opt = getopt_long(argc, argv, "u:s:v", opts, NULL)) != -1) {
 		switch (opt) {
+			case 'D':
+				params.logfd = open(optarg,
+						O_WRONLY | O_CREAT | O_SYNC,
+						0600);
+				if (params.logfd < 0) {
+					fprintf(stderr,
+						"opening '%s' failed: %s\n",
+						optarg, strerror(errno));
+					exit(2);
+				}
+				break;
 			case 'u':
 				if (strcmp(optarg, "curses") == 0)
 					ui = NCURSES;
