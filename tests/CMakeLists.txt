@@ -98,6 +98,12 @@ test("csv-avg -f col1,col2,col3" 3-numeric-columns-4-rows.csv avg-3-columns.csv 
 test("csv-avg -f col3,col1" 3-numeric-columns-4-rows.csv avg-2-columns.csv empty.txt 0
 	avg-2-columns)
 
+test("csv-avg --help" empty.csv avg-help.txt empty.txt 2
+	avg_help)
+
+test("csv-avg --version" empty.csv git-version.txt empty.txt 0
+	avg_version)
+
 ################################### CAT ########################################
 
 test("csv-cat ${DATA_DIR}/one-column-one-row.csv" empty.csv one-column-one-row.csv empty.txt 0
@@ -144,6 +150,12 @@ test("csv-concat new_column = %name ' - ' %id" 3-columns-3-rows.csv concat-2-col
 test("csv-concat new_column = %name ', ' %id" 3-columns-3-rows.csv concat-2-cols-comma.csv empty.txt 0
 	concat_2_cols_comma)
 
+test("csv-concat --help" empty.csv concat-help.txt empty.txt 2
+	concat_help)
+
+test("csv-concat --version" empty.csv git-version.txt empty.txt 0
+	concat_version)
+
 ################################## COUNT #######################################
 
 test("csv-count" empty.txt empty.csv count-no-args.txt 2
@@ -160,6 +172,12 @@ test("csv-count -r" 2-columns-3-rows.csv count-3-rows.txt empty.txt 0
 
 test("csv-count -c -r" 2-columns-3-rows.csv count-2-cols-3-rows.txt empty.txt 0
 	count_-c_-r_2_cols_3_rows)
+
+test("csv-count --help" empty.csv count-help.txt empty.txt 2
+	count_help)
+
+test("csv-count --version" empty.csv git-version.txt empty.txt 0
+	count_version)
 
 ################################### CUT ########################################
 
@@ -240,16 +258,34 @@ test("csv-cut --fields name,id,something" 3-different-order-columns-3-rows.csv 3
 test("csv-cut --fields=name,id,something" 3-different-order-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
 	cut_3_fields_in_different_order_using_--fields_with_=)
 
+test("csv-cut --help" empty.csv cut-help.txt empty.txt 2
+	cut_help)
+
+test("csv-cut --version" empty.csv git-version.txt empty.txt 0
+	cut_version)
+
 ################################### EXEC #######################################
 
 test_with_cwd("csv-exec -- csv-ls -f size %name" files.csv sizes.txt empty.txt 0
 	exec_csv-ls_-f_size
 	${CMAKE_SOURCE_DIR}/tests/files/)
 
+test("csv-exec --help" empty.csv exec-help.txt empty.txt 2
+	exec_help)
+
+test("csv-exec --version" empty.csv git-version.txt empty.txt 0
+	exec_version)
+
 ################################# EXEC-ADD #####################################
 
 test("csv-exec-add -n name2 -f name -- sed 's/file/name/g'" files.csv exec-add-names.csv empty.txt 0
 	exec-add_sed)
+
+test("csv-exec-add --help" empty.csv exec-add-help.txt empty.txt 2
+	exec-add_help)
+
+test("csv-exec-add --version" empty.csv git-version.txt empty.txt 0
+	exec-add_version)
 
 ################################### GREP #######################################
 
@@ -298,10 +334,22 @@ test("csv-grep -f name -x -F or | csv-count -r --no-header" 3-columns-3-rows.csv
 test("csv-grep -f name -F or.m | csv-count -r --no-header" 3-columns-3-rows.csv 0.txt empty.txt 0
 	grep_-f_name_-F_or.m_count)
 
+test("csv-grep --help" empty.csv grep-help.txt empty.txt 2
+	grep_help)
+
+test("csv-grep --version" empty.csv git-version.txt empty.txt 0
+	grep_version)
+
 ################################## GROUPS ######################################
 
 test("csv-groups | csv-grep -f name -x -F root | csv-count -c --no-header" empty.txt 5.txt empty.txt 0
 	groups)
+
+test("csv-groups --help" empty.csv groups-help.txt empty.txt 2
+	groups_help)
+
+test("csv-groups --version" empty.csv git-version.txt empty.txt 0
+	groups_version)
 
 ################################### HEAD #######################################
 
@@ -341,6 +389,12 @@ test("csv-head --lines=3" 3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
 test("csv-head -n 3" 3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
 	head_-n_3_and_there_are_3_lines_in_input)
 
+test("csv-head --help" empty.csv head-help.txt empty.txt 2
+	head_help)
+
+test("csv-head --version" empty.csv git-version.txt empty.txt 0
+	head_version)
+
 #################################### LS ########################################
 
 test_with_cwd("csv-ls -f name"
@@ -358,6 +412,12 @@ test_with_cwd("csv-ls -l | csv-count -c"
 	ls-l-count-columns
 	${CMAKE_SOURCE_DIR}/tests/files)
 
+test("csv-ls --help" empty.csv ls-help.txt empty.txt 2
+	ls_help)
+
+test("csv-ls --version" empty.csv git-version.txt empty.txt 0
+	ls_version)
+
 ################################### MIN ########################################
 
 test("csv-min -f id" id-column-3-rows.csv min-id.csv empty.txt 0
@@ -372,6 +432,12 @@ test("csv-min -f col3,col1" 3-numeric-columns-4-rows.csv min-2-columns.csv empty
 test("csv-min -f col1,col2,col3,col4" text1.csv min-text1.csv empty.txt 0
 	min-text1)
 
+test("csv-min --help" empty.csv min-help.txt empty.txt 2
+	min_help)
+
+test("csv-min --version" empty.csv git-version.txt empty.txt 0
+	min_version)
+
 ################################### MAX ########################################
 
 test("csv-max -f id" id-column-3-rows.csv max-id.csv empty.txt 0
@@ -385,6 +451,12 @@ test("csv-max -f col3,col1" 3-numeric-columns-4-rows.csv max-2-columns.csv empty
 
 test("csv-max -f col1,col2,col3,col4" text1.csv max-text1.csv empty.txt 0
 	max-text1)
+
+test("csv-max --help" empty.csv max-help.txt empty.txt 2
+	max_help)
+
+test("csv-max --version" empty.csv git-version.txt empty.txt 0
+	max_version)
 
 ################################# NETSTAT ######################################
 
@@ -414,6 +486,12 @@ test("csv-netstat -4 | csv-count -c" empty.txt netstat-4-count-columns.csv empty
 test("csv-netstat -6 | csv-count -c" empty.txt netstat-6-count-columns.csv empty.txt 0
 	netstat_6_count_columns)
 
+test("csv-netstat --help" empty.csv netstat-help.txt empty.txt 2
+	netstat_help)
+
+test("csv-netstat --version" empty.csv git-version.txt empty.txt 0
+	netstat_version)
+
 endif(LIBMNL_FOUND)
 
 ################################### PS ########################################
@@ -422,6 +500,12 @@ if (LIBPROCPS_FOUND)
 
 test("csv-ps | csv-count -c" empty.txt ps-columns.csv empty.txt 0
 	ps_columns)
+
+test("csv-ps --help" empty.csv ps-help.txt empty.txt 2
+	ps_help)
+
+test("csv-ps --version" empty.csv git-version.txt empty.txt 0
+	ps_version)
 
 endif(LIBPROCPS_FOUND)
 
@@ -435,6 +519,12 @@ test("csv-replace -f name -e '\\(.*\\)\\( i\\)\\(.*\\)' -r '%3 STRING %1' -n new
 
 test("csv-replace -f name -E '(.*)( i)(.*)' -r '%3 STRING %1' -n new-col" 3-columns-3-rows.csv replace-regex.csv empty.txt 0
 	replace_eregex)
+
+test("csv-replace --help" empty.csv replace-help.txt empty.txt 2
+	replace_help)
+
+test("csv-replace --version" empty.csv git-version.txt empty.txt 0
+	replace_version)
 
 ################################# RPN-ADD ######################################
 
@@ -572,6 +662,12 @@ test("csv-rpn-add -f str_to_int -e '%str toint'\
 	rpn-add-num-base.csv rpn-add-convert.csv empty.txt 0
 	rpn-add_str_to_int)
 
+test("csv-rpn-add --help" empty.csv rpn-add-help.txt empty.txt 2
+	rpn-add_help)
+
+test("csv-rpn-add --version" empty.csv git-version.txt empty.txt 0
+	rpn-add_version)
+
 ################################ RPN-FILTER ####################################
 
 test("csv-rpn-filter -e '%id 2 =='" 3-columns-3-rows.csv rpn-filter-row-2.csv empty.txt 0
@@ -628,6 +724,12 @@ test("csv-rpn-filter -e \"%name '.suffix' concat 'lorem ipsum.suffix' ==\"" 3-co
 test("csv-rpn-filter -e \"%id tostring '2' ==\"" 3-columns-3-rows.csv rpn-filter-row-2.csv empty.txt 0
 	rpn-filter_tostring)
 
+test("csv-rpn-filter --help" empty.csv rpn-filter-help.txt empty.txt 2
+	rpn-filter_help)
+
+test("csv-rpn-filter --version" empty.csv git-version.txt empty.txt 0
+	rpn-filter_version)
+
 ################################### SHOW #######################################
 
 test("csv-show" 3-columns-3-rows.csv show-3-columns-3-rows.txt empty.txt 0
@@ -661,6 +763,12 @@ set_tests_properties(show_curses PROPERTIES
 		ENVIRONMENT "LC_ALL=C;PATH=${CMAKE_CURRENT_BINARY_DIR}/..:$ENV{PATH};")
 endif()
 
+test("csv-show --help" empty.csv show-help.txt empty.txt 2
+	show_help)
+
+test("csv-show --version" empty.csv git-version.txt empty.txt 0
+	show_version)
+
 ################################### SORT #######################################
 
 test("csv-sort -f id" id-column-3-rows.csv id-column-3-rows.csv empty.txt 0
@@ -675,6 +783,12 @@ test("csv-sort -f id,name" sort-2-cols.csv sort-2-cols-sorted.csv empty.txt 0
 test("csv-sort -f id,name -r" sort-2-cols.csv sort-2-cols-rsorted.csv empty.txt 0
 	sort_2_cols_rsorted)
 
+test("csv-sort --help" empty.csv sort-help.txt empty.txt 2
+	sort_help)
+
+test("csv-sort --version" empty.csv git-version.txt empty.txt 0
+	sort_version)
+
 ################################## SPLIT #######################################
 
 test("csv-split -f column3 -n before,after -e,"
@@ -684,6 +798,12 @@ test("csv-split -f column3 -n before,after -e,"
 test("csv-split -f column3 -n before,after -e, -r"
 	commas.csv split-commas-reverse.csv empty.txt 0
 	split_commas_reverse)
+
+test("csv-split --help" empty.csv split-help.txt empty.txt 2
+	split_help)
+
+test("csv-split --version" empty.csv git-version.txt empty.txt 0
+	split_version)
 
 ################################### SQL ########################################
 if (BISON_FOUND AND FLEX_FOUND)
@@ -896,6 +1016,12 @@ test("csv-sql 'select str1, str2, str1 like \"%12\" as \"str1_like_%12\", str1 l
 #		    from input'"
 #	rpn-add-num-base.csv rpn-add-convert.csv empty.txt 0
 #	sql_str_to_int)
+
+test("csv-sql --help" empty.csv sql-help.txt empty.txt 2
+	sql_help)
+
+test("csv-sql --version" empty.csv git-version.txt empty.txt 0
+	sql_version)
 
 endif(BISON_FOUND AND FLEX_FOUND)
 
@@ -1135,6 +1261,12 @@ test("csv-sqlite -l group_members 'select * from group_members' | csv-count -c -
 	one-column-one-row.csv 2.txt empty.txt 0
 	sqlite_group_members_count_columns)
 
+test("csv-sqlite --help" empty.csv sqlite-help.txt empty.txt 2
+	sqlite_help)
+
+test("csv-sqlite --version" empty.csv git-version.txt empty.txt 0
+	sqlite_version)
+
 endif(SQLITE3_FOUND)
 
 ################################ SUBSTRING #####################################
@@ -1146,6 +1278,12 @@ test("csv-substring -f name -n substr2 -p 2"
 test("csv-substring -f name -n last_char -p -1 -l 1"
 	3-columns-3-rows.csv substring-p-1.csv empty.txt 0
 	substring_p_1)
+
+test("csv-substring --help" empty.csv substring-help.txt empty.txt 2
+	substring_help)
+
+test("csv-substring --version" empty.csv git-version.txt empty.txt 0
+	substring_version)
 
 ################################### SUM ########################################
 
@@ -1164,6 +1302,12 @@ test("csv-sum -f col1,col2,col3,col4" text1.csv sum-text1.csv empty.txt 0
 test("csv-sum --separator=, -f col1,col2,col3,col4" text1.csv sum-text2.csv empty.txt 0
 	sum-text2)
 
+test("csv-sum --help" empty.csv sum-help.txt empty.txt 2
+	sum_help)
+
+test("csv-sum --version" empty.csv git-version.txt empty.txt 0
+	sum_version)
+
 ################################### TAC ########################################
 
 test("csv-tac ${DATA_DIR}/one-column-one-row.csv" empty.csv one-column-one-row.csv empty.txt 0
@@ -1177,6 +1321,12 @@ test("csv-tac ${DATA_DIR}/3-different-order-columns-3-rows.csv ${DATA_DIR}/3-col
 
 test("csv-tac ${DATA_DIR}/one-column-one-row.csv ${DATA_DIR}/2-columns-3-rows.csv" empty.csv empty.csv cat-2-files-different-num-columns.txt 2
 	tac_two_files_different_columns)
+
+test("csv-tac --help" empty.csv tac-help.txt empty.txt 2
+	tac_help)
+
+test("csv-tac --version" empty.csv git-version.txt empty.txt 0
+	tac_version)
 
 ################################### TAIL #######################################
 
@@ -1216,6 +1366,12 @@ test("csv-tail --lines=3" 3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
 test("csv-tail -n 3" 3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
 	tail_-n_3_and_there_are_3_lines_in_input)
 
+test("csv-tail --help" empty.csv tail-help.txt empty.txt 2
+	tail_help)
+
+test("csv-tail --version" empty.csv git-version.txt empty.txt 0
+	tail_version)
+
 ################################### UNIQ #######################################
 
 test("csv-uniq -f col1" uniq-input1.csv uniq-output1.csv empty.txt 0 uniq-1)
@@ -1224,7 +1380,19 @@ test("csv-uniq -f col3,col2,col1" uniq-input2.csv uniq-output2.csv empty.txt 0 u
 
 test("csv-uniq -f col3" uniq-input2.csv uniq-output3.csv empty.txt 0 uniq-3)
 
+test("csv-uniq --help" empty.csv uniq-help.txt empty.txt 2
+	uniq_help)
+
+test("csv-uniq --version" empty.csv git-version.txt empty.txt 0
+	uniq_version)
+
 ################################### USERS ######################################
 
 test("csv-users | csv-grep -f name -x -F root | csv-count -c --no-header" empty.txt 9.txt empty.txt 0
 	users)
+
+test("csv-users --help" empty.csv users-help.txt empty.txt 2
+	users_help)
+
+test("csv-users --version" empty.csv git-version.txt empty.txt 0
+	users_version)

@@ -1,0 +1,8 @@
+Usage: csv-show [OPTION]...
+Options:
+  -u, --ui curses/less/none
+  -s, --spacing NUM
+      --with-types
+      --no-header
+      --help
+      --version

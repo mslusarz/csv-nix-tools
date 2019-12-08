@@ -1,0 +1,13 @@
+Usage: csv-replace [OPTION]...
+Options:
+  -e regex
+  -E eregex
+  -F pattern
+  -f name
+  -i, --ignore-case
+  -n new-name
+  -r replacement
+  -s, --show
+      --no-header
+      --help
+      --version

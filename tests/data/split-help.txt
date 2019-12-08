@@ -1,0 +1,11 @@
+Usage: csv-split [OPTION]...
+Options:
+  -e separator
+  -f name
+  -n name1,name2
+  -r, --reverse
+  -p  --print-separator=yes/no/auto
+  -s, --show
+      --no-header
+      --help
+      --version

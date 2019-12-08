@@ -1,0 +1,53 @@
+Usage: csv-rpn-add [OPTION]...
+Options:
+  -f new_column_name
+  -e RPN_expression
+  -s, --show
+      --no-header
+      --help
+      --version
+
+                    description                     examples
+-----------------------------------------------------------------------
+Variables:
+  %[^ ]*            value of column                 %name
+
+Constants:
+  [-][1-9][0-9]*    decimal integer                 1, 1294, -89
+  [-]0x[0-9a-fA-F]+ hexadecimal integer             0x1, 0x1A34, -0x8A
+  [-]0[0-9]+        octal integer                   01, 01234, -067
+  '[^']*'           string                          'text'
+
+Operators/functions:
+  +                 addition                        %num 5 +
+  -                 subtraction                     %num 5 -
+  *                 multiplication                  %num 5 *
+  /                 division                        %num 5 /
+  %                 modulo                          %num 5 %
+  |                 bitwise or                      %num 5 |
+  &                 bitwise and                     %num 5 &
+  ~                 bitwise negation                %num ~
+  ^                 bitwise xor                     %num 5 ^
+  <<                bitwise left shift              %num 5 <<
+  >>                bitwise right shift             %num 5 >>
+  lt, <             less                            %num 5 lt, %num 5 <
+  le, <=            less or equal                   %num 5 le, %num 5 <=
+  gt, >             greater                         %num 5 gt, %num 5 >
+  ge, >=            greater or equal                %num 5 ge, %num 5 >=
+  eq, ==            equal                           %num 5 eq, %num 5 ==
+  ne, !=            not equal                       %num 5 ne, %num 5 !=
+  and               logical and                     %bool1 %bool2 and
+  or                logical or                      %bool1 %bool2 or
+  xor               logical exclusive or            %bool1 %bool2 xor
+  not               logical negation                %bool1 not
+  if                if first then second else third %bool %val1 %val2 if
+  substr            substring                       %str 1 3 substr
+  strlen            string length                   %str strlen
+  concat            concatenation                   %str1 %str2 concat
+  like              match pattern                   %str 'patt%' like
+  tostring          convert to decimal notation     %num tostring
+  tostring_base2    convert to binary notation      %num tostring_base2
+  tostring_base8    convert to octal notation       %num tostring_base8
+  tostring_base10   convert to decimal notation     %num tostring_base10
+  tostring_base16   convert to hexadecimal notation %num tostring_base16
+  toint             convert to integer              %str toint

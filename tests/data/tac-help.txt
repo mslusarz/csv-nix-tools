@@ -1,0 +1,6 @@
+Usage: csv-cat [OPTION]... [FILE]...
+Options:
+  -s, --show
+      --no-header
+      --help
+      --version

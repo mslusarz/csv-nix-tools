@@ -1,0 +1,10 @@
+Usage: csv-substring [OPTION]...
+Options:
+  -f name
+  -n new-name
+  -p start-pos
+  -s, --show
+  -l length
+      --no-header
+      --help
+      --version

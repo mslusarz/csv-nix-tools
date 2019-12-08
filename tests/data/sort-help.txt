@@ -1,0 +1,8 @@
+Usage: csv-sort [OPTION]...
+Options:
+  -f, --fields=name1[,name2...]
+  -r, --reverse
+  -s, --show
+      --no-header
+      --help
+      --version

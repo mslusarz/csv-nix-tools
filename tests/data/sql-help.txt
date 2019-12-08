@@ -1,0 +1,6 @@
+Usage: csv-sql [OPTION] sql-query
+Options:
+  -s, --show
+      --no-header
+      --help
+      --version

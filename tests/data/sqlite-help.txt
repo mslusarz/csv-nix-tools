@@ -1,0 +1,8 @@
+Usage: csv-sqlite [OPTION] sql-query
+Options:
+  -i path
+  -l table (users / groups / group_members)
+  -s, --show
+      --no-header
+      --help
+      --version

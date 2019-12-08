@@ -1,0 +1,7 @@
+Usage: csv-head [OPTION]...
+Options:
+  -n, --lines=count
+  -s, --show
+      --no-header
+      --help
+      --version
