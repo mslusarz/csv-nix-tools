@@ -1,0 +1,10 @@
+name                            name2
+file with spaces                name with spaces
+file,with,commas                name,with,commas
+file.with.dots                  name.with.dots
+file_with_\n_newline            name_with_\n_newline
+file_with_backslash_\\n_here    name_with_backslash_\\n_here
+file_with_double_"_quote        name_with_double_"_quote
+file_with_execute_permissions   name_with_execute_permissions
+file_with_single_'_quote        name_with_single_'_quote
+symlink_file                    symlink_name

@@ -98,6 +98,9 @@ test("csv-avg -f col1,col2,col3" 3-numeric-columns-4-rows.csv avg-3-columns.csv 
 test("csv-avg -f col3,col1" 3-numeric-columns-4-rows.csv avg-2-columns.csv empty.txt 0
 	avg-2-columns)
 
+test("csv-avg -f col3,col1 -s" 3-numeric-columns-4-rows.csv avg-2-columns-s.txt empty.txt 0
+	avg-2-columns-s)
+
 test("csv-avg --help" empty.csv avg-help.txt empty.txt 2
 	avg_help)
 
@@ -147,6 +150,9 @@ test("csv-concat" empty.txt empty.csv concat-no-args.txt 2
 test("csv-concat new_column = %name ' - ' %id" 3-columns-3-rows.csv concat-2-cols.csv empty.txt 0
 	concat_2_cols)
 
+test("csv-concat new_column = %name ' - ' %id -s" 3-columns-3-rows.csv concat-2-cols-s.txt empty.txt 0
+	concat_2_cols-s)
+
 test("csv-concat new_column = %name ', ' %id" 3-columns-3-rows.csv concat-2-cols-comma.csv empty.txt 0
 	concat_2_cols_comma)
 
@@ -172,6 +178,9 @@ test("csv-count -r" 2-columns-3-rows.csv count-3-rows.txt empty.txt 0
 
 test("csv-count -c -r" 2-columns-3-rows.csv count-2-cols-3-rows.txt empty.txt 0
 	count_-c_-r_2_cols_3_rows)
+
+test("csv-count -c -r -s" 2-columns-3-rows.csv count-2-cols-3-rows-s.txt empty.txt 0
+	count_-c_-r_2_cols_3_rows-s)
 
 test("csv-count --help" empty.csv count-help.txt empty.txt 2
 	count_help)
@@ -242,6 +251,9 @@ test("csv-cut --fields=something" 3-columns-3-rows.csv something-column-3-rows.c
 test("csv-cut -f name,something" 3-columns-3-rows.csv 2-columns-3-rows.csv empty.txt 0
 	cut_2_fields_using_-f)
 
+test("csv-cut -f name,something -s" 3-columns-3-rows.csv 2-columns-3-rows.txt empty.txt 0
+	cut_2_fields_using_-f_-s)
+
 test("csv-cut --fields name,something" 3-columns-3-rows.csv 2-columns-3-rows.csv empty.txt 0
 	cut_2_fields_using_--fields_with_spaces)
 
@@ -281,6 +293,9 @@ test("csv-exec --version" empty.csv git-version.txt empty.txt 0
 test("csv-exec-add -n name2 -f name -- sed 's/file/name/g'" files.csv exec-add-names.csv empty.txt 0
 	exec-add_sed)
 
+test("csv-exec-add -n name2 -f name -s -- sed 's/file/name/g'" files.csv exec-add-names.txt empty.txt 0
+	exec-add_sed_-s)
+
 test("csv-exec-add --help" empty.csv exec-add-help.txt empty.txt 2
 	exec-add_help)
 
@@ -298,6 +313,9 @@ test("csv-grep -f x -F y" empty.csv empty.csv eof.txt 2
 
 test("csv-grep -f name -e or" 3-columns-3-rows.csv grep-name-or.csv empty.txt 0
 	grep_-f_name_-e_or)
+
+test("csv-grep -f name -e or -s" 3-columns-3-rows.csv grep-name-or.txt empty.txt 0
+	grep_-f_name_-e_or_-s)
 
 test("csv-grep -f name -e or | csv-count -r --no-header" 3-columns-3-rows.csv 1.txt empty.txt 0
 	grep_-f_name_-e_or_count)
@@ -371,6 +389,9 @@ test("csv-head --lines 1" one-column-one-row.csv one-column-one-row.csv empty.tx
 test("csv-head -n 1" one-column-one-row.csv one-column-one-row.csv empty.txt 0
 	head_-n_1)
 
+test("csv-head -n 1 -s" one-column-one-row.csv one-column-one-row.txt empty.txt 0
+	head_-n_1_-s)
+
 test("csv-head --lines 2" one-column-one-row.csv one-column-one-row.csv empty.txt 0
 	head_--lines=2_but_there_is_only_1_line_in_input)
 
@@ -402,6 +423,11 @@ test_with_cwd("csv-ls -f name"
 	ls-files
 	${CMAKE_SOURCE_DIR}/tests/files)
 
+test_with_cwd("csv-ls -f name,mode,symlink,type_name -ls"
+	empty.txt files_and_dirs.txt empty.txt 0
+	ls-files-s
+	${CMAKE_SOURCE_DIR}/tests/files)
+
 test_with_cwd("csv-ls | csv-count -c"
 	empty.txt ls-count-columns.csv empty.txt 0
 	ls-count-columns
@@ -429,6 +455,9 @@ test("csv-min -f col1,col2,col3" 3-numeric-columns-4-rows.csv min-3-columns.csv 
 test("csv-min -f col3,col1" 3-numeric-columns-4-rows.csv min-2-columns.csv empty.txt 0
 	min-2-columns)
 
+test("csv-min -f col3,col1 -s" 3-numeric-columns-4-rows.csv min-2-columns.txt empty.txt 0
+	min-2-columns-s)
+
 test("csv-min -f col1,col2,col3,col4" text1.csv min-text1.csv empty.txt 0
 	min-text1)
 
@@ -448,6 +477,9 @@ test("csv-max -f col1,col2,col3" 3-numeric-columns-4-rows.csv max-3-columns.csv 
 
 test("csv-max -f col3,col1" 3-numeric-columns-4-rows.csv max-2-columns.csv empty.txt 0
 	max-2-columns)
+
+test("csv-max -f col3,col1 -s" 3-numeric-columns-4-rows.csv max-2-columns.txt empty.txt 0
+	max-2-columns-s)
 
 test("csv-max -f col1,col2,col3,col4" text1.csv max-text1.csv empty.txt 0
 	max-text1)
@@ -520,6 +552,9 @@ test("csv-replace -f name -e '\\(.*\\)\\( i\\)\\(.*\\)' -r '%3 STRING %1' -n new
 test("csv-replace -f name -E '(.*)( i)(.*)' -r '%3 STRING %1' -n new-col" 3-columns-3-rows.csv replace-regex.csv empty.txt 0
 	replace_eregex)
 
+test("csv-replace -f name -E '(.*)( i)(.*)' -r '%3 STRING %1' -n new-col -s" 3-columns-3-rows.csv replace-regex.txt empty.txt 0
+	replace_eregex_-s)
+
 test("csv-replace --help" empty.csv replace-help.txt empty.txt 2
 	replace_help)
 
@@ -531,6 +566,10 @@ test("csv-replace --version" empty.csv git-version.txt empty.txt 0
 test("csv-rpn-add -f 'num_mul_2' -e '%num 2 *'"
 	rpn-add-num-dec.csv rpn-add-num-mul.csv empty.txt 0
 	rpn-add_num_mul)
+
+test("csv-rpn-add -f 'num_mul_2' -e '%num 2 *' -s"
+	rpn-add-num-dec.csv rpn-add-num-mul.txt empty.txt 0
+	rpn-add_num_mul_-s)
 
 test("csv-rpn-add -f 'num_add_num2' -e '%num %num2 +'"
 	rpn-add-num-dec.csv rpn-add-num-sum.csv empty.txt 0
@@ -673,6 +712,9 @@ test("csv-rpn-add --version" empty.csv git-version.txt empty.txt 0
 test("csv-rpn-filter -e '%id 2 =='" 3-columns-3-rows.csv rpn-filter-row-2.csv empty.txt 0
 	rpn-filter_eq)
 
+test("csv-rpn-filter -e '%id 2 ==' -s" 3-columns-3-rows.csv rpn-filter-row-2.txt empty.txt 0
+	rpn-filter_eq_-s)
+
 test("csv-rpn-filter -e '%id 2 !='" 3-columns-3-rows.csv rpn-filter-rows-1-3.csv empty.txt 0
 	rpn-filter_ne)
 
@@ -783,6 +825,9 @@ test("csv-sort -f id,name" sort-2-cols.csv sort-2-cols-sorted.csv empty.txt 0
 test("csv-sort -f id,name -r" sort-2-cols.csv sort-2-cols-rsorted.csv empty.txt 0
 	sort_2_cols_rsorted)
 
+test("csv-sort -f id,name -s" sort-2-cols.csv sort-2-cols-sorted.txt empty.txt 0
+	sort_2_cols_-s)
+
 test("csv-sort --help" empty.csv sort-help.txt empty.txt 2
 	sort_help)
 
@@ -799,6 +844,10 @@ test("csv-split -f column3 -n before,after -e, -r"
 	commas.csv split-commas-reverse.csv empty.txt 0
 	split_commas_reverse)
 
+test("csv-split -f column3 -n before,after -e, -s"
+	commas.csv split-commas.txt empty.txt 0
+	split_commas_-s)
+
 test("csv-split --help" empty.csv split-help.txt empty.txt 2
 	split_help)
 
@@ -811,6 +860,10 @@ if (BISON_FOUND AND FLEX_FOUND)
 test("csv-sql 'select * from input'"
 	3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
 	sql_select_all_from_input)
+
+test("csv-sql 'select * from input' -s"
+	3-columns-3-rows.csv 3-columns-3-rows.txt empty.txt 0
+	sql_select_all_from_input_-s)
 
 test("csv-sql 'select * from input where id == 2'"
 	3-columns-3-rows.csv rpn-filter-row-2.csv empty.txt 0
@@ -1031,6 +1084,10 @@ if(SQLITE3_FOUND)
 test("csv-sqlite 'select * from input'"
 	3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
 	sqlite_select_all_from_input)
+
+test("csv-sqlite 'select * from input' -s"
+	3-columns-3-rows.csv 3-columns-3-rows.txt empty.txt 0
+	sqlite_select_all_from_input_-s)
 
 test("csv-sqlite 'select * from input where id == 2'"
 	3-columns-3-rows.csv rpn-filter-row-2.csv empty.txt 0
@@ -1275,6 +1332,10 @@ test("csv-substring -f name -n substr2 -p 2"
 	3-columns-3-rows.csv substring-p2.csv empty.txt 0
 	substring_p2)
 
+test("csv-substring -f name -n substr2 -p 2 -s"
+	3-columns-3-rows.csv substring-p2.txt empty.txt 0
+	substring_p2_-s)
+
 test("csv-substring -f name -n last_char -p -1 -l 1"
 	3-columns-3-rows.csv substring-p-1.csv empty.txt 0
 	substring_p_1)
@@ -1296,6 +1357,9 @@ test("csv-sum -f col1,col2,col3" 3-numeric-columns-4-rows.csv sum-3-columns.csv 
 test("csv-sum -f col3,col1" 3-numeric-columns-4-rows.csv sum-2-columns.csv empty.txt 0
 	sum-2-columns)
 
+test("csv-sum -f col3,col1 -s" 3-numeric-columns-4-rows.csv sum-2-columns.txt empty.txt 0
+	sum-2-columns-s)
+
 test("csv-sum -f col1,col2,col3,col4" text1.csv sum-text1.csv empty.txt 0
 	sum-text1)
 
@@ -1315,6 +1379,9 @@ test("csv-tac ${DATA_DIR}/one-column-one-row.csv" empty.csv one-column-one-row.c
 
 test("csv-tac ${DATA_DIR}/one-column-one-row.csv ${DATA_DIR}/one-column-one-row.csv" empty.csv cat-2-files.csv empty.txt 0
 	tac_two_files)
+
+test("csv-tac ${DATA_DIR}/one-column-one-row.csv ${DATA_DIR}/one-column-one-row.csv -s" empty.csv cat-2-files.txt empty.txt 0
+	tac_two_files_-s)
 
 test("csv-tac ${DATA_DIR}/3-different-order-columns-3-rows.csv ${DATA_DIR}/3-columns-2-last-rows.csv" empty.csv tac-2-different-files.csv empty.txt 0
 	tac_two_different_files)
@@ -1366,6 +1433,9 @@ test("csv-tail --lines=3" 3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
 test("csv-tail -n 3" 3-columns-3-rows.csv 3-columns-3-rows.csv empty.txt 0
 	tail_-n_3_and_there_are_3_lines_in_input)
 
+test("csv-tail -n 2 -s" 3-columns-3-rows.csv tail-n-2-s.txt empty.txt 0
+	tail_-n_2_-s)
+
 test("csv-tail --help" empty.csv tail-help.txt empty.txt 2
 	tail_help)
 
@@ -1377,6 +1447,8 @@ test("csv-tail --version" empty.csv git-version.txt empty.txt 0
 test("csv-uniq -f col1" uniq-input1.csv uniq-output1.csv empty.txt 0 uniq-1)
 
 test("csv-uniq -f col3,col2,col1" uniq-input2.csv uniq-output2.csv empty.txt 0 uniq-2)
+
+test("csv-uniq -f col3,col2,col1 -s" uniq-input2.csv uniq-output2.txt empty.txt 0 uniq-2-s)
 
 test("csv-uniq -f col3" uniq-input2.csv uniq-output3.csv empty.txt 0 uniq-3)
 

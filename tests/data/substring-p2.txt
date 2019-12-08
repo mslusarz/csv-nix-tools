@@ -1,0 +1,4 @@
+name                   id   something   substr2
+lorem ipsum            1    1           orem ipsum
+not all that is gold   2    0           ot all that is gold
+something else         3    1           omething else
