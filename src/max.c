@@ -30,102 +30,233 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <errno.h>
+#include <getopt.h>
 #include <limits.h>
-#include <stddef.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "agg.h"
+#include "parse.h"
 #include "utils.h"
 
-struct state {
+static const struct option opts[] = {
+	{"fields",	required_argument,	NULL, 'f'},
+	{"no-header",	no_argument,		NULL, 'H'},
+	{"show",	no_argument,		NULL, 's'},
+	{"version",	no_argument,		NULL, 'V'},
+	{"help",	no_argument,		NULL, 'h'},
+	{NULL,		0,			NULL, 0},
+};
+
+static void
+usage(FILE *out)
+{
+	fprintf(out, "Usage: csv-max [OPTION]...\n");
+	fprintf(out, "Options:\n");
+	fprintf(out, "  -f, --fields=name1[,name2...]\n");
+	fprintf(out, "  -s, --show\n");
+	fprintf(out, "      --no-header\n");
+	fprintf(out, "      --help\n");
+	fprintf(out, "      --version\n");
+}
+
+struct cb_params {
+	size_t *columns;
+	enum output_types *types;
+	size_t ncolumns;
+
 	long long *max_int;
 	char **max_str;
 	size_t *str_size;
-	size_t ncolumns;
 };
 
 static int
-init_state(void *state, size_t ncolumns, const char *unused)
+next_row(const char *buf, const size_t *col_offs,
+		const struct col_header *headers, size_t nheaders,
+		void *arg)
 {
-	struct state *st = state;
-	st->ncolumns = ncolumns;
-	st->max_int = xmalloc_nofail(ncolumns, sizeof(st->max_int[0]));
-	st->max_str = xmalloc_nofail(ncolumns, sizeof(st->max_str[0]));
-	st->str_size = xmalloc_nofail(ncolumns, sizeof(st->str_size[0]));
-	for (size_t i = 0; i < ncolumns; ++i) {
-		st->max_int[i] = LLONG_MIN;
-		st->max_str[i] = NULL;
-		st->str_size[i] = 0;
-	}
+	struct cb_params *params = arg;
 
-	return 0;
-}
+	for (size_t i = 0; i < params->ncolumns; ++i) {
+		const char *val = &buf[col_offs[params->columns[i]]];
 
-static int
-new_data_int(void *state, size_t col, long long llval)
-{
-	struct state *st = state;
+		if (params->types[i] == TYPE_INT) {
+			long long llval;
+			if (strtoll_safe(val, &llval, 0))
+				return -1;
 
-	if (llval > st->max_int[col])
-		st->max_int[col] = llval;
+			if (llval > params->max_int[i])
+				params->max_int[i] = llval;
 
-	return 0;
-}
+		} else {
+			const char *unquoted = val;
+			if (val[0] == '"')
+				unquoted = csv_unquot(val);
 
-static long long
-aggregate_int(void *state, size_t col)
-{
-	struct state *st = state;
+			if (params->max_str[i] == NULL ||
+					strcmp(unquoted, params->max_str[i]) > 0) {
+				size_t len = strlen(unquoted);
+				if (len + 1 > params->str_size[i]) {
+					free(params->max_str[i]);
+					params->max_str[i] = xmalloc_nofail(len + 1, 1);
+					params->str_size[i] = len + 1;
+				}
+				memcpy(params->max_str[i], unquoted, len + 1);
+			}
 
-	return st->max_int[col];
-}
-
-static void
-free_state(void *state)
-{
-	struct state *st = state;
-
-	free(st->max_int);
-	for (size_t i = 0; i < st->ncolumns; ++i)
-		free(st->max_str[i]);
-	free(st->max_str);
-	free(st->str_size);
-}
-
-static int
-new_data_str(void *state, size_t col, const char *str)
-{
-	struct state *st = state;
-
-	if (st->max_str[col] == NULL || strcmp(str, st->max_str[col]) > 0) {
-		size_t len = strlen(str);
-		if (len + 1 > st->str_size[col]) {
-			free(st->max_str[col]);
-			st->max_str[col] = xmalloc_nofail(len + 1, 1);
-			st->str_size[col] = len + 1;
+			if (val[0] == '"')
+				free((char *)unquoted);
 		}
-		memcpy(st->max_str[col], str, len + 1);
 	}
 
 	return 0;
 }
 
 static void
-aggregate_str(void *state, size_t col)
+type_not_supported(const char *type, const char *col)
 {
-	struct state *st = state;
-
-	csv_print_quoted(st->max_str[col], strlen(st->max_str[col]));
+	fprintf(stderr,
+		"Type '%s', used by column '%s', is not supported by csv-max.\n",
+		type, col);
+	exit(2);
 }
 
 int
 main(int argc, char *argv[])
 {
-	struct state state;
+	int opt;
+	struct cb_params params;
+	char *cols = NULL;
+	bool print_header = true;
+	bool show = false;
 
-	return agg_main(argc, argv, "max", &state, init_state, new_data_int,
-			aggregate_int, free_state, new_data_str, aggregate_str,
-			false);
+	params.columns = NULL;
+	params.types = NULL;
+	params.ncolumns = 0;
+
+	while ((opt = getopt_long(argc, argv, "f:sv", opts, NULL)) != -1) {
+		switch (opt) {
+			case 'f':
+				cols = xstrdup_nofail(optarg);
+				break;
+			case 'H':
+				print_header = false;
+				break;
+			case 's':
+				show = true;
+				break;
+			case 'V':
+				printf("git\n");
+				return 0;
+			case 'h':
+			default:
+				usage(stdout);
+				return 2;
+		}
+	}
+
+	if (!cols) {
+		usage(stderr);
+		exit(2);
+	}
+
+	if (show)
+		csv_show();
+
+	struct csv_ctx *s = csv_create_ctx(stdin, stderr);
+	if (!s)
+		exit(2);
+	if (csv_read_header(s))
+		exit(2);
+	const struct col_header *headers;
+	size_t nheaders = csv_get_headers(s, &headers);
+
+	params.columns = xmalloc_nofail(nheaders, sizeof(params.columns[0]));
+	params.types = xmalloc_nofail(nheaders, sizeof(params.types[0]));
+
+	char *col = strtok(cols, ",");
+	while (col) {
+		size_t idx = csv_find(headers, nheaders, col);
+		if (idx == CSV_NOT_FOUND) {
+			fprintf(stderr, "column %s not found\n", col);
+			exit(2);
+		}
+
+		if (params.ncolumns == nheaders) {
+			fprintf(stderr, "duplicated columns\n");
+			exit(2);
+		}
+
+		const char *t = headers[idx].type;
+		if (strcmp(t, "int") == 0)
+			params.types[params.ncolumns] = TYPE_INT;
+		else if (strcmp(t, "string") == 0)
+			params.types[params.ncolumns] = TYPE_STRING;
+		else
+			type_not_supported(t, col);
+
+		params.columns[params.ncolumns++] = idx;
+
+		col = strtok(NULL, ",");
+	}
+
+	free(cols);
+
+	params.max_int = xmalloc_nofail(params.ncolumns,
+			sizeof(params.max_int[0]));
+	params.max_str = xmalloc_nofail(params.ncolumns,
+			sizeof(params.max_str[0]));
+	params.str_size = xmalloc_nofail(params.ncolumns,
+			sizeof(params.str_size[0]));
+	for (size_t i = 0; i < params.ncolumns; ++i) {
+		params.max_int[i] = LLONG_MIN;
+		params.max_str[i] = NULL;
+		params.str_size[i] = 0;
+	}
+
+	if (print_header) {
+		for (size_t i = 0; i < params.ncolumns - 1; ++i)
+			printf("max(%s):%s,",
+					headers[params.columns[i]].name,
+					headers[params.columns[i]].type);
+		printf("max(%s):%s\n",
+				headers[params.columns[params.ncolumns - 1]].name,
+				headers[params.columns[params.ncolumns - 1]].type);
+	}
+
+	if (csv_read_all(s, &next_row, &params))
+		exit(2);
+
+	csv_destroy_ctx(s);
+
+	for (size_t i = 0; i < params.ncolumns - 1; ++i) {
+		if (params.types[i] == TYPE_INT) {
+			printf("%lld,", params.max_int[i]);
+		} else {
+			csv_print_quoted(params.max_str[i],
+					strlen(params.max_str[i]));
+			putchar(',');
+		}
+	}
+
+	size_t idx = params.ncolumns - 1;
+	if (params.types[idx] == TYPE_INT)
+		printf("%lld", params.max_int[idx]);
+	else
+		csv_print_quoted(params.max_str[idx],
+				strlen(params.max_str[idx]));
+
+	putchar('\n');
+
+	free(params.columns);
+	free(params.types);
+	free(params.max_int);
+	for (size_t i = 0; i < params.ncolumns; ++i)
+		free(params.max_str[i]);
+	free(params.max_str);
+	free(params.str_size);
+
+	return 0;
 }

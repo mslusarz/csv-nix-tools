@@ -30,72 +30,186 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <errno.h>
+#include <getopt.h>
 #include <limits.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-#include "agg.h"
+#include "parse.h"
 #include "utils.h"
 
-struct state {
+static const struct option opts[] = {
+	{"fields",	required_argument,	NULL, 'f'},
+	{"no-header",	no_argument,		NULL, 'H'},
+	{"show",	no_argument,		NULL, 's'},
+	{"version",	no_argument,		NULL, 'V'},
+	{"help",	no_argument,		NULL, 'h'},
+	{NULL,		0,			NULL, 0},
+};
+
+static void
+usage(FILE *out)
+{
+	fprintf(out, "Usage: csv-avg [OPTION]...\n");
+	fprintf(out, "Options:\n");
+	fprintf(out, "  -f, --fields=name1[,name2...]\n");
+	fprintf(out, "  -s, --show\n");
+	fprintf(out, "      --no-header\n");
+	fprintf(out, "      --help\n");
+	fprintf(out, "      --version\n");
+}
+
+struct cb_params {
+	size_t *columns;
+	size_t ncolumns;
+
 	long long *sums;
 	size_t rows;
 };
 
 static int
-init_state(void *state, size_t ncolumns, const char *unused)
+next_row(const char *buf, const size_t *col_offs,
+		const struct col_header *headers, size_t nheaders,
+		void *arg)
 {
-	struct state *st = state;
-	st->sums = xcalloc_nofail(ncolumns, sizeof(st->sums[0]));
-	st->rows = 0;
-	return 0;
-}
+	struct cb_params *params = arg;
 
-static int
-new_data_int(void *state, size_t col, long long llval)
-{
-	struct state *st = state;
+	for (size_t i = 0; i < params->ncolumns; ++i) {
+		const char *val = &buf[col_offs[params->columns[i]]];
 
-	if (llval > 0 && st->sums[col] > LLONG_MAX - llval) {
-		fprintf(stderr, "integer overflow\n");
-		return -1;
+		long long llval;
+		if (strtoll_safe(val, &llval, 0))
+			return -1;
+
+		if (llval > 0 && params->sums[i] > LLONG_MAX - llval) {
+			fprintf(stderr, "integer overflow\n");
+			return -1;
+		}
+
+		if (llval < 0 && params->sums[i] < LLONG_MIN - llval) {
+			fprintf(stderr, "integer underflow\n");
+			return -1;
+		}
+
+		params->sums[i] += llval;
 	}
 
-	if (llval < 0 && st->sums[col] < LLONG_MIN - llval) {
-		fprintf(stderr, "integer underflow\n");
-		return -1;
-	}
-
-	st->sums[col] += llval;
-
-	if (col == 0)
-		st->rows++;
+	params->rows++;
 
 	return 0;
-}
-
-static long long
-aggregate_int(void *state, size_t col)
-{
-	struct state *st = state;
-
-	return st->sums[col] / (long long)st->rows;
-}
-
-static void
-free_state(void *state)
-{
-	struct state *st = state;
-
-	free(st->sums);
 }
 
 int
 main(int argc, char *argv[])
 {
-	struct state state;
+	int opt;
+	struct cb_params params;
+	char *cols = NULL;
+	bool print_header = true;
+	bool show = false;
 
-	return agg_main(argc, argv, "avg", &state, init_state, new_data_int,
-			aggregate_int, free_state, NULL, NULL, false);
+	params.columns = NULL;
+	params.ncolumns = 0;
+
+	while ((opt = getopt_long(argc, argv, "f:sv", opts, NULL)) != -1) {
+		switch (opt) {
+			case 'f':
+				cols = xstrdup_nofail(optarg);
+				break;
+			case 'H':
+				print_header = false;
+				break;
+			case 's':
+				show = true;
+				break;
+			case 'V':
+				printf("git\n");
+				return 0;
+			case 'h':
+			default:
+				usage(stdout);
+				return 2;
+		}
+	}
+
+	if (!cols) {
+		usage(stderr);
+		exit(2);
+	}
+
+	if (show)
+		csv_show();
+
+	struct csv_ctx *s = csv_create_ctx(stdin, stderr);
+	if (!s)
+		exit(2);
+	if (csv_read_header(s))
+		exit(2);
+	const struct col_header *headers;
+	size_t nheaders = csv_get_headers(s, &headers);
+
+	params.columns = xmalloc_nofail(nheaders, sizeof(params.columns[0]));
+
+	char *col = strtok(cols, ",");
+	while (col) {
+		size_t idx = csv_find(headers, nheaders, col);
+		if (idx == CSV_NOT_FOUND) {
+			fprintf(stderr, "column %s not found\n", col);
+			exit(2);
+		}
+
+		if (params.ncolumns == nheaders) {
+			fprintf(stderr, "duplicated columns\n");
+			exit(2);
+		}
+
+		const char *t = headers[idx].type;
+		if (strcmp(t, "int") != 0) {
+			fprintf(stderr,
+				"Type '%s', used by column '%s', is not supported by csv-avg.\n",
+				t, col);
+			exit(2);
+		}
+
+		params.columns[params.ncolumns++] = idx;
+
+		col = strtok(NULL, ",");
+	}
+
+	free(cols);
+
+	params.sums = xcalloc_nofail(params.ncolumns, sizeof(params.sums[0]));
+	params.rows = 0;
+
+	if (print_header) {
+		for (size_t i = 0; i < params.ncolumns - 1; ++i)
+			printf("avg(%s):%s,",
+					headers[params.columns[i]].name,
+					headers[params.columns[i]].type);
+		printf("avg(%s):%s\n",
+				headers[params.columns[params.ncolumns - 1]].name,
+				headers[params.columns[params.ncolumns - 1]].type);
+	}
+
+	if (csv_read_all(s, &next_row, &params))
+		exit(2);
+
+	csv_destroy_ctx(s);
+
+	for (size_t i = 0; i < params.ncolumns - 1; ++i)
+		printf("%lld,", params.sums[i] / (long long)params.rows);
+
+	printf("%lld", params.sums[params.ncolumns - 1] /
+			(long long)params.rows);
+
+	putchar('\n');
+
+	free(params.columns);
+	free(params.sums);
+
+	return 0;
 }
