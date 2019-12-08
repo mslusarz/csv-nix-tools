@@ -369,6 +369,9 @@ test("csv-min -f col1,col2,col3" 3-numeric-columns-4-rows.csv min-3-columns.csv 
 test("csv-min -f col3,col1" 3-numeric-columns-4-rows.csv min-2-columns.csv empty.txt 0
 	min-2-columns)
 
+test("csv-min -f col1,col2,col3,col4" text1.csv min-text1.csv empty.txt 0
+	min-text1)
+
 ################################### MAX ########################################
 
 test("csv-max -f id" id-column-3-rows.csv max-id.csv empty.txt 0
@@ -379,6 +382,9 @@ test("csv-max -f col1,col2,col3" 3-numeric-columns-4-rows.csv max-3-columns.csv 
 
 test("csv-max -f col3,col1" 3-numeric-columns-4-rows.csv max-2-columns.csv empty.txt 0
 	max-2-columns)
+
+test("csv-max -f col1,col2,col3,col4" text1.csv max-text1.csv empty.txt 0
+	max-text1)
 
 ################################# NETSTAT ######################################
 
@@ -1151,6 +1157,12 @@ test("csv-sum -f col1,col2,col3" 3-numeric-columns-4-rows.csv sum-3-columns.csv 
 
 test("csv-sum -f col3,col1" 3-numeric-columns-4-rows.csv sum-2-columns.csv empty.txt 0
 	sum-2-columns)
+
+test("csv-sum -f col1,col2,col3,col4" text1.csv sum-text1.csv empty.txt 0
+	sum-text1)
+
+test("csv-sum --separator=, -f col1,col2,col3,col4" text1.csv sum-text2.csv empty.txt 0
+	sum-text2)
 
 ################################### TAC ########################################
 

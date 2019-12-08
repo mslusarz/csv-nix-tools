@@ -1,0 +1,2 @@
+sum(col1):string,sum(col2):string,sum(col3):string,sum(col4):string
+"aaa1,bbb1,ccc1,ddd1","bbb2,aaa2,ddd2,ccc2","ccc3,ddd3,bbb3,aaa3","ddd4,ccc4,bbb4,aaa4"
