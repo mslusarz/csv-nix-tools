@@ -1,0 +1,6 @@
+Usage: csv-header [OPTION]...
+Options:
+  -m, --remove
+  -s, --show
+      --help
+      --version

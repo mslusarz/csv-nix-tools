@@ -40,6 +40,7 @@ Filtering/processing tools:
 - csv-exec-add - pipes data to standard input of an external command and creates new column from its standard output
 - csv-grep - filters rows matching a pattern
 - csv-head - outputs the first N rows
+- csv-header - processes data header
 - csv-max - takes a maximum value of numerical or string column(s)
 - csv-min - takes a minimum value of numerical or string column(s)
 - csv-replace - performs string substitution on column(s) (similar to sed s/$str/$str/)
@@ -165,14 +166,14 @@ sum of sizes of all files with "png" extension
 
 ```
 $ csv-ls . | csv-split -f name -e . -n base,ext -r | \
-csv-grep -f ext -x -F png | csv-sum -f size --no-header
+csv-grep -f ext -x -F png | csv-sum -f size | csv-header --remove
 94877
 ```
 
 number of files in the current directory, without header
 
 ```
-$ csv-ls . | csv-count --rows --no-header
+$ csv-ls . | csv-count --rows | csv-header --remove
 19
 ```
 
@@ -189,7 +190,7 @@ csv-show -s 1 --ui none --no-header
 list of files whose 2nd character is 'o'
 
 ```
-$ csv-ls | csv-grep -f name -e '^.o' | csv-cut -f name --no-header
+$ csv-ls | csv-grep -f name -e '^.o' | csv-cut -f name | csv-header --remove
 concat.c
 sort.c
 ```
@@ -198,7 +199,7 @@ or
 
 ```
 $ csv-ls | csv-substring -f name -n 2nd-char -p 2 -l 1 | \
-csv-grep -f 2nd-char -F o | csv-cut -f name --no-header
+csv-grep -f 2nd-char -F o | csv-cut -f name | csv-header --remove
 concat.c
 sort.c
 ```

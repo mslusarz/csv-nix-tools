@@ -416,6 +416,23 @@ test("csv-head --help" empty.csv head-help.txt empty.txt 2
 test("csv-head --version" empty.csv git-version.txt empty.txt 0
 	head_version)
 
+################################## HEADER ######################################
+
+test("csv-header" 2-columns-3-rows.csv 2-columns-3-rows.csv empty.txt 0
+	header_pass)
+
+test("csv-header -m" 2-columns-3-rows.csv 2-columns-3-rows-noheader.csv empty.txt 0
+	header_remove)
+
+test("csv-header -s" 2-columns-3-rows.csv 2-columns-3-rows.txt empty.txt 0
+	header_-s)
+
+test("csv-header --help" empty.csv header-help.txt empty.txt 2
+	header_help)
+
+test("csv-header --version" empty.csv git-version.txt empty.txt 0
+	header_version)
+
 #################################### LS ########################################
 
 test_with_cwd("csv-ls -f name"
