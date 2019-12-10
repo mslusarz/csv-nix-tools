@@ -44,7 +44,6 @@
 
 static const struct option opts[] = {
 	{"fields",	required_argument,	NULL, 'f'},
-	{"no-header",	no_argument,		NULL, 'H'},
 	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
@@ -58,7 +57,6 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -f, --fields=name1[,name2...]\n");
 	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -109,7 +107,6 @@ main(int argc, char *argv[])
 	int opt;
 	struct cb_params params;
 	char *cols = NULL;
-	bool print_header = true;
 	bool show = false;
 
 	params.columns = NULL;
@@ -119,9 +116,6 @@ main(int argc, char *argv[])
 		switch (opt) {
 			case 'f':
 				cols = xstrdup_nofail(optarg);
-				break;
-			case 'H':
-				print_header = false;
 				break;
 			case 's':
 				show = true;
@@ -185,15 +179,13 @@ main(int argc, char *argv[])
 	params.sums = xcalloc_nofail(params.ncolumns, sizeof(params.sums[0]));
 	params.rows = 0;
 
-	if (print_header) {
-		for (size_t i = 0; i < params.ncolumns - 1; ++i)
-			printf("avg(%s):%s,",
-					headers[params.columns[i]].name,
-					headers[params.columns[i]].type);
-		printf("avg(%s):%s\n",
-				headers[params.columns[params.ncolumns - 1]].name,
-				headers[params.columns[params.ncolumns - 1]].type);
-	}
+	for (size_t i = 0; i < params.ncolumns - 1; ++i)
+		printf("avg(%s):%s,",
+				headers[params.columns[i]].name,
+				headers[params.columns[i]].type);
+	printf("avg(%s):%s\n",
+			headers[params.columns[params.ncolumns - 1]].name,
+			headers[params.columns[params.ncolumns - 1]].type);
 
 	if (csv_read_all(s, &next_row, &params))
 		exit(2);

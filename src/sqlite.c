@@ -43,7 +43,6 @@
 #include "sqlite.h"
 
 static const struct option opts[] = {
-	{"no-header",	no_argument,		NULL, 'H'},
 	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
@@ -58,7 +57,6 @@ usage(FILE *out)
 	fprintf(out, "  -i path\n");
 	fprintf(out, "  -l table (users / groups / group_members)\n");
 	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -338,7 +336,6 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	bool print_header = true;
 	bool show = false;
 	struct input *inputs = NULL;
 	size_t ninputs = 0;
@@ -350,9 +347,6 @@ main(int argc, char *argv[])
 
 	while ((opt = getopt_long(argc, argv, "i:l:sv", opts, NULL)) != -1) {
 		switch (opt) {
-			case 'H':
-				print_header = false;
-				break;
 			case 'i':
 				inputs = xrealloc_nofail(inputs,
 						++ninputs, sizeof(inputs[0]));
@@ -473,15 +467,13 @@ main(int argc, char *argv[])
 		exit(2);
 	}
 
-	if (print_header) {
-		for (size_t i = 0; i < cnt - 1; ++i) {
-			print_col(select, i, inputs, ninputs);
-			fputc(',', stdout);
-		}
-
-		print_col(select, cnt - 1, inputs, ninputs);
-		fputc('\n', stdout);
+	for (size_t i = 0; i < cnt - 1; ++i) {
+		print_col(select, i, inputs, ninputs);
+		fputc(',', stdout);
 	}
+
+	print_col(select, cnt - 1, inputs, ninputs);
+	fputc('\n', stdout);
 
 	while (ret == SQLITE_ROW) {
 		for (size_t i = 0; i < cnt - 1; ++i) {

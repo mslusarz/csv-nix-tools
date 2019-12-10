@@ -41,7 +41,6 @@
 #include "utils.h"
 
 static const struct option opts[] = {
-	{"no-header",		no_argument,		NULL, 'H'},
 	{"print-separator",	required_argument,	NULL, 'p'},
 	{"reverse",		no_argument,		NULL, 'r'},
 	{"show",		no_argument,		NULL, 's'},
@@ -61,7 +60,6 @@ usage(FILE *out)
 	fprintf(out, "  -r, --reverse\n");
 	fprintf(out, "  -p  --print-separator=yes/no/auto\n");
 	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -139,7 +137,6 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	bool print_header = true;
 	char *col = NULL;
 	struct cb_params params;
 	char *name1 = NULL;
@@ -193,9 +190,6 @@ main(int argc, char *argv[])
 			case 's':
 				show = true;
 				break;
-			case 'H':
-				print_header = false;
-				break;
 			case 'V':
 				printf("git\n");
 				return 0;
@@ -248,11 +242,10 @@ main(int argc, char *argv[])
 	free(col);
 	col = NULL;
 
-	if (print_header) {
-		for (size_t i = 0; i < nheaders; ++i)
-			printf("%s:%s,", headers[i].name, headers[i].type);
-		printf("%s:string,%s:string\n", name1, name2);
-	}
+	for (size_t i = 0; i < nheaders; ++i)
+		printf("%s:%s,", headers[i].name, headers[i].type);
+	printf("%s:string,%s:string\n", name1, name2);
+
 	free(name1);
 	free(name2);
 	name1 = NULL;

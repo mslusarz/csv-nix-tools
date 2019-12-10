@@ -547,7 +547,6 @@ static const struct option opts[] = {
 	{"all",		no_argument, 		NULL, 'a'},
 	{"directory",	no_argument,		NULL, 'd'},
 	{"fields",	required_argument,	NULL, 'f'},
-	{"no-header",	no_argument,		NULL, 'H'},
 	{"recursive",	no_argument,		NULL, 'R'},
 	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
@@ -567,7 +566,6 @@ usage(FILE *out)
 	fprintf(out, "  -R, --recursive\n");
 	fprintf(out, "  -s, --show\n");
 	fprintf(out, "  -U\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -578,7 +576,6 @@ main(int argc, char *argv[])
 	int opt, ret = 0;
 	int dir = 0, recursive = 0, all = 0, sort = 1;
 	char *cols = NULL;
-	bool print_header = true;
 	bool show = false;
 
 	struct column_info columns[] = {
@@ -638,9 +635,6 @@ main(int argc, char *argv[])
 			case 'f':
 				cols = xstrdup_nofail(optarg);
 				break;
-			case 'H':
-				print_header = false;
-				break;
 			case 'l':
 				for (size_t i = 0; i < ncolumns; ++i)
 					columns[i].vis = true;
@@ -689,8 +683,7 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show();
 
-	if (print_header)
-		csvci_print_header(columns, ncolumns);
+	csvci_print_header(columns, ncolumns);
 
 	for (int i = optind; i < argc; ++i) {
 		int fd = openat(AT_FDCWD, argv[i], O_PATH | O_NOFOLLOW);

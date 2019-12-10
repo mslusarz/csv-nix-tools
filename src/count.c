@@ -42,7 +42,6 @@
 static const struct option opts[] = {
 	{"columns",	no_argument,		NULL, 'c'},
 	{"rows",	no_argument,		NULL, 'r'},
-	{"no-header",	no_argument,		NULL, 'H'},
 	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
@@ -57,7 +56,6 @@ usage(FILE *out)
 	fprintf(out, "  -c, --columns\n");
 	fprintf(out, "  -r, --rows\n");
 	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -83,7 +81,6 @@ main(int argc, char *argv[])
 {
 	int opt;
 	struct cb_params params;
-	bool print_header = true;
 	bool show = false;
 	bool columns = false;
 	bool rows = false;
@@ -97,9 +94,6 @@ main(int argc, char *argv[])
 				break;
 			case 'r':
 				rows = true;
-				break;
-			case 'H':
-				print_header = false;
 				break;
 			case 's':
 				show = true;
@@ -136,18 +130,16 @@ main(int argc, char *argv[])
 
 	csv_destroy_ctx(s);
 
-	if (print_header) {
-		if (columns) {
-			printf("columns:int");
-			if (rows)
-				putc(',', stdout);
-		}
-
+	if (columns) {
+		printf("columns:int");
 		if (rows)
-			printf("rows:int");
-
-		putc('\n', stdout);
+			putc(',', stdout);
 	}
+
+	if (rows)
+		printf("rows:int");
+
+	putc('\n', stdout);
 
 	if (columns) {
 		printf("%lu", nheaders);

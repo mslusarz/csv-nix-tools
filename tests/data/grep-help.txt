@@ -8,6 +8,5 @@ Options:
   -s, --show
   -v, --invert
   -x, --whole
-      --no-header
       --help
       --version

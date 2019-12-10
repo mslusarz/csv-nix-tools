@@ -42,7 +42,6 @@
 
 static const struct option opts[] = {
 	{"field",	required_argument,	NULL, 'f'},
-	{"no-header",	no_argument,		NULL, 'H'},
 	{"new-name",	required_argument,	NULL, 'n'},
 	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
@@ -58,7 +57,6 @@ usage(FILE *out)
 	fprintf(out, "  -f, --field=name\n");
 	fprintf(out, "  -n, --new-name=name\n");
 	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -266,7 +264,6 @@ main(int argc, char *argv[])
 	struct cb_params params;
 	char *stdin_colname = NULL;
 	char *new_colname = NULL;
-	bool print_header = true;
 	bool show = false;
 
 	memset(&params, 0, sizeof(params));
@@ -281,9 +278,6 @@ main(int argc, char *argv[])
 				break;
 			case 's':
 				show = true;
-				break;
-			case 'H':
-				print_header = false;
 				break;
 			case 'V':
 				printf("git\n");
@@ -352,11 +346,10 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show();
 
-	if (print_header) {
-		for (size_t i = 0; i < nheaders; ++i)
-			printf("%s:%s,", headers[i].name, headers[i].type);
-		printf("%s:string\n", new_colname);
-	}
+	for (size_t i = 0; i < nheaders; ++i)
+		printf("%s:%s,", headers[i].name, headers[i].type);
+	printf("%s:string\n", new_colname);
+
 	free(new_colname);
 
 	if (csv_read_all(s, &next_row, &params))

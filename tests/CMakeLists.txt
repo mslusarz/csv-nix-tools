@@ -130,9 +130,6 @@ test("csv-cat --help" empty.csv cat-help.txt empty.txt 2
 test("csv-cat --version" empty.csv git-version.txt empty.txt 0
 	cat_version)
 
-test("csv-cat --no-header" 2-columns-3-rows.csv cat-no-headers.txt empty.txt 0
-	cat_no_header)
-
 test("csv-cat -s" 2-columns-3-rows.csv cat-show.txt empty.txt 0
 	cat_show)
 
@@ -317,39 +314,39 @@ test("csv-grep -f name -e or" 3-columns-3-rows.csv grep-name-or.csv empty.txt 0
 test("csv-grep -f name -e or -s" 3-columns-3-rows.csv grep-name-or.txt empty.txt 0
 	grep_-f_name_-e_or_-s)
 
-test("csv-grep -f name -e or | csv-count -r --no-header" 3-columns-3-rows.csv 1.txt empty.txt 0
+test("csv-grep -f name -e or | csv-count -r | csv-header -m" 3-columns-3-rows.csv 1.txt empty.txt 0
 	grep_-f_name_-e_or_count)
 
-test("csv-grep -f name -x -e or | csv-count -r --no-header" 3-columns-3-rows.csv 0.txt empty.txt 0
+test("csv-grep -f name -x -e or | csv-count -r | csv-header -m" 3-columns-3-rows.csv 0.txt empty.txt 0
 	grep_-f_name_-x_-e_or_count)
 
-test("csv-grep -f name -e or.m | csv-count -r --no-header" 3-columns-3-rows.csv 1.txt empty.txt 0
+test("csv-grep -f name -e or.m | csv-count -r | csv-header -m" 3-columns-3-rows.csv 1.txt empty.txt 0
 	grep_-f_name_-e_or.m_count)
 
 
 test("csv-grep -f name -E or" 3-columns-3-rows.csv grep-name-or.csv empty.txt 0
 	grep_-f_name_-E_or)
 
-test("csv-grep -f name -E or | csv-count -r --no-header" 3-columns-3-rows.csv 1.txt empty.txt 0
+test("csv-grep -f name -E or | csv-count -r | csv-header -m" 3-columns-3-rows.csv 1.txt empty.txt 0
 	grep_-f_name_-E_or_count)
 
-test("csv-grep -f name -x -E or | csv-count -r --no-header" 3-columns-3-rows.csv 0.txt empty.txt 0
+test("csv-grep -f name -x -E or | csv-count -r | csv-header -m" 3-columns-3-rows.csv 0.txt empty.txt 0
 	grep_-f_name_-x_-E_or_count)
 
-test("csv-grep -f name -E or.m | csv-count -r --no-header" 3-columns-3-rows.csv 1.txt empty.txt 0
+test("csv-grep -f name -E or.m | csv-count -r | csv-header -m" 3-columns-3-rows.csv 1.txt empty.txt 0
 	grep_-f_name_-E_or.m_count)
 
 
 test("csv-grep -f name -F or" 3-columns-3-rows.csv grep-name-or.csv empty.txt 0
 	grep_-f_name_-F_or)
 
-test("csv-grep -f name -F or | csv-count -r --no-header" 3-columns-3-rows.csv 1.txt empty.txt 0
+test("csv-grep -f name -F or | csv-count -r | csv-header -m" 3-columns-3-rows.csv 1.txt empty.txt 0
 	grep_-f_name_-F_or_count)
 
-test("csv-grep -f name -x -F or | csv-count -r --no-header" 3-columns-3-rows.csv 0.txt empty.txt 0
+test("csv-grep -f name -x -F or | csv-count -r | csv-header -m" 3-columns-3-rows.csv 0.txt empty.txt 0
 	grep_-f_name_-x_-F_or_count)
 
-test("csv-grep -f name -F or.m | csv-count -r --no-header" 3-columns-3-rows.csv 0.txt empty.txt 0
+test("csv-grep -f name -F or.m | csv-count -r | csv-header -m" 3-columns-3-rows.csv 0.txt empty.txt 0
 	grep_-f_name_-F_or.m_count)
 
 test("csv-grep --help" empty.csv grep-help.txt empty.txt 2
@@ -360,7 +357,7 @@ test("csv-grep --version" empty.csv git-version.txt empty.txt 0
 
 ################################## GROUPS ######################################
 
-test("csv-groups | csv-grep -f name -x -F root | csv-count -c --no-header" empty.txt 5.txt empty.txt 0
+test("csv-groups | csv-grep -f name -x -F root | csv-count -c | csv-header -m" empty.txt 5.txt empty.txt 0
 	groups)
 
 test("csv-groups --help" empty.csv groups-help.txt empty.txt 2
@@ -1325,15 +1322,15 @@ test("csv-sqlite 'select str1, str2, str1 like \"%12\" as \"str1_like_%12\", str
 #	rpn-add-num-base.csv rpn-add-convert.csv empty.txt 0
 #	sqlite_str_to_int)
 
-test("csv-sqlite -l users 'select * from users' | csv-count -c --no-header"
+test("csv-sqlite -l users 'select * from users' | csv-count -c | csv-header -m"
 	one-column-one-row.csv 7.txt empty.txt 0
 	sqlite_users_count_columns)
 
-test("csv-sqlite -l groups 'select * from groups' | csv-count -c --no-header"
+test("csv-sqlite -l groups 'select * from groups' | csv-count -c | csv-header -m"
 	one-column-one-row.csv 3.txt empty.txt 0
 	sqlite_groups_count_columns)
 
-test("csv-sqlite -l group_members 'select * from group_members' | csv-count -c --no-header"
+test("csv-sqlite -l group_members 'select * from group_members' | csv-count -c | csv-header -m"
 	one-column-one-row.csv 2.txt empty.txt 0
 	sqlite_group_members_count_columns)
 
@@ -1479,7 +1476,7 @@ test("csv-uniq --version" empty.csv git-version.txt empty.txt 0
 
 ################################### USERS ######################################
 
-test("csv-users | csv-grep -f name -x -F root | csv-count -c --no-header" empty.txt 9.txt empty.txt 0
+test("csv-users | csv-grep -f name -x -F root | csv-count -c | csv-header -m" empty.txt 9.txt empty.txt 0
 	users)
 
 test("csv-users --help" empty.csv users-help.txt empty.txt 2

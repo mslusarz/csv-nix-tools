@@ -49,7 +49,6 @@
 #include "utils.h"
 
 static const struct option opts[] = {
-	{"no-header",		no_argument,	NULL, 'H'},
 	{"ignore-case",		no_argument,	NULL, 'i'},
 	{"show",		no_argument,	NULL, 's'},
 	{"invert",		no_argument,	NULL, 'v'},
@@ -72,7 +71,6 @@ usage(FILE *out)
 	fprintf(out, "  -s, --show\n");
 	fprintf(out, "  -v, --invert\n");
 	fprintf(out, "  -x, --whole\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -198,7 +196,6 @@ main(int argc, char *argv[])
 	bool invert = false;
 	struct condition *conditions = NULL;
 	size_t nconditions = 0;
-	bool print_header = true;
 	bool show = false;
 	bool ignore_case = false;
 	char *current_column = NULL;
@@ -268,9 +265,6 @@ main(int argc, char *argv[])
 
 				break;
 			}
-			case 'H':
-				print_header = false;
-				break;
 			case 'i':
 				ignore_case = true;
 				break;
@@ -349,8 +343,7 @@ main(int argc, char *argv[])
 			free(pattern);
 	}
 
-	if (print_header)
-		csv_print_header(stdout, headers, nheaders);
+	csv_print_header(stdout, headers, nheaders);
 
 	struct cb_params params;
 	params.conditions = conditions;

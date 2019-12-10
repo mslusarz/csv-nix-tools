@@ -5,6 +5,5 @@ Options:
   -p start-pos
   -s, --show
   -l length
-      --no-header
       --help
       --version

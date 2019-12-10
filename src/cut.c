@@ -42,7 +42,6 @@
 
 static const struct option opts[] = {
 	{"fields",	required_argument,	NULL, 'f'},
-	{"no-header",	no_argument,		NULL, 'H'},
 	{"reverse",	no_argument,		NULL, 'r'},
 	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
@@ -58,7 +57,6 @@ usage(FILE *out)
 	fprintf(out, "  -f, --fields=name1[,name2...]\n");
 	fprintf(out, "  -r, --reverse\n");
 	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -93,7 +91,6 @@ main(int argc, char *argv[])
 	params.columns = NULL;
 	params.ncolumns = 0;
 	char *cols = NULL;
-	bool print_header = true;
 	bool reverse = false;
 	bool show = false;
 
@@ -104,9 +101,6 @@ main(int argc, char *argv[])
 				break;
 			case 'r':
 				reverse = true;
-				break;
-			case 'H':
-				print_header = false;
 				break;
 			case 's':
 				show = true;
@@ -182,13 +176,11 @@ main(int argc, char *argv[])
 		goto cleanup;
 	}
 
-	if (print_header) {
-		for (size_t i = 0; i < params.ncolumns - 1; ++i)
-			printf("%s:%s,", headers[params.columns[i]].name,
-					headers[params.columns[i]].type);
-		printf("%s:%s\n", headers[params.columns[params.ncolumns - 1]].name,
-				headers[params.columns[params.ncolumns - 1]].type);
-	}
+	for (size_t i = 0; i < params.ncolumns - 1; ++i)
+		printf("%s:%s,", headers[params.columns[i]].name,
+				headers[params.columns[i]].type);
+	printf("%s:%s\n", headers[params.columns[params.ncolumns - 1]].name,
+			headers[params.columns[params.ncolumns - 1]].type);
 
 	if (csv_read_all(s, &next_row, &params))
 		ret = 2;

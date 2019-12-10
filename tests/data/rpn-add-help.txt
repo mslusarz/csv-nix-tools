@@ -3,7 +3,6 @@ Options:
   -f new_column_name
   -e RPN_expression
   -s, --show
-      --no-header
       --help
       --version
 

@@ -42,7 +42,6 @@
 #include "utils.h"
 
 static const struct option opts[] = {
-	{"no-header",		no_argument,		NULL, 'H'},
 	{"show",		no_argument,		NULL, 's'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
@@ -55,7 +54,6 @@ usage(FILE *out)
 	fprintf(out, "Usage: csv-sql [OPTION] sql-query\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -301,14 +299,10 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	bool print_header = true;
 	bool show = false;
 
 	while ((opt = getopt_long(argc, argv, "s", opts, NULL)) != -1) {
 		switch (opt) {
-			case 'H':
-				print_header = false;
-				break;
 			case 's':
 				show = true;
 				break;
@@ -350,12 +344,10 @@ main(int argc, char *argv[])
 
 	fclose(in);
 
-	if (print_header) {
-		for (size_t i = 0; i < Params.columns_count - 1; ++i)
-			print_column_header(i, ',');
+	for (size_t i = 0; i < Params.columns_count - 1; ++i)
+		print_column_header(i, ',');
 
-		print_column_header(Params.columns_count - 1, '\n');
-	}
+	print_column_header(Params.columns_count - 1, '\n');
 
 	if (Params.columns_count < 1)
 		abort();

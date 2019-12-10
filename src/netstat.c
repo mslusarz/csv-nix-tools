@@ -101,7 +101,6 @@
 static const struct option opts[] = {
 	{"extend",	no_argument,		NULL, 'e'},
 	{"fields",	required_argument,	NULL, 'f'},
-	{"no-header",	no_argument,		NULL, 'H'},
 	{"resolve",	no_argument,		NULL, 'r'},
 	{"show",	no_argument,		NULL, 's'},
 //	{"sctp",	no_argument,		NULL, 'S'},
@@ -133,7 +132,6 @@ usage(FILE *out)
 	fprintf(out, "  -x, --unix\n");
 	fprintf(out, "  -4, --inet4\n");
 	fprintf(out, "  -6, --inet6\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -1530,7 +1528,6 @@ main(int argc, char *argv[])
 {
 	int opt;
 	char *cols = NULL;
-	bool print_header = true;
 	bool show = false;
 	unsigned protocols = 0;
 
@@ -1623,9 +1620,6 @@ main(int argc, char *argv[])
 			case 'f':
 				cols = xstrdup_nofail(optarg);
 				break;
-			case 'H':
-				print_header = false;
-				break;
 			case 'r':
 				for (size_t i = 0; i < ncolumns; ++i)
 					if (columns[i].data & REQUIRES_RESOLVING)
@@ -1695,8 +1689,7 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show();
 
-	if (print_header)
-		csvci_print_header(columns, ncolumns);
+	csvci_print_header(columns, ncolumns);
 
 	struct mnl_socket *nl;
 

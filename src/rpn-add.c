@@ -41,7 +41,6 @@
 #include "utils.h"
 
 static const struct option opts[] = {
-	{"no-header",		no_argument,		NULL, 'H'},
 	{"show",		no_argument,		NULL, 's'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
@@ -56,7 +55,6 @@ usage(FILE *out)
 	fprintf(out, "  -f new_column_name\n");
 	fprintf(out, "  -e RPN_expression\n");
 	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 	fprintf(out, "\n");
@@ -163,7 +161,6 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	bool print_header = true;
 	size_t nexpressions = 0;
 	char **expressions = NULL;
 	char **names = NULL;
@@ -196,9 +193,6 @@ main(int argc, char *argv[])
 			case 'f':
 				free(new_column);
 				new_column = xstrdup_nofail(optarg);
-				break;
-			case 'H':
-				print_header = false;
 				break;
 			case 's':
 				show = true;
@@ -246,17 +240,15 @@ main(int argc, char *argv[])
 			exit(2);
 	}
 
-	if (print_header) {
-		for (size_t i = 0; i < nheaders; ++i)
-			printf("%s:%s,", headers[i].name, headers[i].type);
-		for (size_t i = 0; i < nexpressions - 1; ++i)
-			printf("%s:%s,", names[i],
-				rpn_expression_type(&params.expressions[i],
-						headers));
-		printf("%s:%s\n", names[nexpressions - 1],
-			rpn_expression_type(&params.expressions[nexpressions - 1],
-						headers));
-	}
+	for (size_t i = 0; i < nheaders; ++i)
+		printf("%s:%s,", headers[i].name, headers[i].type);
+	for (size_t i = 0; i < nexpressions - 1; ++i)
+		printf("%s:%s,", names[i],
+			rpn_expression_type(&params.expressions[i],
+					headers));
+	printf("%s:%s\n", names[nexpressions - 1],
+		rpn_expression_type(&params.expressions[nexpressions - 1],
+					headers));
 
 	for (size_t i = 0; i < nexpressions; ++i) {
 		free(expressions[i]);

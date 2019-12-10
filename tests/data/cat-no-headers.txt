@@ -1,3 +1,0 @@
-lorem ipsum,1
-not all that is gold,0
-something else,1

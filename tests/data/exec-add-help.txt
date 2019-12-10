@@ -3,6 +3,5 @@ Options:
   -f, --field=name
   -n, --new-name=name
   -s, --show
-      --no-header
       --help
       --version

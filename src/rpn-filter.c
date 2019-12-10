@@ -41,7 +41,6 @@
 #include "utils.h"
 
 static const struct option opts[] = {
-	{"no-header",		no_argument,		NULL, 'H'},
 	{"show",		no_argument,		NULL, 's'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
@@ -55,7 +54,6 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -e \"RPN expression\"\n");
 	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -95,7 +93,6 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	bool print_header = true;
 	size_t nexpressions = 0;
 	char **expressions = NULL;
 	struct cb_params params;
@@ -115,9 +112,6 @@ main(int argc, char *argv[])
 
 				break;
 			}
-			case 'H':
-				print_header = false;
-				break;
 			case 's':
 				show = true;
 				break;
@@ -167,8 +161,7 @@ main(int argc, char *argv[])
 		free(expressions[i]);
 	free(expressions);
 
-	if (print_header)
-		csv_print_header(stdout, headers, nheaders);
+	csv_print_header(stdout, headers, nheaders);
 
 	if (csv_read_all(s, &next_row, &params))
 		exit(2);

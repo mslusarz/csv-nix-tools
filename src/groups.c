@@ -40,7 +40,6 @@
 
 static const struct option opts[] = {
 	{"fields",	required_argument,	NULL, 'f'},
-	{"no-header",	no_argument,		NULL, 'H'},
 	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
@@ -54,7 +53,6 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -f, --fields=name1[,name2...]\n");
 	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -176,7 +174,6 @@ main(int argc, char *argv[])
 {
 	int opt;
 	char *cols = NULL;
-	bool print_header = true;
 	bool show = false;
 
 	struct column_info columns[] = {
@@ -193,9 +190,6 @@ main(int argc, char *argv[])
 		switch (opt) {
 			case 'f':
 				cols = xstrdup_nofail(optarg);
-				break;
-			case 'H':
-				print_header = false;
 				break;
 			case 's':
 				show = true;
@@ -224,8 +218,7 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show();
 
-	if (print_header)
-		csvci_print_header(columns, ncolumns);
+	csvci_print_header(columns, ncolumns);
 
 	load_groups();
 	for (size_t i = 0; i < ncolumns; ++i) {

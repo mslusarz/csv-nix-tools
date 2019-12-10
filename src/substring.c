@@ -41,7 +41,6 @@
 #include "utils.h"
 
 static const struct option opts[] = {
-	{"no-header",		no_argument,		NULL, 'H'},
 	{"show",		no_argument,		NULL, 's'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
@@ -58,7 +57,6 @@ usage(FILE *out)
 	fprintf(out, "  -p start-pos\n");
 	fprintf(out, "  -s, --show\n");
 	fprintf(out, "  -l length\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -101,7 +99,6 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	bool print_header = true;
 	char *input_col = NULL;
 	char *new_name = NULL;
 	struct cb_params params;
@@ -128,9 +125,6 @@ main(int argc, char *argv[])
 			case 'l':
 				if (strtoul_safe(optarg, &params.length, 0))
 					exit(2);
-				break;
-			case 'H':
-				print_header = false;
 				break;
 			case 'V':
 				printf("git\n");
@@ -173,11 +167,10 @@ main(int argc, char *argv[])
 	free(input_col);
 	input_col = NULL;
 
-	if (print_header) {
-		for (size_t i = 0; i < nheaders; ++i)
-			printf("%s:%s,", headers[i].name, headers[i].type);
-		printf("%s:string\n", new_name);
-	}
+	for (size_t i = 0; i < nheaders; ++i)
+		printf("%s:%s,", headers[i].name, headers[i].type);
+	printf("%s:string\n", new_name);
+
 	free(new_name);
 	new_name = NULL;
 

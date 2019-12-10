@@ -46,7 +46,6 @@
 
 static const struct option opts[] = {
 	{"fields",	required_argument,	NULL, 'f'},
-	{"no-header",	no_argument,		NULL, 'H'},
 	{"reverse",	no_argument,		NULL, 'r'},
 	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
@@ -62,7 +61,6 @@ usage(FILE *out)
 	fprintf(out, "  -f, --fields=name1[,name2...]\n");
 	fprintf(out, "  -r, --reverse\n");
 	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -198,7 +196,6 @@ main(int argc, char *argv[])
 	params.used = 0;
 	char *cols = NULL;
 	struct sort_params sort_params;
-	bool print_header = true;
 	bool show = false;
 
 	sort_params.columns = NULL;
@@ -208,9 +205,6 @@ main(int argc, char *argv[])
 		switch (opt) {
 			case 'f':
 				cols = xstrdup_nofail(optarg);
-				break;
-			case 'H':
-				print_header = false;
 				break;
 			case 'r':
 				reverse = true;
@@ -266,8 +260,7 @@ main(int argc, char *argv[])
 	}
 	free(cols);
 
-	if (print_header)
-		csv_print_header(stdout, headers, nheaders);
+	csv_print_header(stdout, headers, nheaders);
 
 	if (csv_read_all(s, &next_row, &params))
 		exit(2);

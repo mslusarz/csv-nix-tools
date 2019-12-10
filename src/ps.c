@@ -65,7 +65,6 @@
 
 static const struct option opts[] = {
 	{"fields",	required_argument,	NULL, 'f'},
-	{"no-header",	no_argument,		NULL, 'H'},
 	{"pid",		required_argument,	NULL, 'p'},
 	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
@@ -83,7 +82,6 @@ usage(FILE *out)
 	fprintf(out, "  -f, --fields=name1[,name2...]\n");
 	fprintf(out, "  -p, --pid=pid1[,pid2...]\n");
 	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -1265,7 +1263,6 @@ main(int argc, char *argv[])
 {
 	int opt;
 	char *cols = NULL;
-	bool print_header = true;
 	bool show = false;
 	pid_t *pids = NULL;
 	size_t npids = 0;
@@ -1432,9 +1429,6 @@ main(int argc, char *argv[])
 			case 'f':
 				cols = xstrdup_nofail(optarg);
 				break;
-			case 'H':
-				print_header = false;
-				break;
 			case 'p': {
 				char *pid = strtok(optarg, ",");
 				while (pid) {
@@ -1487,8 +1481,7 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show();
 
-	if (print_header)
-		csvci_print_header(columns, ncolumns);
+	csvci_print_header(columns, ncolumns);
 
 	if (sources & USR_GRP)
 		usr_grp_query_init();

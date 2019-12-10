@@ -41,7 +41,6 @@
 #include "utils.h"
 
 static const struct option opts[] = {
-	{"no-header",	no_argument,		NULL, 'H'},
 	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
@@ -54,7 +53,6 @@ usage(FILE *out)
 	fprintf(out, "Usage: csv-cat [OPTION]... [FILE]...\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -192,14 +190,10 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	bool print_header = true;
 	bool show = false;
 
 	while ((opt = getopt_long(argc, argv, "sv", opts, NULL)) != -1) {
 		switch (opt) {
-			case 'H':
-				print_header = false;
-				break;
 			case 's':
 				show = true;
 				break;
@@ -257,8 +251,7 @@ main(int argc, char *argv[])
 		}
 	}
 
-	if (print_header)
-		csv_print_header(stdout, headers, nheaders);
+	csv_print_header(stdout, headers, nheaders);
 
 	for (size_t i = 0; i < ninputs; ++i) {
 		struct input *in = &inputs[i];

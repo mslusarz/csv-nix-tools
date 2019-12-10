@@ -7,6 +7,5 @@ Options:
   -R, --recursive
   -s, --show
   -U
-      --no-header
       --help
       --version

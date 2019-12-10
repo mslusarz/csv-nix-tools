@@ -6,6 +6,5 @@ Options:
   -r, --reverse
   -p  --print-separator=yes/no/auto
   -s, --show
-      --no-header
       --help
       --version

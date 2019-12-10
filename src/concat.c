@@ -41,7 +41,6 @@
 #include "utils.h"
 
 static const struct option opts[] = {
-	{"no-header",		no_argument,		NULL, 'H'},
 	{"show",		no_argument,		NULL, 's'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
@@ -54,7 +53,6 @@ usage(FILE *out)
 	fprintf(out, "Usage: csv-concat [OPTION]... -- new_name = [%%name|str]...\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -130,7 +128,6 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	bool print_header = true;
 	char *new_name = NULL;
 	struct cb_params params;
 	bool show = false;
@@ -141,9 +138,6 @@ main(int argc, char *argv[])
 		switch (opt) {
 			case 's':
 				show = true;
-				break;
-			case 'H':
-				print_header = false;
 				break;
 			case 'V':
 				printf("git\n");
@@ -213,11 +207,9 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show();
 
-	if (print_header) {
-		for (size_t i = 0; i < nheaders; ++i)
-			printf("%s:%s,", headers[i].name, headers[i].type);
-		printf("%s:string\n", new_name);
-	}
+	for (size_t i = 0; i < nheaders; ++i)
+		printf("%s:%s,", headers[i].name, headers[i].type);
+	printf("%s:string\n", new_name);
 
 	if (csv_read_all(s, &next_row, &params))
 		exit(2);

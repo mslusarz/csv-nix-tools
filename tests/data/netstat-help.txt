@@ -9,6 +9,5 @@ Options:
   -x, --unix
   -4, --inet4
   -6, --inet6
-      --no-header
       --help
       --version

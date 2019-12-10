@@ -42,7 +42,6 @@
 
 static const struct option opts[] = {
 	{"lines",	required_argument,	NULL, 'n'},
-	{"no-header",	no_argument,		NULL, 'H'},
 	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
@@ -56,7 +55,6 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -n, --lines=count\n");
 	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -116,7 +114,6 @@ main(int argc, char *argv[])
 {
 	int opt;
 	struct cb_params params;
-	bool print_header = true;
 	bool show = false;
 
 	params.count = 0;
@@ -126,9 +123,6 @@ main(int argc, char *argv[])
 		switch (opt) {
 			case 'n':
 				params.nlines = atoi(optarg);
-				break;
-			case 'H':
-				print_header = false;
 				break;
 			case 's':
 				show = true;
@@ -158,8 +152,7 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
-	if (print_header)
-		csv_print_header(stdout, headers, nheaders);
+	csv_print_header(stdout, headers, nheaders);
 
 	if (params.nlines > 0)
 		if (csv_read_all(s, &next_row, &params))

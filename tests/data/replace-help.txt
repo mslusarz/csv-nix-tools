@@ -8,6 +8,5 @@ Options:
   -n new-name
   -r replacement
   -s, --show
-      --no-header
       --help
       --version

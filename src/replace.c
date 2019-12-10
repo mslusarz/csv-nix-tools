@@ -46,7 +46,6 @@
 #include "utils.h"
 
 static const struct option opts[] = {
-	{"no-header",		no_argument,		NULL, 'H'},
 	{"ignore-case",		no_argument,		NULL, 'i'},
 	{"show",		no_argument,		NULL, 's'},
 	{"version",		no_argument,		NULL, 'V'},
@@ -67,7 +66,6 @@ usage(FILE *out)
 	fprintf(out, "  -n new-name\n");
 	fprintf(out, "  -r replacement\n");
 	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --no-header\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
 }
@@ -305,7 +303,6 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	bool print_header = true;
 	char *input_col = NULL;
 	char *new_name = NULL;
 	char *regex = NULL;
@@ -346,9 +343,6 @@ main(int argc, char *argv[])
 				break;
 			case 's':
 				show = true;
-				break;
-			case 'H':
-				print_header = false;
 				break;
 			case 'V':
 				printf("git\n");
@@ -413,11 +407,9 @@ main(int argc, char *argv[])
 		parse_replacement(replacement, &params);
 	}
 
-	if (print_header) {
-		for (size_t i = 0; i < nheaders; ++i)
-			printf("%s:%s,", headers[i].name, headers[i].type);
-		printf("%s:string\n", new_name);
-	}
+	for (size_t i = 0; i < nheaders; ++i)
+		printf("%s:%s,", headers[i].name, headers[i].type);
+	printf("%s:string\n", new_name);
 
 	free(new_name);
 	new_name = NULL;

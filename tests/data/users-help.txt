@@ -2,6 +2,5 @@ Usage: csv-users [OPTION]...
 Options:
   -f, --fields=name1[,name2...]
   -s, --show
-      --no-header
       --help
       --version

@@ -3,6 +3,5 @@ Options:
   -c, --columns
   -r, --rows
   -s, --show
-      --no-header
       --help
       --version
