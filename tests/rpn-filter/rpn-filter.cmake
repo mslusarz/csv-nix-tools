@@ -91,3 +91,228 @@ test("csv-rpn-filter --help" data/empty.csv rpn-filter/help.txt data/empty.txt 2
 
 test("csv-rpn-filter --version" data/empty.csv data/git-version.txt data/empty.txt 0
 	rpn-filter_version)
+
+
+test("csv-rpn-filter -e '%id + 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_add)
+
+test("csv-rpn-filter -e '%id - 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_sub)
+
+test("csv-rpn-filter -e '%id * 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_mul)
+
+test("csv-rpn-filter -e '%id / 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_div)
+
+test("csv-rpn-filter -e '%id % 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_mod)
+
+test("csv-rpn-filter -e '%id | 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_bit_or)
+
+test("csv-rpn-filter -e '%id & 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_bit_and)
+
+test("csv-rpn-filter -e '%id ^ 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_bit_xor)
+
+test("csv-rpn-filter -e '%id << 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_bit_lshift)
+
+test("csv-rpn-filter -e '%id >> 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_bit_rshift)
+
+test("csv-rpn-filter -e '~ 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_bit_neg)
+
+test("csv-rpn-filter -e '%id and 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_logic_and)
+
+test("csv-rpn-filter -e '%id or 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_logic_or)
+
+test("csv-rpn-filter -e '%id xor 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_logic_xor)
+
+test("csv-rpn-filter -e 'not 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_logic_not)
+
+test("csv-rpn-filter -e '%name 1 substr %id =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_substr)
+
+test("csv-rpn-filter -e '%name concat %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_concat)
+
+test("csv-rpn-filter -e '%name like %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_like)
+
+test("csv-rpn-filter -e 'tostring_base2 %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_tostring_base2)
+
+test("csv-rpn-filter -e 'tostring_base8 %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_tostring_base8)
+
+test("csv-rpn-filter -e 'tostring_base10 %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_tostring_base10)
+
+test("csv-rpn-filter -e 'tostring_base16 %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_tostring_base16)
+
+test("csv-rpn-filter -e 'strlen %id =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_strlen)
+
+test("csv-rpn-filter -e 'toint %id =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_toint)
+
+test("csv-rpn-filter -e '%id <'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_lt)
+
+test("csv-rpn-filter -e '%id <='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_le)
+
+test("csv-rpn-filter -e '%id >'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_gt)
+
+test("csv-rpn-filter -e '%id >='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_ge)
+
+test("csv-rpn-filter -e '%id =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_eq)
+
+test("csv-rpn-filter -e '%id !='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_ne)
+
+test("csv-rpn-filter -e '%id %name if 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/stack-low.txt 2
+	rpn-filter_stackerr_if)
+
+
+test("csv-rpn-filter -e '%name %id + 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/2-args-not-numeric.txt 2
+	rpn-filter_typeerr_add)
+
+test("csv-rpn-filter -e '%name %id - 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/2-args-not-numeric.txt 2
+	rpn-filter_typeerr_sub)
+
+test("csv-rpn-filter -e '%name %id * 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/2-args-not-numeric.txt 2
+	rpn-filter_typeerr_mul)
+
+test("csv-rpn-filter -e '%name %id / 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/2-args-not-numeric.txt 2
+	rpn-filter_typeerr_div)
+
+test("csv-rpn-filter -e '%name %id % 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/2-args-not-numeric.txt 2
+	rpn-filter_typeerr_mod)
+
+test("csv-rpn-filter -e '%name %id | 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/2-args-not-numeric.txt 2
+	rpn-filter_typeerr_bit_or)
+
+test("csv-rpn-filter -e '%name %id & 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/2-args-not-numeric.txt 2
+	rpn-filter_typeerr_bit_and)
+
+test("csv-rpn-filter -e '%name %id ^ 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/2-args-not-numeric.txt 2
+	rpn-filter_typeerr_bit_xor)
+
+test("csv-rpn-filter -e '%name %id << 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/2-args-not-numeric.txt 2
+	rpn-filter_typeerr_bit_lshift)
+
+test("csv-rpn-filter -e '%name %id >> 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/2-args-not-numeric.txt 2
+	rpn-filter_typeerr_bit_rshift)
+
+test("csv-rpn-filter -e '%name ~ 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/1-arg-not-numeric.txt 2
+	rpn-filter_typeerr_bit_neg)
+
+test("csv-rpn-filter -e '%name %id and 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/2-args-not-numeric.txt 2
+	rpn-filter_typeerr_logic_and)
+
+test("csv-rpn-filter -e '%name %id or 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/2-args-not-numeric.txt 2
+	rpn-filter_typeerr_logic_or)
+
+test("csv-rpn-filter -e '%name %id xor 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/2-args-not-numeric.txt 2
+	rpn-filter_typeerr_logic_xor)
+
+test("csv-rpn-filter -e '%name not 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/1-arg-not-numeric.txt 2
+	rpn-filter_typeerr_logic_not)
+
+test("csv-rpn-filter -e '%id 1 5 substr %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/substr-invalid-types.txt 2
+	rpn-filter_typeerr_substr_arg1)
+
+test("csv-rpn-filter -e '%name %name 5 substr %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/substr-invalid-types.txt 2
+	rpn-filter_typeerr_substr_arg2)
+
+test("csv-rpn-filter -e '%name 1 %name substr %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/substr-invalid-types.txt 2
+	rpn-filter_typeerr_substr_arg3)
+
+test("csv-rpn-filter -e '%id %name concat %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/concat-invalid-types.txt 2
+	rpn-filter_typeerr_concat_arg1)
+
+test("csv-rpn-filter -e '%name %id concat %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/concat-invalid-types.txt 2
+	rpn-filter_typeerr_concat_arg2)
+
+test("csv-rpn-filter -e '2 %name like %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/like-invalid-types.txt 2
+	rpn-filter_typeerr_like_arg1)
+
+test("csv-rpn-filter -e '%name 2 like %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/like-invalid-types.txt 2
+	rpn-filter_typeerr_like_arg2)
+
+test("csv-rpn-filter -e '%name tostring_base2 %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/tostring-invalid-types.txt 2
+	rpn-filter_typeerr_tostring_base2)
+
+test("csv-rpn-filter -e '%name tostring_base8 %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/tostring-invalid-types.txt 2
+	rpn-filter_typeerr_tostring_base8)
+
+test("csv-rpn-filter -e '%name tostring_base10 %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/tostring-invalid-types.txt 2
+	rpn-filter_typeerr_tostring_base10)
+
+test("csv-rpn-filter -e '%name tostring_base16 %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/tostring-invalid-types.txt 2
+	rpn-filter_typeerr_tostring_base16)
+
+test("csv-rpn-filter -e '%id strlen %id =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/strlen-invalid-types.txt 2
+	rpn-filter_typeerr_strlen)
+
+test("csv-rpn-filter -e '%id toint %id =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/toint-invalid-types.txt 2
+	rpn-filter_typeerr_toint)
+
+test("csv-rpn-filter -e '%id %name <'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/comparison-invalid-types.txt 2
+	rpn-filter_typeerr_lt)
+
+test("csv-rpn-filter -e '%id %name <='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/comparison-invalid-types.txt 2
+	rpn-filter_typeerr_le)
+
+test("csv-rpn-filter -e '%id %name >'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/comparison-invalid-types.txt 2
+	rpn-filter_typeerr_gt)
+
+test("csv-rpn-filter -e '%id %name >='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/comparison-invalid-types.txt 2
+	rpn-filter_typeerr_ge)
+
+test("csv-rpn-filter -e '%id %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/comparison-invalid-types.txt 2
+	rpn-filter_typeerr_eq)
+
+test("csv-rpn-filter -e '%id %name !='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/comparison-invalid-types.txt 2
+	rpn-filter_typeerr_ne)
+
+test("csv-rpn-filter -e '%id %name %id if 2 =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/if-invalid-types.txt 2
+	rpn-filter_typeerr_if)
+
+
+test("csv-rpn-filter -e '2 %id and'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/logic-invalid-values.txt 2
+	rpn-filter_valueerr_logic_and_arg1)
+
+test("csv-rpn-filter -e '%id 2 and'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/logic-invalid-values.txt 2
+	rpn-filter_valueerr_logic_and_arg2)
+
+test("csv-rpn-filter -e '2 %id or'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/logic-invalid-values.txt 2
+	rpn-filter_valueerr_logic_or_arg1)
+
+test("csv-rpn-filter -e '%id 2 or'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/logic-invalid-values.txt 2
+	rpn-filter_valueerr_logic_or_arg2)
+
+test("csv-rpn-filter -e '2 %id xor'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/logic-invalid-values.txt 2
+	rpn-filter_valueerr_logic_xor_arg1)
+
+test("csv-rpn-filter -e '%id 2 xor'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/logic-invalid-values.txt 2
+	rpn-filter_valueerr_logic_xor_arg2)
+
+test("csv-rpn-filter -e '2 not'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/logic-invalid-values.txt 2
+	rpn-filter_valueerr_logic_not)
+
+test("csv-rpn-filter -e '%name 2 -1 substr %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv rpn-filter/substring-invalid-length.txt 2
+	rpn-filter_valueerr_substr)

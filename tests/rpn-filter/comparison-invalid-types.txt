@@ -1,0 +1,1 @@
+comparison operators can operate only on the same type values

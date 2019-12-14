@@ -1,0 +1,1 @@
+tostring can operate only on numeric values

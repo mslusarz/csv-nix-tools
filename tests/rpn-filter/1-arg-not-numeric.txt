@@ -1,0 +1,1 @@
+not/bit_neg can operate only on numeric values
