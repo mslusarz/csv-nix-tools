@@ -38,6 +38,9 @@ test("csv-count -c" data/empty.txt data/empty.csv data/eof.txt 2
 test("csv-count -c" data/2-columns-3-rows.csv count/2-cols.txt data/empty.txt 0
 	count_-c_2_cols)
 
+test("csv-count -c -R" data/2-columns-3-rows.csv count/2-cols.txt data/empty.txt 0
+	count_-c_2_cols_-R)
+
 test("csv-count -r" data/2-columns-3-rows.csv count/3-rows.txt data/empty.txt 0
 	count_-r_3_rows)
 

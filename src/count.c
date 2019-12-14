@@ -83,17 +83,21 @@ main(int argc, char *argv[])
 	struct cb_params params;
 	bool show = false;
 	bool columns = false;
+	bool read_rows = false;
 	bool rows = false;
 
 	params.rows = 0;
 
-	while ((opt = getopt_long(argc, argv, "crsv", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "crRsv", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'c':
 				columns = true;
 				break;
 			case 'r':
 				rows = true;
+				break;
+			case 'R':
+				read_rows = true;
 				break;
 			case 's':
 				show = true;
@@ -124,7 +128,7 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
-	if (rows)
+	if (rows || read_rows)
 		if (csv_read_all(s, &next_row, &params))
 			exit(2);
 
