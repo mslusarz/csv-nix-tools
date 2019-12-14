@@ -512,7 +512,7 @@ if (LIBMNL_FOUND)
 test("csv-netstat | csv-count -c -r | csv-cut -f columns" empty.txt netstat-count-columns.csv empty.txt 0
 	netstat_count_columns)
 
-test("csv-netstat -e | csv-count -c" empty.txt netstat-e-count-columns.csv empty.txt 0
+test("csv-netstat -e | csv-count -c -r | csv-cut -f columns" empty.txt netstat-e-count-columns.csv empty.txt 0
 	netstat_e_count_columns)
 
 test("csv-netstat -t | csv-count -c" empty.txt netstat-t-count-columns.csv empty.txt 0
@@ -532,6 +532,9 @@ test("csv-netstat -4 | csv-count -c" empty.txt netstat-4-count-columns.csv empty
 
 test("csv-netstat -6 | csv-count -c" empty.txt netstat-6-count-columns.csv empty.txt 0
 	netstat_6_count_columns)
+
+test("csv-netstat -f family,protocol | csv-uniq -f family,protocol | csv-head -n 0" empty.txt netstat-f-count-columns.csv empty.txt 0
+	netstat_f_count_columns)
 
 test("csv-netstat --help" empty.csv netstat-help.txt empty.txt 2
 	netstat_help)
