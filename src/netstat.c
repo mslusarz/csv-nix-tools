@@ -99,7 +99,7 @@
 #define REQUIRES_RESOLVING (1ULL << 31)
 
 static const struct option opts[] = {
-	{"extend",	no_argument,		NULL, 'e'},
+	{"extended",	no_argument,		NULL, 'e'},
 	{"fields",	required_argument,	NULL, 'f'},
 	{"resolve",	no_argument,		NULL, 'r'},
 	{"show",	no_argument,		NULL, 's'},
@@ -121,6 +121,7 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-netstat [OPTION]...\n");
 	fprintf(out, "Options:\n");
+	fprintf(out, "  -e, --extended\n");
 	fprintf(out, "  -f, --fields=name1[,name2...]\n");
 	fprintf(out, "  -r, --resolve\n");
 	fprintf(out, "  -s, --show\n");
