@@ -136,6 +136,17 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 
 		break;
 	case RPN_STRLEN:
+		if (height < 1) {
+			fprintf(stderr, "not enough stack entries\n");
+			return -1;
+		}
+
+		if (stack[height - 1].type != RPN_PCHAR) {
+			fprintf(stderr, "strlen can operate only on string values\n");
+			return -1;
+		}
+
+		break;
 	case RPN_TOINT:
 		if (height < 1) {
 			fprintf(stderr, "not enough stack entries\n");
@@ -174,7 +185,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		height -= 2;
 		if (stack[height - 1].type != RPN_LLONG ||
 				stack[height].type != stack[height + 1].type) {
-			fprintf(stderr, "invalid types for substr operator\n");
+			fprintf(stderr, "invalid types for if operator\n");
 			return -1;
 		}
 		break;
@@ -256,7 +267,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		ssize_t start = (ssize_t)stack[height].llong;
 		if (stack[height + 1].llong < 0) {
 			fprintf(stderr,
-				"negative length (%lld) for substring op\n",
+				"negative length (%lld) for substring operator\n",
 				stack[height + 1].llong);
 			return -1;
 		}
