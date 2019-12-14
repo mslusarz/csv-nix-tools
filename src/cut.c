@@ -118,11 +118,10 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show();
 
-	struct csv_ctx *s = csv_create_ctx(stdin, stderr);
-	if (!s)
-		exit(2);
-	if (csv_read_header(s))
-		exit(2);
+	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
+
+	csv_read_header_nofail(s);
+
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
@@ -182,8 +181,7 @@ main(int argc, char *argv[])
 	printf("%s:%s\n", headers[params.columns[params.ncolumns - 1]].name,
 			headers[params.columns[params.ncolumns - 1]].type);
 
-	if (csv_read_all(s, &next_row, &params))
-		ret = 2;
+	csv_read_all_nofail(s, &next_row, &params);
 
 cleanup:
 	free(params.columns);

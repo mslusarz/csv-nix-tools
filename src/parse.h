@@ -44,8 +44,10 @@ struct col_header {
 };
 
 struct csv_ctx *csv_create_ctx(FILE *in, FILE *err);
+struct csv_ctx *csv_create_ctx_nofail(FILE *in, FILE *err);
 
 int csv_read_header(struct csv_ctx *s);
+void csv_read_header_nofail(struct csv_ctx *s);
 
 size_t csv_get_headers(struct csv_ctx *s, const struct col_header **headers);
 
@@ -54,6 +56,7 @@ typedef int (*csv_row_cb)(const char *buf, const size_t *col_offs,
 		void *arg);
 
 int csv_read_all(struct csv_ctx *s, csv_row_cb cb, void *arg);
+void csv_read_all_nofail(struct csv_ctx *s, csv_row_cb cb, void *arg);
 
 void csv_destroy_ctx(struct csv_ctx *s);
 

@@ -324,11 +324,10 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show();
 
-	struct csv_ctx *s = csv_create_ctx(stdin, stderr);
-	if (!s)
-		exit(2);
-	if (csv_read_header(s))
-		exit(2);
+	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
+
+	csv_read_header_nofail(s);
+
 	Nheaders = csv_get_headers(s, &Headers);
 
 	FILE *in = fmemopen(argv[optind], strlen(argv[optind]), "r");
@@ -352,8 +351,7 @@ main(int argc, char *argv[])
 	if (Params.columns_count < 1)
 		abort();
 
-	if (csv_read_all(s, &next_row, &Params))
-		exit(2);
+	csv_read_all_nofail(s, &next_row, &Params);
 
 	csv_destroy_ctx(s);
 

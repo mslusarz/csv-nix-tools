@@ -1673,12 +1673,9 @@ main(int argc, char *argv[])
 		protocols = ALL;
 
 	if (cols) {
-		int r = csvci_parse_cols(cols, columns, &ncolumns);
+		csvci_parse_cols_nofail(cols, columns, &ncolumns);
 
 		free(cols);
-
-		if (r)
-			exit(2);
 	} else {
 		for (size_t i = 0; i < ncolumns; ++i)
 			columns[i].vis = columns[i].vis &&

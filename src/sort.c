@@ -231,11 +231,10 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show();
 
-	struct csv_ctx *s = csv_create_ctx(stdin, stderr);
-	if (!s)
-		exit(2);
-	if (csv_read_header(s))
-		exit(2);
+	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
+
+	csv_read_header_nofail(s);
+
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
@@ -262,8 +261,7 @@ main(int argc, char *argv[])
 
 	csv_print_header(stdout, headers, nheaders);
 
-	if (csv_read_all(s, &next_row, &params))
-		exit(2);
+	csv_read_all_nofail(s, &next_row, &params);
 
 	size_t *row_idx = xmalloc_nofail(params.used, sizeof(row_idx[0]));
 

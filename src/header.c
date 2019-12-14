@@ -141,11 +141,10 @@ main(int argc, char *argv[])
 		csv_show();
 	}
 
-	struct csv_ctx *s = csv_create_ctx(stdin, stderr);
-	if (!s)
-		exit(2);
-	if (csv_read_header(s))
-		exit(2);
+	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
+
+	csv_read_header_nofail(s);
+
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 

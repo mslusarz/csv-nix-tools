@@ -239,11 +239,9 @@ sqlite_type_to_csv_name(int t)
 static void
 add_file(FILE *f, size_t num, sqlite3 *db, struct input *input)
 {
-	struct csv_ctx *s = csv_create_ctx(f, stderr);
-	if (!s)
-		exit(2);
-	if (csv_read_header(s))
-		exit(2);
+	struct csv_ctx *s = csv_create_ctx_nofail(f, stderr);
+
+	csv_read_header_nofail(s);
 
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
@@ -278,8 +276,7 @@ add_file(FILE *f, size_t num, sqlite3 *db, struct input *input)
 	}
 
 	params.db = db;
-	if (csv_read_all(s, &next_row, &params))
-		exit(2);
+	csv_read_all_nofail(s, &next_row, &params);
 
 	if (sqlite3_finalize(params.insert) != SQLITE_OK) {
 		fprintf(stderr, "sqlite3_finalize(insert): %s\n",

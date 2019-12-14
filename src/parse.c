@@ -62,6 +62,15 @@ csv_create_ctx(FILE *in, FILE *err)
 	return s;
 }
 
+struct csv_ctx *
+csv_create_ctx_nofail(FILE *in, FILE *err)
+{
+	struct csv_ctx *s = csv_create_ctx(in, err);
+	if (!s)
+		exit(2);
+	return s;
+}
+
 void
 csv_destroy_ctx(struct csv_ctx *ctx)
 {
@@ -144,6 +153,13 @@ csv_read_header(struct csv_ctx *ctx)
 	*nl = 0;
 
 	return add_header(ctx, start);
+}
+
+void
+csv_read_header_nofail(struct csv_ctx *ctx)
+{
+	if (csv_read_header(ctx))
+		exit(2);
 }
 
 size_t
@@ -286,4 +302,11 @@ end:
 	free(buf);
 
 	return ret;
+}
+
+void
+csv_read_all_nofail(struct csv_ctx *ctx, csv_row_cb cb, void *arg)
+{
+	if (csv_read_all(ctx, cb, arg))
+		exit(2);
 }

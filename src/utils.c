@@ -613,6 +613,14 @@ csvci_parse_cols(char *cols, struct column_info *columns, size_t *ncolumns)
 }
 
 void
+csvci_parse_cols_nofail(char *cols, struct column_info *columns,
+		size_t *ncolumns)
+{
+	if (csvci_parse_cols(cols, columns, ncolumns))
+		exit(2);
+}
+
+void
 csvci_set_columns_order(struct column_info *columns, size_t *ncolumns)
 {
 	size_t order = 0;

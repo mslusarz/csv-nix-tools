@@ -137,11 +137,9 @@ static const struct col_header *headers;
 static void
 add_input(FILE *f, struct input *in, size_t file_idx)
 {
-	struct csv_ctx *s = csv_create_ctx(f, stderr);
-	if (!s)
-		exit(2);
-	if (csv_read_header(s))
-		exit(2);
+	struct csv_ctx *s = csv_create_ctx_nofail(f, stderr);
+
+	csv_read_header_nofail(s);
 
 	const struct col_header *headers_cur;
 	size_t nheaders_cur = csv_get_headers(s, &headers_cur);
@@ -258,8 +256,7 @@ main(int argc, char *argv[])
 		struct cb_params params;
 		memset(&params, 0, sizeof(params));
 
-		if (csv_read_all(in->s, &next_row, &params))
-			exit(2);
+		csv_read_all_nofail(in->s, &next_row, &params);
 
 		for (size_t j = params.used; j > 0; --j) {
 			size_t k = j - 1;
