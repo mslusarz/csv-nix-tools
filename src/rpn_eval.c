@@ -359,7 +359,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		regex_t preg;
 
 		/* TODO: cache compiled regex */
-		int ret = regcomp(&preg, n, REG_NOSUB);
+		int ret = regcomp(&preg, n, REG_EXTENDED | REG_NOSUB);
 		if (ret) {
 			size_t len = regerror(ret, &preg, NULL, 0);
 			char *errbuf = xmalloc_nofail(len, 1);
