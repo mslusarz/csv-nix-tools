@@ -31,8 +31,7 @@
 
 if (LIBPROCPS_FOUND)
 
-# count -r + cut to let ps finish printing data and contribute to code coverage
-test("csv-ps | csv-count -c -r | csv-cut -f columns" data/empty.txt ps/columns.csv data/empty.txt 0
+test("csv-ps | csv-count -c -R" data/empty.txt ps/columns.csv data/empty.txt 0
 	ps_columns)
 
 test("csv-ps --help" data/empty.csv ps/help.txt data/empty.txt 2

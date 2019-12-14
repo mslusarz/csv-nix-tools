@@ -29,7 +29,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-test("csv-users | csv-count -c -r | csv-cut -f columns"
+test("csv-users | csv-count -c -R"
 	data/empty.txt users/columns.csv data/empty.txt 0
 	users)
 

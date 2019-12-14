@@ -31,29 +31,28 @@
 
 if (LIBMNL_FOUND)
 
-# count -r + cut to let netstat finish printing data and contribute to code coverage
-test("csv-netstat | csv-count -c -r | csv-cut -f columns" data/empty.txt netstat/count-columns.csv data/empty.txt 0
+test("csv-netstat | csv-count -c -R" data/empty.txt netstat/count-columns.csv data/empty.txt 0
 	netstat_count_columns)
 
-test("csv-netstat -e | csv-count -c -r | csv-cut -f columns" data/empty.txt netstat/e-count-columns.csv data/empty.txt 0
+test("csv-netstat -e | csv-count -c -R" data/empty.txt netstat/e-count-columns.csv data/empty.txt 0
 	netstat_e_count_columns)
 
-test("csv-netstat -t | csv-count -c" data/empty.txt netstat/t-count-columns.csv data/empty.txt 0
+test("csv-netstat -t | csv-count -c -R" data/empty.txt netstat/t-count-columns.csv data/empty.txt 0
 	netstat_t_count_columns)
 
-test("csv-netstat -u | csv-count -c" data/empty.txt netstat/u-count-columns.csv data/empty.txt 0
+test("csv-netstat -u | csv-count -c -R" data/empty.txt netstat/u-count-columns.csv data/empty.txt 0
 	netstat_u_count_columns)
 
-test("csv-netstat -w | csv-count -c" data/empty.txt netstat/w-count-columns.csv data/empty.txt 0
+test("csv-netstat -w | csv-count -c -R" data/empty.txt netstat/w-count-columns.csv data/empty.txt 0
 	netstat_w_count_columns)
 
-test("csv-netstat -x | csv-count -c" data/empty.txt netstat/x-count-columns.csv data/empty.txt 0
+test("csv-netstat -x | csv-count -c -R" data/empty.txt netstat/x-count-columns.csv data/empty.txt 0
 	netstat_x_count_columns)
 
-test("csv-netstat -4 | csv-count -c" data/empty.txt netstat/4-count-columns.csv data/empty.txt 0
+test("csv-netstat -4 | csv-count -c -R" data/empty.txt netstat/4-count-columns.csv data/empty.txt 0
 	netstat_4_count_columns)
 
-test("csv-netstat -6 | csv-count -c" data/empty.txt netstat/6-count-columns.csv data/empty.txt 0
+test("csv-netstat -6 | csv-count -c -R" data/empty.txt netstat/6-count-columns.csv data/empty.txt 0
 	netstat_6_count_columns)
 
 test("csv-netstat -f family,protocol | csv-uniq -f family,protocol | csv-head -n 0" data/empty.txt netstat/f-count-columns.csv data/empty.txt 0
