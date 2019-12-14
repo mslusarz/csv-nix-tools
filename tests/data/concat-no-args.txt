@@ -1,5 +1,0 @@
-Usage: csv-concat [OPTION]... -- new_name = [%name|str]...
-Options:
-  -s, --show
-      --help
-      --version

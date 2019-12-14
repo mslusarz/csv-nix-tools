@@ -45,7 +45,7 @@ set(ENV{XDG_CACHE_HOME} ${TMP_DIR})
 
 execute_process(COMMAND sh -c "${CMD}"
 		WORKING_DIRECTORY "${CWD}"
-		INPUT_FILE ${SRC_DIR}/data/${INPUT}
+		INPUT_FILE ${SRC_DIR}/${INPUT}
 		OUTPUT_FILE ${TMP_DIR}/${NAME}.stdout
 		ERROR_FILE ${TMP_DIR}/${NAME}.stderr
 		RESULT_VARIABLE res)
@@ -67,16 +67,16 @@ endif()
 if (STDOUT)
 	execute_process(COMMAND ${CMAKE_COMMAND} -E compare_files
 				${TMP_DIR}/${NAME}.stdout
-				${SRC_DIR}/data/${STDOUT}
+				${SRC_DIR}/${STDOUT}
 			RESULT_VARIABLE res)
 	if (NOT res EQUAL 0)
 		file(READ ${TMP_DIR}/${NAME}.stdout DATA)
 		message(STATUS "Stdout:\n${DATA}\nEnd of stdout")
 
-		file(READ ${SRC_DIR}/data/${STDOUT} DATA)
+		file(READ ${SRC_DIR}/${STDOUT} DATA)
 		message(STATUS "Expected stdout:\n${DATA}\nEnd of expected stdout")
 
-		execute_process(COMMAND diff -u ${SRC_DIR}/data/${STDOUT} ${TMP_DIR}/${NAME}.stdout)
+		execute_process(COMMAND diff -u ${SRC_DIR}/${STDOUT} ${TMP_DIR}/${NAME}.stdout)
 
 		message(FATAL_ERROR "stdout differ")
 	endif()
@@ -85,16 +85,16 @@ endif()
 if (STDERR)
 	execute_process(COMMAND ${CMAKE_COMMAND} -E compare_files
 				${TMP_DIR}/${NAME}.stderr
-				${SRC_DIR}/data/${STDERR}
+				${SRC_DIR}/${STDERR}
 			RESULT_VARIABLE res)
 	if (NOT res EQUAL 0)
 		file(READ ${TMP_DIR}/${NAME}.stderr DATA)
 		message(STATUS "Stderr:\n${DATA}\nEnd of stderr")
 
-		file(READ ${SRC_DIR}/data/${STDERR} DATA)
+		file(READ ${SRC_DIR}/${STDERR} DATA)
 		message(STATUS "Expected stderr:\n${DATA}\nEnd of expected stderr")
 
-		execute_process(COMMAND diff -u ${SRC_DIR}/data/${STDERR} ${TMP_DIR}/${NAME}.stderr)
+		execute_process(COMMAND diff -u ${SRC_DIR}/${STDERR} ${TMP_DIR}/${NAME}.stderr)
 
 		message(FATAL_ERROR "stderr differ")
 	endif()

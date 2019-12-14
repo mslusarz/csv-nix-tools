@@ -1,7 +1,0 @@
-Usage: csv-cut [OPTION]...
-Options:
-  -f, --fields=name1[,name2...]
-  -r, --reverse
-  -s, --show
-      --help
-      --version
