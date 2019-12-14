@@ -29,8 +29,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-test("csv-users | csv-grep -f name -x -F root | csv-count -c | csv-header -m"
-	data/empty.txt users/columns.txt data/empty.txt 0
+test("csv-users | csv-count -c -r | csv-cut -f columns"
+	data/empty.txt users/columns.csv data/empty.txt 0
 	users)
 
 test("csv-users --help" data/empty.csv users/help.txt data/empty.txt 2

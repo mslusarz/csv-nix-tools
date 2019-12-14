@@ -29,7 +29,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-test("csv-groups | csv-grep -f name -x -F root | csv-count -c | csv-header -m" data/empty.txt groups/count-columns.txt data/empty.txt 0
+test("csv-groups | csv-count -c -r | csv-cut -f columns" data/empty.txt groups/count-columns.csv data/empty.txt 0
 	groups)
 
 test("csv-groups --help" data/empty.csv groups/help.txt data/empty.txt 2

@@ -256,16 +256,16 @@ test("csv-sqlite 'select str1, str2, str1 like \"%12\" as \"str1_like_%12\", str
 #	data/rpn-add-num-base.csv data/rpn-add-convert.csv data/empty.txt 0
 #	sqlite_str_to_int)
 
-test("csv-sqlite -l users 'select * from users' | csv-count -c | csv-header -m"
-	data/one-column-one-row.csv sqlite/users-columns.txt data/empty.txt 0
+test("csv-sqlite -l users 'select * from users' | csv-count -c -r | csv-cut -f columns"
+	data/one-column-one-row.csv sqlite/users-columns.csv data/empty.txt 0
 	sqlite_users_count_columns)
 
-test("csv-sqlite -l groups 'select * from groups' | csv-count -c | csv-header -m"
-	data/one-column-one-row.csv sqlite/groups-columns.txt data/empty.txt 0
+test("csv-sqlite -l groups 'select * from groups' | csv-count -c -r | csv-cut -f columns "
+	data/one-column-one-row.csv sqlite/groups-columns.csv data/empty.txt 0
 	sqlite_groups_count_columns)
 
-test("csv-sqlite -l group_members 'select * from group_members' | csv-count -c | csv-header -m"
-	data/one-column-one-row.csv sqlite/group_members-columns.txt data/empty.txt 0
+test("csv-sqlite -l group_members 'select * from group_members' | csv-count -c -r | csv-cut -f columns"
+	data/one-column-one-row.csv sqlite/group_members-columns.csv data/empty.txt 0
 	sqlite_group_members_count_columns)
 
 test("csv-sqlite --help" data/empty.csv sqlite/help.txt data/empty.txt 2
