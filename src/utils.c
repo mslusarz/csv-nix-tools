@@ -56,12 +56,12 @@ csv_print_line(FILE *out, const char *buf, const size_t *col_offs,
 		const struct col_header *headers, size_t nheaders, bool nl)
 {
 	for (size_t i = 0; i < nheaders - 1; ++i) {
-		fputs(&buf[col_offs[i]], stdout);
-		fputc(',', stdout);
+		fputs(&buf[col_offs[i]], out);
+		fputc(',', out);
 	}
-	fputs(&buf[col_offs[nheaders - 1]], stdout);
+	fputs(&buf[col_offs[nheaders - 1]], out);
 	if (nl)
-		fputc('\n', stdout);
+		fputc('\n', out);
 }
 
 int
