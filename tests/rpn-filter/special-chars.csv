@@ -1,0 +1,13 @@
+id:int,name:string
+1,something.else
+2,something?else
+3,something*else
+4,something+else
+5,something[else
+6,something]else
+7,something(else
+8,something)else
+9,something$else
+10,something^else
+11,something\else
+12,something|else

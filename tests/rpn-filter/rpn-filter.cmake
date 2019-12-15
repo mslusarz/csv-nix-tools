@@ -80,6 +80,44 @@ test("csv-rpn-filter -e \"%name 3 1 substr 'r' ==\"" data/3-columns-3-rows.csv d
 test("csv-rpn-filter -e \"%name '%th%' like\"" data/3-columns-3-rows.csv data/rpn-filter-rows-2-3.csv data/empty.txt 0
 	rpn-filter_like)
 
+
+test("csv-rpn-filter -e \"%name '%ing.%' like\"" rpn-filter/special-chars.csv rpn-filter/special-chars-found1.csv data/empty.txt 0
+	rpn-filter_like_escape_dot)
+
+test("csv-rpn-filter -e \"%name '%ing?%' like\"" rpn-filter/special-chars.csv rpn-filter/special-chars-found2.csv data/empty.txt 0
+	rpn-filter_like_escape_quest)
+
+test("csv-rpn-filter -e \"%name '%ing*%' like\"" rpn-filter/special-chars.csv rpn-filter/special-chars-found3.csv data/empty.txt 0
+	rpn-filter_like_escape_star)
+
+test("csv-rpn-filter -e \"%name '%ing+%' like\"" rpn-filter/special-chars.csv rpn-filter/special-chars-found4.csv data/empty.txt 0
+	rpn-filter_like_escape_plus)
+
+test("csv-rpn-filter -e \"%name '%ing[%' like\"" rpn-filter/special-chars.csv rpn-filter/special-chars-found5.csv data/empty.txt 0
+	rpn-filter_like_escape_sq_open)
+
+test("csv-rpn-filter -e \"%name '%ing]%' like\"" rpn-filter/special-chars.csv rpn-filter/special-chars-found6.csv data/empty.txt 0
+	rpn-filter_like_escape_sq_close)
+
+test("csv-rpn-filter -e \"%name '%ing(%' like\"" rpn-filter/special-chars.csv rpn-filter/special-chars-found7.csv data/empty.txt 0
+	rpn-filter_like_escape_rnd_open)
+
+test("csv-rpn-filter -e \"%name '%ing)%' like\"" rpn-filter/special-chars.csv rpn-filter/special-chars-found8.csv data/empty.txt 0
+	rpn-filter_like_escape_rnd_close)
+
+test("csv-rpn-filter -e \"%name '%ing$%' like\"" rpn-filter/special-chars.csv rpn-filter/special-chars-found9.csv data/empty.txt 0
+	rpn-filter_like_escape_dollar)
+
+test("csv-rpn-filter -e \"%name '%ing^%' like\"" rpn-filter/special-chars.csv rpn-filter/special-chars-found10.csv data/empty.txt 0
+	rpn-filter_like_escape_caret)
+
+test("csv-rpn-filter -e \"%name '%ing\\%' like\"" rpn-filter/special-chars.csv rpn-filter/special-chars-found11.csv data/empty.txt 0
+	rpn-filter_like_escape_backslash)
+
+test("csv-rpn-filter -e \"%name '%ing|%' like\"" rpn-filter/special-chars.csv rpn-filter/special-chars-found12.csv data/empty.txt 0
+	rpn-filter_like_escape_vbar)
+
+
 test("csv-rpn-filter -e \"%name '.suffix' concat 'lorem ipsum.suffix' ==\"" data/3-columns-3-rows.csv data/rpn-filter-row-1.csv data/empty.txt 0
 	rpn-filter_concat)
 
