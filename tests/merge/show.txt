@@ -1,0 +1,4 @@
+_label   label1_name            label1_something
+label1   lorem ipsum            1
+label1   not all that is gold   0
+label1   something else         1

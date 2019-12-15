@@ -1,0 +1,9 @@
+_label:string,label1_name:string,label2_name:string,label2_something:int,label3_name:string,label3_id:int,label3_something:int,label4_name:string
+label1,lorem ipsum,,,,,,
+label2,,lorem ipsum,1,,,,
+label2,,not all that is gold,0,,,,
+label2,,something else,1,,,,
+label3,,,,lorem ipsum,1,1,
+label3,,,,not all that is gold,2,0,
+label3,,,,something else,3,1,
+label4,,,,,,,lorem ipsum

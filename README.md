@@ -42,6 +42,7 @@ Filtering/processing tools:
 - csv-head - outputs the first N rows
 - csv-header - processes data header
 - csv-max - takes a maximum value of numerical or string column(s)
+- csv-merge - merges multiple input streams
 - csv-min - takes a minimum value of numerical or string column(s)
 - csv-replace - performs string substitution on column(s) (similar to sed s/$str/$str/)
 - csv-rpn-add - creates new column from RPN expression

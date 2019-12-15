@@ -1,0 +1,8 @@
+Usage: csv-merge [OPTION]...
+Options:
+  -l, --label label
+  -p, --path path
+  -s, --show
+      --labeled-path path
+      --help
+      --version

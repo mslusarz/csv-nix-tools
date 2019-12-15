@@ -1,0 +1,5 @@
+_label:string,label1_name:string,label2_name:string,label2_something:int
+label1,lorem ipsum,,
+label2,,lorem ipsum,1
+label2,,not all that is gold,0
+label2,,something else,1
