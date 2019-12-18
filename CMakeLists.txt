@@ -228,7 +228,7 @@ if(LIBMNL_FOUND)
 		link_directories(${LIBMNL_LIBRARY_DIRS})
 	endif()
 
-	build_tool(csv-netstat src/netstat.c)
+	build_tool(csv-netstat src/netstat.c src/merge_utils.c)
 	if (LIBMNL_INCLUDE_DIRS)
 		target_include_directories(csv-netstat PRIVATE ${LIBMNL_INCLUDE_DIRS})
 	endif()

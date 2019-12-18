@@ -51,6 +51,7 @@
 
 #include <libmnl/libmnl.h>
 
+#include "merge_utils.h"
 #include "utils.h"
 
 /* protocols */
@@ -99,21 +100,23 @@
 #define REQUIRES_RESOLVING (1ULL << 31)
 
 static const struct option opts[] = {
-	{"extended",	no_argument,		NULL, 'e'},
-	{"fields",	required_argument,	NULL, 'f'},
-	{"resolve",	no_argument,		NULL, 'r'},
-	{"show",	no_argument,		NULL, 's'},
-//	{"sctp",	no_argument,		NULL, 'S'},
-	{"tcp",		no_argument,		NULL, 't'},
-	{"udp",		no_argument,		NULL, 'u'},
-//	{"udplite",	no_argument,		NULL, 'U'},
-	{"raw",		no_argument,		NULL, 'w'},
-	{"version",	no_argument,		NULL, 'V'},
-	{"unix",	no_argument,		NULL, 'x'},
-	{"help",	no_argument,		NULL, 'h'},
-	{"inet4",	no_argument,		NULL, '4'},
-	{"inet6",	no_argument,		NULL, '6'},
-	{NULL,		0,			NULL, 0},
+	{"extended",		no_argument,		NULL, 'e'},
+	{"fields",		required_argument,	NULL, 'f'},
+	{"merge-with-stdin",	no_argument,		NULL, 'M'},
+	{"label",		required_argument,	NULL, 'L'},
+	{"resolve",		no_argument,		NULL, 'r'},
+	{"show",		no_argument,		NULL, 's'},
+//	{"sctp",		no_argument,		NULL, 'S'},
+	{"tcp",			no_argument,		NULL, 't'},
+	{"udp",			no_argument,		NULL, 'u'},
+//	{"udplite",		no_argument,		NULL, 'U'},
+	{"raw",			no_argument,		NULL, 'w'},
+	{"version",		no_argument,		NULL, 'V'},
+	{"unix",		no_argument,		NULL, 'x'},
+	{"help",		no_argument,		NULL, 'h'},
+	{"inet4",		no_argument,		NULL, '4'},
+	{"inet6",		no_argument,		NULL, '6'},
+	{NULL,			0,			NULL, 0},
 };
 
 static void
@@ -123,6 +126,8 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -e, --extended\n");
 	fprintf(out, "  -f, --fields=name1[,name2...]\n");
+	fprintf(out, "  -M, --merge-with-stdin\n");
+	fprintf(out, "  -L, --label label\n");
 	fprintf(out, "  -r, --resolve\n");
 	fprintf(out, "  -s, --show\n");
 //	fprintf(out, "  -S, --sctp\n");
@@ -384,6 +389,8 @@ struct sock_data {
 	struct inet_diag_msg *inet_msg;
 	struct nlattr *inet_attrs[__INET_DIAG_MAX + 1];
 	uint8_t protocol;
+
+	struct csvmu_ctx *ctx;
 };
 
 static int
@@ -401,7 +408,7 @@ inet_data_cb(const struct nlmsghdr *nlh, void *data)
 		exit(2);
 	}
 
-	csvci_print_row(sd, sd->columns, sd->ncolumns);
+	csvmu_print_row(sd->ctx, sd, sd->columns, sd->ncolumns);
 
 	return MNL_CB_OK;
 }
@@ -506,7 +513,7 @@ unix_data_cb(const struct nlmsghdr *nlh, void *data)
 		exit(2);
 	}
 
-	csvci_print_row(sd, sd->columns, sd->ncolumns);
+	csvmu_print_row(sd->ctx, sd, sd->columns, sd->ncolumns);
 
 	return MNL_CB_OK;
 }
@@ -1429,7 +1436,8 @@ print_info(const void *p)
 
 static void
 dump(struct mnl_socket *nl, uint8_t family, uint8_t protocol,
-		struct column_info *columns, size_t ncolumns)
+		struct column_info *columns, size_t ncolumns,
+		struct csvmu_ctx *ctx)
 {
 	char buf[MNL_SOCKET_BUFFER_SIZE];
 	struct nlmsghdr *nlh;
@@ -1441,6 +1449,8 @@ dump(struct mnl_socket *nl, uint8_t family, uint8_t protocol,
 	sd.columns = columns;
 	sd.ncolumns = ncolumns;
 	sd.protocol = protocol;
+
+	sd.ctx = ctx;
 
 	nlh = mnl_nlmsg_put_header(buf);
 	nlh->nlmsg_type	= SOCK_DIAG_BY_FAMILY;
@@ -1531,6 +1541,8 @@ main(int argc, char *argv[])
 	char *cols = NULL;
 	bool show = false;
 	unsigned protocols = 0;
+	bool merge_with_stdin = false;
+	char *label = NULL;
 
 	struct column_info columns[] = {
 		{ true,  0, "family",          TYPE_STRING, print_family,         ALL },
@@ -1610,7 +1622,7 @@ main(int argc, char *argv[])
 
 	size_t ncolumns = ARRAY_SIZE(columns);
 
-	while ((opt = getopt_long(argc, argv, "ef:rSstUuwx46", opts,
+	while ((opt = getopt_long(argc, argv, "ef:L:MrSstUuwx46", opts,
 			NULL)) != -1) {
 		switch (opt) {
 			case 'e':
@@ -1620,6 +1632,12 @@ main(int argc, char *argv[])
 				break;
 			case 'f':
 				cols = xstrdup_nofail(optarg);
+				break;
+			case 'L':
+				label = strdup(optarg);
+				break;
+			case 'M':
+				merge_with_stdin = true;
 				break;
 			case 'r':
 				for (size_t i = 0; i < ncolumns; ++i)
@@ -1687,7 +1705,11 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show();
 
-	csvci_print_header(columns, ncolumns);
+	struct csvmu_ctx ctx;
+	ctx.label = label;
+	ctx.merge_with_stdin = merge_with_stdin;
+
+	csvmu_print_header(&ctx, "socket", columns, ncolumns);
 
 	struct mnl_socket *nl;
 
@@ -1731,10 +1753,13 @@ main(int argc, char *argv[])
 	};
 
 	for (size_t i = 0; i < ARRAY_SIZE(protos); ++i) {
-		if (protocols & protos[i].flags)
+		if (protocols & protos[i].flags) {
 			dump(nl, protos[i].family, protos[i].protocol, columns,
-					ncolumns);
+					ncolumns, &ctx);
+		}
 	}
+
+	free(ctx.label);
 
 	mnl_socket_close(nl);
 
