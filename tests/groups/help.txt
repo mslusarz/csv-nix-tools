@@ -1,6 +1,8 @@
 Usage: csv-groups [OPTION]...
 Options:
   -f, --fields=name1[,name2...]
+  -M, --merge-with-stdin
+  -L, --label label
   -s, --show
       --help
       --version
