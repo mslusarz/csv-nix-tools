@@ -58,58 +58,6 @@ usage(FILE *out)
 }
 
 static void
-merge_groups_into_users(void)
-{
-	for (size_t i = 0; i < ngroups; ++i) {
-		struct csv_group *g = &groups[i];
-		char **members = g->members;
-
-		for (size_t j = 0; j < g->nmembers; ++j) {
-			struct csv_user *u = find_user_by_name(members[j]);
-			if (u) {
-				u->groups = xrealloc_nofail(u->groups,
-						u->ngroups + 1,
-						sizeof(u->groups[0]));
-
-				u->groups[u->ngroups++] = g;
-			} else {
-				fprintf(stderr,
-					"warning: group '%s' contains unknown user '%s'\n",
-					g->name, *members);
-			}
-		}
-	}
-
-	for (size_t i = 0; i < nusers; ++i) {
-		struct csv_user *u = &users[i];
-
-		struct csv_group *g = find_group_by_gid(u->gid);
-		if (!g) {
-			fprintf(stderr,
-				"warning: user '%s' belongs to unknown group %d\n",
-				u->name, u->gid);
-			continue;
-		}
-
-		bool found = false;
-		for (size_t j = 0; j < u->ngroups; ++j) {
-			if (u->groups[j] == g) {
-				found = true;
-				break;
-			}
-		}
-
-		if (!found) {
-			u->groups = xrealloc_nofail(u->groups,
-					u->ngroups + 1,
-					sizeof(u->groups[0]));
-
-			u->groups[u->ngroups++] = g;
-		}
-	}
-}
-
-static void
 print_name(const void *p)
 {
 	const struct csv_user *u = p;
@@ -158,42 +106,6 @@ print_shell(const void *p)
 	csv_print_quoted(u->shell, strlen(u->shell));
 }
 
-static void
-print_group_ids(const void *p)
-{
-	const struct csv_user *u = p;
-	if (u->ngroups) {
-		if (u->ngroups > 1)
-			putc('"', stdout);
-
-		for (size_t j = 0; j < u->ngroups - 1; ++j)
-			printf("%u,", u->groups[j]->gid);
-
-		printf("%u", u->groups[u->ngroups - 1]->gid);
-
-		if (u->ngroups > 1)
-			putc('"', stdout);
-	}
-}
-
-static void
-print_group_names(const void *p)
-{
-	const struct csv_user *u = p;
-	if (u->ngroups) {
-		if (u->ngroups > 1)
-			putc('"', stdout);
-
-		for (size_t j = 0; j < u->ngroups - 1; ++j)
-			printf("%s,", u->groups[j]->name);
-
-		printf("%s", u->groups[u->ngroups - 1]->name);
-
-		if (u->ngroups > 1)
-			putc('"', stdout);
-	}
-}
-
 int
 main(int argc, char *argv[])
 {
@@ -209,8 +121,6 @@ main(int argc, char *argv[])
 			{ true, 0, "gecos",       TYPE_STRING, print_gecos },
 			{ true, 0, "dir",         TYPE_STRING, print_dir },
 			{ true, 0, "shell",       TYPE_STRING, print_shell },
-			{ true, 0, "group_ids",   TYPE_STRING, print_group_ids },
-			{ true, 0, "group_names", TYPE_STRING, print_group_names },
 	};
 	size_t ncolumns = ARRAY_SIZE(columns);
 
@@ -246,20 +156,11 @@ main(int argc, char *argv[])
 	csvci_print_header(columns, ncolumns);
 
 	load_users();
-	for (size_t i = 0; i < ncolumns; ++i) {
-		if (strcmp(columns[i].name, "group_ids") != 0 &&
-				strcmp(columns[i].name, "group_names") != 0)
-			continue;
-
-		load_groups();
-		merge_groups_into_users();
-	}
 
 	for (size_t i = 0; i < nusers; ++i)
 		csvci_print_row(&users[i], columns, ncolumns);
 
 	free_users();
-	free_groups();
 
 	return 0;
 }
