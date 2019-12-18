@@ -1,6 +1,8 @@
 Usage: csv-ps [OPTION]...
 Options:
   -f, --fields=name1[,name2...]
+  -M, --merge-with-stdin
+  -L, --label label
   -p, --pid=pid1[,pid2...]
   -s, --show
       --help

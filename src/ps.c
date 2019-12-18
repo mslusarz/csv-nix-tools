@@ -60,16 +60,19 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#include "merge_utils.h"
 #include "usr-grp-query.h"
 #include "utils.h"
 
 static const struct option opts[] = {
-	{"fields",	required_argument,	NULL, 'f'},
-	{"pid",		required_argument,	NULL, 'p'},
-	{"show",	no_argument,		NULL, 's'},
-	{"version",	no_argument,		NULL, 'V'},
-	{"help",	no_argument,		NULL, 'h'},
-	{NULL,		0,			NULL, 0},
+	{"fields",		required_argument,	NULL, 'f'},
+	{"merge-with-stdin",	no_argument,		NULL, 'M'},
+	{"label",		required_argument,	NULL, 'L'},
+	{"pid",			required_argument,	NULL, 'p'},
+	{"show",		no_argument,		NULL, 's'},
+	{"version",		no_argument,		NULL, 'V'},
+	{"help",		no_argument,		NULL, 'h'},
+	{NULL,			0,			NULL, 0},
 };
 
 static size_t PageSize;
@@ -80,6 +83,8 @@ usage(FILE *out)
 	fprintf(out, "Usage: csv-ps [OPTION]...\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -f, --fields=name1[,name2...]\n");
+	fprintf(out, "  -M, --merge-with-stdin\n");
+	fprintf(out, "  -L, --label label\n");
 	fprintf(out, "  -p, --pid=pid1[,pid2...]\n");
 	fprintf(out, "  -s, --show\n");
 	fprintf(out, "      --help\n");
@@ -1266,6 +1271,8 @@ main(int argc, char *argv[])
 	bool show = false;
 	pid_t *pids = NULL;
 	size_t npids = 0;
+	bool merge_with_stdin = false;
+	char *label = NULL;
 
 	estimate_boottime_once();
 
@@ -1424,10 +1431,16 @@ main(int argc, char *argv[])
 
 	size_t ncolumns = ARRAY_SIZE(columns);
 
-	while ((opt = getopt_long(argc, argv, "f:p:s", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "f:L:Mp:s", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'f':
 				cols = xstrdup_nofail(optarg);
+				break;
+			case 'L':
+				label = strdup(optarg);
+				break;
+			case 'M':
+				merge_with_stdin = true;
 				break;
 			case 'p': {
 				char *pid = strtok(optarg, ",");
@@ -1478,7 +1491,11 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show();
 
-	csvci_print_header(columns, ncolumns);
+	struct csvmu_ctx ctx;
+	ctx.label = label;
+	ctx.merge_with_stdin = merge_with_stdin;
+
+	csvmu_print_header(&ctx, "proc", columns, ncolumns);
 
 	if (sources & USR_GRP)
 		usr_grp_query_init();
@@ -1537,15 +1554,15 @@ main(int argc, char *argv[])
 			}
 		}
 
-		csvci_print_row(&pd, columns, ncolumns);
+		csvmu_print_row(&ctx, &pd, columns, ncolumns);
 
 		freeproc(proc);
 	}
 
 	closeproc(pt);
 
-	if (pids)
-		free(pids);
+	free(ctx.label);
+	free(pids);
 
 	if (sources & USR_GRP)
 		usr_grp_query_fini();

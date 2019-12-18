@@ -211,7 +211,7 @@ if(LIBPROCPS_FOUND)
 		link_directories(${LIBPROCPS_LIBRARY_DIRS})
 	endif()
 
-	build_tool(csv-ps src/ps.c src/usr-grp-query.c)
+	build_tool(csv-ps src/ps.c src/usr-grp-query.c src/merge_utils.c)
 	if (LIBPROCPS_INCLUDE_DIRS)
 		target_include_directories(csv-ps PRIVATE ${LIBPROCPS_INCLUDE_DIRS})
 	endif()
