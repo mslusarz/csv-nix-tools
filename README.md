@@ -26,6 +26,7 @@ sudo make install
 
 Source tools:
 - csv-groups - lists system groups
+- csv-group-members - lists system groups and users that belong to them
 - csv-ls - lists files
 - csv-netstat - lists network connections
 - csv-ps - lists processes (WIP)
