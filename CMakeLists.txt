@@ -144,7 +144,7 @@ build_tool(csv-sum		src/sum.c)
 build_tool(csv-tac		src/tac.c)
 build_tool(csv-tail		src/tail.c)
 build_tool(csv-uniq		src/uniq.c)
-build_tool(csv-users		src/users.c src/usr-grp.c)
+build_tool(csv-users		src/users.c src/usr-grp.c src/merge_utils.c)
 
 target_link_libraries(csv-rpn-add	csvrpn)
 target_link_libraries(csv-rpn-filter	csvrpn)

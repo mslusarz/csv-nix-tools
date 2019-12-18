@@ -35,14 +35,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "merge_utils.h"
 #include "usr-grp.h"
 #include "utils.h"
 
 static const struct option opts[] = {
-	{"fields",	required_argument,	NULL, 'f'},
-	{"show",	no_argument,		NULL, 's'},
-	{"version",	no_argument,		NULL, 'V'},
-	{"help",	no_argument,		NULL, 'h'},
+	{"fields",		required_argument,	NULL, 'f'},
+	{"merge-with-stdin",	no_argument,		NULL, 'M'},
+	{"label",		required_argument,	NULL, 'L'},
+	{"show",		no_argument,		NULL, 's'},
+	{"version",		no_argument,		NULL, 'V'},
+	{"help",		no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
 };
 
@@ -52,6 +55,8 @@ usage(FILE *out)
 	fprintf(out, "Usage: csv-users [OPTION]...\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -f, --fields=name1[,name2...]\n");
+	fprintf(out, "  -M, --merge-with-stdin\n");
+	fprintf(out, "  -L, --label label\n");
 	fprintf(out, "  -s, --show\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
@@ -112,6 +117,8 @@ main(int argc, char *argv[])
 	int opt;
 	char *cols = NULL;
 	bool show = false;
+	bool merge_with_stdin = false;
+	char *label = NULL;
 
 	struct column_info columns[] = {
 			{ true, 0, "name",        TYPE_STRING, print_name },
@@ -124,10 +131,16 @@ main(int argc, char *argv[])
 	};
 	size_t ncolumns = ARRAY_SIZE(columns);
 
-	while ((opt = getopt_long(argc, argv, "f:s", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "f:L:Ms", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'f':
 				cols = xstrdup_nofail(optarg);
+				break;
+			case 'L':
+				label = strdup(optarg);
+				break;
+			case 'M':
+				merge_with_stdin = true;
 				break;
 			case 's':
 				show = true;
@@ -153,13 +166,18 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show();
 
-	csvci_print_header(columns, ncolumns);
+	struct csvmu_ctx ctx;
+	ctx.label = label;
+	ctx.merge_with_stdin = merge_with_stdin;
+
+	csvmu_print_header(&ctx, "user", columns, ncolumns);
 
 	load_users();
 
 	for (size_t i = 0; i < nusers; ++i)
-		csvci_print_row(&users[i], columns, ncolumns);
+		csvmu_print_row(&ctx, &users[i], columns, ncolumns);
 
+	free(ctx.label);
 	free_users();
 
 	return 0;
