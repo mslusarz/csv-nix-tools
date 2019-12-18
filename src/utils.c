@@ -640,15 +640,22 @@ static const char *output_types_str[] = {
 };
 
 void
-csvci_print_header(struct column_info *columns, size_t ncolumns)
+csvci_print_header_with_prefix(struct column_info *columns,
+		size_t ncolumns, const char *prefix)
 {
 	for (size_t i = 0; i < ncolumns - 1; ++i) {
-		printf("%s:%s,", columns[i].name,
+		printf("%s%s:%s,", prefix, columns[i].name,
 				output_types_str[columns[i].type]);
 	}
 
-	printf("%s:%s\n", columns[ncolumns - 1].name,
+	printf("%s%s:%s\n", prefix, columns[ncolumns - 1].name,
 			output_types_str[columns[ncolumns - 1].type]);
+}
+
+void
+csvci_print_header(struct column_info *columns, size_t ncolumns)
+{
+	csvci_print_header_with_prefix(columns, ncolumns, "");
 }
 
 void
