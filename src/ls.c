@@ -51,6 +51,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "merge_utils.h"
 #include "usr-grp-query.h"
 #include "utils.h"
 
@@ -397,7 +398,8 @@ alphasort_caseinsensitive(const struct dirent **a, const struct dirent **b)
 
 static int
 list(const char *dirpath, int dirfd, int recursive, int all, int sort,
-		const struct column_info *columns, size_t ncolumns)
+		const struct column_info *columns, size_t ncolumns,
+		struct csvmu_ctx *ctx)
 {
 	int ret = 0;
 	struct dirent **namelist;
@@ -494,7 +496,7 @@ restart_readlink:
 				dirpath,
 				symlink
 		};
-		csvci_print_row(&info, columns, ncolumns);
+		csvmu_print_row(ctx, &info, columns, ncolumns);
 
 		if (S_ISLNK(statbuf.st_mode))
 			free(symlink);
@@ -523,7 +525,8 @@ restart_readlink:
 
 		strcpy(path + pos, dirs[j]);
 
-		ret |= list(path, fd, recursive, all, sort, columns, ncolumns);
+		ret |= list(path, fd, recursive, all, sort, columns, ncolumns,
+				ctx);
 
 		if (close(fd)) {
 			perror("close");
@@ -544,14 +547,16 @@ dirs_alloc_fail:
 }
 
 static const struct option opts[] = {
-	{"all",		no_argument, 		NULL, 'a'},
-	{"directory",	no_argument,		NULL, 'd'},
-	{"fields",	required_argument,	NULL, 'f'},
-	{"recursive",	no_argument,		NULL, 'R'},
-	{"show",	no_argument,		NULL, 's'},
-	{"version",	no_argument,		NULL, 'V'},
-	{"help",	no_argument,		NULL, 'h'},
-	{NULL,		0,			NULL, 0},
+	{"all",			no_argument, 		NULL, 'a'},
+	{"directory",		no_argument,		NULL, 'd'},
+	{"fields",		required_argument,	NULL, 'f'},
+	{"merge-with-stdin",	no_argument,		NULL, 'M'},
+	{"label",		required_argument,	NULL, 'L'},
+	{"recursive",		no_argument,		NULL, 'R'},
+	{"show",		no_argument,		NULL, 's'},
+	{"version",		no_argument,		NULL, 'V'},
+	{"help",		no_argument,		NULL, 'h'},
+	{NULL,			0,			NULL, 0},
 };
 
 static void
@@ -562,6 +567,8 @@ usage(FILE *out)
 	fprintf(out, "  -a, --all\n");
 	fprintf(out, "  -d, --directory\n");
 	fprintf(out, "  -f, --fields=name1[,name2...]\n");
+	fprintf(out, "  -M, --merge-with-stdin\n");
+	fprintf(out, "  -L, --label label\n");
 	fprintf(out, "  -l\n");
 	fprintf(out, "  -R, --recursive\n");
 	fprintf(out, "  -s, --show\n");
@@ -577,6 +584,8 @@ main(int argc, char *argv[])
 	int dir = 0, recursive = 0, all = 0, sort = 1;
 	char *cols = NULL;
 	bool show = false;
+	bool merge_with_stdin = false;
+	char *label = NULL;
 
 	struct column_info columns[] = {
 		{ true, 0, "size",           TYPE_INT,    print_size },
@@ -624,7 +633,7 @@ main(int argc, char *argv[])
 
 	size_t ncolumns = ARRAY_SIZE(columns);
 
-	while ((opt = getopt_long(argc, argv, "adf:lRsU", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "adf:lL:MRsU", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'a':
 				all = 1;
@@ -638,6 +647,12 @@ main(int argc, char *argv[])
 			case 'l':
 				for (size_t i = 0; i < ncolumns; ++i)
 					columns[i].vis = true;
+				break;
+			case 'L':
+				label = strdup(optarg);
+				break;
+			case 'M':
+				merge_with_stdin = true;
 				break;
 			case 'R':
 				recursive = 1;
@@ -680,7 +695,11 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show();
 
-	csvci_print_header(columns, ncolumns);
+	struct csvmu_ctx ctx;
+	ctx.label = label;
+	ctx.merge_with_stdin = merge_with_stdin;
+
+	csvmu_print_header(&ctx, "file", columns, ncolumns);
 
 	for (int i = optind; i < argc; ++i) {
 		int fd = openat(AT_FDCWD, argv[i], O_PATH | O_NOFOLLOW);
@@ -704,7 +723,7 @@ main(int argc, char *argv[])
 
 		if (S_ISDIR(buf.st_mode) && !dir) {
 			ret |= list(argv[i], fd, recursive, all, sort, columns,
-					ncolumns);
+					ncolumns, &ctx);
 		} else {
 			char *symlink = NULL;
 			if (S_ISLNK(buf.st_mode)) do {
@@ -745,7 +764,8 @@ restart_readlink:
 					NULL,
 					symlink
 			};
-			csvci_print_row(&info, columns, ncolumns);
+
+			csvmu_print_row(&ctx, &info, columns, ncolumns);
 		}
 
 		if (close(fd)) {
@@ -756,6 +776,7 @@ restart_readlink:
 	}
 
 	usr_grp_query_fini();
+	free(ctx.label);
 
 	if (ret & 2)
 		return 2;

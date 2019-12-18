@@ -3,6 +3,8 @@ Options:
   -a, --all
   -d, --directory
   -f, --fields=name1[,name2...]
+  -M, --merge-with-stdin
+  -L, --label label
   -l
   -R, --recursive
   -s, --show
