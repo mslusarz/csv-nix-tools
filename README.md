@@ -83,7 +83,7 @@ size:int,type:int,mode:int,owner_id:int,group_id:int,nlink:int,mtime_sec:int,mti
 all Makefiles in current directory and below
 
 ```
-$ csv-ls -R . | csv-grep -f name -x -F Makefile | csv-cut -f size,parent,name
+$ csv-ls -f size,parent,name -R . | csv-grep -f name -x -F Makefile
 size:int,parent:string,name:string
 18746,./build,Makefile
 ```
@@ -91,7 +91,7 @@ size:int,parent:string,name:string
 files and their sizes sorted by size and name, in descending order
 
 ```
-$ csv-ls | csv-sort -r -f size,name | csv-cut -f size,name
+$ csv-ls -f size,name | csv-sort -r -f size,name
 size:int,name:string
 14660,ls.c
 7238,sort.c
@@ -144,13 +144,13 @@ sum(size):int
 4 biggest files in the current directory
 
 ```
-$ csv-ls . | csv-sort -r -f size | csv-head -n 4 | csv-cut -f size,name
+$ csv-ls -f size,name . | csv-sort -r -f size | csv-head -n 4
 size:int,name:string
 14660,ls.c
 7238,sort.c
 6297,parse.c
 6189,grep.c
-$ csv-ls . | csv-sort -f size | csv-tail -n 4 | csv-cut -f size,name
+$ csv-ls -f size,name . | csv-sort -f size | csv-tail -n 4
 ...
 ```
 
@@ -182,7 +182,7 @@ $ csv-ls . | csv-count --rows | csv-header --remove
 list of files formatted in human-readable format (similar to ls -l) with disabled pager
 
 ```
-$ csv-ls -l | csv-cut -f mode,nlink,owner_name,group_name,size,mtime,name | \
+$ csv-ls -l -f mode,nlink,owner_name,group_name,size,mtime,name | \
 csv-show -s 1 --ui none --no-header
 0644 1  someuser    somegroup    1234     2019-04-23 20:17:58.331813826 file1
 0644 1  someuser    somegroup    30381380 2019-04-23 20:18:25.539676175 file2
@@ -192,7 +192,7 @@ csv-show -s 1 --ui none --no-header
 list of files whose 2nd character is 'o'
 
 ```
-$ csv-ls | csv-grep -f name -e '^.o' | csv-cut -f name | csv-header --remove
+$ csv-ls -f name | csv-grep -f name -e '^.o' | csv-header --remove
 concat.c
 sort.c
 ```
@@ -221,7 +221,7 @@ $ csv-ls -R -f full_path .
 sum of file sizes and real allocated blocks in the current directory
 
 ```
-$ csv-ls | csv-cut -f size,blocks | csv-rpn-add -f space_used -e "%blocks 512 *" | \
+$ csv-ls -f size,blocks | csv-rpn-add -f space_used -e "%blocks 512 *" | \
 csv-sum -f size,blocks,space_used
 sum(size):int,sum(blocks):int,sum(space_used):int
 109679,288,147456
