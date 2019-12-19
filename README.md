@@ -311,38 +311,44 @@ $ csv-ls -R -f full_path . | csv-rpn-add -f new -e "%full_path -1 1 substr 'c' =
 ```
 
 # TODO (high level)
+- more tests
+- more data collection tools (find, df, ifconfig/ip, lsattr, lsusb, readlink, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, w/who?, etc)
 - more processing tools (tr, rev, drop, paste?, etc)
-- more data collection tools (find, df, ifconfig/ip?, lsattr, lsusb, readlink, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, w/who?, etc)
-- more rpn operators/functions (split, rev, base64enc/dec, timestamp conversion, now, regex, sed, tr)
+- more rpn operators/functions (split, rev, base64enc/dec, timestamp conversion, now, regex, sed/replace, tr)
 - exporting tools (to-xml, to-json, to-sql)
 - importing tools (from-xml, from-json)
-- export as much as possible as a library(ies)
-- moar tests, fuzzing, Valgrind
-- code coverage (coveralls?)
-- Coverity
+- test regularly with Valgrind
 - documentation
 - i18n
+- export as much as possible as a library(ies)
+- Coverity
+- fuzzing
 
 # TODO (low level)
+- sqlite, sql, exec: add support for labeled streams
+- sqlite: drop support for -l option once the above is implemented
+- treat type-less columns as string columns
+- header: implement add, add-types, change-type, guess-type, remove-types, rename
 - ps: lots of work, detailed in ps.c
-- sql/sqlite: load /proc/mounts, /sys/devices, ps, netstat or any other tool output (ls)
-- rpn/sql: binary number parsing
 - show: ability to lock columns (make them always visible)
-- tool for header ops (add/remove/change/detect types)
+- show: implement "search" and "help" in the ncurses backend
+- rpn/sql: make naming of functions consistent (if->case?, strlen->length, toint->cast)
+- rpn: cache compiled regex
+- netstat: support more protocols
+- netstat: translate interface number to interface name
+- netstat: figure out how to print inet\_diag\_info
+- rpn/sql: binary number parsing
 - switch to deal with new lines in shell-compatible way (see what coreutils' ls does)
-- make naming of rpn/sql functions consistent (if->case?, strlen->length, toint->cast)
 - write down data format spec
-- strict column names verification
+- strict column name verification
 
 ## Random ideas
 - export data as bash/python/etc script?
 - float support?
 - importing from other tools (lspci -mm?, strace?, lsof -F, ss, dpkg, rpm)?
-- tool for encoding strings in safe for transport way (base64? just hex?)
 - loops and temporary variables in rpn?
 - built-in pipes? (csv "ls | grep -f size -F 0 | cut -f name")
 - shell?
 - what about unicode?
 - one multicommand binary? (csv ls, csv grep, ...)
 - csv-show: column separators? header separator? number formatter? (see what csvlook from csvkit does)
-- invert naming? (ls-csv, grep-csv, etc)
