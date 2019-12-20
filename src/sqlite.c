@@ -41,7 +41,6 @@
 #include "parse.h"
 #include "utils.h"
 #include "usr-grp.h"
-#include "sqlite.h"
 
 static const struct option opts[] = {
 	{"show",	no_argument,		NULL, 's'},
@@ -57,7 +56,6 @@ usage(FILE *out)
 	fprintf(out, "Usage: csv-sqlite [OPTION] sql-query\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -i path\n");
-	fprintf(out, "  -l table (users / groups / group_members)\n");
 	fprintf(out, "  -L, --use-labels\n");
 	fprintf(out, "  -s, --show\n");
 	fprintf(out, "      --help\n");
@@ -483,13 +481,8 @@ main(int argc, char *argv[])
 	bool labels = false;
 	struct input *inputs = NULL;
 	size_t ninputs = 0;
-	struct {
-		bool users;
-		bool groups;
-		bool group_members;
-	} tables = { false, false, false };
 
-	while ((opt = getopt_long(argc, argv, "i:Ll:sv", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "i:Lsv", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'i':
 				inputs = xrealloc_nofail(inputs,
@@ -497,23 +490,6 @@ main(int argc, char *argv[])
 
 				inputs[ninputs - 1].path =
 						xstrdup_nofail(optarg);
-				break;
-			case 'l':
-				if (strcmp(optarg, "users") == 0) {
-					tables.users = true;
-				} else if (strcmp(optarg, "groups") == 0) {
-					tables.groups = true;
-				} else if (strcmp(optarg, "group_members") == 0) {
-					tables.group_members = true;
-					/* required to fill missing entries for
-					 * user's default group */
-					tables.users = true;
-					tables.groups = true;
-				} else {
-					fprintf(stderr, "unknown table '%s'\n",
-							optarg);
-					exit(2);
-				}
 				break;
 			case 'L':
 				labels = true;
@@ -544,20 +520,6 @@ main(int argc, char *argv[])
 		fprintf(stderr, "sqlite3_open: %s\n", sqlite3_errmsg(db));
 		exit(2);
 	}
-
-	if (tables.users) {
-		load_users();
-		load_users_into_db(db);
-	}
-
-	if (tables.group_members || tables.groups)
-		load_groups();
-
-	if (tables.groups)
-		load_groups_into_db(db);
-
-	if (tables.group_members)
-		load_group_members_into_db(db);
 
 	if (ninputs == 0) {
 		inputs = xcalloc_nofail(1, sizeof(inputs[0]));
@@ -596,8 +558,8 @@ main(int argc, char *argv[])
 
 	sqlite3_stmt *select;
 	if (sqlite3_prepare_v2(db, argv[optind], -1, &select, NULL) != SQLITE_OK) {
-		fprintf(stderr, "sqlite3_prepare_v2(select): %s\n",
-				sqlite3_errmsg(db));
+		fprintf(stderr, "sqlite3_prepare_v2(select='%s'): %s\n",
+				argv[optind], sqlite3_errmsg(db));
 		exit(2);
 	}
 

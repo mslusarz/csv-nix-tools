@@ -175,7 +175,7 @@ if(SQLITE3_FOUND)
 		link_directories(${SQLITE3_LIBRARY_DIRS})
 	endif()
 
-	build_tool(csv-sqlite src/sqlite.c src/usr-grp.c src/sqlite-usr-grp.c)
+	build_tool(csv-sqlite src/sqlite.c)
 
 	if (SQLITE3_INCLUDE_DIRS)
 		target_include_directories(csv-sqlite ${SQLITE3_INCLUDE_DIRS})
