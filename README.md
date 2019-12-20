@@ -310,6 +310,12 @@ or 400x faster (3.1x faster than csv-replace):
 $ csv-ls -R -f full_path . | csv-rpn-add -f new -e "%full_path -1 1 substr 'c' == %full_path 1 %full_path strlen 1 - substr 'o' concat %full_path if"
 ```
 
+list all system users and the name of the default group they belong to:
+
+```
+csv-users -L user | csv-groups -M -L group | csv-sqlite -L "select user.name as user_name, 'group'.name as group_name from user, 'group' where user.gid = 'group'.gid"
+```
+
 # TODO (high level)
 - more tests
 - more data collection tools (find, df, ifconfig/ip, lsattr, lsusb, readlink, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, w/who?, etc)
