@@ -325,7 +325,7 @@ $ csv-ls -R -f full_path . | csv-rpn-add -f new -e "%full_path -1 1 substr 'c' =
 - fuzzing
 
 # TODO (low level)
-- sqlite, sql, exec: add support for labeled streams
+- sql, exec: add support for labeled streams
 - sqlite: drop support for -l option once the above is implemented
 - treat type-less columns as string columns
 - header: implement add, add-types, change-type, guess-type, remove-types, rename

@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <assert.h>
 #include <getopt.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -44,6 +45,7 @@
 
 static const struct option opts[] = {
 	{"show",	no_argument,		NULL, 's'},
+	{"use-labels",	no_argument,		NULL, 'L'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -56,6 +58,7 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -i path\n");
 	fprintf(out, "  -l table (users / groups / group_members)\n");
+	fprintf(out, "  -L, --use-labels\n");
 	fprintf(out, "  -s, --show\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
@@ -64,13 +67,31 @@ usage(FILE *out)
 struct input {
 	char *path;
 	struct csv_ctx *csv_ctx;
-	const struct col_header *headers;
-	size_t nheaders;
+
+	struct table {
+		char *name;
+
+		struct col_header *headers;
+		size_t nheaders;
+
+		char *create;
+		char *insert;
+	} *tables;
+
+	size_t ntables;
 };
 
 struct cb_params {
 	sqlite3 *db;
-	sqlite3_stmt *insert;
+	bool labels;
+	size_t label_column;
+
+	struct table_insert {
+		char *name;
+		sqlite3_stmt *insert;
+	} *inserts;
+
+	size_t ntables;
 };
 
 static int
@@ -80,41 +101,81 @@ next_row(const char *buf, const size_t *col_offs,
 {
 	struct cb_params *params = arg;
 
+	struct table_insert *ins = NULL;
+
+	const char *label = "";
+	if (params->labels) {
+		assert(params->label_column != SIZE_MAX);
+		label = &buf[col_offs[params->label_column]];
+		if (label[0] == '"') {
+			fprintf(stderr,
+				"labels with special characters are not supported\n");
+			exit(2);
+		}
+
+		for (size_t i = 0; i < params->ntables; ++i) {
+			if (strcmp(params->inserts[i].name, label) == 0) {
+				ins = &params->inserts[i];
+				break;
+			}
+		}
+
+		if (!ins) {
+			fprintf(stderr,
+				"can't find prepared query for label '%s'\n",
+				label);
+			exit(2);
+		}
+	} else {
+		assert(params->ntables == 1);
+		ins = &params->inserts[0];
+	}
+
+	size_t label_len = strlen(label);
+	size_t idx = 0;
 	for (size_t i = 0; i < nheaders; ++i) {
+		if (params->labels) {
+			if (strncmp(headers[i].name, label, label_len) != 0 ||
+				headers[i].name[label_len] != LABEL_SEPARATOR)
+				continue;
+		}
+
 		int ret;
 		if (strcmp(headers[i].type, "int") == 0) {
 			long long val;
 			if (strtoll_safe(&buf[col_offs[i]], &val, 0) < 0)
 				exit(2);
-			ret = sqlite3_bind_int64(params->insert, i + 1, val);
+			ret = sqlite3_bind_int64(ins->insert, idx + 1, val);
 		} else {
 			const char *str = &buf[col_offs[i]];
 			if (str[0] == '"') {
 				char *unquoted = csv_unquot(str);
-				ret = sqlite3_bind_text(params->insert, i + 1,
+				ret = sqlite3_bind_text(ins->insert, idx + 1,
 						unquoted, -1, SQLITE_TRANSIENT);
 				free(unquoted);
 			} else {
-				ret = sqlite3_bind_text(params->insert, i + 1,
+				ret = sqlite3_bind_text(ins->insert, idx + 1,
 						str, -1, SQLITE_STATIC);
 			}
 		}
 
 		if (ret != SQLITE_OK) {
 			fprintf(stderr, "sqlite3_bind_*: %s, %lu %s %s\n",
-					sqlite3_errmsg(params->db), i,
+					sqlite3_errmsg(params->db), idx,
 					headers[i].name, headers[i].type);
 			exit(2);
 		}
+
+		idx++;
 	}
 
-	if (sqlite3_step(params->insert) != SQLITE_DONE) {
+	if (sqlite3_step(ins->insert) != SQLITE_DONE) {
 		fprintf(stderr, "sqlite3_step: %s\n",
 				sqlite3_errmsg(params->db));
 		exit(2);
 	}
 
-	if (sqlite3_reset(params->insert) != SQLITE_OK) {
+	if (sqlite3_reset(ins->insert) != SQLITE_OK) {
 		fprintf(stderr, "sqlite3_reset: %s\n",
 				sqlite3_errmsg(params->db));
 		exit(2);
@@ -136,8 +197,9 @@ static int
 build_queries(const struct col_header *headers, size_t nheaders,
 		char **pcreate, char **pins, const char *table_name)
 {
-	size_t create_len = strlen("create table ();") + strlen(table_name);
-	size_t insert_len = strlen("insert into () values();") + strlen(table_name);
+	size_t create_len = strlen("create table ''();") + strlen(table_name);
+	size_t insert_len = strlen("insert into ''() values();") +
+			strlen(table_name);
 
 	for (size_t i = 0; i < nheaders; ++i) {
 		create_len += strlen(headers[i].name) + strlen(" '") +
@@ -160,8 +222,8 @@ build_queries(const struct col_header *headers, size_t nheaders,
 		return -1;
 	}
 
-	int cr_written = sprintf(create, "create table %s(", table_name);
-	int ins_written = sprintf(insert, "insert into %s(", table_name);
+	int cr_written = sprintf(create, "create table '%s'(", table_name);
+	int ins_written = sprintf(insert, "insert into '%s'(", table_name);
 	for (size_t i = 0; i < nheaders - 1; ++i) {
 		cr_written += sprintf(&create[cr_written], "'%s' %s, ",
 				headers[i].name, type(headers[i].type));
@@ -183,14 +245,16 @@ build_queries(const struct col_header *headers, size_t nheaders,
 	ins_written += sprintf(&insert[ins_written], "?);");
 
 	if (cr_written != create_len) {
-		fprintf(stderr, "miscalculated needed buffer size 1 %d != %lu\n",
-				cr_written, create_len);
+		fprintf(stderr,
+			"miscalculated needed buffer size 1 %d != %lu\n",
+			cr_written, create_len);
 		goto err;
 	}
 
 	if (ins_written != insert_len) {
-		fprintf(stderr, "miscalculated needed buffer size 2 %d != %lu\n",
-				ins_written, insert_len);
+		fprintf(stderr,
+			"miscalculated needed buffer size 2 %d != %lu\n",
+			ins_written, insert_len);
 		goto err;
 	}
 
@@ -237,7 +301,7 @@ sqlite_type_to_csv_name(int t)
 }
 
 static void
-add_file(FILE *f, size_t num, sqlite3 *db, struct input *input)
+add_file(FILE *f, size_t num, sqlite3 *db, struct input *input, bool labels)
 {
 	struct csv_ctx *s = csv_create_ctx_nofail(f, stderr);
 
@@ -247,44 +311,136 @@ add_file(FILE *f, size_t num, sqlite3 *db, struct input *input)
 	size_t nheaders = csv_get_headers(s, &headers);
 
 	input->csv_ctx = s;
-	input->headers = headers;
-	input->nheaders = nheaders;
+	input->ntables = 0;
+	input->tables = NULL;
 
-	char table_name[32];
-	if (num == SIZE_MAX)
-		strcpy(table_name, "input");
-	else
-		sprintf(table_name, "input%ld", num);
+	size_t label_column = SIZE_MAX;
 
-	char *create, *insert;
-	if (build_queries(headers, nheaders, &create, &insert, table_name))
-		exit(2);
+	if (labels) {
+		for (size_t i = 0; i < nheaders; ++i) {
+			if (strcmp(headers[i].name, LABEL_COLUMN) == 0) {
+				label_column = i;
+				continue;
+			}
 
-	if (sqlite3_exec(db, create, NULL, NULL, NULL) != SQLITE_OK) {
-		fprintf(stderr, "sqlite3_exec(create='%s'): %s\n", create,
-				sqlite3_errmsg(db));
-		exit(2);
+			const char *sep =
+				strchr(headers[i].name, LABEL_SEPARATOR);
+			if (!sep) {
+				fprintf(stderr,
+					"column '%s' doesn't contain label separator (%c)\n",
+					headers[i].name, LABEL_SEPARATOR);
+				exit(2);
+			}
+			size_t label_len = (uintptr_t)sep
+					- (uintptr_t)headers[i].name;
+
+			struct table *t = NULL;
+			/* XXX optimize? */
+			for (size_t j = 0; j < input->ntables; ++j) {
+				if (strncmp(headers[i].name,
+						input->tables[j].name,
+						label_len) == 0) {
+					t = &input->tables[j];
+					break;
+				}
+			}
+
+			if (!t) {
+				input->tables = xrealloc_nofail(input->tables,
+						input->ntables + 1,
+						sizeof(input->tables[0]));
+				t = &input->tables[input->ntables++];
+				t->name = xstrndup_nofail(headers[i].name,
+						label_len);
+				t->headers = NULL;
+				t->nheaders = 0;
+				t->create = NULL;
+				t->insert = NULL;
+			}
+
+			t->headers = xrealloc_nofail(t->headers,
+					t->nheaders + 1, sizeof(t->headers[0]));
+			t->headers[t->nheaders].name = headers[i].name
+					+ label_len + 1;
+			t->headers[t->nheaders].type = headers[i].type;
+			t->nheaders++;
+		}
+
+		for (size_t i = 0; i < input->ntables; ++i) {
+			struct table *t = &input->tables[i];
+
+			if (build_queries(t->headers, t->nheaders, &t->create,
+					&t->insert, t->name))
+				exit(2);
+		}
+	} else {
+		struct table *t;
+
+		input->ntables = 1;
+		input->tables = t = xmalloc_nofail(1, sizeof(input->tables[0]));
+
+		/* not used when labels are disabled */
+		t->headers = NULL;
+		t->nheaders = 0;
+		t->name = NULL;
+
+		char table_name[32];
+		if (num == SIZE_MAX)
+			strcpy(table_name, "input");
+		else
+			sprintf(table_name, "input%ld", num);
+
+		if (build_queries(headers, nheaders, &t->create, &t->insert,
+				table_name))
+			exit(2);
 	}
-	free(create);
 
 	struct cb_params params;
-	if (sqlite3_prepare_v2(db, insert, -1, &params.insert, NULL) !=
-			SQLITE_OK) {
-		fprintf(stderr, "sqlite3_prepare_v2(insert='%s'): %s\n",
-				insert, sqlite3_errmsg(db));
-		exit(2);
+	params.db = db;
+	params.labels = labels;
+	params.ntables = input->ntables;
+	params.inserts = xcalloc_nofail(input->ntables,
+			sizeof(params.inserts[0]));
+	params.label_column = label_column;
+
+	for (size_t i = 0; i < input->ntables; ++i) {
+		struct table *t = &input->tables[i];
+		if (sqlite3_exec(db, t->create, NULL, NULL, NULL) != SQLITE_OK) {
+			fprintf(stderr, "sqlite3_exec(create='%s'): %s\n",
+					t->create,
+					sqlite3_errmsg(db));
+			exit(2);
+		}
+		free(t->create);
+		t->create = NULL;
+
+		params.inserts[i].name = t->name;
+		if (sqlite3_prepare_v2(db, t->insert, -1,
+				&params.inserts[i].insert, NULL) != SQLITE_OK) {
+			fprintf(stderr, "sqlite3_prepare_v2(insert='%s'): %s\n",
+					t->insert, sqlite3_errmsg(db));
+			exit(2);
+		}
+
 	}
 
-	params.db = db;
 	csv_read_all_nofail(s, &next_row, &params);
 
-	if (sqlite3_finalize(params.insert) != SQLITE_OK) {
-		fprintf(stderr, "sqlite3_finalize(insert): %s\n",
-				sqlite3_errmsg(db));
-		exit(2);
-	}
+	for (size_t i = 0; i < input->ntables; ++i) {
+		struct table *t = &input->tables[i];
 
-	free(insert);
+		if (sqlite3_finalize(params.inserts[i].insert) != SQLITE_OK) {
+			fprintf(stderr, "sqlite3_finalize(insert): %s\n",
+					sqlite3_errmsg(db));
+			exit(2);
+		}
+
+		free(t->insert);
+		t->insert = NULL;
+
+		free(t->name);
+		t->name = NULL;
+	}
 }
 
 static void
@@ -299,18 +455,8 @@ print_col(sqlite3_stmt *select, size_t i, struct input *inputs, size_t ninputs)
 		return;
 	}
 
-	bool found = false;
-	for (size_t j = 0; j < ninputs; ++j) {
-		size_t col = csv_find(inputs[j].headers, inputs[j].nheaders, name);
-		if (col == CSV_NOT_FOUND)
-			continue;
-		printf("%s:%s", name, inputs[j].headers[col].type);
-		found = true;
-		break;
-	}
-
-	if (!found) /* guess */
-		printf("%s:string", name);
+	/* guess */
+	printf("%s:string", name);
 }
 
 static void
@@ -334,6 +480,7 @@ main(int argc, char *argv[])
 {
 	int opt;
 	bool show = false;
+	bool labels = false;
 	struct input *inputs = NULL;
 	size_t ninputs = 0;
 	struct {
@@ -342,7 +489,7 @@ main(int argc, char *argv[])
 		bool group_members;
 	} tables = { false, false, false };
 
-	while ((opt = getopt_long(argc, argv, "i:l:sv", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "i:Ll:sv", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'i':
 				inputs = xrealloc_nofail(inputs,
@@ -367,6 +514,9 @@ main(int argc, char *argv[])
 							optarg);
 					exit(2);
 				}
+				break;
+			case 'L':
+				labels = true;
 				break;
 			case 's':
 				show = true;
@@ -413,7 +563,7 @@ main(int argc, char *argv[])
 		inputs = xcalloc_nofail(1, sizeof(inputs[0]));
 		ninputs++;
 
-		add_file(stdin, SIZE_MAX, db, &inputs[0]);
+		add_file(stdin, SIZE_MAX, db, &inputs[0], labels);
 	} else {
 		bool stdin_used = false;
 		for (size_t i = 0; i < ninputs; ++i) {
@@ -437,7 +587,7 @@ main(int argc, char *argv[])
 				exit(2);
 			}
 
-			add_file(f, i + 1, db, &inputs[i]);
+			add_file(f, i + 1, db, &inputs[i], labels);
 
 			if (strcmp(path, "-") != 0)
 				fclose(f);
