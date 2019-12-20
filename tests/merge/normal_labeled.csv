@@ -1,4 +1,4 @@
-_label:string,label3_name:string,label3_id:int,label3_something:int,label1_name:string,label2_name:string,label2_something:int
+_label:string,label3.name:string,label3.id:int,label3.something:int,label1.name:string,label2.name:string,label2.something:int
 label3,lorem ipsum,1,1,,,
 label3,not all that is gold,2,0,,,
 label3,something else,3,1,,,

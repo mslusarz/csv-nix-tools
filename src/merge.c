@@ -131,7 +131,7 @@ add_input_with_label(const char *label, FILE *f)
 	for (size_t i = 0; i < nheaders_cur; ++i) {
 		struct col_header *h = &Headers[Nheaders + i];
 		char *name = xmalloc_nofail(lsize + 1 + strlen(headers_cur[i].name) + 1, 1);
-		sprintf(name, "%s_%s", label, headers_cur[i].name);
+		sprintf(name, "%s%c%s", label, LABEL_SEPARATOR, headers_cur[i].name);
 
 		size_t idx = csv_find(Headers, Nheaders + i, name);
 		if (idx != CSV_NOT_FOUND) {

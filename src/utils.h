@@ -42,6 +42,7 @@
 #include "parse.h"
 
 #define LABEL_COLUMN ("_label")
+#define LABEL_SEPARATOR ('.')
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 

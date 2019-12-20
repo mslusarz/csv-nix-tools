@@ -1,4 +1,4 @@
-_label:string,label1_name:string,label2_name:string,label2_something:int
+_label:string,label1.name:string,label2.name:string,label2.something:int
 label1,lorem ipsum,,
 label2,,lorem ipsum,1
 label2,,not all that is gold,0

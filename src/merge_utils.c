@@ -120,7 +120,7 @@ csvmu_print_header(struct csvmu_ctx *ctx, const char *default_label,
 		printf("%s:string,", LABEL_COLUMN);
 
 		prefix = xmalloc_nofail(strlen(ctx->label) + 1 + 1, 1);
-		sprintf(prefix, "%s_", ctx->label);
+		sprintf(prefix, "%s%c", ctx->label, LABEL_SEPARATOR);
 	}
 
 	if (ctx->merge_with_stdin) {
