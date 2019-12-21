@@ -37,7 +37,7 @@ Filtering/processing tools:
 - csv-cat - concatenates multiple csv files
 - csv-concat - concatenates columns and user-defined strings
 - csv-count - counts the number of columns and/or rows
-- csv-cut - narrows down columns and reorders them
+- csv-cut - removes columns and reorders them
 - csv-exec-add - pipes data to standard input of an external command and creates new column from its standard output
 - csv-grep - filters rows matching a pattern
 - csv-head - outputs the first N rows
