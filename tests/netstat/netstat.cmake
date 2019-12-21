@@ -58,6 +58,12 @@ test("csv-netstat -6 | csv-count -c -R" data/empty.txt netstat/6-count-columns.c
 test("csv-netstat -f family,protocol | csv-uniq -f family,protocol | csv-head -n 0" data/empty.txt netstat/f-count-columns.csv data/empty.txt 0
 	netstat_f_count_columns)
 
+test("csv-netstat -M -f family,inode,state | csv-head -n 0" data/3-columns-3-rows-with-label.csv netstat/columns-merged.csv data/empty.txt 0
+	netstat_merged)
+
+test("csv-netstat -M -f family,inode,state -L meh | csv-head -n 0" data/3-columns-3-rows-with-label.csv netstat/columns-merged-label.csv data/empty.txt 0
+	netstat_merged_label)
+
 test("csv-netstat --help" data/empty.csv netstat/help.txt data/empty.txt 2
 	netstat_help)
 

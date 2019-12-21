@@ -33,6 +33,12 @@ test("csv-users | csv-count -c -R"
 	data/empty.txt users/columns.csv data/empty.txt 0
 	users)
 
+test("csv-users -M | csv-head -n 0" data/3-columns-3-rows-with-label.csv users/columns-merged.csv data/empty.txt 0
+	users_merged)
+
+test("csv-users -M -L meh | csv-head -n 0" data/3-columns-3-rows-with-label.csv users/columns-merged-label.csv data/empty.txt 0
+	users_merged_label)
+
 test("csv-users --help" data/empty.csv users/help.txt data/empty.txt 2
 	users_help)
 

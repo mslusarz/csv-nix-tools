@@ -1,0 +1,22 @@
+_label:string,label1.name:string,label1.id:int,label1.something:int,file.name:string
+label1,lorem ipsum,1,1,
+label1,not all that is gold,2,0,
+label1,something else,3,1,
+file,,,,dir with spaces
+file,,,,"dir,with,commas"
+file,,,,dir.with.dots
+file,,,,"dir_with_
+_newline"
+file,,,,dir_with_backslash_\n_here
+file,,,,"dir_with_double_""_quote"
+file,,,,dir_with_single_'_quote
+file,,,,file with spaces
+file,,,,"file,with,commas"
+file,,,,file.with.dots
+file,,,,"file_with_
+_newline"
+file,,,,file_with_backslash_\n_here
+file,,,,"file_with_double_""_quote"
+file,,,,file_with_execute_permissions
+file,,,,file_with_single_'_quote
+file,,,,symlink_file

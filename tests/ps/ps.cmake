@@ -34,6 +34,12 @@ if (LIBPROCPS_FOUND)
 test("csv-ps | csv-count -c -R" data/empty.txt ps/columns.csv data/empty.txt 0
 	ps_columns)
 
+test("csv-ps -M -f tid,cmd,age | csv-head -n 0" data/3-columns-3-rows-with-label.csv ps/columns-merged.csv data/empty.txt 0
+	ps_merged)
+
+test("csv-ps -M -f tid,cmd,age -L meh | csv-head -n 0" data/3-columns-3-rows-with-label.csv ps/columns-merged-label.csv data/empty.txt 0
+	ps_merged_label)
+
 test("csv-ps --help" data/empty.csv ps/help.txt data/empty.txt 2
 	ps_help)
 

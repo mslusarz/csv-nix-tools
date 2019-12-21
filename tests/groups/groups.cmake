@@ -32,6 +32,12 @@
 test("csv-groups | csv-count -c -R" data/empty.txt groups/count-columns.csv data/empty.txt 0
 	groups)
 
+test("csv-groups -M | csv-head -n 0" data/3-columns-3-rows-with-label.csv groups/columns-merged.csv data/empty.txt 0
+	groups_merged)
+
+test("csv-groups -M -L meh | csv-head -n 0" data/3-columns-3-rows-with-label.csv groups/columns-merged-label.csv data/empty.txt 0
+	groups_merged_label)
+
 test("csv-groups --help" data/empty.csv groups/help.txt data/empty.txt 2
 	groups_help)
 

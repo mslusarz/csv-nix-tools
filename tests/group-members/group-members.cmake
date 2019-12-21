@@ -32,6 +32,12 @@
 test("csv-group-members | csv-count -c -R" data/empty.txt group-members/count-columns.csv data/empty.txt 0
 	group-members)
 
+test("csv-group-members -M | csv-head -n 0" data/3-columns-3-rows-with-label.csv group-members/columns-merged.csv data/empty.txt 0
+	group-members_merged)
+
+test("csv-group-members -M -L meh | csv-head -n 0" data/3-columns-3-rows-with-label.csv group-members/columns-merged-label.csv data/empty.txt 0
+	group-members_merged_label)
+
 test("csv-group-members --help" data/empty.csv group-members/help.txt data/empty.txt 2
 	group-members_help)
 
