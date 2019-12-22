@@ -139,31 +139,31 @@ test("csv-sqlite 'select num, num2, num3, num2 % num3 as num2_mod_num3, num2 % (
 	data/rpn-add-num-dec.csv data/rpn-add-num-mod.csv data/empty.txt 0
 	sqlite_num_mod)
 
-# original encoding is lost
-#test("csv-sqlite 'select printf(\"0x%x\", num) as num, printf(\"0x%x\", num2) as num2, printf(\"0x%x\", num3) as num3, printf(\"0x%x\", num2 & num3) as num2_bit_and_num3 from input'"
-#	data/rpn-add-num-hex.csv data/rpn-add-num-bit-and.csv data/empty.txt 0
-#	sqlite_num_bit_and)
 
-#test("csv-sqlite 'select printf(\"0x%x\", num) as num, printf(\"0x%x\", num2) as num2, printf(\"0x%x\", num3) as num3, printf(\"0x%x\", num2 | num) as num2_bit_or_num from input'"
-#	data/rpn-add-num-hex.csv data/rpn-add-num-bit-or.csv data/empty.txt 0
-#	sqlite_num_bit_or)
+test("csv-sqlite 'select printf(\"0x%x\", num2 & num3) as num2_bit_and_num3 from input'"
+	data/rpn-add-num-hex.csv data/sql-num-bit-and.csv data/empty.txt 0
+	sqlite_num_bit_and)
 
-# + no support for bit xor
-#test("csv-sqlite 'select printf(\"0x%x\", num) as num, printf(\"0x%x\", num2) as num2, printf(\"0x%x\", num3) as num3, printf(\"0x%x\", num2 ^ num) as num2_bit_xor_num from input'"
-#	data/rpn-add-num-hex.csv data/rpn-add-num-bit-xor.csv data/empty.txt 0
+test("csv-sqlite 'select printf(\"0x%x\", num2 | num) as num2_bit_or_num from input'"
+	data/rpn-add-num-hex.csv data/sql-num-bit-or.csv data/empty.txt 0
+	sqlite_num_bit_or)
+
+# no support for bit xor
+#test("csv-sqlite 'select printf(\"0x%x\", num2 ^ num) as num2_bit_xor_num from input'"
+#	data/rpn-add-num-hex.csv data/sql-num-bit-xor.csv data/empty.txt 0
 #	sqlite_num_bit_xor)
 
-#test("csv-sqlite 'select printf(\"0x%x\", num) as num, printf(\"0x%x\", num2) as num2, printf(\"0x%x\", num3) as num3, printf(\"0x%x\", ~num2) as bit_neg_num2 from input'"
-#	data/rpn-add-num-hex.csv data/rpn-add-num-bit-neg.csv data/empty.txt 0
-#	sqlite_num_bit_neg)
+test("csv-sqlite 'select printf(\"0x%x\", ~num2) as bit_neg_num2 from input'"
+	data/rpn-add-num-hex.csv data/sql-num-bit-neg.csv data/empty.txt 0
+	sqlite_num_bit_neg)
 
-#test("csv-sqlite 'select printf(\"0x%x\", num) as num, printf(\"0x%x\", num2) as num2, printf(\"0x%x\", num3) as num3, printf(\"0x%x\", num2 << num) as num2_lshift_num from input'"
-#	data/rpn-add-num-hex.csv data/rpn-add-num-bit-lshift.csv data/empty.txt 0
-#	sqlite_num_bit_lshift)
+test("csv-sqlite 'select printf(\"0x%x\", num2 << num) as num2_lshift_num from input'"
+	data/rpn-add-num-hex.csv data/sql-num-bit-lshift.csv data/empty.txt 0
+	sqlite_num_bit_lshift)
 
-#test("csv-sqlite 'select printf(\"0x%x\", num) as num, printf(\"0x%x\", num2) as num2, printf(\"0x%x\", num3) as num3, printf(\"0x%x\", num2 >> num) as num2_rshift_num from input'"
-#	data/rpn-add-num-hex.csv data/rpn-add-num-bit-rshift.csv data/empty.txt 0
-#	sqlite_num_bit_rshift)
+test("csv-sqlite 'select printf(\"0x%x\", num2 >> num) as num2_rshift_num from input'"
+	data/rpn-add-num-hex.csv data/sql-num-bit-rshift.csv data/empty.txt 0
+	sqlite_num_bit_rshift)
 
 
 # sqlite doesn't support gt, lt, ge, le, eq, ne
