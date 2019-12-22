@@ -50,7 +50,7 @@ static const struct option opts[] = {
 static void
 usage(FILE *out)
 {
-	fprintf(out, "Usage: csv-cat [OPTION]... [FILE]...\n");
+	fprintf(out, "Usage: csv-tac [OPTION]... [FILE]...\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -s, --show\n");
 	fprintf(out, "      --help\n");
