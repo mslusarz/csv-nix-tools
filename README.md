@@ -90,7 +90,7 @@ size:int,type:int,mode:int,owner_id:int,group_id:int,nlink:int,mtime_sec:int,mti
 18746,0100000,0644,1000,1000,1,1557072822,286415067,1557072822,286415067,1557072849,958066747,0x801,16126121,0,4096,40,reg,marcin,marcin,1,1,0,1,0,0,1,0,0,0,0,0,2019-05-05 18:13:42.286415067,2019-05-05 18:13:42.286415067,2019-05-05 18:14:09.958066747,,,build/Makefile,build/Makefile
 ```
 
-All Makefiles in thr current directory and below:
+All Makefiles in the current directory and below:
 
 ```
 $ csv-ls -f size,parent,name -R . | csv-grep -f name -x -F Makefile
