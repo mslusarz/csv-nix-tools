@@ -461,11 +461,13 @@ static void
 print_val(sqlite3_stmt *select, size_t i)
 {
 	int type = sqlite3_column_type(select, i);
-	if (type == SQLITE_INTEGER)
+	if (type == SQLITE_INTEGER) {
 		printf("%lld", sqlite3_column_int64(select, i));
-	else if (type == SQLITE_TEXT) {
+	} else if (type == SQLITE_TEXT) {
 		const char *txt = (const char *)sqlite3_column_text(select, i);
 		csv_print_quoted(txt, strlen(txt));
+	} else if (type == SQLITE_NULL) {
+		/* nothing to do here */
 	} else {
 		fprintf(stderr, "unsupported return type: %d [%s]\n", type,
 				sqlite_type_to_str(type));
