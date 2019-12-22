@@ -313,7 +313,20 @@ $ csv-ls -R -f full_path . | csv-rpn-add -f new -e "%full_path -1 1 substr 'c' =
 list all system users and the name of the default group they belong to:
 
 ```
-csv-users -L user | csv-groups -M -L group | csv-sqlite -L "select user.name as user_name, 'group'.name as group_name from user, 'group' where user.gid = 'group'.gid"
+$ csv-users -L user | csv-groups -M -L group | csv-sqlite -L "select user.name as user_name, 'group'.name as group_name from user, 'group' where user.gid = 'group'.gid"
+```
+
+list all network connections and processes they belong to:
+
+```
+$ csv-ls -L file -f name,symlink /proc/*/fd/* 2>/dev/null |
+csv-grep -f file.symlink -E "socket:\[[0-9]*\]" |
+csv-replace -f file.name -E '/proc/([0-9]*)/.*' -r '%1' -n file.pid |
+csv-replace -f file.symlink -E 'socket:\[([0-9]*)\]' -r %1 -n file.inode |
+csv-netstat -M |
+csv-grep -v -f socket.family -x -F 'UNIX' |
+csv-ps -M |
+csv-sqlite -L 'select socket.protocol, socket.src_ip, socket.src_port, socket.dst_ip, socket.dst_port, socket.state, socket.uid, file.pid, proc.cmd from socket left outer join file on socket.inode = file.inode left outer join proc on file.pid = proc.tid' -s
 ```
 
 # TODO (high level)
