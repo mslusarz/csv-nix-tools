@@ -1,6 +1,9 @@
 **csv-nix-tools**
 =================
 
+[![Build Status](https://github.com/mslusarz/csv-nix-tools/workflows/Full/badge.svg)](https://github.com/mslusarz/csv-nix-tools/actions?query=workflow%3AFull+branch%3Amaster)
+[![Coverage Status](https://codecov.io/github/mslusarz/csv-nix-tools/coverage.svg?branch=master)](https://codecov.io/gh/mslusarz/csv-nix-tools/branch/master)
+
 csv-nix-tools is a collection of tools for gathering and processing system information using csv as an intermediate format.
 
 This project is in early prototyping stage.
