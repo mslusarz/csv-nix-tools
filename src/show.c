@@ -587,7 +587,7 @@ main(int argc, char *argv[])
 
 	params.logfd = -1;
 
-	while ((opt = getopt_long(argc, argv, "u:s:v", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "u:s:", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'D':
 				params.logfd = open(optarg,

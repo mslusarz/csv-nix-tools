@@ -159,7 +159,7 @@ main(int argc, char *argv[])
 	params.types = NULL;
 	params.ncolumns = 0;
 
-	while ((opt = getopt_long(argc, argv, "e:f:sv", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "e:f:s", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'e':
 				sep = xstrdup_nofail(optarg);

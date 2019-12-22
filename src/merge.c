@@ -243,7 +243,7 @@ main(int argc, char *argv[])
 	bool stdin_used = false;
 	char *label = NULL;
 
-	while ((opt = getopt_long(argc, argv, "l:p:P:sv", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "l:p:P:s", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'l':
 				free(label);

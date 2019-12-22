@@ -484,7 +484,7 @@ main(int argc, char *argv[])
 	struct input *inputs = NULL;
 	size_t ninputs = 0;
 
-	while ((opt = getopt_long(argc, argv, "i:Lsv", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "i:Ls", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'i':
 				inputs = xrealloc_nofail(inputs,

@@ -201,7 +201,7 @@ main(int argc, char *argv[])
 	sort_params.columns = NULL;
 	sort_params.ncolumns = 0;
 
-	while ((opt = getopt_long(argc, argv, "f:rsv", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "f:rs", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'f':
 				cols = xstrdup_nofail(optarg);

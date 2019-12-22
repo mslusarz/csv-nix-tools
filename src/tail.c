@@ -119,7 +119,7 @@ main(int argc, char *argv[])
 	params.count = 0;
 	params.nlines = 10;
 
-	while ((opt = getopt_long(argc, argv, "n:sv", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "n:s", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'n':
 				params.nlines = atoi(optarg);

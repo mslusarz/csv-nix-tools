@@ -190,7 +190,7 @@ main(int argc, char *argv[])
 	int opt;
 	bool show = false;
 
-	while ((opt = getopt_long(argc, argv, "sv", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "s", opts, NULL)) != -1) {
 		switch (opt) {
 			case 's':
 				show = true;

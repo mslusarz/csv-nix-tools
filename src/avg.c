@@ -112,7 +112,7 @@ main(int argc, char *argv[])
 	params.columns = NULL;
 	params.ncolumns = 0;
 
-	while ((opt = getopt_long(argc, argv, "f:sv", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "f:s", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'f':
 				cols = xstrdup_nofail(optarg);
