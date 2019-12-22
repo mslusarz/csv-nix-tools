@@ -332,7 +332,6 @@ csv-users -L user | csv-groups -M -L group | csv-sqlite -L "select user.name as 
 
 # TODO (low level)
 - sql, exec: add support for labeled streams
-- treat type-less columns as string columns
 - header: implement add, add-types, change-type, guess-type, remove-types, rename
 - ps: lots of work, detailed in ps.c
 - show: ability to lock columns (make them always visible)

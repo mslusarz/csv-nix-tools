@@ -83,11 +83,11 @@ csv_destroy_ctx(struct csv_ctx *ctx)
 static int
 add_header(struct csv_ctx *ctx, char *start)
 {
-	char *pipe = strchr(start, ':');
-	if (!pipe) {
-		fprintf(ctx->err, "one of the columns does not have type name\n");
-		return -1;
-	}
+	char *type = strchr(start, ':');
+	if (type)
+		*type++ = 0;
+	else
+		type = "string";
 
 	struct col_header *headers = realloc(ctx->headers,
 			(ctx->nheaders + 1) * sizeof(ctx->headers[0]));
@@ -97,18 +97,16 @@ add_header(struct csv_ctx *ctx, char *start)
 	}
 	ctx->headers = headers;
 
-	*pipe = 0;
-
-	if (strcmp(pipe + 1, "int") != 0 &&
-			strcmp(pipe + 1, "int[]") != 0 &&
-			strcmp(pipe + 1, "string") != 0 &&
-			strcmp(pipe + 1, "string[]") != 0) {
-		fprintf(ctx->err, "unsupported type '%s'\n", pipe + 1);
+	if (strcmp(type, "int") != 0 &&
+			strcmp(type, "int[]") != 0 &&
+			strcmp(type, "string") != 0 &&
+			strcmp(type, "string[]") != 0) {
+		fprintf(ctx->err, "unsupported type '%s'\n", type);
 		return -1;
 	}
 
 	ctx->headers[ctx->nheaders].name = start;
-	ctx->headers[ctx->nheaders].type = pipe + 1;
+	ctx->headers[ctx->nheaders].type = type;
 	ctx->nheaders++;
 
 	return 0;

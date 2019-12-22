@@ -38,6 +38,9 @@ test("csv-cat" data/one-column-one-row.csv data/one-column-one-row.csv data/empt
 test("csv-cat" data/3-columns-3-rows.csv data/3-columns-3-rows.csv data/empty.txt 0
 	parsing_3_columns_3_rows)
 
+test("csv-cat" parsing/3-columns-3-rows-typeless.csv parsing/3-columns-3-rows-types.csv data/empty.txt 0
+	parsing_input_without_types)
+
 test("csv-cat" data/commas.csv data/commas.csv data/empty.txt 0
 	parsing_commas)
 
