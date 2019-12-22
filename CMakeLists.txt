@@ -95,6 +95,11 @@ if (NOT TMUX)
 	message(WARNING "tmux not found. csv-show's tmux-based test won't be executed.")
 endif()
 
+find_program(PANDOC pandoc)
+if (NOT PANDOC)
+	message(WARNING "pandoc not found. Man pages won't be generated.")
+endif()
+
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 
@@ -238,6 +243,19 @@ if(LIBMNL_FOUND)
 	endif()
 
 	target_link_libraries(csv-netstat ${LIBMNL_LIBRARIES})
+endif()
+
+if(PANDOC)
+	add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/csv-cat.1
+			MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/doc/csv-cat.1.md
+			COMMAND ${PANDOC} -s -t man -o ${CMAKE_BINARY_DIR}/csv-cat.1 ${CMAKE_SOURCE_DIR}/doc/csv-cat.1.md)
+
+	add_custom_target(doc ALL
+			DEPENDS ${CMAKE_BINARY_DIR}/csv-cat.1
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+	install(FILES ${CMAKE_BINARY_DIR}/csv-cat.1
+			DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
 endif()
 
 option(TEST_UNDER_MEMCHECK "Run tests under Valgrind memcheck" OFF)
