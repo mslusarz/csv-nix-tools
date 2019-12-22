@@ -256,6 +256,14 @@ test("csv-sqlite 'select str1, str2, str1 like \"%12\" as \"str1_like_%12\", str
 #	data/rpn-add-num-base.csv data/rpn-add-convert.csv data/empty.txt 0
 #	sqlite_str_to_int)
 
+test("csv-sqlite -i ${DATA_DIR}/3-columns-3-rows.csv -i ${DATA_DIR}/3-columns-3-other-rows.csv 'select input1.id, input2.something from input1, input2 where input1.id = 1 and input2.something = 77'"
+	data/empty.txt sqlite/mult_inputs.csv data/empty.txt 0
+	sqlite_multiple_inputs)
+
+test("csv-sqlite -i - -i ${DATA_DIR}/3-columns-3-other-rows.csv 'select input1.id, input2.something from input1, input2 where input1.id = 1 and input2.something = 77'"
+	data/3-columns-3-rows.csv sqlite/mult_inputs.csv data/empty.txt 0
+	sqlite_multiple_inputs_stdin)
+
 test("csv-users -L user | csv-sqlite -L 'select * from user' | csv-count -c -R"
 	data/one-column-one-row.csv sqlite/users-columns.csv data/empty.txt 0
 	sqlite_users_count_columns)
