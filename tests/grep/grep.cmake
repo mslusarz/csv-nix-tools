@@ -68,6 +68,10 @@ test("csv-grep -f name -x -F or" data/3-columns-3-rows.csv grep/not-found.csv da
 test("csv-grep -f name -F or.m" data/3-columns-3-rows.csv grep/not-found.csv data/empty.txt 0
 	grep_-f_name_-F_or.m)
 
+
+test("csv-grep -f name -e or -v" data/3-columns-3-rows.csv grep/name-or-not.csv data/empty.txt 0
+	grep_-f_name_-e_or_-v)
+
 test("csv-grep --help" data/empty.csv grep/help.txt data/empty.txt 2
 	grep_help)
 
