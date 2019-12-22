@@ -245,17 +245,26 @@ if(LIBMNL_FOUND)
 	target_link_libraries(csv-netstat ${LIBMNL_LIBRARIES})
 endif()
 
-if(PANDOC)
-	add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/csv-cat.1
-			MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/doc/csv-cat.1.md
-			COMMAND ${PANDOC} -s -t man -o ${CMAKE_BINARY_DIR}/csv-cat.1 ${CMAKE_SOURCE_DIR}/doc/csv-cat.1.md)
+function(gen_doc name)
+	add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/csv-${name}.1
+			MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/doc/csv-${name}.1.md
+			COMMAND ${PANDOC} -s -t man -o ${CMAKE_BINARY_DIR}/csv-${name}.1 ${CMAKE_SOURCE_DIR}/doc/csv-${name}.1.md)
 
-	add_custom_target(doc ALL
-			DEPENDS ${CMAKE_BINARY_DIR}/csv-cat.1
+	add_custom_target(doc-csv-${name}
+			DEPENDS ${CMAKE_BINARY_DIR}/csv-${name}.1
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-	install(FILES ${CMAKE_BINARY_DIR}/csv-cat.1
+	add_dependencies(doc doc-csv-${name})
+
+	install(FILES ${CMAKE_BINARY_DIR}/csv-${name}.1
 			DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
+endfunction()
+
+if(PANDOC)
+	add_custom_target(doc ALL)
+
+	gen_doc(cat)
+	gen_doc(tac)
 endif()
 
 option(TEST_UNDER_MEMCHECK "Run tests under Valgrind memcheck" OFF)

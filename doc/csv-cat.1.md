@@ -13,9 +13,12 @@ csv-cat - concatenate CSV files and print on the standard output
 
 # DESCRIPTION #
 
-Concatenate CSV FILE(s) to standard output. All files must have the same
-columns (number, names, and types), but their order can be different between
-files. csv-cat chooses the order of the first input file.
+Concatenate CSV FILE(s) to standard output. With no FILE, or when FILE is -,
+read standard input.
+
+All files must have the same columns (number, names, and types), but their
+order can be different between files. csv-cat chooses the order of the first
+input file.
 
 -s, --show
 :   pipe output to **csv-show**(1)
