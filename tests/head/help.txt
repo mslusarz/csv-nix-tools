@@ -1,6 +1,6 @@
 Usage: csv-head [OPTION]...
 Options:
-  -n, --lines=count
+  -n, --lines=NUM
   -s, --show
       --help
       --version

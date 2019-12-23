@@ -264,6 +264,7 @@ if(PANDOC)
 	add_custom_target(doc ALL)
 
 	gen_doc(cat)
+	gen_doc(head)
 	gen_doc(tac)
 endif()
 
