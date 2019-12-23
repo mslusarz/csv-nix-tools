@@ -37,4 +37,4 @@ csv-tail -n 5 < file1.csv
 
 # SEE ALSO #
 
-**tail**(1), **csv-head**(1), **csv-show**(1)
+**tail**(1), **csv-head**(1), **csv-show**(1), **csv-nix-tools**(7)

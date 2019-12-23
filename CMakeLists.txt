@@ -245,28 +245,34 @@ if(LIBMNL_FOUND)
 	target_link_libraries(csv-netstat ${LIBMNL_LIBRARIES})
 endif()
 
-function(gen_doc name)
-	add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/csv-${name}.1
-			MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/doc/csv-${name}.1.md
-			COMMAND ${PANDOC} -s -t man -o ${CMAKE_BINARY_DIR}/csv-${name}.1 ${CMAKE_SOURCE_DIR}/doc/csv-${name}.1.md)
+function(gen_doc name section)
+	add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/csv-${name}.${section}
+			MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/doc/csv-${name}.${section}.md
+			COMMAND ${PANDOC} -s -t man -o ${CMAKE_BINARY_DIR}/csv-${name}.${section} ${CMAKE_SOURCE_DIR}/doc/csv-${name}.${section}.md)
 
 	add_custom_target(doc-csv-${name}
-			DEPENDS ${CMAKE_BINARY_DIR}/csv-${name}.1
+			DEPENDS ${CMAKE_BINARY_DIR}/csv-${name}.${section}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 	add_dependencies(doc doc-csv-${name})
 
-	install(FILES ${CMAKE_BINARY_DIR}/csv-${name}.1
-			DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
+	install(FILES ${CMAKE_BINARY_DIR}/csv-${name}.${section}
+			DESTINATION ${CMAKE_INSTALL_MANDIR}/man${section})
+endfunction()
+
+function(gen1_doc name)
+	gen_doc(${name} 1)
 endfunction()
 
 if(PANDOC)
 	add_custom_target(doc ALL)
 
-	gen_doc(cat)
-	gen_doc(head)
-	gen_doc(tac)
-	gen_doc(tail)
+	gen_doc(nix-tools 7)
+
+	gen1_doc(cat)
+	gen1_doc(head)
+	gen1_doc(tac)
+	gen1_doc(tail)
 endif()
 
 option(TEST_UNDER_MEMCHECK "Run tests under Valgrind memcheck" OFF)

@@ -36,4 +36,4 @@ csv-cat file1.csv - file2.csv
 
 # SEE ALSO #
 
-**cat**(1), **csv-tac**(1), **csv-show**(1)
+**cat**(1), **csv-tac**(1), **csv-show**(1), **csv-nix-tools**(7)

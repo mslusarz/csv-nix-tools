@@ -37,4 +37,4 @@ csv-tac file1.csv - file2.csv
 
 # SEE ALSO #
 
-**tac**(1), **csv-cat**(1), **csv-show**(1)
+**tac**(1), **csv-cat**(1), **csv-show**(1), **csv-nix-tools**(7)
