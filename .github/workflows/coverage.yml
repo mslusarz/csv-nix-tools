@@ -16,9 +16,11 @@ jobs:
     - name: create build directory
       run: mkdir build
     - name: configure
-      run: cd build && cmake .. -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON
+      run: cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/tmp/csv-nix-tools-bin -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON
     - name: build
       run: cd build && make
+    - name: install
+      run: cd build && make install
     - name: test
       run: cd build && ctest --output-on-failure --timeout 60
     - name: upload coverage results
