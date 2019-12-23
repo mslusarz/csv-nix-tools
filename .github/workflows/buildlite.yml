@@ -9,13 +9,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - name: remove optional deps
+    - name: remove optional dependencies
       run: sudo apt remove flex bison libsqlite3-dev libprocps-dev libncurses5-dev libmnl-dev pandoc tmux
-    - name: mkdir
+    - name: create build directory
       run: mkdir build
-    - name: cmake
+    - name: configure
       run: cd build && cmake ..
-    - name: make
+    - name: build
       run: cd build && make
-    - name: ctest
+    - name: test
       run: cd build && ctest --output-on-failure --timeout 60
