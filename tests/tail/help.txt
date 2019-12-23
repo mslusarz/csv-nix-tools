@@ -1,6 +1,6 @@
 Usage: csv-tail [OPTION]...
 Options:
-  -n, --lines=count
+  -n, --lines=NUM
   -s, --show
       --help
       --version

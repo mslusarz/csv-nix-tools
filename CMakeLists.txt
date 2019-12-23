@@ -266,6 +266,7 @@ if(PANDOC)
 	gen_doc(cat)
 	gen_doc(head)
 	gen_doc(tac)
+	gen_doc(tail)
 endif()
 
 option(TEST_UNDER_MEMCHECK "Run tests under Valgrind memcheck" OFF)

@@ -53,7 +53,7 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-tail [OPTION]...\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -n, --lines=count\n");
+	fprintf(out, "  -n, --lines=NUM\n");
 	fprintf(out, "  -s, --show\n");
 	fprintf(out, "      --help\n");
 	fprintf(out, "      --version\n");
@@ -122,7 +122,8 @@ main(int argc, char *argv[])
 	while ((opt = getopt_long(argc, argv, "n:s", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'n':
-				params.nlines = atoi(optarg);
+				if (strtoul_safe(optarg, &params.nlines, 0))
+					exit(2);
 				break;
 			case 's':
 				show = true;
