@@ -271,6 +271,7 @@ if(PANDOC)
 
 	gen1_doc(cat)
 	gen1_doc(head)
+	gen1_doc(show)
 	gen1_doc(tac)
 	gen1_doc(tail)
 endif()

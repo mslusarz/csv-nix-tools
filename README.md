@@ -415,3 +415,4 @@ raw        ::                    58         ::                     0            
 - what about unicode?
 - one multicommand binary? (csv ls, csv grep, ...)
 - csv-show: column separators? header separator? number formatter? (see what csvlook from csvkit does)
+- csv-show: browser (html) backend?

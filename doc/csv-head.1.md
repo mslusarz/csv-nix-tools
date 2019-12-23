@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-head - print on the standard output the beginning of CSV file from standard input
+csv-head - print on the standard output the beginning of a CSV file from standard input
 
 # SYNOPSIS #
 

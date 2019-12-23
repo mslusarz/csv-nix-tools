@@ -31,7 +31,7 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 - **csv-cut**(1)
 - **csv-exec-add**(1)
 - **csv-grep**(1)
-- **csv-head**(1) - print on the standard output the beginning of CSV file from standard input
+- **csv-head**(1) - print on the standard output the beginning of a CSV file from standard input
 - **csv-header**(1)
 - **csv-max**(1)
 - **csv-merge**(1)
@@ -46,13 +46,13 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 - **csv-substring**(1)
 - **csv-sum**(1)
 - **csv-tac**(1) - concatenate CSV files and print on the standard output in reverse
-- **csv-tail**(1) - print on the standard output the end of CSV file from standard input
+- **csv-tail**(1) - print on the standard output the end of a CSV file from standard input
 - **csv-uniq**(1)
 
 # SINK TOOLS #
 
 - **csv-exec**(1)
-- **csv-show**(1)
+- **csv-show**(1) - print on the standard output a CSV file from standard input in human-readable format
 
 # COMMON OPTIONS FOR ALL SOURCE TOOLS #
 

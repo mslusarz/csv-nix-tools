@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-tail - print on the standard output the end of CSV file from standard input
+csv-tail - print on the standard output the end of a CSV file from standard input
 
 # SYNOPSIS #
 
