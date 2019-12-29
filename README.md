@@ -377,8 +377,8 @@ raw        ::                    58         ::                     0            
 
 # TODO (high level)
 - more tests
-- more data collection tools (find, df, ifconfig/ip, lsattr, lsusb, readlink, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, w/who?, etc)
-- more processing tools (tr, rev, drop, paste?, etc)
+- more data collection tools (id, env, uname, w/who, df, free, ifconfig/ip, ipcs, lsattr, lsusb, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, etc)
+- more processing tools (nl, tr, rev, drop, paste?, etc)
 - more rpn operators/functions (split, rev, base64enc/dec, timestamp conversion, now, regex, sed/replace, tr)
 - exporting tools (to-xml, to-json, to-sql)
 - importing tools (from-xml, from-json)
@@ -401,9 +401,10 @@ raw        ::                    58         ::                     0            
 - netstat: translate interface number to interface name
 - netstat: figure out how to print inet\_diag\_info
 - rpn/sql: binary number parsing
-- switch to deal with new lines in shell-compatible way (see what coreutils' ls does)
 - write down data format spec
 - strict column name verification
+- ls: better default list of columns
+- show: exit if output fits on screen?
 
 ## Random ideas
 - export data as bash/python/etc script?
@@ -416,3 +417,5 @@ raw        ::                    58         ::                     0            
 - one multicommand binary? (csv ls, csv grep, ...)
 - csv-show: column separators? header separator? number formatter? (see what csvlook from csvkit does)
 - csv-show: browser (html) backend?
+- other sink tools: diff/comm?, treeview (generic pstree)
+- csv -> csvnt?
