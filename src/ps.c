@@ -32,10 +32,6 @@
 
 /*
  * TODO:
- * - better default list of columns (ps-like or top-like?)
- * - better column names
- * - verify units/mults (pages/mb/kb/b)
- * - tree view?
  * - threads?
  * - figure out what to do with these columns:
  * 	wchan, tty, tpgid, exit_signal, *signals*, alarm, kstk*, flags
@@ -83,12 +79,14 @@ usage(FILE *out)
 	fprintf(out, "Usage: csv-ps [OPTION]...\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -f, --fields=name1[,name2...]\n");
-	fprintf(out, "  -M, --merge-with-stdin\n");
-	fprintf(out, "  -L, --label label\n");
-	fprintf(out, "  -p, --pid=pid1[,pid2...]\n");
-	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --help\n");
-	fprintf(out, "      --version\n");
+	fprintf(out, "                             choose the list of columns\n");
+	fprintf(out, "  -M, --merge-with-stdin     \n");
+	fprintf(out, "  -L, --label label          \n");
+	fprintf(out, "  -l                         use a longer listing format (can be used up to 4 times)\n");
+	fprintf(out, "  -p, --pid=pid1[,pid2...]   select processes from this list\n");
+	fprintf(out, "  -s, --show                 pipe output to csv-show\n");
+	fprintf(out, "      --help                 display this help and exit\n");
+	fprintf(out, "      --version              output version information and exit\n");
 }
 
 static void
@@ -190,6 +188,32 @@ struct proc_data {
 	struct timespec start_time_ts;
 	struct timespec age_ts;
 };
+
+static void
+print_size_human(size_t size)
+{
+	if (size < 10 * 1024) {
+		printf("%lu B", size);
+		return;
+	}
+	size /= 1024;
+	if (size < 10 * 1024) {
+		printf("%lu KiB", size);
+		return;
+	}
+	size /= 1024;
+	if (size < 10 * 1024) {
+		printf("%lu MiB", size);
+		return;
+	}
+	size /= 1024;
+	if (size < 10 * 1024) {
+		printf("%lu GiB", size);
+		return;
+	}
+	size /= 1024;
+	printf("%lu TiB", size);
+}
 
 static void
 print_tid(const void *p)
@@ -363,7 +387,7 @@ print_nice(const void *p)
 }
 
 static void
-print_rss(const void *p)
+print_rss_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%ld", pd->proc->rss * PageSize);
@@ -391,7 +415,7 @@ print_sched(const void *p)
 }
 
 static void
-print_vsize(const void *p)
+print_vsize_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%lu", pd->proc->vsize);
@@ -440,10 +464,10 @@ print_cmaj_flt(const void *p)
 }
 
 static void
-print_tty(const void *p)
+print_tty_id(const void *p)
 {
 	const struct proc_data *pd = p;
-	printf("%d", pd->proc->tty);
+	printf("0x%x", pd->proc->tty);
 }
 
 static void
@@ -503,77 +527,91 @@ print_pending_signals_per_task(const void *p)
 }
 
 static void
-print_vm_size(const void *p)
+print_vm_size_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%lu", pd->proc->vm_size * 1024);
 }
 
 static void
-print_vm_lock(const void *p)
+print_vm_size(const void *p)
+{
+	const struct proc_data *pd = p;
+	print_size_human(pd->proc->vm_size * 1024);
+}
+
+static void
+print_vm_lock_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%lu", pd->proc->vm_lock * 1024);
 }
 
 static void
-print_vm_rss(const void *p)
+print_vm_rss_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%lu", pd->proc->vm_rss * 1024);
 }
 
 static void
-print_vm_rss_anon(const void *p)
+print_vm_rss(const void *p)
+{
+	const struct proc_data *pd = p;
+	print_size_human(pd->proc->vm_rss * 1024);
+}
+
+static void
+print_vm_rss_anon_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%lu", pd->proc->vm_rss_anon * 1024);
 }
 
 static void
-print_vm_rss_file(const void *p)
+print_vm_rss_file_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%lu", pd->proc->vm_rss_file * 1024);
 }
 
 static void
-print_vm_rss_shared(const void *p)
+print_vm_rss_shared_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%lu", pd->proc->vm_rss_shared * 1024);
 }
 
 static void
-print_vm_data(const void *p)
+print_vm_data_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%lu", pd->proc->vm_data * 1024);
 }
 
 static void
-print_vm_stack(const void *p)
+print_vm_stack_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%lu", pd->proc->vm_stack * 1024);
 }
 
 static void
-print_vm_swap(const void *p)
+print_vm_swap_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%lu", pd->proc->vm_swap * 1024);
 }
 
 static void
-print_vm_exe(const void *p)
+print_vm_exe_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%lu", pd->proc->vm_exe * 1024);
 }
 
 static void
-print_vm_lib(const void *p)
+print_vm_lib_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%lu", pd->proc->vm_lib * 1024);
@@ -629,35 +667,35 @@ print_supgid(const void *p)
 }
 
 static void
-print_size(const void *p)
+print_size_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%ld", pd->proc->size * PageSize);
 }
 
 static void
-print_resident(const void *p)
+print_resident_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%ld", pd->proc->resident * PageSize);
 }
 
 static void
-print_share(const void *p)
+print_share_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%ld", pd->proc->share * PageSize);
 }
 
 static void
-print_trs(const void *p)
+print_trs_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%ld", pd->proc->trs * PageSize);
 }
 
 static void
-print_drs(const void *p)
+print_drs_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%ld", pd->proc->drs * PageSize);
@@ -678,6 +716,30 @@ print_cmdline(const void *p)
 			if (*cmd)
 				putchar(',');
 		}
+	}
+
+	putchar('"');
+}
+
+static void
+print_command(const void *p)
+{
+	const struct proc_data *pd = p;
+	putchar('"');
+
+	char **cmd = pd->proc->cmdline;
+
+	if (cmd) {
+		while (*cmd) {
+			print_inside_quote(*cmd, strlen(*cmd));
+			cmd++;
+			if (*cmd)
+				putchar(' ');
+		}
+	} else {
+		putchar('[');
+		print_inside_quote(pd->proc->cmd, strlen(pd->proc->cmd));
+		putchar(']');
 	}
 
 	putchar('"');
@@ -905,14 +967,14 @@ print_supgid_names(const void *p)
 }
 
 static void
-print_time_ms(const void *p)
+print_cpu_time_ms(const void *p)
 {
 	const struct proc_data *pd = p;
 	printf("%llu", time_in_ms(pd->proc->utime + pd->proc->stime));
 }
 
 static void
-print_time(const void *p)
+print_cpu_time(const void *p)
 {
 	const struct proc_data *pd = p;
 	unsigned long long time = time_in_ms(pd->proc->utime + pd->proc->stime);
@@ -985,6 +1047,24 @@ print_age(const void *p)
 		printf("%um:%02u.%03us", m, s, ms);
 	else
 		printf("%u.%03us", s, ms);
+}
+
+static void
+print_cpu_percent(const void *p)
+{
+	const struct proc_data *pd = p;
+	unsigned long long cpu_time_ms =
+			time_in_ms(pd->proc->utime + pd->proc->stime);
+	unsigned long long age_ms = pd->age_ts.tv_sec * 1000 +
+			pd->age_ts.tv_nsec / 1000000;
+
+	if (cpu_time_ms > age_ms)
+		cpu_time_ms = age_ms;
+
+	if (age_ms == 0)
+		printf("0");
+	else
+		printf("%llu", 100 * cpu_time_ms / age_ms);
 }
 
 static void
@@ -1297,144 +1377,149 @@ main(int argc, char *argv[])
 	};
 
 	struct column_info columns[] = {
-		/* always available */
-		{ true, 0, "tid",           TYPE_INT,    print_tid, DEF },
-		{ true, 0, "tgid",          TYPE_INT,    print_tgid, DEF },
-		{ true, 0, "euid",          TYPE_INT,    print_euid, DEF },
-		{ true, 0, "egid",          TYPE_INT,    print_egid, DEF },
+		{ true,  0, 0, "euid_name",     TYPE_STRING, print_euid_name, DEF | USR_GRP },
+		{ true,  0, 0, "pid",           TYPE_INT,    print_tgid, DEF },
+		{ true,  0, 0, "ppid",          TYPE_INT,    print_ppid, STAT_OR_STATUS },
+		{ true,  0, 0, "%cpu",          TYPE_INT,    print_cpu_percent, STAT | AGE },
+		{ true,  0, 0, "vm_size",       TYPE_STRING, print_vm_size, STATUS },
+		{ true,  0, 0, "vm_rss",        TYPE_STRING, print_vm_rss, STATUS },
+		{ true,  0, 0, "tty_id",        TYPE_INT,    print_tty_id, STAT },
+		{ true,  0, 0, "state",         TYPE_STRING, print_state, STAT_OR_STATUS },
+		{ true,  0, 0, "start_time",    TYPE_STRING, print_start_time, STAT | START_TIME },
+		{ true,  0, 0, "cpu_time",      TYPE_STRING, print_cpu_time, STAT },
+		{ true,  0, 0, "processor",     TYPE_INT,    print_processor, STAT },
+		{ true,  0, 0, "command",       TYPE_STRING, print_command, STAT_OR_STATUS | CMDLINE },
 
-		/* from stat or status */
-		{ true, 0, "ppid",          TYPE_INT,    print_ppid, STAT_OR_STATUS },
-		{ true, 0, "state",         TYPE_STRING, print_state, STAT_OR_STATUS },
-		{ true, 0, "cmd",           TYPE_STRING, print_cmd, STAT_OR_STATUS },
-		{ true, 0, "nlwp",          TYPE_INT,    print_nlwp, STAT_OR_STATUS },
-		{ true, 0, "wchan",         TYPE_INT,    print_wchan, STAT_OR_STATUS },
+		{ false, 0, 1, "euid",          TYPE_INT,    print_euid, DEF },
+		{ false, 0, 1, "tid",           TYPE_INT,    print_tid, DEF },
+		{ false, 0, 1, "cpu_time_ms",   TYPE_INT,    print_cpu_time_ms, STAT },
 
-		/* from stat */
-		{ true, 0, "pgrp",          TYPE_INT,    print_pgrp, STAT },
-		{ true, 0, "session",       TYPE_INT,    print_session, STAT },
+		{ false, 0, 1, "age",           TYPE_STRING, print_age, STAT | START_TIME | AGE },
 
-		{ true, 0, "user_time_ms",              TYPE_INT, print_user_time_ms, STAT },
-		{ true, 0, "system_time_ms",            TYPE_INT, print_system_time_ms, STAT },
-		{ true, 0, "cumulative_user_time_ms",   TYPE_INT, print_cumulative_user_time_ms, STAT },
-		{ true, 0, "cumulative_system_time_ms", TYPE_INT, print_cumulative_system_time_ms, STAT },
-		{ true, 0, "start_time_sec",            TYPE_INT, print_start_time_sec, STAT | START_TIME },
-		{ true, 0, "start_time_msec",           TYPE_INT, print_start_time_msec, STAT | START_TIME },
+		{ false, 0, 1, "egid_name",     TYPE_STRING, print_egid_name, DEF | USR_GRP },
+		{ false, 0, 1, "ruid_name",     TYPE_STRING, print_ruid_name, STATUS | USR_GRP },
+		{ false, 0, 1, "rgid_name",     TYPE_STRING, print_rgid_name, STATUS | USR_GRP },
+		{ false, 0, 1, "suid_name",     TYPE_STRING, print_suid_name, STATUS | USR_GRP },
+		{ false, 0, 1, "sgid_name",     TYPE_STRING, print_sgid_name, STATUS | USR_GRP },
+		{ false, 0, 1, "fuid_name",     TYPE_STRING, print_fuid_name, STATUS | USR_GRP },
+		{ false, 0, 1, "fgid_name",     TYPE_STRING, print_fgid_name, STATUS | USR_GRP },
+		{ false, 0, 1, "supgid_names",  TYPE_STRING, print_supgid_names, STATUS | USR_GRP },
 
-		{ true, 0, "start_code",    TYPE_INT, print_start_code, STAT },
-		{ true, 0, "end_code",      TYPE_INT, print_end_code, STAT },
-		{ true, 0, "start_stack",   TYPE_INT, print_start_stack, STAT },
-		{ true, 0, "kstk_esp",      TYPE_INT, print_kstk_esp, STAT },
-		{ true, 0, "kstk_eip",      TYPE_INT, print_kstk_eip, STAT },
+		{ false, 0, 2, "egid",          TYPE_INT,    print_egid, DEF },
+		{ false, 0, 2, "ruid",          TYPE_INT, print_ruid, STATUS },
+		{ false, 0, 2, "rgid",          TYPE_INT, print_rgid, STATUS },
+		{ false, 0, 2, "suid",          TYPE_INT, print_suid, STATUS },
+		{ false, 0, 2, "sgid",          TYPE_INT, print_sgid, STATUS },
+		{ false, 0, 2, "fuid",          TYPE_INT, print_fuid, STATUS },
+		{ false, 0, 2, "fgid",          TYPE_INT, print_fgid, STATUS },
+		{ false, 0, 2, "supgid",        TYPE_STRING, print_supgid, STATUS },
 
-		{ true, 0, "priority",      TYPE_INT, print_priority, STAT },
-		{ true, 0, "nice",          TYPE_INT, print_nice, STAT },
-		{ true, 0, "rss",           TYPE_INT, print_rss, STAT },
-		{ true, 0, "alarm",         TYPE_INT, print_alarm, STAT },
+		{ false, 0, 2, "age_sec",       TYPE_INT,    print_age_sec, STAT | START_TIME | AGE },
+		{ false, 0, 2, "age_msec",      TYPE_INT,    print_age_msec, STAT | START_TIME | AGE },
 
-		{ true, 0, "rtprio",        TYPE_INT, print_rtprio, STAT },
-		{ true, 0, "sched",         TYPE_INT, print_sched, STAT },
-		{ true, 0, "vsize",         TYPE_INT, print_vsize, STAT },
-		{ true, 0, "rss_rlim",      TYPE_INT, print_rss_rlim, STAT },
-		{ true, 0, "flags",         TYPE_INT, print_flags, STAT },
-		{ true, 0, "min_flt",       TYPE_INT, print_min_flt, STAT },
-		{ true, 0, "maj_flt",       TYPE_INT, print_maj_flt, STAT },
-		{ true, 0, "cmin_flt",      TYPE_INT, print_cmin_flt, STAT },
-		{ true, 0, "cmaj_flt",      TYPE_INT, print_cmaj_flt, STAT },
+		{ false, 0, 2, "vm_size_B",     TYPE_INT, print_vm_size_bytes, STATUS },
+		{ false, 0, 2, "vm_lock_B",     TYPE_INT, print_vm_lock_bytes, STATUS },
+		{ false, 0, 2, "vm_rss_B",      TYPE_INT, print_vm_rss_bytes, STATUS },
+		{ false, 0, 2, "vm_rss_anon_B", TYPE_INT, print_vm_rss_anon_bytes, STATUS },
+		{ false, 0, 2, "vm_rss_file_B", TYPE_INT, print_vm_rss_file_bytes, STATUS },
+		{ false, 0, 2, "vm_rss_shared_B", TYPE_INT, print_vm_rss_shared_bytes, STATUS },
+		{ false, 0, 2, "vm_data_B",     TYPE_INT, print_vm_data_bytes, STATUS },
+		{ false, 0, 2, "vm_stack_B",    TYPE_INT, print_vm_stack_bytes, STATUS },
+		{ false, 0, 2, "vm_swap_B",     TYPE_INT, print_vm_swap_bytes, STATUS },
+		{ false, 0, 2, "vm_exe_B",      TYPE_INT, print_vm_exe_bytes, STATUS },
+		{ false, 0, 2, "vm_lib_B",      TYPE_INT, print_vm_lib_bytes, STATUS },
 
-		{ true, 0, "tty",           TYPE_INT, print_tty, STAT },
-		{ true, 0, "tpgid",         TYPE_INT, print_tpgid, STAT },
-		{ true, 0, "exit_signal",   TYPE_INT, print_exit_signal, STAT },
-		{ true, 0, "processor",     TYPE_INT, print_processor, STAT },
+		{ false, 0, 2, "priority",      TYPE_INT, print_priority, STAT },
+		{ false, 0, 2, "nice",          TYPE_INT, print_nice, STAT },
 
-		/* from status */
-		{ true, 0, "pending_signals",          TYPE_STRING, print_pending_signals, STATUS },
-		{ true, 0, "blocked_signals",          TYPE_STRING, print_blocked_signals, STATUS },
-		{ true, 0, "ignored_signals",          TYPE_STRING, print_ignored_signals, STATUS },
-		{ true, 0, "caught_signals",           TYPE_STRING, print_caught_signals, STATUS },
-		{ true, 0, "pending_signals_per_task", TYPE_STRING, print_pending_signals_per_task, STATUS },
+		{ false, 0, 3, "cmd",           TYPE_STRING, print_cmd, STAT_OR_STATUS },
+		{ false, 0, 3, "nlwp",          TYPE_INT,    print_nlwp, STAT_OR_STATUS },
+		{ false, 0, 3, "wchan",         TYPE_INT,    print_wchan, STAT_OR_STATUS },
 
-		{ true, 0, "vm_size",       TYPE_INT, print_vm_size, STATUS },
-		{ true, 0, "vm_lock",       TYPE_INT, print_vm_lock, STATUS },
-		{ true, 0, "vm_rss",        TYPE_INT, print_vm_rss, STATUS },
-		{ true, 0, "vm_rss_anon",   TYPE_INT, print_vm_rss_anon, STATUS },
-		{ true, 0, "vm_rss_file",   TYPE_INT, print_vm_rss_file, STATUS },
-		{ true, 0, "vm_rss_shared", TYPE_INT, print_vm_rss_shared, STATUS },
-		{ true, 0, "vm_data",       TYPE_INT, print_vm_data, STATUS },
-		{ true, 0, "vm_stack",      TYPE_INT, print_vm_stack, STATUS },
-		{ true, 0, "vm_swap",       TYPE_INT, print_vm_swap, STATUS },
-		{ true, 0, "vm_exe",        TYPE_INT, print_vm_exe, STATUS },
-		{ true, 0, "vm_lib",        TYPE_INT, print_vm_lib, STATUS },
+		{ false, 0, 3, "pgrp",          TYPE_INT,    print_pgrp, STAT },
+		{ false, 0, 3, "session",       TYPE_INT,    print_session, STAT },
 
-		{ true, 0, "ruid",          TYPE_INT, print_ruid, STATUS },
-		{ true, 0, "rgid",          TYPE_INT, print_rgid, STATUS },
-		{ true, 0, "suid",          TYPE_INT, print_suid, STATUS },
-		{ true, 0, "sgid",          TYPE_INT, print_sgid, STATUS },
-		{ true, 0, "fuid",          TYPE_INT, print_fuid, STATUS },
-		{ true, 0, "fgid",          TYPE_INT, print_fgid, STATUS },
+		{ false, 0, 3, "user_time_ms",              TYPE_INT, print_user_time_ms, STAT },
+		{ false, 0, 3, "system_time_ms",            TYPE_INT, print_system_time_ms, STAT },
+		{ false, 0, 3, "cumulative_user_time_ms",   TYPE_INT, print_cumulative_user_time_ms, STAT },
+		{ false, 0, 3, "cumulative_system_time_ms", TYPE_INT, print_cumulative_system_time_ms, STAT },
+		{ false, 0, 3, "start_time_sec",            TYPE_INT, print_start_time_sec, STAT | START_TIME },
+		{ false, 0, 3, "start_time_msec",           TYPE_INT, print_start_time_msec, STAT | START_TIME },
 
-		{ true, 0, "supgid",        TYPE_STRING, print_supgid, STATUS },
+		{ false, 0, 3, "rss_B",         TYPE_INT, print_rss_bytes, STAT },
+		{ false, 0, 3, "rtprio",        TYPE_INT, print_rtprio, STAT },
+		{ false, 0, 3, "sched",         TYPE_INT, print_sched, STAT },
+		{ false, 0, 3, "min_flt",       TYPE_INT, print_min_flt, STAT },
+		{ false, 0, 3, "maj_flt",       TYPE_INT, print_maj_flt, STAT },
+		{ false, 0, 3, "cmin_flt",      TYPE_INT, print_cmin_flt, STAT },
+		{ false, 0, 3, "cmaj_flt",      TYPE_INT, print_cmaj_flt, STAT },
+		{ false, 0, 3, "tpgid",         TYPE_INT, print_tpgid, STAT },
 
-		/* from statm */
-		{ true, 0, "size",          TYPE_INT, print_size, STATM },
-		{ true, 0, "resident",      TYPE_INT, print_resident, STATM },
-		{ true, 0, "share",         TYPE_INT, print_share, STATM },
-		{ true, 0, "trs",           TYPE_INT, print_trs, STATM },
-		{ true, 0, "drs",           TYPE_INT, print_drs, STATM },
+		{ false, 0, 3, "size_B",        TYPE_INT, print_size_bytes, STATM },
+		{ false, 0, 3, "resident_B",    TYPE_INT, print_resident_bytes, STATM },
+		{ false, 0, 3, "share_B",       TYPE_INT, print_share_bytes, STATM },
+		{ false, 0, 3, "trs_B",         TYPE_INT, print_trs_bytes, STATM },
+		{ false, 0, 3, "drs_B",         TYPE_INT, print_drs_bytes, STATM },
 
-		/* other */
-		{ true, 0, "cmdline",       TYPE_STRING_ARR, print_cmdline, CMDLINE },
-		{ true, 0, "cgroup",        TYPE_STRING_ARR, print_cgroup, CGROUP },
+		{ false, 0, 3, "cmdline",       TYPE_STRING_ARR, print_cmdline, CMDLINE },
 
-		{ true, 0, "oom_score",     TYPE_INT, print_oom_score, OOM },
-		{ true, 0, "oom_adj",       TYPE_INT, print_oom_adj, OOM },
+		{ false, 0, 4, "alarm",         TYPE_INT, print_alarm, STAT },
 
-		{ true, 0, "ns_ipc",        TYPE_INT, print_ns_ipc, NS },
-		{ true, 0, "ns_mnt",        TYPE_INT, print_ns_mnt, NS },
-		{ true, 0, "ns_net",        TYPE_INT, print_ns_net, NS },
-		{ true, 0, "ns_pid",        TYPE_INT, print_ns_pid, NS },
-		{ true, 0, "ns_user",       TYPE_INT, print_ns_user, NS },
-		{ true, 0, "ns_uts",        TYPE_INT, print_ns_uts, NS },
+		{ false, 0, 4, "start_code",    TYPE_INT, print_start_code, STAT },
+		{ false, 0, 4, "end_code",      TYPE_INT, print_end_code, STAT },
+		{ false, 0, 4, "start_stack",   TYPE_INT, print_start_stack, STAT },
+		{ false, 0, 4, "kstk_esp",      TYPE_INT, print_kstk_esp, STAT },
+		{ false, 0, 4, "kstk_eip",      TYPE_INT, print_kstk_eip, STAT },
 
-		{ true, 0, "sd_mach",       TYPE_STRING, print_sd_mach, SD },
-		{ true, 0, "sd_ouid",       TYPE_STRING, print_sd_ouid, SD },
-		{ true, 0, "sd_seat",       TYPE_STRING, print_sd_seat, SD },
-		{ true, 0, "sd_sess",       TYPE_STRING, print_sd_sess, SD },
-		{ true, 0, "sd_slice",      TYPE_STRING, print_sd_slice, SD },
-		{ true, 0, "sd_unit",       TYPE_STRING, print_sd_unit, SD },
-		{ true, 0, "sd_uunit",      TYPE_STRING, print_sd_uunit, SD },
+		{ false, 0, 4, "vsize_B",       TYPE_INT, print_vsize_bytes, STAT },
+		{ false, 0, 4, "rss_rlim",      TYPE_INT, print_rss_rlim, STAT },
+		{ false, 0, 4, "flags",         TYPE_INT, print_flags, STAT },
 
-		{ true, 0, "lxcname",       TYPE_STRING, print_lxcname, LXC },
+		{ false, 0, 4, "exit_signal",   TYPE_INT, print_exit_signal, STAT },
 
-		{ true, 0, "environ",       TYPE_STRING, print_environ, ENVIRON },
+		{ false, 0, 4, "pending_signals",          TYPE_STRING, print_pending_signals, STATUS },
+		{ false, 0, 4, "blocked_signals",          TYPE_STRING, print_blocked_signals, STATUS },
+		{ false, 0, 4, "ignored_signals",          TYPE_STRING, print_ignored_signals, STATUS },
+		{ false, 0, 4, "caught_signals",           TYPE_STRING, print_caught_signals, STATUS },
+		{ false, 0, 4, "pending_signals_per_task", TYPE_STRING, print_pending_signals_per_task, STATUS },
 
-		{ true, 0, "euid_name",     TYPE_STRING, print_euid_name, DEF | USR_GRP },
-		{ true, 0, "egid_name",     TYPE_STRING, print_egid_name, DEF | USR_GRP },
+		{ false, 0, 4, "oom_score",     TYPE_INT, print_oom_score, OOM },
+		{ false, 0, 4, "oom_adj",       TYPE_INT, print_oom_adj, OOM },
 
-		{ true, 0, "ruid_name",     TYPE_STRING, print_ruid_name, STATUS | USR_GRP },
-		{ true, 0, "rgid_name",     TYPE_STRING, print_rgid_name, STATUS | USR_GRP },
-		{ true, 0, "suid_name",     TYPE_STRING, print_suid_name, STATUS | USR_GRP },
-		{ true, 0, "sgid_name",     TYPE_STRING, print_sgid_name, STATUS | USR_GRP },
-		{ true, 0, "fuid_name",     TYPE_STRING, print_fuid_name, STATUS | USR_GRP },
-		{ true, 0, "fgid_name",     TYPE_STRING, print_fgid_name, STATUS | USR_GRP },
+		{ false, 0, 4, "ns_ipc",        TYPE_INT, print_ns_ipc, NS },
+		{ false, 0, 4, "ns_mnt",        TYPE_INT, print_ns_mnt, NS },
+		{ false, 0, 4, "ns_net",        TYPE_INT, print_ns_net, NS },
+		{ false, 0, 4, "ns_pid",        TYPE_INT, print_ns_pid, NS },
+		{ false, 0, 4, "ns_user",       TYPE_INT, print_ns_user, NS },
+		{ false, 0, 4, "ns_uts",        TYPE_INT, print_ns_uts, NS },
 
-		{ true, 0, "supgid_names",  TYPE_STRING, print_supgid_names, STATUS | USR_GRP },
+		{ false, 0, 4, "sd_mach",       TYPE_STRING, print_sd_mach, SD },
+		{ false, 0, 4, "sd_ouid",       TYPE_STRING, print_sd_ouid, SD },
+		{ false, 0, 4, "sd_seat",       TYPE_STRING, print_sd_seat, SD },
+		{ false, 0, 4, "sd_sess",       TYPE_STRING, print_sd_sess, SD },
+		{ false, 0, 4, "sd_slice",      TYPE_STRING, print_sd_slice, SD },
+		{ false, 0, 4, "sd_unit",       TYPE_STRING, print_sd_unit, SD },
+		{ false, 0, 4, "sd_uunit",      TYPE_STRING, print_sd_uunit, SD },
 
-		{ true, 0, "time_ms",       TYPE_INT,    print_time_ms, STAT },
-		{ true, 0, "time",          TYPE_STRING, print_time, STAT },
+		{ false, 0, 4, "lxcname",       TYPE_STRING, print_lxcname, LXC },
 
-		{ true, 0, "start_time",    TYPE_STRING, print_start_time, STAT | START_TIME },
-		{ true, 0, "age_sec",       TYPE_INT,    print_age_sec, STAT | START_TIME | AGE },
-		{ true, 0, "age_msec",      TYPE_INT,    print_age_msec, STAT | START_TIME | AGE },
-		{ true, 0, "age",           TYPE_STRING, print_age, STAT | START_TIME | AGE },
+		{ false, 0, 4, "environ",       TYPE_STRING, print_environ, ENVIRON },
+		{ false, 0, 4, "cgroup",        TYPE_STRING_ARR, print_cgroup, CGROUP },
 	};
 
 	size_t ncolumns = ARRAY_SIZE(columns);
+	int level = 0;
 
-	while ((opt = getopt_long(argc, argv, "f:L:Mp:s", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "f:lL:Mp:s", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'f':
 				cols = xstrdup_nofail(optarg);
+				break;
+			case 'l':
+				level++;
+				for (size_t i = 0; i < ncolumns; ++i)
+					if (columns[i].level <= level)
+						columns[i].vis = true;
 				break;
 			case 'L':
 				label = strdup(optarg);

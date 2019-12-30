@@ -1,1 +1,1 @@
-_label:string,label1.name:string,label1.id:int,label1.something:int,user.name:string,user.passwd:string,user.uid:int,user.gid:int,user.gecos:string,user.dir:string,user.shell:string
+_label:string,label1.name:string,label1.id:int,label1.something:int,user.name:string,user.uid:int,user.gid:int,user.dir:string,user.shell:string

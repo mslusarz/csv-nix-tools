@@ -180,6 +180,7 @@ enum output_types { TYPE_STRING, TYPE_INT, TYPE_STRING_ARR, TYPE_INT_ARR };
 struct column_info {
 	bool vis;
 	size_t order;
+	size_t level;
 	const char *name;
 	enum output_types type;
 	print_fn print;

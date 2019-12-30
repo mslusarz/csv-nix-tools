@@ -1,13 +1,14 @@
 Usage: csv-ls [OPTION]... [FILE]...
 Options:
-  -a, --all
-  -d, --directory
+  -a, --all                  do not ignore entries starting with .
+  -d, --directory            list directories themselves, not their contents
   -f, --fields=name1[,name2...]
-  -M, --merge-with-stdin
-  -L, --label label
-  -l
-  -R, --recursive
-  -s, --show
-  -U
-      --help
-      --version
+                             choose the list of columns
+  -M, --merge-with-stdin     
+  -L, --label label          
+  -l                         use a longer listing format (can be used up to 3 times)
+  -R, --recursive            list subdirectories recursively
+  -s, --show                 pipe output to csv-show
+  -U                         do not sort; list entries in directory order
+      --help                 display this help and exit
+      --version              output version information and exit

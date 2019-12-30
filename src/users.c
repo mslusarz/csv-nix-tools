@@ -55,11 +55,13 @@ usage(FILE *out)
 	fprintf(out, "Usage: csv-users [OPTION]...\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -f, --fields=name1[,name2...]\n");
-	fprintf(out, "  -M, --merge-with-stdin\n");
-	fprintf(out, "  -L, --label label\n");
-	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --help\n");
-	fprintf(out, "      --version\n");
+	fprintf(out, "                             choose the list of columns\n");
+	fprintf(out, "  -M, --merge-with-stdin     \n");
+	fprintf(out, "  -L, --label label          \n");
+	fprintf(out, "  -l                         use a longer listing format (can be used up to 2 times)\n");
+	fprintf(out, "  -s, --show                 pipe output to csv-show\n");
+	fprintf(out, "      --help                 display this help and exit\n");
+	fprintf(out, "      --version              output version information and exit\n");
 }
 
 static void
@@ -121,20 +123,27 @@ main(int argc, char *argv[])
 	char *label = NULL;
 
 	struct column_info columns[] = {
-			{ true, 0, "name",        TYPE_STRING, print_name },
-			{ true, 0, "passwd",      TYPE_STRING, print_passwd },
-			{ true, 0, "uid",         TYPE_INT,    print_uid },
-			{ true, 0, "gid",         TYPE_INT,    print_gid },
-			{ true, 0, "gecos",       TYPE_STRING, print_gecos },
-			{ true, 0, "dir",         TYPE_STRING, print_dir },
-			{ true, 0, "shell",       TYPE_STRING, print_shell },
+			{ true,  0, 0, "name",   TYPE_STRING, print_name },
+			{ false, 0, 2, "passwd", TYPE_STRING, print_passwd },
+			{ true,  0, 0, "uid",    TYPE_INT,    print_uid },
+			{ true,  0, 0, "gid",    TYPE_INT,    print_gid },
+			{ false, 0, 1, "gecos",  TYPE_STRING, print_gecos },
+			{ true,  0, 0, "dir",    TYPE_STRING, print_dir },
+			{ true,  0, 0, "shell",  TYPE_STRING, print_shell },
 	};
 	size_t ncolumns = ARRAY_SIZE(columns);
+	int level = 0;
 
-	while ((opt = getopt_long(argc, argv, "f:L:Ms", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "f:lL:Ms", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'f':
 				cols = xstrdup_nofail(optarg);
+				break;
+			case 'l':
+				level++;
+				for (size_t i = 0; i < ncolumns; ++i)
+					if (columns[i].level <= level)
+						columns[i].vis = true;
 				break;
 			case 'L':
 				label = strdup(optarg);

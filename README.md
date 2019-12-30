@@ -74,20 +74,43 @@ Sink:
 
 # Examples
 
-Raw data about one file:
+List of files in directory:
 
 ```
-$ csv-ls build/Makefile
-size:int,type:int,mode:int,owner_id:int,group_id:int,nlink:int,mtime_sec:int,mtime_nsec:int,ctime_sec:int,ctime_nsec:int,atime_sec:int,atime_nsec:int,dev:int,ino:int,rdev:int,blksize:int,blocks:int,symlink:string,parent:string,name:string
-18746,0100000,0644,1000,1000,1,1557072822,286415067,1557072822,286415067,1557072849,958066747,0x801,16126121,0,4096,40,,,build/Makefile
+$ csv-ls doc
+name:string
+csv-cat.1.md
+csv-head.1.md
+csv-nix-tools.7.md
+csv-show.1.md
+csv-tac.1.md
+csv-tail.1.md
 ```
 
-Raw and processed data about one file:
+Extended information about files in one directory:
 
 ```
-$ csv-ls -l build/Makefile
-size:int,type:int,mode:int,owner_id:int,group_id:int,nlink:int,mtime_sec:int,mtime_nsec:int,ctime_sec:int,ctime_nsec:int,atime_sec:int,atime_nsec:int,dev:int,ino:int,rdev:int,blksize:int,blocks:int,type:string,owner_name:string,group_name:string,owner_read:int,owner_write:int,owner_execute:int,group_read:int,group_write:int,group_execute:int,other_read:int,other_write:int,other_execute:int,setuid:int,setgid:int,sticky:int,mtime:string,ctime:string,atime:string,symlink:string,parent:string,name:string,full_path:string
-18746,0100000,0644,1000,1000,1,1557072822,286415067,1557072822,286415067,1557072849,958066747,0x801,16126121,0,4096,40,reg,marcin,marcin,1,1,0,1,0,0,1,0,0,0,0,0,2019-05-05 18:13:42.286415067,2019-05-05 18:13:42.286415067,2019-05-05 18:14:09.958066747,,,build/Makefile,build/Makefile
+$ csv-ls -l doc
+type_mode:string,nlink:int,owner_name:string,group_name:string,size:int,mtime:string,name:string,symlink:string
+-rwxr-xr-x ,1,marcin,marcin,773,2019-12-23 01:24:58.478029642,csv-cat.1.md,
+-rwxr-xr-x ,1,marcin,marcin,721,2019-12-23 02:15:21.074174728,csv-head.1.md,
+-rwxr-xr-x ,1,marcin,marcin,1673,2019-12-23 02:16:07.494064188,csv-nix-tools.7.md,
+-rwxr-xr-x ,1,marcin,marcin,1476,2019-12-23 02:43:08.227018848,csv-show.1.md,
+-rwxr-xr-x ,1,marcin,marcin,825,2019-12-23 01:25:09.873956973,csv-tac.1.md,
+-rwxr-xr-x ,1,marcin,marcin,710,2019-12-23 02:15:38.110135517,csv-tail.1.md,
+```
+
+Extended^3 information about files in one directory:
+
+```
+$ csv-ls -lll doc
+type_mode:string,nlink:int,owner_name:string,group_name:string,size:int,mtime:string,name:string,symlink:string,parent:string,type:int,type_name:string,mode:int,owner_read:int,owner_write:int,owner_execute:int,group_read:int,group_write:int,group_execute:int,other_read:int,other_write:int,other_execute:int,setuid:int,setgid:int,sticky:int,owner_id:int,group_id:int,ctime:string,atime:string,full_path:string,mtime_sec:int,mtime_nsec:int,ctime_sec:int,ctime_nsec:int,atime_sec:int,atime_nsec:int,dev:int,ino:int,rdev:int,blksize:int,blocks:int
+-rwxr-xr-x ,1,marcin,marcin,773,2019-12-23 01:24:58.478029642,csv-cat.1.md,,doc,0100000,reg,0644,1,1,0,1,0,0,1,0,0,0,0,0,1000,1000,2019-12-23 01:24:58.478029642,2019-12-29 20:13:34.710830508,doc/csv-cat.1.md,1577060698,478029642,1577060698,478029642,1577646814,710830508,0x801,16122673,0,4096,8
+-rwxr-xr-x ,1,marcin,marcin,721,2019-12-23 02:15:21.074174728,csv-head.1.md,,doc,0100000,reg,0644,1,1,0,1,0,0,1,0,0,0,0,0,1000,1000,2019-12-23 02:15:21.074174728,2019-12-29 20:13:34.710830508,doc/csv-head.1.md,1577063721,74174728,1577063721,74174728,1577646814,710830508,0x801,16122671,0,4096,8
+-rwxr-xr-x ,1,marcin,marcin,1673,2019-12-23 02:16:07.494064188,csv-nix-tools.7.md,,doc,0100000,reg,0644,1,1,0,1,0,0,1,0,0,0,0,0,1000,1000,2019-12-23 02:16:07.494064188,2019-12-29 20:13:34.710830508,doc/csv-nix-tools.7.md,1577063767,494064188,1577063767,494064188,1577646814,710830508,0x801,16125292,0,4096,8
+-rwxr-xr-x ,1,marcin,marcin,1476,2019-12-23 02:43:08.227018848,csv-show.1.md,,doc,0100000,reg,0644,1,1,0,1,0,0,1,0,0,0,0,0,1000,1000,2019-12-23 02:43:08.227018848,2019-12-29 20:13:34.710830508,doc/csv-show.1.md,1577065388,227018848,1577065388,227018848,1577646814,710830508,0x801,16125313,0,4096,8
+-rwxr-xr-x ,1,marcin,marcin,825,2019-12-23 01:25:09.873956973,csv-tac.1.md,,doc,0100000,reg,0644,1,1,0,1,0,0,1,0,0,0,0,0,1000,1000,2019-12-23 01:25:09.873956973,2019-12-29 20:13:34.710830508,doc/csv-tac.1.md,1577060709,873956973,1577060709,873956973,1577646814,710830508,0x801,16124245,0,4096,8
+-rwxr-xr-x ,1,marcin,marcin,710,2019-12-23 02:15:38.110135517,csv-tail.1.md,,doc,0100000,reg,0644,1,1,0,1,0,0,1,0,0,0,0,0,1000,1000,2019-12-23 02:15:38.110135517,2019-12-29 20:13:34.710830508,doc/csv-tail.1.md,1577063738,110135517,1577063738,110135517,1577646814,710830508,0x801,16125317,0,4096,8
 ```
 
 All Makefiles in the current directory and below:
@@ -95,7 +118,8 @@ All Makefiles in the current directory and below:
 ```
 $ csv-ls -f size,parent,name -R . | csv-grep -f name -x -F Makefile
 size:int,parent:string,name:string
-18746,./build,Makefile
+55358,./build,Makefile
+6345,./build/tests,Makefile
 ```
 
 Files and their sizes sorted by size and name, in descending order:
@@ -125,28 +149,28 @@ size:int,name:string
 Files owned by user=1000:
 
 ```
-$ csv-ls -R / 2>/dev/null | csv-grep -f owner_id -x -F 1000 | csv-cut -f parent,name
+$ csv-ls -R -f parent,name,owner_id / 2>/dev/null | csv-grep -f owner_id -x -F 1000 | csv-cut -f parent,name
 ...
 ```
 
 Files owned by user=marcin:
 
 ```
-$ csv-ls -lR / 2>/dev/null | csv-grep -f owner_name -x -F marcin | csv-cut -f parent,name
+$ csv-ls -R -f parent,name,owner_name / 2>/dev/null | csv-grep -f owner_name -x -F marcin | csv-cut -f parent,name
 ...
 ```
 
 Files anyone can read:
 
 ```
-$ csv-ls -lR / 2>/dev/null | csv-grep -f other_read -x -F 1 | csv-cut -f parent,name
+$ csv-ls -R -f parent,name,other_read / 2>/dev/null | csv-grep -f other_read -x -F 1 | csv-cut -f parent,name
 ...
 ```
 
 Sum of sizes of all files in the current directory:
 
 ```
-$ csv-ls . | csv-sum -f size
+$ csv-ls -l . | csv-sum -f size
 sum(size):int
 78739
 ```
@@ -177,7 +201,7 @@ size:int,name:string,base:string,ext:string
 Sum of sizes of all files with the "png" extension:
 
 ```
-$ csv-ls . | csv-split -f name -e . -n base,ext -r |
+$ csv-ls -l . | csv-split -f name -e . -n base,ext -r |
 csv-grep -f ext -x -F png | csv-sum -f size | csv-header --remove
 94877
 ```
@@ -193,11 +217,11 @@ rows:int
 List of files formatted in human-readable format (similar to ls -l) with disabled pager:
 
 ```
-$ csv-ls -l -f mode,nlink,owner_name,group_name,size,mtime,name |
-csv-show -s 1 --ui none --no-header
-0644 1  someuser    somegroup    1234     2019-04-23 20:17:58.331813826 file1
-0644 1  someuser    somegroup    30381380 2019-04-23 20:18:25.539676175 file2
-0644 12 anotheruser anothergroup 897722   2019-04-24 23:21:46.644869396 file3
+$ csv-ls -l | csv-show -s 1 --ui none --no-header
+-rwxr-xr-x  1 marcin marcin 5089  2019-12-23 00:23:36.438335394 avg.c           
+-rwxr-xr-x  1 marcin marcin 5108  2019-12-23 00:22:44.362494798 cat.c           
+-rwxr-xr-x  1 marcin marcin 5353  2019-12-14 22:19:16.197571951 concat.c        
+...
 ```
 
 List of files whose 2nd character is 'o':
@@ -273,7 +297,7 @@ $ csv-ls -f size,name | csv-rpn-filter -e "%size 2000 >= %size 3000 < and"
 ```
 
 
-Files and their permissions printed in human-readable format:
+Files and their permissions printed in human-readable format (simpler version of column type_mode):
 
 ```
 $ csv-ls -f mode,name | csv-rpn-add -f strmode -e "\
@@ -339,8 +363,8 @@ csv-replace -f file.name -E '/proc/([0-9]*)/.*' -r '%1' -n file.pid |
 csv-replace -f file.symlink -E 'socket:\[([0-9]*)\]' -r %1 -n file.inode |
 csv-netstat -M |
 csv-grep -v -f socket.family -x -F 'UNIX' |
-csv-ps -M |
-csv-sqlite -L 'select socket.protocol, socket.src_ip, socket.src_port, socket.dst_ip, socket.dst_port, socket.state, socket.uid, file.pid, proc.cmd from socket left outer join file on socket.inode = file.inode left outer join proc on file.pid = proc.tid' -s
+csv-ps -M -f pid,cmd |
+csv-sqlite -L 'select socket.protocol, socket.src_ip, socket.src_port, socket.dst_ip, socket.dst_port, socket.state, socket.uid, file.pid, proc.cmd from socket left outer join file on socket.inode = file.inode left outer join proc on file.pid = proc.pid' -s
 
 protocol   src_ip                src_port   dst_ip                 dst_port   state         uid    pid     cmd
 tcp        127.0.0.53            53         0.0.0.0                0          LISTEN        102            
@@ -403,7 +427,6 @@ raw        ::                    58         ::                     0            
 - rpn/sql: binary number parsing
 - write down data format spec
 - strict column name verification
-- ls: better default list of columns
 - show: exit if output fits on screen?
 
 ## Random ideas

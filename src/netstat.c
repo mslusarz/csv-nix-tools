@@ -100,7 +100,6 @@
 #define REQUIRES_RESOLVING (1ULL << 31)
 
 static const struct option opts[] = {
-	{"extended",		no_argument,		NULL, 'e'},
 	{"fields",		required_argument,	NULL, 'f'},
 	{"merge-with-stdin",	no_argument,		NULL, 'M'},
 	{"label",		required_argument,	NULL, 'L'},
@@ -124,22 +123,23 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-netstat [OPTION]...\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -e, --extended\n");
 	fprintf(out, "  -f, --fields=name1[,name2...]\n");
-	fprintf(out, "  -M, --merge-with-stdin\n");
-	fprintf(out, "  -L, --label label\n");
-	fprintf(out, "  -r, --resolve\n");
-	fprintf(out, "  -s, --show\n");
-//	fprintf(out, "  -S, --sctp\n");
-	fprintf(out, "  -t, --tcp\n");
-	fprintf(out, "  -u, --udp\n");
-//	fprintf(out, "  -U, --udplite\n");
-	fprintf(out, "  -w, --raw\n");
-	fprintf(out, "  -x, --unix\n");
-	fprintf(out, "  -4, --inet4\n");
-	fprintf(out, "  -6, --inet6\n");
-	fprintf(out, "      --help\n");
-	fprintf(out, "      --version\n");
+	fprintf(out, "                             choose the list of columns\n");
+	fprintf(out, "  -M, --merge-with-stdin     \n");
+	fprintf(out, "  -L, --label label          \n");
+	fprintf(out, "  -l                         use a longer listing format (can be used up to 3 times)\n");
+	fprintf(out, "  -r, --resolve              \n");
+	fprintf(out, "  -s, --show                 pipe output to csv-show\n");
+//	fprintf(out, "  -S, --sctp                 \n");
+	fprintf(out, "  -t, --tcp                  \n");
+	fprintf(out, "  -u, --udp                  \n");
+//	fprintf(out, "  -U, --udplite              \n");
+	fprintf(out, "  -w, --raw                  \n");
+	fprintf(out, "  -x, --unix                 \n");
+	fprintf(out, "  -4, --inet4                \n");
+	fprintf(out, "  -6, --inet6                \n");
+	fprintf(out, "      --help                 display this help and exit\n");
+	fprintf(out, "      --version              output version information and exit\n");
 }
 
 static inline int
@@ -1545,93 +1545,96 @@ main(int argc, char *argv[])
 	char *label = NULL;
 
 	struct column_info columns[] = {
-		{ true,  0, "family",          TYPE_STRING, print_family,         ALL },
-		{ true,  0, "protocol",        TYPE_STRING, print_protocol,       INET },
-		{ true,  0, "src_ip",          TYPE_STRING, print_src_ip,         INET },
-		{ false, 0, "src_name",        TYPE_STRING, print_src_name,       INET | REQUIRES_RESOLVING },
-		{ true,  0, "src_port",        TYPE_INT,    print_src_port,       INET },
-		{ false, 0, "src_port_name",   TYPE_STRING, print_src_port_name,  INET | REQUIRES_RESOLVING },
-		{ true,  0, "dst_ip",          TYPE_STRING, print_dst_ip,         INET },
-		{ false, 0, "dst_name",        TYPE_STRING, print_dst_name,       INET | REQUIRES_RESOLVING },
-		{ true,  0, "dst_port",        TYPE_INT,    print_dst_port,       INET },
-		{ false, 0, "dst_port_name",   TYPE_STRING, print_dst_port_name,  INET | REQUIRES_RESOLVING },
-		{ true,  0, "state",           TYPE_STRING, print_state,          ALL },
-		{ true,  0, "name",            TYPE_STRING, print_name,           UNIX | UNIX_NAME },
-		{ true,  0, "inode",           TYPE_INT,    print_inode,          ALL },
-		{ true,  0, "peer_inode",      TYPE_INT,    print_peer_inode,     UNIX | UNIX_PEER },
-		{ true,  0, "type",            TYPE_STRING, print_type,           UNIX },
-		{ true,  0, "uid",             TYPE_INT,    print_uid,            INET
+		{ true,  0, 0, "family",          TYPE_STRING, print_family,         ALL },
+		{ true,  0, 0, "protocol",        TYPE_STRING, print_protocol,       INET },
+		{ true,  0, 0, "src_ip",          TYPE_STRING, print_src_ip,         INET },
+		{ true,  0, 0, "src_port",        TYPE_INT,    print_src_port,       INET },
+		{ true,  0, 0, "dst_ip",          TYPE_STRING, print_dst_ip,         INET },
+		{ true,  0, 0, "dst_port",        TYPE_INT,    print_dst_port,       INET },
+		{ false, 0, 0, "src_name",        TYPE_STRING, print_src_name,       INET | REQUIRES_RESOLVING },
+		{ false, 0, 0, "src_port_name",   TYPE_STRING, print_src_port_name,  INET | REQUIRES_RESOLVING },
+		{ false, 0, 0, "dst_name",        TYPE_STRING, print_dst_name,       INET | REQUIRES_RESOLVING },
+		{ false, 0, 0, "dst_port_name",   TYPE_STRING, print_dst_port_name,  INET | REQUIRES_RESOLVING },
+		{ true,  0, 0, "state",           TYPE_STRING, print_state,          ALL },
+		{ true,  0, 0, "name",            TYPE_STRING, print_name,           UNIX | UNIX_NAME },
+		{ true,  0, 0, "inode",           TYPE_INT,    print_inode,          ALL },
+		{ true,  0, 0, "peer_inode",      TYPE_INT,    print_peer_inode,     UNIX | UNIX_PEER },
+		{ true,  0, 0, "type",            TYPE_STRING, print_type,           UNIX },
+		{ true,  0, 0, "uid",             TYPE_INT,    print_uid,            INET
 #if UNIX_DIAG_UID_AVAILABLE
 | UNIX | UNIX_UID
 #endif
 		},
-		{ true,  0, "pending_conns",   TYPE_INT,    print_pending_conns,  ALL | UNIX_RQLEN },
-		{ true,  0, "incoming_data",   TYPE_INT,    print_incoming_data,  ALL | UNIX_RQLEN },
-		{ true,  0, "backlog_length",  TYPE_INT,    print_backlog_length, ALL | UNIX_RQLEN },
-		{ true,  0, "outgoing_data",   TYPE_INT,    print_outgoing_data,  ALL | UNIX_RQLEN },
-		{ true,  0, "rmem_alloc",      TYPE_INT,    print_rmem_alloc,     ALL | INET_SKMEMINFO | UNIX_MEMINFO },
-		{ true,  0, "rcvbuf",          TYPE_INT,    print_rcvbuf,         ALL | INET_SKMEMINFO | UNIX_MEMINFO },
-		{ true,  0, "wmem_alloc",      TYPE_INT,    print_wmem_alloc,     ALL | INET_SKMEMINFO | UNIX_MEMINFO },
-		{ true,  0, "sndbuf",          TYPE_INT,    print_sndbuf,         ALL | INET_SKMEMINFO | UNIX_MEMINFO },
-		{ true,  0, "fwd_alloc",       TYPE_INT,    print_fwd_alloc,      ALL | INET_SKMEMINFO | UNIX_MEMINFO },
-		{ true,  0, "wmem_queued",     TYPE_INT,    print_wmem_queued,    ALL | INET_SKMEMINFO | UNIX_MEMINFO },
-		{ true,  0, "optmem",          TYPE_INT,    print_optmem,         ALL | INET_SKMEMINFO | UNIX_MEMINFO },
-		{ true,  0, "backlog",         TYPE_INT,    print_backlog,        ALL | INET_SKMEMINFO | UNIX_MEMINFO },
-		{ true,  0, "drops",           TYPE_INT,    print_drops,          ALL | INET_SKMEMINFO | UNIX_MEMINFO },
-		{ true,  0, "shutdown",        TYPE_INT,    print_shutdown,       ALL | INET_SHUTDOWN | UNIX_SHUTDOWN },
-		{ true,  0, "vfs_dev",         TYPE_INT,    print_vfs_dev,        UNIX | UNIX_VFS },
-		{ true,  0, "vfs_ino",         TYPE_INT,    print_vfs_ino,        UNIX | UNIX_VFS },
-		{ true,  0, "interface",       TYPE_INT,    print_interface,      INET },
-		{ true,  0, "timer",           TYPE_STRING, print_timer,          INET },
-		{ true,  0, "retransmits",     TYPE_INT,    print_retransmits,    INET },
-		{ true,  0, "expires_ms",      TYPE_INT,    print_expires_ms,     INET },
-		{ true,  0, "rmem",            TYPE_INT,    print_rmem,           INET | INET_MEMINFO },
-		{ true,  0, "wmem",            TYPE_INT,    print_wmem,           INET | INET_MEMINFO },
-		{ true,  0, "fmem",            TYPE_INT,    print_fmem,           INET | INET_MEMINFO },
-		{ true,  0, "tmem",            TYPE_INT,    print_tmem,           INET | INET_MEMINFO },
-		{ true,  0, "ipv6only",        TYPE_INT,    print_ipv6only,       INET6 },
-		{ true,  0, "user_protocol",   TYPE_STRING, print_user_protocol,  RAW },
-		{ false, 0, "cookie0",         TYPE_INT,    print_cookie0,        ALL },
-		{ false, 0, "cookie1",         TYPE_INT,    print_cookie1,        ALL },
-		{ false, 0, "icons",           TYPE_INT_ARR,print_icons,          UNIX | UNIX_ICONS },
-		{ false, 0, "cong",            TYPE_STRING, print_cong,           INET | INET_CONG },
-		{ false, 0, "tos",             TYPE_INT,    print_tos,            INET | INET_TOS },
-		{ false, 0, "tclass",          TYPE_INT,    print_tclass,         INET | INET_TCLASS },
-		{ false, 0, "locals",          TYPE_STRING, print_locals,         INET },
-		{ false, 0, "peers",           TYPE_STRING, print_peers,          INET },
-		{ false, 0, "pad",             TYPE_INT,    print_pad,            INET },
-		{ false, 0, "mark",            TYPE_INT,    print_mark,           INET },
-		{ false, 0, "class_id",        TYPE_INT,    print_class_id,       INET | INET_TCLASS },
-		{ false, 0, "md5sig",          TYPE_STRING, print_md5sig,         INET },
-		{ false, 0, "vegas_enabled",   TYPE_INT,    print_vegas_enabled,  TCP | INET_VEGASINFO },
-		{ false, 0, "vegas_rttcnt",    TYPE_INT,    print_vegas_rttcnt,   TCP | INET_VEGASINFO },
-		{ false, 0, "vegas_rtt",       TYPE_INT,    print_vegas_rtt,      TCP | INET_VEGASINFO },
-		{ false, 0, "vegas_minrtt",    TYPE_INT,    print_vegas_minrtt,   TCP | INET_VEGASINFO },
-		{ false, 0, "dctcp_enabled",   TYPE_INT,    print_dctcp_enabled,  TCP | INET_DCTCPINFO },
-		{ false, 0, "dctcp_ce_state",  TYPE_INT,    print_dctcp_ce_state, TCP | INET_DCTCPINFO },
-		{ false, 0, "dctcp_alpha",     TYPE_INT,    print_dctcp_alpha,    TCP | INET_DCTCPINFO },
-		{ false, 0, "dctcp_ab_ecn",    TYPE_INT,    print_dctcp_ab_ecn,   TCP | INET_DCTCPINFO },
-		{ false, 0, "dctcp_ab_tot",    TYPE_INT,    print_dctcp_ab_tot,   TCP | INET_DCTCPINFO },
-		{ false, 0, "bbr_bw_lo",       TYPE_INT,    print_bbr_bw_lo,      TCP | INET_BBRINFO },
-		{ false, 0, "bbr_bw_hi",       TYPE_INT,    print_bbr_bw_hi,      TCP | INET_BBRINFO },
-		{ false, 0, "bbr_min_rtt",     TYPE_INT,    print_bbr_min_rtt,    TCP | INET_BBRINFO },
-		{ false, 0, "bbr_pacing_gain", TYPE_INT,    print_bbr_pacing_gain,TCP | INET_BBRINFO },
-		{ false, 0, "bbr_cwnd_gain",   TYPE_INT,    print_bbr_cwnd_gain,  TCP | INET_BBRINFO },
-		{ false, 0, "info",            TYPE_STRING, print_info,           INET | INET_INFO },
+		{ true,  0, 0, "interface",       TYPE_INT,    print_interface,      INET },
+		{ false, 0, 1, "pending_conns",   TYPE_INT,    print_pending_conns,  ALL | UNIX_RQLEN },
+		{ false, 0, 1, "incoming_data",   TYPE_INT,    print_incoming_data,  ALL | UNIX_RQLEN },
+		{ false, 0, 1, "backlog_length",  TYPE_INT,    print_backlog_length, ALL | UNIX_RQLEN },
+		{ false, 0, 1, "outgoing_data",   TYPE_INT,    print_outgoing_data,  ALL | UNIX_RQLEN },
+		{ false, 0, 1, "rmem_alloc",      TYPE_INT,    print_rmem_alloc,     ALL | INET_SKMEMINFO | UNIX_MEMINFO },
+		{ false, 0, 1, "rcvbuf",          TYPE_INT,    print_rcvbuf,         ALL | INET_SKMEMINFO | UNIX_MEMINFO },
+		{ false, 0, 1, "wmem_alloc",      TYPE_INT,    print_wmem_alloc,     ALL | INET_SKMEMINFO | UNIX_MEMINFO },
+		{ false, 0, 1, "sndbuf",          TYPE_INT,    print_sndbuf,         ALL | INET_SKMEMINFO | UNIX_MEMINFO },
+		{ false, 0, 1, "fwd_alloc",       TYPE_INT,    print_fwd_alloc,      ALL | INET_SKMEMINFO | UNIX_MEMINFO },
+		{ false, 0, 1, "wmem_queued",     TYPE_INT,    print_wmem_queued,    ALL | INET_SKMEMINFO | UNIX_MEMINFO },
+		{ false, 0, 1, "optmem",          TYPE_INT,    print_optmem,         ALL | INET_SKMEMINFO | UNIX_MEMINFO },
+		{ false, 0, 1, "backlog",         TYPE_INT,    print_backlog,        ALL | INET_SKMEMINFO | UNIX_MEMINFO },
+		{ false, 0, 1, "drops",           TYPE_INT,    print_drops,          ALL | INET_SKMEMINFO | UNIX_MEMINFO },
+		{ false, 0, 1, "shutdown",        TYPE_INT,    print_shutdown,       ALL | INET_SHUTDOWN | UNIX_SHUTDOWN },
+		{ false, 0, 1, "vfs_dev",         TYPE_INT,    print_vfs_dev,        UNIX | UNIX_VFS },
+		{ false, 0, 1, "vfs_ino",         TYPE_INT,    print_vfs_ino,        UNIX | UNIX_VFS },
+		{ false, 0, 1, "timer",           TYPE_STRING, print_timer,          INET },
+		{ false, 0, 1, "retransmits",     TYPE_INT,    print_retransmits,    INET },
+		{ false, 0, 1, "expires_ms",      TYPE_INT,    print_expires_ms,     INET },
+		{ false, 0, 1, "rmem",            TYPE_INT,    print_rmem,           INET | INET_MEMINFO },
+		{ false, 0, 1, "wmem",            TYPE_INT,    print_wmem,           INET | INET_MEMINFO },
+		{ false, 0, 1, "fmem",            TYPE_INT,    print_fmem,           INET | INET_MEMINFO },
+		{ false, 0, 1, "tmem",            TYPE_INT,    print_tmem,           INET | INET_MEMINFO },
+		{ false, 0, 1, "ipv6only",        TYPE_INT,    print_ipv6only,       INET6 },
+		{ false, 0, 1, "user_protocol",   TYPE_STRING, print_user_protocol,  RAW },
+		{ false, 0, 2, "cookie0",         TYPE_INT,    print_cookie0,        ALL },
+		{ false, 0, 2, "cookie1",         TYPE_INT,    print_cookie1,        ALL },
+		{ false, 0, 2, "icons",           TYPE_INT_ARR,print_icons,          UNIX | UNIX_ICONS },
+		{ false, 0, 2, "cong",            TYPE_STRING, print_cong,           INET | INET_CONG },
+		{ false, 0, 2, "tos",             TYPE_INT,    print_tos,            INET | INET_TOS },
+		{ false, 0, 2, "tclass",          TYPE_INT,    print_tclass,         INET | INET_TCLASS },
+		{ false, 0, 2, "locals",          TYPE_STRING, print_locals,         INET },
+		{ false, 0, 2, "peers",           TYPE_STRING, print_peers,          INET },
+		{ false, 0, 2, "pad",             TYPE_INT,    print_pad,            INET },
+		{ false, 0, 2, "mark",            TYPE_INT,    print_mark,           INET },
+		{ false, 0, 2, "class_id",        TYPE_INT,    print_class_id,       INET | INET_TCLASS },
+		{ false, 0, 2, "md5sig",          TYPE_STRING, print_md5sig,         INET },
+		{ false, 0, 2, "vegas_enabled",   TYPE_INT,    print_vegas_enabled,  TCP | INET_VEGASINFO },
+		{ false, 0, 2, "vegas_rttcnt",    TYPE_INT,    print_vegas_rttcnt,   TCP | INET_VEGASINFO },
+		{ false, 0, 2, "vegas_rtt",       TYPE_INT,    print_vegas_rtt,      TCP | INET_VEGASINFO },
+		{ false, 0, 2, "vegas_minrtt",    TYPE_INT,    print_vegas_minrtt,   TCP | INET_VEGASINFO },
+		{ false, 0, 2, "dctcp_enabled",   TYPE_INT,    print_dctcp_enabled,  TCP | INET_DCTCPINFO },
+		{ false, 0, 2, "dctcp_ce_state",  TYPE_INT,    print_dctcp_ce_state, TCP | INET_DCTCPINFO },
+		{ false, 0, 2, "dctcp_alpha",     TYPE_INT,    print_dctcp_alpha,    TCP | INET_DCTCPINFO },
+		{ false, 0, 2, "dctcp_ab_ecn",    TYPE_INT,    print_dctcp_ab_ecn,   TCP | INET_DCTCPINFO },
+		{ false, 0, 2, "dctcp_ab_tot",    TYPE_INT,    print_dctcp_ab_tot,   TCP | INET_DCTCPINFO },
+		{ false, 0, 2, "bbr_bw_lo",       TYPE_INT,    print_bbr_bw_lo,      TCP | INET_BBRINFO },
+		{ false, 0, 2, "bbr_bw_hi",       TYPE_INT,    print_bbr_bw_hi,      TCP | INET_BBRINFO },
+		{ false, 0, 2, "bbr_min_rtt",     TYPE_INT,    print_bbr_min_rtt,    TCP | INET_BBRINFO },
+		{ false, 0, 2, "bbr_pacing_gain", TYPE_INT,    print_bbr_pacing_gain,TCP | INET_BBRINFO },
+		{ false, 0, 2, "bbr_cwnd_gain",   TYPE_INT,    print_bbr_cwnd_gain,  TCP | INET_BBRINFO },
+		{ false, 0, 3, "info",            TYPE_STRING, print_info,           INET | INET_INFO },
 	};
 
 	size_t ncolumns = ARRAY_SIZE(columns);
+	int level = 0;
 
-	while ((opt = getopt_long(argc, argv, "ef:L:MrSstUuwx46", opts,
+	while ((opt = getopt_long(argc, argv, "f:lL:MrSstUuwx46", opts,
 			NULL)) != -1) {
 		switch (opt) {
-			case 'e':
-				for (size_t i = 0; i < ncolumns; ++i)
-					if (!(columns[i].data & REQUIRES_RESOLVING))
-						columns[i].vis = true;
-				break;
 			case 'f':
 				cols = xstrdup_nofail(optarg);
+				break;
+			case 'l':
+				level++;
+				for (size_t i = 0; i < ncolumns; ++i)
+					if (columns[i].level <= level)
+						if (!(columns[i].data & REQUIRES_RESOLVING))
+							columns[i].vis = true;
 				break;
 			case 'L':
 				label = strdup(optarg);

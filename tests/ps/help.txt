@@ -1,9 +1,11 @@
 Usage: csv-ps [OPTION]...
 Options:
   -f, --fields=name1[,name2...]
-  -M, --merge-with-stdin
-  -L, --label label
-  -p, --pid=pid1[,pid2...]
-  -s, --show
-      --help
-      --version
+                             choose the list of columns
+  -M, --merge-with-stdin     
+  -L, --label label          
+  -l                         use a longer listing format (can be used up to 4 times)
+  -p, --pid=pid1[,pid2...]   select processes from this list
+  -s, --show                 pipe output to csv-show
+      --help                 display this help and exit
+      --version              output version information and exit

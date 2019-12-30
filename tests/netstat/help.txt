@@ -1,16 +1,17 @@
 Usage: csv-netstat [OPTION]...
 Options:
-  -e, --extended
   -f, --fields=name1[,name2...]
-  -M, --merge-with-stdin
-  -L, --label label
-  -r, --resolve
-  -s, --show
-  -t, --tcp
-  -u, --udp
-  -w, --raw
-  -x, --unix
-  -4, --inet4
-  -6, --inet6
-      --help
-      --version
+                             choose the list of columns
+  -M, --merge-with-stdin     
+  -L, --label label          
+  -l                         use a longer listing format (can be used up to 3 times)
+  -r, --resolve              
+  -s, --show                 pipe output to csv-show
+  -t, --tcp                  
+  -u, --udp                  
+  -w, --raw                  
+  -x, --unix                 
+  -4, --inet4                
+  -6, --inet6                
+      --help                 display this help and exit
+      --version              output version information and exit

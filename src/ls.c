@@ -77,6 +77,28 @@ get_file_type_long(mode_t m)
 	abort();
 }
 
+static char
+get_file_type(mode_t m)
+{
+	if (S_ISREG(m))
+		return '-';
+	if (S_ISDIR(m))
+		return 'd';
+	if (S_ISLNK(m))
+		return 'l';
+	if (S_ISFIFO(m))
+		return 'p';
+	if (S_ISSOCK(m))
+		return 's';
+	if (S_ISCHR(m))
+		return 'c';
+	if (S_ISBLK(m))
+		return 'b';
+
+	fprintf(stderr, "unknown file type 0%o\n", m);
+	abort();
+}
+
 struct file_info {
 	struct stat *st;
 	const char *path;
@@ -89,6 +111,56 @@ print_size(const void *p)
 {
 	const struct file_info *f = p;
 	printf("%ld", f->st->st_size);
+}
+
+static inline char
+get_ugx(bool xset, bool setid)
+{
+	if (xset) {
+		if (setid)
+			return 's';
+	} else {
+		if (setid)
+			return 'S';
+	}
+
+	return 'x';
+}
+
+static inline char
+get_ox(bool xset, bool sticky)
+{
+	if (xset) {
+		if (sticky)
+			return 't';
+	} else {
+		if (sticky)
+			return 'T';
+	}
+
+	return 'x';
+}
+
+static void
+print_type_mode(const void *p)
+{
+	const struct file_info *f = p;
+	mode_t m = f->st->st_mode;
+	bool suid = f->st->st_mode & S_ISUID;
+	bool sgid = f->st->st_mode & S_ISGID;
+	bool sticky = f->st->st_mode & S_ISVTX;
+
+	printf("%c%c%c%c%c%c%c%c%c%c ", get_file_type(m),
+			m & S_IRUSR ? 'r' : '-',
+			m & S_IWUSR ? 'w' : '-',
+			get_ugx(m & S_IXUSR, suid),
+			m & S_IRGRP ? 'r' : '-',
+			m & S_IWGRP ? 'w' : '-',
+			get_ugx(m & S_IXGRP, sgid),
+			m & S_IROTH ? 'r' : '-',
+			m & S_IWOTH ? 'w' : '-',
+			get_ox(m & S_IXOTH, sticky)
+		);
 }
 
 static void
@@ -564,17 +636,18 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-ls [OPTION]... [FILE]...\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -a, --all\n");
-	fprintf(out, "  -d, --directory\n");
+	fprintf(out, "  -a, --all                  do not ignore entries starting with .\n");
+	fprintf(out, "  -d, --directory            list directories themselves, not their contents\n");
 	fprintf(out, "  -f, --fields=name1[,name2...]\n");
-	fprintf(out, "  -M, --merge-with-stdin\n");
-	fprintf(out, "  -L, --label label\n");
-	fprintf(out, "  -l\n");
-	fprintf(out, "  -R, --recursive\n");
-	fprintf(out, "  -s, --show\n");
-	fprintf(out, "  -U\n");
-	fprintf(out, "      --help\n");
-	fprintf(out, "      --version\n");
+	fprintf(out, "                             choose the list of columns\n");
+	fprintf(out, "  -M, --merge-with-stdin     \n");
+	fprintf(out, "  -L, --label label          \n");
+	fprintf(out, "  -l                         use a longer listing format (can be used up to 3 times)\n");
+	fprintf(out, "  -R, --recursive            list subdirectories recursively\n");
+	fprintf(out, "  -s, --show                 pipe output to csv-show\n");
+	fprintf(out, "  -U                         do not sort; list entries in directory order\n");
+	fprintf(out, "      --help                 display this help and exit\n");
+	fprintf(out, "      --version              output version information and exit\n");
 }
 
 int
@@ -588,50 +661,65 @@ main(int argc, char *argv[])
 	char *label = NULL;
 
 	struct column_info columns[] = {
-		{ true, 0, "size",           TYPE_INT,    print_size },
-		{ true, 0, "type",           TYPE_INT,    print_type },
-		{ true, 0, "mode",           TYPE_INT,    print_mode },
-		{ true, 0, "owner_id",       TYPE_INT,    print_owner_id },
-		{ true, 0, "group_id",       TYPE_INT,    print_group_id },
-		{ true, 0, "nlink",          TYPE_INT,    print_nlink },
-		{ true, 0, "mtime_sec",      TYPE_INT,    print_mtime_sec },
-		{ true, 0, "mtime_nsec",     TYPE_INT,    print_mtime_nsec },
-		{ true, 0, "ctime_sec",      TYPE_INT,    print_ctime_sec },
-		{ true, 0, "ctime_nsec",     TYPE_INT,    print_ctime_nsec },
-		{ true, 0, "atime_sec",      TYPE_INT,    print_atime_sec },
-		{ true, 0, "atime_nsec",     TYPE_INT,    print_atime_nsec },
-		{ true, 0, "dev",            TYPE_INT,    print_dev },
-		{ true, 0, "ino",            TYPE_INT,    print_ino },
-		{ true, 0, "rdev",           TYPE_INT,    print_rdev },
-		{ true, 0, "blksize",        TYPE_INT,    print_blksize },
-		{ true, 0, "blocks",         TYPE_INT,    print_blocks },
+		{ false, 0, 1, "type_mode",     TYPE_STRING, print_type_mode },
+		{ false, 0, 1, "nlink",         TYPE_INT,    print_nlink },
+		{ false, 0, 1, "owner_name",    TYPE_STRING, print_owner_name },
+		{ false, 0, 1, "group_name",    TYPE_STRING, print_group_name },
+		{ false, 0, 1, "size",          TYPE_INT,    print_size },
+		{ false, 0, 1, "mtime",         TYPE_STRING, print_mtime },
+		{ true,  0, 0, "name",          TYPE_STRING, print_name },
+		{ false, 0, 1, "symlink",       TYPE_STRING, print_symlink },
+		{ false, 0, 2, "parent",        TYPE_STRING, print_parent },
 
-		{ false, 0, "type_name",     TYPE_STRING, print_type_name },
-		{ false, 0, "owner_name",    TYPE_STRING, print_owner_name },
-		{ false, 0, "group_name",    TYPE_STRING, print_group_name },
-		{ false, 0, "owner_read",    TYPE_INT,    print_owner_read },
-		{ false, 0, "owner_write",   TYPE_INT,    print_owner_write },
-		{ false, 0, "owner_execute", TYPE_INT,    print_owner_execute },
-		{ false, 0, "group_read",    TYPE_INT,    print_group_read },
-		{ false, 0, "group_write",   TYPE_INT,    print_group_write },
-		{ false, 0, "group_execute", TYPE_INT,    print_group_execute },
-		{ false, 0, "other_read",    TYPE_INT,    print_other_read },
-		{ false, 0, "other_write",   TYPE_INT,    print_other_write },
-		{ false, 0, "other_execute", TYPE_INT,    print_other_execute },
-		{ false, 0, "setuid",        TYPE_INT,    print_setuid },
-		{ false, 0, "setgid",        TYPE_INT,    print_setgid },
-		{ false, 0, "sticky",        TYPE_INT,    print_sticky },
-		{ false, 0, "mtime",         TYPE_STRING, print_mtime },
-		{ false, 0, "ctime",         TYPE_STRING, print_ctime },
-		{ false, 0, "atime",         TYPE_STRING, print_atime },
+		{ false, 0, 2, "type",          TYPE_INT,    print_type },
+		{ false, 0, 2, "type_name",     TYPE_STRING, print_type_name },
 
-		{ true, 0, "symlink",        TYPE_STRING, print_symlink },
-		{ true, 0, "parent",         TYPE_STRING, print_parent },
-		{ true, 0, "name",           TYPE_STRING, print_name },
-		{ false, 0, "full_path",     TYPE_STRING, print_full_path },
+		{ false, 0, 2, "mode",          TYPE_INT,    print_mode },
+
+		{ false, 0, 2, "owner_read",    TYPE_INT,    print_owner_read },
+		{ false, 0, 2, "owner_write",   TYPE_INT,    print_owner_write },
+		{ false, 0, 2, "owner_execute", TYPE_INT,    print_owner_execute },
+
+		{ false, 0, 2, "group_read",    TYPE_INT,    print_group_read },
+		{ false, 0, 2, "group_write",   TYPE_INT,    print_group_write },
+		{ false, 0, 2, "group_execute", TYPE_INT,    print_group_execute },
+
+		{ false, 0, 2, "other_read",    TYPE_INT,    print_other_read },
+		{ false, 0, 2, "other_write",   TYPE_INT,    print_other_write },
+		{ false, 0, 2, "other_execute", TYPE_INT,    print_other_execute },
+
+		{ false, 0, 2, "setuid",        TYPE_INT,    print_setuid },
+		{ false, 0, 2, "setgid",        TYPE_INT,    print_setgid },
+		{ false, 0, 2, "sticky",        TYPE_INT,    print_sticky },
+
+		{ false, 0, 2, "owner_id",      TYPE_INT,    print_owner_id },
+		{ false, 0, 2, "group_id",      TYPE_INT,    print_group_id },
+
+		{ false, 0, 2, "ctime",         TYPE_STRING, print_ctime },
+		{ false, 0, 2, "atime",         TYPE_STRING, print_atime },
+
+		{ false, 0, 2, "full_path",     TYPE_STRING, print_full_path },
+
+		{ false, 0, 3, "mtime_sec",     TYPE_INT,    print_mtime_sec },
+		{ false, 0, 3, "mtime_nsec",    TYPE_INT,    print_mtime_nsec },
+
+		{ false, 0, 3, "ctime_sec",     TYPE_INT,    print_ctime_sec },
+		{ false, 0, 3, "ctime_nsec",    TYPE_INT,    print_ctime_nsec },
+
+		{ false, 0, 3, "atime_sec",     TYPE_INT,    print_atime_sec },
+		{ false, 0, 3, "atime_nsec",    TYPE_INT,    print_atime_nsec },
+
+		{ false, 0, 3, "dev",           TYPE_INT,    print_dev },
+		{ false, 0, 3, "ino",           TYPE_INT,    print_ino },
+
+		{ false, 0, 3, "rdev",          TYPE_INT,    print_rdev },
+
+		{ false, 0, 3, "blksize",       TYPE_INT,    print_blksize },
+		{ false, 0, 3, "blocks",        TYPE_INT,    print_blocks },
 	};
 
 	size_t ncolumns = ARRAY_SIZE(columns);
+	int level = 0;
 
 	while ((opt = getopt_long(argc, argv, "adf:lL:MRsU", opts, NULL)) != -1) {
 		switch (opt) {
@@ -645,8 +733,10 @@ main(int argc, char *argv[])
 				cols = xstrdup_nofail(optarg);
 				break;
 			case 'l':
+				level++;
 				for (size_t i = 0; i < ncolumns; ++i)
-					columns[i].vis = true;
+					if (columns[i].level <= level)
+						columns[i].vis = true;
 				break;
 			case 'L':
 				label = strdup(optarg);
@@ -655,6 +745,11 @@ main(int argc, char *argv[])
 				merge_with_stdin = true;
 				break;
 			case 'R':
+				for (size_t i = 0; i < ncolumns; ++i)
+					if (strcmp(columns[i].name, "parent") == 0) {
+						columns[i].vis = true;
+						break;
+					}
 				recursive = 1;
 				break;
 			case 's':

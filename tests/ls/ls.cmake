@@ -59,6 +59,16 @@ test_with_cwd("csv-ls -l | csv-count -c"
 	ls-l-count-columns
 	${CMAKE_SOURCE_DIR}/tests/ls/files)
 
+test_with_cwd("csv-ls -ll | csv-count -c"
+	data/empty.txt ls/ll-count-columns.csv data/empty.txt 0
+	ls-ll-count-columns
+	${CMAKE_SOURCE_DIR}/tests/ls/files)
+
+test_with_cwd("csv-ls -lll | csv-count -c"
+	data/empty.txt ls/lll-count-columns.csv data/empty.txt 0
+	ls-lll-count-columns
+	${CMAKE_SOURCE_DIR}/tests/ls/files)
+
 test("csv-ls --help" data/empty.csv ls/help.txt data/empty.txt 2
 	ls_help)
 

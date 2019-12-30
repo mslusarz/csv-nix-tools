@@ -30,7 +30,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 test("csv-groups | csv-count -c -R" data/empty.txt groups/count-columns.csv data/empty.txt 0
-	groups)
+	groups_count)
+
+test("csv-groups -l | csv-count -c -R" data/empty.txt groups/count-columns-l.csv data/empty.txt 0
+	groups_-l_count)
 
 test("csv-groups -M | csv-head -n 0" data/3-columns-3-rows-with-label.csv groups/columns-merged.csv data/empty.txt 0
 	groups_merged)

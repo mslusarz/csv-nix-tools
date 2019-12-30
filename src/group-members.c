@@ -55,11 +55,12 @@ usage(FILE *out)
 	fprintf(out, "Usage: csv-group-members [OPTION]...\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -f, --fields=name1[,name2...]\n");
-	fprintf(out, "  -M, --merge-with-stdin\n");
-	fprintf(out, "  -L, --label label\n");
-	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --help\n");
-	fprintf(out, "      --version\n");
+	fprintf(out, "                             choose the list of columns\n");
+	fprintf(out, "  -M, --merge-with-stdin     \n");
+	fprintf(out, "  -L, --label label          \n");
+	fprintf(out, "  -s, --show                 pipe output to csv-show\n");
+	fprintf(out, "      --help                 display this help and exit\n");
+	fprintf(out, "      --version              output version information and exit\n");
 }
 
 static void
@@ -146,8 +147,8 @@ main(int argc, char *argv[])
 	char *label = NULL;
 
 	struct column_info columns[] = {
-			{ true, 0, "group_name", TYPE_STRING, print_group_name },
-			{ true, 0, "user_name", TYPE_STRING, print_user_name },
+			{ true, 0, 0, "group_name", TYPE_STRING, print_group_name },
+			{ true, 0, 0, "user_name", TYPE_STRING, print_user_name },
 	};
 
 	size_t ncolumns = ARRAY_SIZE(columns);
