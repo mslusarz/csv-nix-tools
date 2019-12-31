@@ -29,20 +29,20 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-test("csv-concat" data/empty.txt data/empty.csv concat/help.txt 2
-	concat_no_args)
+test("csv-add-concat" data/empty.txt data/empty.csv add-concat/help.txt 2
+	add-concat_no_args)
 
-test("csv-concat new_column = %name ' - ' %id" data/3-columns-3-rows.csv concat/2-cols.csv data/empty.txt 0
-	concat_2_cols)
+test("csv-add-concat new_column = %name ' - ' %id" data/3-columns-3-rows.csv add-concat/2-cols.csv data/empty.txt 0
+	add-concat_2_cols)
 
-test("csv-concat new_column = %name ' - ' %id -s" data/3-columns-3-rows.csv concat/2-cols-s.txt data/empty.txt 0
-	concat_2_cols-s)
+test("csv-add-concat new_column = %name ' - ' %id -s" data/3-columns-3-rows.csv add-concat/2-cols-s.txt data/empty.txt 0
+	add-concat_2_cols-s)
 
-test("csv-concat new_column = %name ', ' %id" data/3-columns-3-rows.csv concat/2-cols-comma.csv data/empty.txt 0
-	concat_2_cols_comma)
+test("csv-add-concat new_column = %name ', ' %id" data/3-columns-3-rows.csv add-concat/2-cols-comma.csv data/empty.txt 0
+	add-concat_2_cols_comma)
 
-test("csv-concat --help" data/empty.csv concat/help.txt data/empty.txt 2
-	concat_help)
+test("csv-add-concat --help" data/empty.csv add-concat/help.txt data/empty.txt 2
+	add-concat_help)
 
-test("csv-concat --version" data/empty.csv data/git-version.txt data/empty.txt 0
-	concat_version)
+test("csv-add-concat --version" data/empty.csv data/git-version.txt data/empty.txt 0
+	add-concat_version)

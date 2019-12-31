@@ -51,7 +51,7 @@ static const struct option opts[] = {
 static void
 usage(FILE *out)
 {
-	fprintf(out, "Usage: csv-concat [OPTION]... -- new_name = [%%name|str]...\n");
+	fprintf(out, "Usage: csv-add-concat [OPTION]... -- new_name = [%%name|str]...\n");
 	fprintf(out, "Options:\n");
 	describe_Show(out);
 	describe_Show_full(out);

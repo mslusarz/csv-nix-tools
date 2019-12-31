@@ -24,11 +24,11 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 
 # PROCESSING TOOLS #
 
+- **csv-add-concat**(1)
 - **csv-add-exec**(1)
 - **csv-add-rpn**(1)
 - **csv-avg**(1)
 - **csv-cat**(1) - concatenate CSV files and print on the standard output
-- **csv-concat**(1)
 - **csv-count**(1)
 - **csv-cut**(1)
 - **csv-grep**(1)

@@ -73,11 +73,11 @@ set(DATA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data")
 
 inc(parsing)
 
+inc(add-concat)
 inc(add-exec)
 inc(add-rpn)
 inc(avg)
 inc(cat)
-inc(concat)
 inc(count)
 inc(cut)
 inc(exec)

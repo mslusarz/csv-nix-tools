@@ -43,11 +43,11 @@ Source:
 - csv-users - lists system users
 
 Filtering/processing:
+- csv-add-concat - concatenates columns and user-defined strings
 - csv-add-exec - pipes data to standard input of an external command and creates new column from its standard output
 - csv-add-rpn - creates new column from RPN expression
 - csv-avg - takes an average of numerical column(s)
 - csv-cat - concatenates multiple csv files
-- csv-concat - concatenates columns and user-defined strings
 - csv-count - counts the number of columns and/or rows
 - csv-cut - removes columns and reorders them
 - csv-grep - filters rows matching a pattern
@@ -260,7 +260,7 @@ sort.c
 Full paths of all files in current directory and below:
 
 ```
-$ csv-ls -R -c parent,name . | csv-concat full_path = %parent / %name | csv-cut -c full_path
+$ csv-ls -R -c parent,name . | csv-add-concat full_path = %parent / %name | csv-cut -c full_path
 ....
 ```
 or
