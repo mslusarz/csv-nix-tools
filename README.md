@@ -45,6 +45,7 @@ Source:
 Filtering/processing:
 - csv-add-concat - concatenates columns and user-defined strings
 - csv-add-exec - pipes data to standard input of an external command and creates new column from its standard output
+- csv-add-replace - performs string substitution on column(s) (similar to sed s/$str/$str/)
 - csv-add-rpn - creates new column from RPN expression
 - csv-avg - takes an average of numerical column(s)
 - csv-cat - concatenates multiple csv files
@@ -57,7 +58,6 @@ Filtering/processing:
 - csv-max - takes a maximum value of numerical or string column(s)
 - csv-merge - merges multiple input streams
 - csv-min - takes a minimum value of numerical or string column(s)
-- csv-replace - performs string substitution on column(s) (similar to sed s/$str/$str/)
 - csv-sort - sorts input by column(s)
 - csv-split - splits one column into two using a delimiter
 - csv-sql - processes input data using simplified (but very fast) SQL-based syntax (WIP)
@@ -354,9 +354,9 @@ $ csv-ls -R -c full_path . | csv-add-exec -c full_path -n new -- sed 's/.c$/.o/'
 or 130x faster:
 
 ```
-$ csv-ls -R -c full_path . | csv-replace -c full_path -E '(.*)\.c$' -r '%1.o' -n new
+$ csv-ls -R -c full_path . | csv-add-replace -c full_path -E '(.*)\.c$' -r '%1.o' -n new
 ```
-or 400x faster (3.1x faster than csv-replace):
+or 400x faster (3.1x faster than csv-add-replace):
 
 ```
 $ csv-ls -R -c full_path . | csv-add-rpn -n new -e "%full_path -1 1 substr 'c' == %full_path 1 %full_path strlen 1 - substr 'o' concat %full_path if"
@@ -373,8 +373,8 @@ List all network connections and processes they belong to:
 ```
 $ csv-ls -T -c name,symlink /proc/*/fd/* 2>/dev/null |
 csv-grep -c file.symlink -E "socket:\[[0-9]*\]" |
-csv-replace -c file.name -E '/proc/([0-9]*)/.*' -r '%1' -n file.pid |
-csv-replace -c file.symlink -E 'socket:\[([0-9]*)\]' -r %1 -n file.inode |
+csv-add-replace -c file.name -E '/proc/([0-9]*)/.*' -r '%1' -n file.pid |
+csv-add-replace -c file.symlink -E 'socket:\[([0-9]*)\]' -r %1 -n file.inode |
 csv-netstat -M |
 csv-grep -v -c socket.family -x -F 'UNIX' |
 csv-ps -M -c pid,cmd |
