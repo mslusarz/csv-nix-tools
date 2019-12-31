@@ -50,6 +50,7 @@ Filtering/processing:
 - csv-cut - removes columns and reorders them
 - csv-exec-add - pipes data to standard input of an external command and creates new column from its standard output
 - csv-grep - filters rows matching a pattern
+- csv-grep-rpn - filters rows using RPN expression
 - csv-head - outputs the first N rows
 - csv-header - processes data header
 - csv-max - takes a maximum value of numerical or string column(s)
@@ -57,7 +58,6 @@ Filtering/processing:
 - csv-min - takes a minimum value of numerical or string column(s)
 - csv-replace - performs string substitution on column(s) (similar to sed s/$str/$str/)
 - csv-rpn-add - creates new column from RPN expression
-- csv-rpn-filter - filters rows using RPN expression
 - csv-sort - sorts input by column(s)
 - csv-split - splits one column into two using a delimiter
 - csv-sql - processes input data using simplified (but very fast) SQL-based syntax (WIP)
@@ -306,7 +306,7 @@ $ csv-ls -c size,name | csv-sql "select size, name from input where size > 2000 
 or
 
 ```
-$ csv-ls -c size,name | csv-rpn-filter -e "%size 2000 >= %size 3000 < and"
+$ csv-ls -c size,name | csv-grep-rpn -e "%size 2000 >= %size 3000 < and"
 ...
 ```
 

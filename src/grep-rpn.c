@@ -51,7 +51,7 @@ static const struct option opts[] = {
 static void
 usage(FILE *out)
 {
-	fprintf(out, "Usage: csv-rpn-filter [OPTION]...\n");
+	fprintf(out, "Usage: csv-grep-rpn [OPTION]...\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -e \"RPN expression\"\n");
 	describe_Show(out);
