@@ -1,9 +1,9 @@
 Usage: csv-merge [OPTION]...
 Options:
-  -l, --label label
-  -p, --path path
+  -N, --table-name name
+  -p, --path-without-table path
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
-      --labeled-path path
+      --path-with-table path
       --help                 display this help and exit
       --version              output version information and exit

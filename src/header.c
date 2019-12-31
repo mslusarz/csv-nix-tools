@@ -65,8 +65,8 @@ usage(FILE *out)
 	fprintf(out, "  -m, --remove\n");
 //	fprintf(out, "  -M, --remove-types\n");
 //	fprintf(out, "  -n, --rename original,new\n");
-	describe_show(out);
-	describe_show_full(out);
+	describe_Show(out);
+	describe_Show_full(out);
 	describe_help(out);
 	describe_version(out);
 }

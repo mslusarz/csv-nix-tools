@@ -38,7 +38,7 @@
 #include "utils.h"
 
 struct stdin_cfg {
-	size_t label_column;
+	size_t table_column;
 	size_t ncolumns;
 };
 
@@ -49,11 +49,11 @@ next_row(const char *buf, const size_t *col_offs,
 {
 	struct stdin_cfg *cfg = arg;
 
-	fputs(&buf[col_offs[cfg->label_column]], stdout);
+	fputs(&buf[col_offs[cfg->table_column]], stdout);
 	fputc(',', stdout);
 
 	for (size_t i = 0; i < nheaders - 1; ++i) {
-		if (i == cfg->label_column)
+		if (i == cfg->table_column)
 			continue;
 		fputs(&buf[col_offs[i]], stdout);
 		fputc(',', stdout);
@@ -82,18 +82,18 @@ csvmu_add_columns_to_stdin(const char *prefix, struct column_info *columns,
 	struct stdin_cfg cfg;
 	cfg.ncolumns = ncolumns;
 
-	cfg.label_column =
-			csv_find(input_headers, input_nheaders, LABEL_COLUMN);
+	cfg.table_column =
+			csv_find(input_headers, input_nheaders, TABLE_COLUMN);
 
-	if (cfg.label_column == CSV_NOT_FOUND) {
+	if (cfg.table_column == CSV_NOT_FOUND) {
 		fprintf(stderr,
 			"column '%s' not found in input\n",
-			LABEL_COLUMN);
+			TABLE_COLUMN);
 		exit(2);
 	}
 
 	for (size_t i = 0; i < input_nheaders; ++i) {
-		if (i == cfg.label_column)
+		if (i == cfg.table_column)
 			continue;
 
 		printf("%s:%s,", input_headers[i].name, input_headers[i].type);
@@ -109,21 +109,18 @@ csvmu_add_columns_to_stdin(const char *prefix, struct column_info *columns,
 }
 
 void
-csvmu_print_header(struct csvmu_ctx *ctx, const char *default_label,
-		struct column_info *columns, size_t ncolumns)
+csvmu_print_header(struct csvmu_ctx *ctx, struct column_info *columns,
+		size_t ncolumns)
 {
-	if (ctx->merge_with_stdin && !ctx->label)
-		ctx->label = xstrdup_nofail(default_label);
-
 	char *prefix = NULL;
-	if (ctx->label) {
-		printf("%s:string,", LABEL_COLUMN);
+	if (ctx->table) {
+		printf("%s:string,", TABLE_COLUMN);
 
-		prefix = xmalloc_nofail(strlen(ctx->label) + 1 + 1, 1);
-		sprintf(prefix, "%s%c", ctx->label, LABEL_SEPARATOR);
+		prefix = xmalloc_nofail(strlen(ctx->table) + 1 + 1, 1);
+		sprintf(prefix, "%s%c", ctx->table, TABLE_SEPARATOR);
 	}
 
-	if (ctx->merge_with_stdin) {
+	if (ctx->merge) {
 		ctx->input_ncolumns =
 			csvmu_add_columns_to_stdin(prefix, columns, ncolumns);
 	} else {
@@ -148,9 +145,9 @@ void
 csvmu_print_row(struct csvmu_ctx *ctx, const void *row,
 		const struct column_info *columns, size_t ncolumns)
 {
-	if (ctx->label)
-		printf("%s,", ctx->label);
-	if (ctx->merge_with_stdin)
+	if (ctx->table)
+		printf("%s,", ctx->table);
+	if (ctx->merge)
 		csvmu_fill_columns_from_stdin(ctx->input_ncolumns);
 
 	csvci_print_row(row, columns, ncolumns);

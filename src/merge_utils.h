@@ -37,13 +37,13 @@
 #include "utils.h"
 
 struct csvmu_ctx {
-	char *label;
-	bool merge_with_stdin;
+	char *table;
+	bool merge;
 	size_t input_ncolumns;
 };
 
-void csvmu_print_header(struct csvmu_ctx *ctx, const char *default_label,
-		struct column_info *columns, size_t ncolumns);
+void csvmu_print_header(struct csvmu_ctx *ctx, struct column_info *columns,
+		size_t ncolumns);
 
 void csvmu_print_row(struct csvmu_ctx *ctx,
 		const void *row,

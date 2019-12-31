@@ -56,8 +56,8 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -c, --columns\n");
 	fprintf(out, "  -r, --rows\n");
-	describe_show(out);
-	describe_show_full(out);
+	describe_Show(out);
+	describe_Show_full(out);
 	describe_help(out);
 	describe_version(out);
 }

@@ -1,7 +1,7 @@
-_label:string,label1.name:string,label1.id:int,label1.something:int,file.name:string
-label1,lorem ipsum,1,1,
-label1,not all that is gold,2,0,
-label1,something else,3,1,
+_table:string,table1.name:string,table1.id:int,table1.something:int,file.name:string
+table1,lorem ipsum,1,1,
+table1,not all that is gold,2,0,
+table1,something else,3,1,
 file,,,,dir with spaces
 file,,,,"dir,with,commas"
 file,,,,dir.with.dots

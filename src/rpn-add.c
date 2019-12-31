@@ -55,8 +55,8 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -n new_column_name\n");
 	fprintf(out, "  -e RPN_expression\n");
-	describe_show(out);
-	describe_show_full(out);
+	describe_Show(out);
+	describe_Show_full(out);
 	describe_help(out);
 	describe_version(out);
 	fprintf(out, "\n");

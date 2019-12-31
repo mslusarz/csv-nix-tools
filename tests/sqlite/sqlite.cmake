@@ -264,15 +264,15 @@ test("csv-sqlite -i - -i ${DATA_DIR}/3-columns-3-other-rows.csv 'select input1.i
 	data/3-columns-3-rows.csv sqlite/mult_inputs.csv data/empty.txt 0
 	sqlite_multiple_inputs_stdin)
 
-test("csv-users -L user | csv-sqlite -L 'select * from user' | csv-count -c -R"
+test("csv-users -T | csv-sqlite -T 'select * from user' | csv-count -c -R"
 	data/one-column-one-row.csv sqlite/users-columns.csv data/empty.txt 0
 	sqlite_users_count_columns)
 
-test("csv-groups -L group | csv-sqlite -L 'select * from \"group\"' | csv-count -c -R"
+test("csv-groups -T | csv-sqlite -T 'select * from \"group\"' | csv-count -c -R"
 	data/one-column-one-row.csv sqlite/groups-columns.csv data/empty.txt 0
 	sqlite_groups_count_columns)
 
-test("csv-group-members -L group_members | csv-sqlite -L 'select * from group_members' | csv-count -c -R"
+test("csv-group-members -T | csv-sqlite -T 'select * from group_member' | csv-count -c -R"
 	data/one-column-one-row.csv sqlite/group_members-columns.csv data/empty.txt 0
 	sqlite_group_members_count_columns)
 

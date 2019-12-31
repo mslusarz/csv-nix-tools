@@ -57,8 +57,8 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -c, --column=name\n");
 	fprintf(out, "  -n, --new-name=name\n");
-	describe_show(out);
-	describe_show_full(out);
+	describe_Show(out);
+	describe_Show_full(out);
 	describe_help(out);
 	describe_version(out);
 }

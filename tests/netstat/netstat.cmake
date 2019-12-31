@@ -118,11 +118,11 @@ test("csv-netstat -6lll | csv-count -c -R" data/empty.txt netstat/6lll-count-col
 test("csv-netstat -c family,protocol | csv-uniq -c family,protocol | csv-head -n 0" data/empty.txt netstat/f-count-columns.csv data/empty.txt 0
 	netstat_f_count_columns)
 
-test("csv-netstat -M -c family,inode,state | csv-head -n 0" data/3-columns-3-rows-with-label.csv netstat/columns-merged.csv data/empty.txt 0
+test("csv-netstat -M -c family,inode,state | csv-head -n 0" data/3-columns-3-rows-with-table.csv netstat/columns-merged.csv data/empty.txt 0
 	netstat_merged)
 
-test("csv-netstat -M -c family,inode,state -L meh | csv-head -n 0" data/3-columns-3-rows-with-label.csv netstat/columns-merged-label.csv data/empty.txt 0
-	netstat_merged_label)
+test("csv-netstat -M -c family,inode,state -N meh | csv-head -n 0" data/3-columns-3-rows-with-table.csv netstat/columns-merged-table.csv data/empty.txt 0
+	netstat_merged_table)
 
 test("csv-netstat --help" data/empty.csv netstat/help.txt data/empty.txt 2
 	netstat_help)

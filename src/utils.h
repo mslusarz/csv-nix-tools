@@ -41,8 +41,8 @@
 
 #include "parse.h"
 
-#define LABEL_COLUMN ("_label")
-#define LABEL_SEPARATOR ('.')
+#define TABLE_COLUMN ("_table")
+#define TABLE_SEPARATOR ('.')
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
@@ -198,10 +198,14 @@ void csvci_print_header_with_prefix(struct column_info *columns,
 void csvci_print_row(const void *row, const struct column_info *columns,
 		size_t ncolumns);
 
-void describe_columns(FILE *out);
+void describe_Merge(FILE *out);
+void describe_table_Name(FILE *out);
+void describe_as_Table(FILE *out);
+
+void describe_Columns(FILE *out);
 void describe_help(FILE *out);
 void describe_version(FILE *out);
-void describe_show(FILE *out);
-void describe_show_full(FILE *out);
+void describe_Show(FILE *out);
+void describe_Show_full(FILE *out);
 
 #endif

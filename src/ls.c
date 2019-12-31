@@ -622,11 +622,12 @@ static const struct option opts[] = {
 	{"all",			no_argument, 		NULL, 'a'},
 	{"directory",		no_argument,		NULL, 'd'},
 	{"columns",		required_argument,	NULL, 'c'},
-	{"merge-with-stdin",	no_argument,		NULL, 'M'},
-	{"label",		required_argument,	NULL, 'L'},
+	{"merge",		no_argument,		NULL, 'M'},
+	{"table-name",		required_argument,	NULL, 'N'},
 	{"recursive",		no_argument,		NULL, 'R'},
 	{"show",		no_argument,		NULL, 's'},
 	{"show-full",		no_argument,		NULL, 'S'},
+	{"as-table",		no_argument,		NULL, 'T'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{NULL,			0,			NULL, 0},
@@ -638,14 +639,15 @@ usage(FILE *out)
 	fprintf(out, "Usage: csv-ls [OPTION]... [FILE]...\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -a, --all                  do not ignore entries starting with .\n");
-	describe_columns(out);
+	describe_Columns(out);
 	fprintf(out, "  -d, --directory            list directories themselves, not their contents\n");
-	fprintf(out, "  -M, --merge-with-stdin     \n");
-	fprintf(out, "  -L, --label label          \n");
 	fprintf(out, "  -l                         use a longer listing format (can be used up to 3 times)\n");
+	describe_Merge(out);
+	describe_table_Name(out);
 	fprintf(out, "  -R, --recursive            list subdirectories recursively\n");
-	describe_show(out);
-	describe_show_full(out);
+	describe_Show(out);
+	describe_Show_full(out);
+	describe_as_Table(out);
 	fprintf(out, "  -U                         do not sort; list entries in directory order\n");
 	describe_help(out);
 	describe_version(out);
@@ -659,8 +661,8 @@ main(int argc, char *argv[])
 	char *cols = NULL;
 	bool show = false;
 	bool show_full;
-	bool merge_with_stdin = false;
-	char *label = NULL;
+	bool merge = false;
+	char *table = NULL;
 
 	struct column_info columns[] = {
 		{ false, 0, 1, "type_mode",     TYPE_STRING, print_type_mode },
@@ -723,7 +725,7 @@ main(int argc, char *argv[])
 	size_t ncolumns = ARRAY_SIZE(columns);
 	int level = 0;
 
-	while ((opt = getopt_long(argc, argv, "adc:lL:MRsSU", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "adc:lMN:RsSTU", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'a':
 				all = 1;
@@ -740,11 +742,13 @@ main(int argc, char *argv[])
 					if (columns[i].level <= level)
 						columns[i].vis = true;
 				break;
-			case 'L':
-				label = strdup(optarg);
-				break;
 			case 'M':
-				merge_with_stdin = true;
+				merge = true;
+				if (!table)
+					table = xstrdup_nofail("file");
+				break;
+			case 'N':
+				table = xstrdup_nofail(optarg);
 				break;
 			case 'R':
 				for (size_t i = 0; i < ncolumns; ++i)
@@ -761,6 +765,9 @@ main(int argc, char *argv[])
 			case 'S':
 				show = true;
 				show_full = true;
+				break;
+			case 'T':
+				table = xstrdup_nofail("file");
 				break;
 			case 'U':
 				sort = 0;
@@ -798,10 +805,10 @@ main(int argc, char *argv[])
 		csv_show(show_full);
 
 	struct csvmu_ctx ctx;
-	ctx.label = label;
-	ctx.merge_with_stdin = merge_with_stdin;
+	ctx.table = table;
+	ctx.merge = merge;
 
-	csvmu_print_header(&ctx, "file", columns, ncolumns);
+	csvmu_print_header(&ctx, columns, ncolumns);
 
 	for (int i = optind; i < argc; ++i) {
 		int fd = openat(AT_FDCWD, argv[i], O_PATH | O_NOFOLLOW);
@@ -878,7 +885,7 @@ restart_readlink:
 	}
 
 	usr_grp_query_fini();
-	free(ctx.label);
+	free(ctx.table);
 
 	if (ret & 2)
 		return 2;

@@ -680,20 +680,38 @@ csvci_print_row(const void *row, const struct column_info *columns,
 }
 
 void
-describe_columns(FILE *out)
+describe_Merge(FILE *out)
+{
+	fprintf(out, "  -M, --merge                \n");
+}
+
+void
+describe_table_Name(FILE *out)
+{
+	fprintf(out, "  -N, --table-name name      \n");
+}
+
+void
+describe_as_Table(FILE *out)
+{
+	fprintf(out, "  -T, --as-table             \n");
+}
+
+void
+describe_Columns(FILE *out)
 {
 	fprintf(out, "  -c, --columns=name1[,name2...]\n");
 	fprintf(out, "                             choose the list of columns\n");
 }
 
 void
-describe_show(FILE *out)
+describe_Show(FILE *out)
 {
 	fprintf(out, "  -s, --show                 print output in table format\n");
 }
 
 void
-describe_show_full(FILE *out)
+describe_Show_full(FILE *out)
 {
 	fprintf(out, "  -S, --show-full            print output in table format with pager\n");
 }

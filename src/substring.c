@@ -57,8 +57,8 @@ usage(FILE *out)
 	fprintf(out, "  -n new-name\n");
 	fprintf(out, "  -p start-pos\n");
 	fprintf(out, "  -l length\n");
-	describe_show(out);
-	describe_show_full(out);
+	describe_Show(out);
+	describe_Show_full(out);
 	describe_help(out);
 	describe_version(out);
 }

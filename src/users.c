@@ -41,10 +41,11 @@
 
 static const struct option opts[] = {
 	{"columns",		required_argument,	NULL, 'c'},
-	{"merge-with-stdin",	no_argument,		NULL, 'M'},
-	{"label",		required_argument,	NULL, 'L'},
+	{"merge",		no_argument,		NULL, 'M'},
+	{"table-name",		required_argument,	NULL, 'N'},
 	{"show",		no_argument,		NULL, 's'},
 	{"show-full",		no_argument,		NULL, 'S'},
+	{"as-table",		no_argument,		NULL, 'T'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -55,12 +56,13 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-users [OPTION]...\n");
 	fprintf(out, "Options:\n");
-	describe_columns(out);
-	fprintf(out, "  -M, --merge-with-stdin     \n");
-	fprintf(out, "  -L, --label label          \n");
+	describe_Columns(out);
 	fprintf(out, "  -l                         use a longer listing format (can be used up to 2 times)\n");
-	describe_show(out);
-	describe_show_full(out);
+	describe_Merge(out);
+	describe_table_Name(out);
+	describe_Show(out);
+	describe_Show_full(out);
+	describe_as_Table(out);
 	describe_help(out);
 	describe_version(out);
 }
@@ -121,8 +123,8 @@ main(int argc, char *argv[])
 	char *cols = NULL;
 	bool show = false;
 	bool show_full;
-	bool merge_with_stdin = false;
-	char *label = NULL;
+	bool merge = false;
+	char *table = NULL;
 
 	struct column_info columns[] = {
 			{ true,  0, 0, "name",   TYPE_STRING, print_name },
@@ -136,7 +138,7 @@ main(int argc, char *argv[])
 	size_t ncolumns = ARRAY_SIZE(columns);
 	int level = 0;
 
-	while ((opt = getopt_long(argc, argv, "c:lL:MsS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "c:lMN:sST", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'c':
 				cols = xstrdup_nofail(optarg);
@@ -147,11 +149,14 @@ main(int argc, char *argv[])
 					if (columns[i].level <= level)
 						columns[i].vis = true;
 				break;
-			case 'L':
-				label = strdup(optarg);
-				break;
 			case 'M':
-				merge_with_stdin = true;
+				merge = true;
+				if (!table)
+					table = xstrdup_nofail("user");
+				break;
+			case 'N':
+				free(table);
+				table = xstrdup_nofail(optarg);
 				break;
 			case 's':
 				show = true;
@@ -160,6 +165,10 @@ main(int argc, char *argv[])
 			case 'S':
 				show = true;
 				show_full = true;
+				break;
+			case 'T':
+				free(table);
+				table = xstrdup_nofail("user");
 				break;
 			case 'V':
 				printf("git\n");
@@ -183,17 +192,17 @@ main(int argc, char *argv[])
 		csv_show(show_full);
 
 	struct csvmu_ctx ctx;
-	ctx.label = label;
-	ctx.merge_with_stdin = merge_with_stdin;
+	ctx.table = table;
+	ctx.merge = merge;
 
-	csvmu_print_header(&ctx, "user", columns, ncolumns);
+	csvmu_print_header(&ctx, columns, ncolumns);
 
 	load_users();
 
 	for (size_t i = 0; i < nusers; ++i)
 		csvmu_print_row(&ctx, &users[i], columns, ncolumns);
 
-	free(ctx.label);
+	free(ctx.table);
 	free_users();
 
 	return 0;

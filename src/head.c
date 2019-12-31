@@ -54,8 +54,8 @@ usage(FILE *out)
 	fprintf(out, "Usage: csv-head [OPTION]...\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -n, --lines=NUM\n");
-	describe_show(out);
-	describe_show_full(out);
+	describe_Show(out);
+	describe_Show_full(out);
 	describe_help(out);
 	describe_version(out);
 }

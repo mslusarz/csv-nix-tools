@@ -40,13 +40,13 @@ test_with_cwd("csv-ls -c name,mode,symlink,type_name -ls"
 	${CMAKE_SOURCE_DIR}/tests/ls/files)
 
 test_with_cwd("csv-ls -c name -M"
-	data/3-columns-3-rows-with-label.csv ls/files_and_dirs_merged.csv data/empty.txt 0
+	data/3-columns-3-rows-with-table.csv ls/files_and_dirs_merged.csv data/empty.txt 0
 	ls-merge
 	${CMAKE_SOURCE_DIR}/tests/ls/files)
 
-test_with_cwd("csv-ls -c name -M -L lorem"
-	data/3-columns-3-rows-with-label.csv ls/files_and_dirs_merged_label.csv data/empty.txt 0
-	ls-merge-new-label
+test_with_cwd("csv-ls -c name -M -N lorem"
+	data/3-columns-3-rows-with-table.csv ls/files_and_dirs_merged_table.csv data/empty.txt 0
+	ls-merge-new-table
 	${CMAKE_SOURCE_DIR}/tests/ls/files)
 
 test_with_cwd("csv-ls | csv-count -c"

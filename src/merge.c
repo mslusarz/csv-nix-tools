@@ -42,14 +42,14 @@
 #include "utils.h"
 
 static const struct option opts[] = {
-	{"label",	required_argument,	NULL, 'l'},
-	{"path",	required_argument,	NULL, 'p'},
-	{"show",	no_argument,		NULL, 's'},
-	{"show-full",	no_argument,		NULL, 'S'},
-	{"version",	no_argument,		NULL, 'V'},
-	{"help",	no_argument,		NULL, 'h'},
-	{"labeled-path",required_argument,	NULL, 'P'},
-	{NULL,		0,			NULL, 0},
+	{"table-name",		required_argument,	NULL, 'N'},
+	{"path-without-table",	required_argument,	NULL, 'p'},
+	{"show",		no_argument,		NULL, 's'},
+	{"show-full",		no_argument,		NULL, 'S'},
+	{"version",		no_argument,		NULL, 'V'},
+	{"help",		no_argument,		NULL, 'h'},
+	{"path-with-table",	required_argument,	NULL, 'P'},
+	{NULL,			0,			NULL, 0},
 };
 
 static struct input {
@@ -58,8 +58,8 @@ static struct input {
 	size_t start;
 	size_t columns;
 
-	char *label;
-	size_t label_column;
+	char *table;
+	size_t table_column;
 } *Inputs;
 static size_t Ninputs;
 
@@ -71,11 +71,11 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-merge [OPTION]...\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -l, --label label\n");
-	fprintf(out, "  -p, --path path\n");
-	describe_show(out);
-	describe_show_full(out);
-	fprintf(out, "      --labeled-path path\n");
+	fprintf(out, "  -N, --table-name name\n");
+	fprintf(out, "  -p, --path-without-table path\n");
+	describe_Show(out);
+	describe_Show_full(out);
+	fprintf(out, "      --path-with-table path\n");
 	describe_help(out);
 	describe_version(out);
 }
@@ -87,11 +87,11 @@ next_row(const char *buf, const size_t *col_offs,
 {
 	struct input *in = arg;
 
-	if (in->label) {
-		fputs(in->label, stdout);
+	if (in->table) {
+		fputs(in->table, stdout);
 		assert(nheaders == in->columns);
 	} else {
-		fputs(&buf[col_offs[in->label_column]], stdout);
+		fputs(&buf[col_offs[in->table_column]], stdout);
 		assert(nheaders == in->columns + 1);
 	}
 	putchar(',');
@@ -100,12 +100,12 @@ next_row(const char *buf, const size_t *col_offs,
 		putchar(',');
 
 	for (size_t i = 0; i < nheaders - 1; ++i) {
-		if (i == in->label_column)
+		if (i == in->table_column)
 			continue;
 		fputs(&buf[col_offs[i]], stdout);
 		putchar(',');
 	}
-	if (nheaders - 1 != in->label_column)
+	if (nheaders - 1 != in->table_column)
 		fputs(&buf[col_offs[nheaders - 1]], stdout);
 
 	for (size_t i = in->start + in->columns; i < Nheaders; ++i)
@@ -117,10 +117,10 @@ next_row(const char *buf, const size_t *col_offs,
 }
 
 static void
-add_input_with_label(const char *label, FILE *f)
+add_nameless_input(const char *table, FILE *f)
 {
 	const struct col_header *headers_cur;
-	size_t lsize = strlen(label);
+	size_t tsize = strlen(table);
 	struct csv_ctx *ctx = csv_create_ctx_nofail(f, stderr);
 
 	csv_read_header_nofail(ctx);
@@ -132,8 +132,8 @@ add_input_with_label(const char *label, FILE *f)
 
 	for (size_t i = 0; i < nheaders_cur; ++i) {
 		struct col_header *h = &Headers[Nheaders + i];
-		char *name = xmalloc_nofail(lsize + 1 + strlen(headers_cur[i].name) + 1, 1);
-		sprintf(name, "%s%c%s", label, LABEL_SEPARATOR, headers_cur[i].name);
+		char *name = xmalloc_nofail(tsize + 1 + strlen(headers_cur[i].name) + 1, 1);
+		sprintf(name, "%s%c%s", table, TABLE_SEPARATOR, headers_cur[i].name);
 
 		size_t idx = csv_find(Headers, Nheaders + i, name);
 		if (idx != CSV_NOT_FOUND) {
@@ -151,8 +151,8 @@ add_input_with_label(const char *label, FILE *f)
 	Inputs[Ninputs].ctx = ctx;
 	Inputs[Ninputs].start = Nheaders;
 	Inputs[Ninputs].columns = nheaders_cur;
-	Inputs[Ninputs].label = xstrdup_nofail(label);
-	Inputs[Ninputs].label_column = SIZE_MAX;
+	Inputs[Ninputs].table = xstrdup_nofail(table);
+	Inputs[Ninputs].table_column = SIZE_MAX;
 
 	Ninputs++;
 
@@ -160,7 +160,7 @@ add_input_with_label(const char *label, FILE *f)
 }
 
 static void
-add_labeled_input(FILE *f)
+add_input(FILE *f)
 {
 	const struct col_header *headers_cur;
 	struct csv_ctx *ctx = csv_create_ctx_nofail(f, stderr);
@@ -172,14 +172,14 @@ add_labeled_input(FILE *f)
 	Headers = xrealloc_nofail(Headers, Nheaders + nheaders_cur,
 			sizeof(struct col_header));
 
-	size_t label_idx = SIZE_MAX;
+	size_t table_idx = SIZE_MAX;
 	size_t out_idx = 0;
 	for (size_t i = 0; i < nheaders_cur; ++i) {
 		const struct col_header *h = &headers_cur[i];
 		struct col_header *nh = &Headers[Nheaders + out_idx];
 
-		if (strcmp(h->name, LABEL_COLUMN) == 0) {
-			label_idx = i;
+		if (strcmp(h->name, TABLE_COLUMN) == 0) {
+			table_idx = i;
 			continue;
 		}
 
@@ -194,8 +194,8 @@ add_labeled_input(FILE *f)
 		out_idx++;
 	}
 
-	if (label_idx == SIZE_MAX) {
-		fprintf(stderr, "column 'label' not found\n");
+	if (table_idx == SIZE_MAX) {
+		fprintf(stderr, "column '%s' not found\n", TABLE_COLUMN);
 		exit(2);
 	}
 
@@ -205,8 +205,8 @@ add_labeled_input(FILE *f)
 	Inputs[Ninputs].ctx = ctx;
 	Inputs[Ninputs].start = Nheaders;
 	Inputs[Ninputs].columns = out_idx;
-	Inputs[Ninputs].label = NULL;
-	Inputs[Ninputs].label_column = label_idx;
+	Inputs[Ninputs].table = NULL;
+	Inputs[Ninputs].table_column = table_idx;
 
 	Ninputs++;
 
@@ -244,22 +244,22 @@ main(int argc, char *argv[])
 	bool show = false;
 	bool show_full;
 	bool stdin_used = false;
-	char *label = NULL;
+	char *table = NULL;
 
-	while ((opt = getopt_long(argc, argv, "l:p:P:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "N:p:P:sS", opts, NULL)) != -1) {
 		switch (opt) {
-			case 'l':
-				free(label);
-				label = strdup(optarg);
+			case 'N':
+				free(table);
+				table = strdup(optarg);
 				break;
 			case 'p': {
 				FILE *f = get_file(optarg, &stdin_used);
-				add_input_with_label(label, f);
+				add_nameless_input(table, f);
 				break;
 			}
 			case 'P': {
 				FILE *f = get_file(optarg, &stdin_used);
-				add_labeled_input(f);
+				add_input(f);
 				break;
 			}
 			case 's':
@@ -279,8 +279,8 @@ main(int argc, char *argv[])
 				return 2;
 		}
 	}
-	free(label);
-	label = NULL;
+	free(table);
+	table = NULL;
 
 	if (Nheaders == 0) {
 		fprintf(stderr, "no input specified\n");
@@ -290,7 +290,7 @@ main(int argc, char *argv[])
 	if (show)
 		csv_show(show_full);
 
-	printf("%s:string,", LABEL_COLUMN);
+	printf("%s:string,", TABLE_COLUMN);
 
 	csv_print_header(stdout, Headers, Nheaders);
 
@@ -298,7 +298,7 @@ main(int argc, char *argv[])
 		struct input *in = &Inputs[i];
 		csv_read_all_nofail(in->ctx, &next_row, in);
 		csv_destroy_ctx(in->ctx);
-		free(in->label);
+		free(in->table);
 		fclose(in->f);
 	}
 

@@ -365,20 +365,20 @@ $ csv-ls -R -c full_path . | csv-rpn-add -n new -e "%full_path -1 1 substr 'c' =
 List all system users and the name of the default group they belong to:
 
 ```
-$ csv-users -L user | csv-groups -M -L group | csv-sqlite -L "select user.name as user_name, 'group'.name as group_name from user, 'group' where user.gid = 'group'.gid"
+$ csv-users -T | csv-groups -M -N grp | csv-sqlite -T "select user.name as user_name, grp.name as group_name from user, grp where user.gid = grp.gid"
 ```
 
 List all network connections and processes they belong to:
 
 ```
-$ csv-ls -L file -c name,symlink /proc/*/fd/* 2>/dev/null |
+$ csv-ls -T -c name,symlink /proc/*/fd/* 2>/dev/null |
 csv-grep -c file.symlink -E "socket:\[[0-9]*\]" |
 csv-replace -c file.name -E '/proc/([0-9]*)/.*' -r '%1' -n file.pid |
 csv-replace -c file.symlink -E 'socket:\[([0-9]*)\]' -r %1 -n file.inode |
 csv-netstat -M |
 csv-grep -v -c socket.family -x -F 'UNIX' |
 csv-ps -M -c pid,cmd |
-csv-sqlite -L 'select socket.protocol, socket.src_ip, socket.src_port, socket.dst_ip, socket.dst_port, socket.state, socket.uid, file.pid, proc.cmd from socket left outer join file on socket.inode = file.inode left outer join proc on file.pid = proc.pid' -s
+csv-sqlite -T 'select socket.protocol, socket.src_ip, socket.src_port, socket.dst_ip, socket.dst_port, socket.state, socket.uid, file.pid, proc.cmd from socket left outer join file on socket.inode = file.inode left outer join proc on file.pid = proc.pid' -s
 
 protocol   src_ip                src_port   dst_ip                 dst_port   state         uid    pid     cmd
 tcp        127.0.0.53            53         0.0.0.0                0          LISTEN        102            
@@ -428,7 +428,7 @@ raw        ::                    58         ::                     0            
 - fuzzing
 
 # TODO (low level)
-- sql, exec: add support for labeled streams
+- sql, exec: add support for tables
 - header: implement add, add-types, change-type, guess-type, remove-types, rename
 - ps: lots of work, detailed in ps.c
 - show: ability to lock columns (make them always visible)

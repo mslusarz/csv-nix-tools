@@ -1,0 +1,9 @@
+_table:string,table1.name:string,table2.name:string,table2.something:int,table3.name:string,table3.id:int,table3.something:int,table4.name:string
+table1,lorem ipsum,,,,,,
+table2,,lorem ipsum,1,,,,
+table2,,not all that is gold,0,,,,
+table2,,something else,1,,,,
+table3,,,,lorem ipsum,1,1,
+table3,,,,not all that is gold,2,0,
+table3,,,,something else,3,1,
+table4,,,,,,,lorem ipsum

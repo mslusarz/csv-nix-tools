@@ -53,8 +53,8 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-concat [OPTION]... -- new_name = [%%name|str]...\n");
 	fprintf(out, "Options:\n");
-	describe_show(out);
-	describe_show_full(out);
+	describe_Show(out);
+	describe_Show_full(out);
 	describe_help(out);
 	describe_version(out);
 }

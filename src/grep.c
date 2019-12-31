@@ -69,8 +69,8 @@ usage(FILE *out)
 	fprintf(out, "  -E ext_regexp\n");
 	fprintf(out, "  -F string\n");
 	fprintf(out, "  -i, --ignore-case\n");
-	describe_show(out);
-	describe_show_full(out);
+	describe_Show(out);
+	describe_Show_full(out);
 	fprintf(out, "  -v, --invert\n");
 	fprintf(out, "  -x, --whole\n");
 	describe_help(out);

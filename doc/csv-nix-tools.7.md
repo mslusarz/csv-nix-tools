@@ -11,7 +11,7 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 
 - XXX format description
 - XXX types
-- XXX labeled streams
+- XXX streams with tables
 
 # SOURCE TOOLS #
 
@@ -59,10 +59,13 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 -f, --fields=name1[,name2...]
 :   XXX
 
--L, --label=label
+-M, --merge
 :   XXX
 
--M, --merge-with-stdin
+-N, --table-name=name
+:   XXX
+
+-T, --as-table
 :   XXX
 
 # COMMON OPTIONS FOR ALL SOURCE AND PROCESSING TOOLS #

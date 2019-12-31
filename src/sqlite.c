@@ -45,7 +45,7 @@
 static const struct option opts[] = {
 	{"show",	no_argument,		NULL, 's'},
 	{"show-full",	no_argument,		NULL, 'S'},
-	{"use-labels",	no_argument,		NULL, 'L'},
+	{"use-tables",	no_argument,		NULL, 'T'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -57,9 +57,9 @@ usage(FILE *out)
 	fprintf(out, "Usage: csv-sqlite [OPTION] sql-query\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -i path\n");
-	fprintf(out, "  -L, --use-labels\n");
-	describe_show(out);
-	describe_show_full(out);
+	describe_Show(out);
+	describe_Show_full(out);
+	fprintf(out, "  -T, --use-tables\n");
 	describe_help(out);
 	describe_version(out);
 }
@@ -83,8 +83,8 @@ struct input {
 
 struct cb_params {
 	sqlite3 *db;
-	bool labels;
-	size_t label_column;
+	bool tables;
+	size_t table_column;
 
 	struct table_insert {
 		char *name;
@@ -103,18 +103,18 @@ next_row(const char *buf, const size_t *col_offs,
 
 	struct table_insert *ins = NULL;
 
-	const char *label = "";
-	if (params->labels) {
-		assert(params->label_column != SIZE_MAX);
-		label = &buf[col_offs[params->label_column]];
-		if (label[0] == '"') {
+	const char *table = "";
+	if (params->tables) {
+		assert(params->table_column != SIZE_MAX);
+		table = &buf[col_offs[params->table_column]];
+		if (table[0] == '"') {
 			fprintf(stderr,
-				"labels with special characters are not supported\n");
+				"tables with special characters are not supported\n");
 			exit(2);
 		}
 
 		for (size_t i = 0; i < params->ntables; ++i) {
-			if (strcmp(params->inserts[i].name, label) == 0) {
+			if (strcmp(params->inserts[i].name, table) == 0) {
 				ins = &params->inserts[i];
 				break;
 			}
@@ -122,8 +122,8 @@ next_row(const char *buf, const size_t *col_offs,
 
 		if (!ins) {
 			fprintf(stderr,
-				"can't find prepared query for label '%s'\n",
-				label);
+				"can't find prepared query for table '%s'\n",
+				table);
 			exit(2);
 		}
 	} else {
@@ -131,12 +131,12 @@ next_row(const char *buf, const size_t *col_offs,
 		ins = &params->inserts[0];
 	}
 
-	size_t label_len = strlen(label);
+	size_t table_len = strlen(table);
 	size_t idx = 0;
 	for (size_t i = 0; i < nheaders; ++i) {
-		if (params->labels) {
-			if (strncmp(headers[i].name, label, label_len) != 0 ||
-				headers[i].name[label_len] != LABEL_SEPARATOR)
+		if (params->tables) {
+			if (strncmp(headers[i].name, table, table_len) != 0 ||
+				headers[i].name[table_len] != TABLE_SEPARATOR)
 				continue;
 		}
 
@@ -301,7 +301,7 @@ sqlite_type_to_csv_name(int t)
 }
 
 static void
-add_file(FILE *f, size_t num, sqlite3 *db, struct input *input, bool labels)
+add_file(FILE *f, size_t num, sqlite3 *db, struct input *input, bool tables)
 {
 	struct csv_ctx *s = csv_create_ctx_nofail(f, stderr);
 
@@ -314,24 +314,24 @@ add_file(FILE *f, size_t num, sqlite3 *db, struct input *input, bool labels)
 	input->ntables = 0;
 	input->tables = NULL;
 
-	size_t label_column = SIZE_MAX;
+	size_t table_column = SIZE_MAX;
 
-	if (labels) {
+	if (tables) {
 		for (size_t i = 0; i < nheaders; ++i) {
-			if (strcmp(headers[i].name, LABEL_COLUMN) == 0) {
-				label_column = i;
+			if (strcmp(headers[i].name, TABLE_COLUMN) == 0) {
+				table_column = i;
 				continue;
 			}
 
 			const char *sep =
-				strchr(headers[i].name, LABEL_SEPARATOR);
+				strchr(headers[i].name, TABLE_SEPARATOR);
 			if (!sep) {
 				fprintf(stderr,
-					"column '%s' doesn't contain label separator (%c)\n",
-					headers[i].name, LABEL_SEPARATOR);
+					"column '%s' doesn't contain table separator (%c)\n",
+					headers[i].name, TABLE_SEPARATOR);
 				exit(2);
 			}
-			size_t label_len = (uintptr_t)sep
+			size_t table_len = (uintptr_t)sep
 					- (uintptr_t)headers[i].name;
 
 			struct table *t = NULL;
@@ -339,7 +339,7 @@ add_file(FILE *f, size_t num, sqlite3 *db, struct input *input, bool labels)
 			for (size_t j = 0; j < input->ntables; ++j) {
 				if (strncmp(headers[i].name,
 						input->tables[j].name,
-						label_len) == 0) {
+						table_len) == 0) {
 					t = &input->tables[j];
 					break;
 				}
@@ -351,7 +351,7 @@ add_file(FILE *f, size_t num, sqlite3 *db, struct input *input, bool labels)
 						sizeof(input->tables[0]));
 				t = &input->tables[input->ntables++];
 				t->name = xstrndup_nofail(headers[i].name,
-						label_len);
+						table_len);
 				t->headers = NULL;
 				t->nheaders = 0;
 				t->create = NULL;
@@ -361,7 +361,7 @@ add_file(FILE *f, size_t num, sqlite3 *db, struct input *input, bool labels)
 			t->headers = xrealloc_nofail(t->headers,
 					t->nheaders + 1, sizeof(t->headers[0]));
 			t->headers[t->nheaders].name = headers[i].name
-					+ label_len + 1;
+					+ table_len + 1;
 			t->headers[t->nheaders].type = headers[i].type;
 			t->nheaders++;
 		}
@@ -379,7 +379,7 @@ add_file(FILE *f, size_t num, sqlite3 *db, struct input *input, bool labels)
 		input->ntables = 1;
 		input->tables = t = xmalloc_nofail(1, sizeof(input->tables[0]));
 
-		/* not used when labels are disabled */
+		/* not used when tables are disabled */
 		t->headers = NULL;
 		t->nheaders = 0;
 		t->name = NULL;
@@ -397,11 +397,11 @@ add_file(FILE *f, size_t num, sqlite3 *db, struct input *input, bool labels)
 
 	struct cb_params params;
 	params.db = db;
-	params.labels = labels;
+	params.tables = tables;
 	params.ntables = input->ntables;
 	params.inserts = xcalloc_nofail(input->ntables,
 			sizeof(params.inserts[0]));
-	params.label_column = label_column;
+	params.table_column = table_column;
 
 	for (size_t i = 0; i < input->ntables; ++i) {
 		struct table *t = &input->tables[i];
@@ -483,11 +483,11 @@ main(int argc, char *argv[])
 	int opt;
 	bool show = false;
 	bool show_full;
-	bool labels = false;
+	bool tables = false;
 	struct input *inputs = NULL;
 	size_t ninputs = 0;
 
-	while ((opt = getopt_long(argc, argv, "i:LsS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "i:sST", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'i':
 				inputs = xrealloc_nofail(inputs,
@@ -496,8 +496,8 @@ main(int argc, char *argv[])
 				inputs[ninputs - 1].path =
 						xstrdup_nofail(optarg);
 				break;
-			case 'L':
-				labels = true;
+			case 'T':
+				tables = true;
 				break;
 			case 's':
 				show = true;
@@ -535,7 +535,7 @@ main(int argc, char *argv[])
 		inputs = xcalloc_nofail(1, sizeof(inputs[0]));
 		ninputs++;
 
-		add_file(stdin, SIZE_MAX, db, &inputs[0], labels);
+		add_file(stdin, SIZE_MAX, db, &inputs[0], tables);
 	} else {
 		bool stdin_used = false;
 		for (size_t i = 0; i < ninputs; ++i) {
@@ -559,7 +559,7 @@ main(int argc, char *argv[])
 				exit(2);
 			}
 
-			add_file(f, i + 1, db, &inputs[i], labels);
+			add_file(f, i + 1, db, &inputs[i], tables);
 
 			if (strcmp(path, "-") != 0)
 				fclose(f);

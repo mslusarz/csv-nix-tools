@@ -66,8 +66,8 @@ usage(FILE *out)
 	fprintf(out, "  -i, --ignore-case\n");
 	fprintf(out, "  -n new-name\n");
 	fprintf(out, "  -r replacement\n");
-	describe_show(out);
-	describe_show_full(out);
+	describe_Show(out);
+	describe_Show_full(out);
 	describe_help(out);
 	describe_version(out);
 }

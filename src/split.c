@@ -60,8 +60,8 @@ usage(FILE *out)
 	fprintf(out, "  -n name1,name2\n");
 	fprintf(out, "  -r, --reverse\n");
 	fprintf(out, "  -p  --print-separator=yes/no/auto\n");
-	describe_show(out);
-	describe_show_full(out);
+	describe_Show(out);
+	describe_Show_full(out);
 	describe_help(out);
 	describe_version(out);
 }

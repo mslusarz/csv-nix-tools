@@ -1,5 +1,5 @@
-_label:string,label1.name:string,label2.name:string,label2.something:int
-label1,lorem ipsum,,
-label2,,lorem ipsum,1
-label2,,not all that is gold,0
-label2,,something else,1
+_table:string,table1.name:string,table2.name:string,table2.something:int
+table1,lorem ipsum,,
+table2,,lorem ipsum,1
+table2,,not all that is gold,0
+table2,,something else,1
