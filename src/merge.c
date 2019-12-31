@@ -45,6 +45,7 @@ static const struct option opts[] = {
 	{"label",	required_argument,	NULL, 'l'},
 	{"path",	required_argument,	NULL, 'p'},
 	{"show",	no_argument,		NULL, 's'},
+	{"show-full",	no_argument,		NULL, 'S'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{"labeled-path",required_argument,	NULL, 'P'},
@@ -72,10 +73,11 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -l, --label label\n");
 	fprintf(out, "  -p, --path path\n");
-	fprintf(out, "  -s, --show\n");
+	describe_show(out);
+	describe_show_full(out);
 	fprintf(out, "      --labeled-path path\n");
-	fprintf(out, "      --help\n");
-	fprintf(out, "      --version\n");
+	describe_help(out);
+	describe_version(out);
 }
 
 static int
@@ -240,10 +242,11 @@ main(int argc, char *argv[])
 {
 	int opt;
 	bool show = false;
+	bool show_full;
 	bool stdin_used = false;
 	char *label = NULL;
 
-	while ((opt = getopt_long(argc, argv, "l:p:P:s", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "l:p:P:sS", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'l':
 				free(label);
@@ -261,6 +264,11 @@ main(int argc, char *argv[])
 			}
 			case 's':
 				show = true;
+				show_full = false;
+				break;
+			case 'S':
+				show = true;
+				show_full = true;
 				break;
 			case 'V':
 				printf("git\n");
@@ -280,7 +288,7 @@ main(int argc, char *argv[])
 	}
 
 	if (show)
-		csv_show();
+		csv_show(show_full);
 
 	printf("%s:string,", LABEL_COLUMN);
 

@@ -44,6 +44,7 @@ static const struct option opts[] = {
 	{"fields",	required_argument,	NULL, 'f'},
 	{"reverse",	no_argument,		NULL, 'r'},
 	{"show",	no_argument,		NULL, 's'},
+	{"show-full",	no_argument,		NULL, 'S'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -56,9 +57,10 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -f, --fields=name1[,name2...]\n");
 	fprintf(out, "  -r, --reverse\n");
-	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --help\n");
-	fprintf(out, "      --version\n");
+	describe_show(out);
+	describe_show_full(out);
+	describe_help(out);
+	describe_version(out);
 }
 
 struct cb_params {
@@ -93,8 +95,9 @@ main(int argc, char *argv[])
 	char *cols = NULL;
 	bool reverse = false;
 	bool show = false;
+	bool show_full;
 
-	while ((opt = getopt_long(argc, argv, "f:rs", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "f:rsS", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'f':
 				cols = xstrdup_nofail(optarg);
@@ -104,6 +107,11 @@ main(int argc, char *argv[])
 				break;
 			case 's':
 				show = true;
+				show_full = false;
+				break;
+			case 'S':
+				show = true;
+				show_full = true;
 				break;
 			case 'V':
 				printf("git\n");
@@ -116,7 +124,7 @@ main(int argc, char *argv[])
 	}
 
 	if (show)
-		csv_show();
+		csv_show(show_full);
 
 	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
 

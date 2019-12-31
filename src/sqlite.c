@@ -44,6 +44,7 @@
 
 static const struct option opts[] = {
 	{"show",	no_argument,		NULL, 's'},
+	{"show-full",	no_argument,		NULL, 'S'},
 	{"use-labels",	no_argument,		NULL, 'L'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
@@ -57,9 +58,10 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -i path\n");
 	fprintf(out, "  -L, --use-labels\n");
-	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --help\n");
-	fprintf(out, "      --version\n");
+	describe_show(out);
+	describe_show_full(out);
+	describe_help(out);
+	describe_version(out);
 }
 
 struct input {
@@ -480,11 +482,12 @@ main(int argc, char *argv[])
 {
 	int opt;
 	bool show = false;
+	bool show_full;
 	bool labels = false;
 	struct input *inputs = NULL;
 	size_t ninputs = 0;
 
-	while ((opt = getopt_long(argc, argv, "i:Ls", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "i:LsS", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'i':
 				inputs = xrealloc_nofail(inputs,
@@ -498,6 +501,11 @@ main(int argc, char *argv[])
 				break;
 			case 's':
 				show = true;
+				show_full = false;
+				break;
+			case 'S':
+				show = true;
+				show_full = true;
 				break;
 			case 'V':
 				printf("git\n");
@@ -515,7 +523,7 @@ main(int argc, char *argv[])
 	}
 
 	if (show)
-		csv_show();
+		csv_show(show_full);
 
 	sqlite3 *db;
 	if (sqlite3_open(":memory:", &db) != SQLITE_OK) {

@@ -1,4 +1,4 @@
 Usage: csv-exec [OPTION]...
 Options:
-      --help
-      --version
+      --help                 display this help and exit
+      --version              output version information and exit

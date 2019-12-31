@@ -44,6 +44,7 @@ static const struct option opts[] = {
 	{"print-separator",	required_argument,	NULL, 'p'},
 	{"reverse",		no_argument,		NULL, 'r'},
 	{"show",		no_argument,		NULL, 's'},
+	{"show-full",		no_argument,		NULL, 'S'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{NULL,			0,			NULL, 0},
@@ -59,9 +60,10 @@ usage(FILE *out)
 	fprintf(out, "  -n name1,name2\n");
 	fprintf(out, "  -r, --reverse\n");
 	fprintf(out, "  -p  --print-separator=yes/no/auto\n");
-	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --help\n");
-	fprintf(out, "      --version\n");
+	describe_show(out);
+	describe_show_full(out);
+	describe_help(out);
+	describe_version(out);
 }
 
 struct cb_params {
@@ -143,10 +145,11 @@ main(int argc, char *argv[])
 	char *name2 = NULL;
 	int print_separators = -1;
 	bool show = false;
+	bool show_full;
 
 	memset(&params, 0, sizeof(params));
 
-	while ((opt = getopt_long(argc, argv, "e:f:p:sn:r", opts,
+	while ((opt = getopt_long(argc, argv, "e:f:p:sSn:r", opts,
 			NULL)) != -1) {
 		switch (opt) {
 			case 'e':
@@ -189,6 +192,11 @@ main(int argc, char *argv[])
 				break;
 			case 's':
 				show = true;
+				show_full = false;
+				break;
+			case 'S':
+				show = true;
+				show_full = true;
 				break;
 			case 'V':
 				printf("git\n");
@@ -206,7 +214,7 @@ main(int argc, char *argv[])
 	}
 
 	if (show)
-		csv_show();
+		csv_show(show_full);
 
 	if (print_separators >= 0)
 		params.print_separators = print_separators;

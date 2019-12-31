@@ -626,6 +626,7 @@ static const struct option opts[] = {
 	{"label",		required_argument,	NULL, 'L'},
 	{"recursive",		no_argument,		NULL, 'R'},
 	{"show",		no_argument,		NULL, 's'},
+	{"show-full",		no_argument,		NULL, 'S'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{NULL,			0,			NULL, 0},
@@ -644,10 +645,11 @@ usage(FILE *out)
 	fprintf(out, "  -L, --label label          \n");
 	fprintf(out, "  -l                         use a longer listing format (can be used up to 3 times)\n");
 	fprintf(out, "  -R, --recursive            list subdirectories recursively\n");
-	fprintf(out, "  -s, --show                 pipe output to csv-show\n");
+	describe_show(out);
+	describe_show_full(out);
 	fprintf(out, "  -U                         do not sort; list entries in directory order\n");
-	fprintf(out, "      --help                 display this help and exit\n");
-	fprintf(out, "      --version              output version information and exit\n");
+	describe_help(out);
+	describe_version(out);
 }
 
 int
@@ -657,6 +659,7 @@ main(int argc, char *argv[])
 	int dir = 0, recursive = 0, all = 0, sort = 1;
 	char *cols = NULL;
 	bool show = false;
+	bool show_full;
 	bool merge_with_stdin = false;
 	char *label = NULL;
 
@@ -721,7 +724,7 @@ main(int argc, char *argv[])
 	size_t ncolumns = ARRAY_SIZE(columns);
 	int level = 0;
 
-	while ((opt = getopt_long(argc, argv, "adf:lL:MRsU", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "adf:lL:MRsSU", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'a':
 				all = 1;
@@ -754,6 +757,11 @@ main(int argc, char *argv[])
 				break;
 			case 's':
 				show = true;
+				show_full = false;
+				break;
+			case 'S':
+				show = true;
+				show_full = true;
 				break;
 			case 'U':
 				sort = 0;
@@ -788,7 +796,7 @@ main(int argc, char *argv[])
 	}
 
 	if (show)
-		csv_show();
+		csv_show(show_full);
 
 	struct csvmu_ctx ctx;
 	ctx.label = label;

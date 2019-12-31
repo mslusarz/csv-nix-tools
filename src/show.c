@@ -73,8 +73,8 @@ usage(FILE *out)
 	fprintf(out, "  -s, --spacing NUM\n");
 	fprintf(out, "      --with-types\n");
 	fprintf(out, "      --no-header\n");
-	fprintf(out, "      --help\n");
-	fprintf(out, "      --version\n");
+	describe_help(out);
+	describe_version(out);
 }
 
 struct cb_params {

@@ -2,6 +2,7 @@ Usage: csv-cut [OPTION]...
 Options:
   -f, --fields=name1[,name2...]
   -r, --reverse
-  -s, --show
-      --help
-      --version
+  -s, --show                 print output in table format
+  -S, --show-full            print output in table format with pager
+      --help                 display this help and exit
+      --version              output version information and exit

@@ -42,6 +42,7 @@
 
 static const struct option opts[] = {
 	{"show",		no_argument,		NULL, 's'},
+	{"show-full",		no_argument,		NULL, 'S'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{NULL,			0,			NULL, 0},
@@ -52,9 +53,10 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-concat [OPTION]... -- new_name = [%%name|str]...\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --help\n");
-	fprintf(out, "      --version\n");
+	describe_show(out);
+	describe_show_full(out);
+	describe_help(out);
+	describe_version(out);
 }
 
 struct elem {
@@ -131,13 +133,19 @@ main(int argc, char *argv[])
 	char *new_name = NULL;
 	struct cb_params params;
 	bool show = false;
+	bool show_full;
 
 	memset(&params, 0, sizeof(params));
 
-	while ((opt = getopt_long(argc, argv, "s", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "sS", opts, NULL)) != -1) {
 		switch (opt) {
 			case 's':
 				show = true;
+				show_full = false;
+				break;
+			case 'S':
+				show = true;
+				show_full = true;
 				break;
 			case 'V':
 				printf("git\n");
@@ -204,7 +212,7 @@ main(int argc, char *argv[])
 	}
 
 	if (show)
-		csv_show();
+		csv_show(show_full);
 
 	for (size_t i = 0; i < nheaders; ++i)
 		printf("%s:%s,", headers[i].name, headers[i].type);

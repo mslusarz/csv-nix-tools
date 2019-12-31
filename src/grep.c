@@ -51,6 +51,7 @@
 static const struct option opts[] = {
 	{"ignore-case",		no_argument,	NULL, 'i'},
 	{"show",		no_argument,	NULL, 's'},
+	{"show-full",		no_argument,	NULL, 'S'},
 	{"invert",		no_argument,	NULL, 'v'},
 	{"version",		no_argument,	NULL, 'V'},
 	{"whole",		no_argument,	NULL, 'x'},
@@ -68,11 +69,12 @@ usage(FILE *out)
 	fprintf(out, "  -E ext_regexp\n");
 	fprintf(out, "  -F string\n");
 	fprintf(out, "  -i, --ignore-case\n");
-	fprintf(out, "  -s, --show\n");
+	describe_show(out);
+	describe_show_full(out);
 	fprintf(out, "  -v, --invert\n");
 	fprintf(out, "  -x, --whole\n");
-	fprintf(out, "      --help\n");
-	fprintf(out, "      --version\n");
+	describe_help(out);
+	describe_version(out);
 }
 
 struct condition {
@@ -197,11 +199,12 @@ main(int argc, char *argv[])
 	struct condition *conditions = NULL;
 	size_t nconditions = 0;
 	bool show = false;
+	bool show_full;
 	bool ignore_case = false;
 	char *current_column = NULL;
 	bool whole = false;
 
-	while ((opt = getopt_long(argc, argv, "e:E:f:F:isvx", opts,
+	while ((opt = getopt_long(argc, argv, "e:E:f:F:isSvx", opts,
 			NULL)) != -1) {
 		switch (opt) {
 			case 'e': {
@@ -270,6 +273,11 @@ main(int argc, char *argv[])
 				break;
 			case 's':
 				show = true;
+				show_full = false;
+				break;
+			case 'S':
+				show = true;
+				show_full = true;
 				break;
 			case 'v':
 				invert = true;
@@ -295,7 +303,7 @@ main(int argc, char *argv[])
 	free(current_column);
 
 	if (show)
-		csv_show();
+		csv_show(show_full);
 
 	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
 

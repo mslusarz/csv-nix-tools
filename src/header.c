@@ -65,9 +65,10 @@ usage(FILE *out)
 	fprintf(out, "  -m, --remove\n");
 //	fprintf(out, "  -M, --remove-types\n");
 //	fprintf(out, "  -n, --rename original,new\n");
-	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --help\n");
-	fprintf(out, "      --version\n");
+	describe_show(out);
+	describe_show_full(out);
+	describe_help(out);
+	describe_version(out);
 }
 
 struct cb_params {
@@ -92,6 +93,7 @@ main(int argc, char *argv[])
 	struct cb_params params;
 	bool print_header = true;
 	bool show = false;
+	bool show_full;
 
 //	char *rename_from = NULL;
 //	char *rename_to = NULL;
@@ -101,7 +103,7 @@ main(int argc, char *argv[])
 
 //	char **columns = NULL;
 
-	while ((opt = getopt_long(argc, argv, "a:A:C:GmMn:s", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "a:A:C:GmMn:sS", opts, NULL)) != -1) {
 		switch (opt) {
 //			case 'a': /* add col1:type1[,col2:type2] */
 //				break;
@@ -118,8 +120,13 @@ main(int argc, char *argv[])
 //				break;
 //			case 'n': /* rename original,new */
 //				break;
-			case 's': /* show */
+			case 's':
 				show = true;
+				show_full = false;
+				break;
+			case 'S':
+				show = true;
+				show_full = true;
 				break;
 			case 'V':
 				printf("git\n");
@@ -138,7 +145,7 @@ main(int argc, char *argv[])
 			exit(2);
 		}
 
-		csv_show();
+		csv_show(show_full);
 	}
 
 	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);

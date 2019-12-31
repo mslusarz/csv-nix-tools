@@ -64,7 +64,7 @@ void print_timespec(const struct timespec *ts, bool nsec);
 
 bool csv_requires_quoting(const char *str, size_t len);
 void csv_print_quoted(const char *str, size_t len);
-void csv_show(void);
+void csv_show(bool full);
 void csv_substring_sanitize(const char *str, ssize_t *start, size_t *len);
 
 char *csv_unquot(const char *str);
@@ -197,5 +197,10 @@ void csvci_print_header_with_prefix(struct column_info *columns,
 		size_t ncolumns, const char *prefix);
 void csvci_print_row(const void *row, const struct column_info *columns,
 		size_t ncolumns);
+
+void describe_help(FILE *out);
+void describe_version(FILE *out);
+void describe_show(FILE *out);
+void describe_show_full(FILE *out);
 
 #endif

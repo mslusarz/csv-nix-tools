@@ -105,7 +105,8 @@ static const struct option opts[] = {
 	{"label",		required_argument,	NULL, 'L'},
 	{"resolve",		no_argument,		NULL, 'r'},
 	{"show",		no_argument,		NULL, 's'},
-//	{"sctp",		no_argument,		NULL, 'S'},
+	{"show-full",		no_argument,		NULL, 'S'},
+//	{"sctp",		no_argument,		NULL, 'c'},
 	{"tcp",			no_argument,		NULL, 't'},
 	{"udp",			no_argument,		NULL, 'u'},
 //	{"udplite",		no_argument,		NULL, 'U'},
@@ -129,8 +130,9 @@ usage(FILE *out)
 	fprintf(out, "  -L, --label label          \n");
 	fprintf(out, "  -l                         use a longer listing format (can be used up to 3 times)\n");
 	fprintf(out, "  -r, --resolve              \n");
-	fprintf(out, "  -s, --show                 pipe output to csv-show\n");
-//	fprintf(out, "  -S, --sctp                 \n");
+	describe_show(out);
+	describe_show_full(out);
+//	fprintf(out, "  -c, --sctp                 \n");
 	fprintf(out, "  -t, --tcp                  \n");
 	fprintf(out, "  -u, --udp                  \n");
 //	fprintf(out, "  -U, --udplite              \n");
@@ -138,8 +140,8 @@ usage(FILE *out)
 	fprintf(out, "  -x, --unix                 \n");
 	fprintf(out, "  -4, --inet4                \n");
 	fprintf(out, "  -6, --inet6                \n");
-	fprintf(out, "      --help                 display this help and exit\n");
-	fprintf(out, "      --version              output version information and exit\n");
+	describe_help(out);
+	describe_version(out);
 }
 
 static inline int
@@ -1540,6 +1542,7 @@ main(int argc, char *argv[])
 	int opt;
 	char *cols = NULL;
 	bool show = false;
+	bool show_full;
 	unsigned protocols = 0;
 	bool merge_with_stdin = false;
 	char *label = NULL;
@@ -1623,9 +1626,15 @@ main(int argc, char *argv[])
 	size_t ncolumns = ARRAY_SIZE(columns);
 	int level = 0;
 
-	while ((opt = getopt_long(argc, argv, "f:lL:MrSstUuwx46", opts,
+	while ((opt = getopt_long(argc, argv, "cf:lL:MrSstUuwx46", opts,
 			NULL)) != -1) {
 		switch (opt) {
+			case 'c':
+				fprintf(stderr,
+					"SCTP not supported yet (patches welcomed)\n");
+				exit(2);
+				/* protocols |= SCTP; */
+				break;
 			case 'f':
 				cols = xstrdup_nofail(optarg);
 				break;
@@ -1647,14 +1656,13 @@ main(int argc, char *argv[])
 					if (columns[i].data & REQUIRES_RESOLVING)
 						columns[i].vis = true;
 				break;
-			case 'S':
-				fprintf(stderr,
-					"SCTP not supported yet (patches welcomed)\n");
-				exit(2);
-				/* protocols |= SCTP; */
-				break;
 			case 's':
 				show = true;
+				show_full = false;
+				break;
+			case 'S':
+				show = true;
+				show_full = true;
 				break;
 			case 't':
 				protocols |= TCP;
@@ -1706,7 +1714,7 @@ main(int argc, char *argv[])
 	}
 
 	if (show)
-		csv_show();
+		csv_show(show_full);
 
 	struct csvmu_ctx ctx;
 	ctx.label = label;

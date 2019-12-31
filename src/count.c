@@ -43,6 +43,7 @@ static const struct option opts[] = {
 	{"columns",	no_argument,		NULL, 'c'},
 	{"rows",	no_argument,		NULL, 'r'},
 	{"show",	no_argument,		NULL, 's'},
+	{"show-full",	no_argument,		NULL, 'S'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -55,9 +56,10 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -c, --columns\n");
 	fprintf(out, "  -r, --rows\n");
-	fprintf(out, "  -s, --show\n");
-	fprintf(out, "      --help\n");
-	fprintf(out, "      --version\n");
+	describe_show(out);
+	describe_show_full(out);
+	describe_help(out);
+	describe_version(out);
 }
 
 struct cb_params {
@@ -82,13 +84,14 @@ main(int argc, char *argv[])
 	int opt;
 	struct cb_params params;
 	bool show = false;
+	bool show_full;
 	bool columns = false;
 	bool read_rows = false;
 	bool rows = false;
 
 	params.rows = 0;
 
-	while ((opt = getopt_long(argc, argv, "crRs", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "crRsS", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'c':
 				columns = true;
@@ -101,6 +104,11 @@ main(int argc, char *argv[])
 				break;
 			case 's':
 				show = true;
+				show_full = false;
+				break;
+			case 'S':
+				show = true;
+				show_full = true;
 				break;
 			case 'V':
 				printf("git\n");
@@ -113,7 +121,7 @@ main(int argc, char *argv[])
 	}
 
 	if (show)
-		csv_show();
+		csv_show(show_full);
 
 	if (!columns && !rows) {
 		usage(stderr);

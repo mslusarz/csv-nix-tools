@@ -5,6 +5,7 @@ Options:
   -M, --merge-with-stdin     
   -L, --label label          
   -l                         use a longer listing format (can be used once)
-  -s, --show                 pipe output to csv-show
+  -s, --show                 print output in table format
+  -S, --show-full            print output in table format with pager
       --help                 display this help and exit
       --version              output version information and exit

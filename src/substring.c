@@ -42,6 +42,7 @@
 
 static const struct option opts[] = {
 	{"show",		no_argument,		NULL, 's'},
+	{"show-full",		no_argument,		NULL, 'S'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{NULL,			0,			NULL, 0},
@@ -55,10 +56,11 @@ usage(FILE *out)
 	fprintf(out, "  -f name\n");
 	fprintf(out, "  -n new-name\n");
 	fprintf(out, "  -p start-pos\n");
-	fprintf(out, "  -s, --show\n");
 	fprintf(out, "  -l length\n");
-	fprintf(out, "      --help\n");
-	fprintf(out, "      --version\n");
+	describe_show(out);
+	describe_show_full(out);
+	describe_help(out);
+	describe_version(out);
 }
 
 struct cb_params {
@@ -103,11 +105,12 @@ main(int argc, char *argv[])
 	char *new_name = NULL;
 	struct cb_params params;
 	bool show = false;
+	bool show_full;
 
 	memset(&params, 0, sizeof(params));
 	params.length = SIZE_MAX;
 
-	while ((opt = getopt_long(argc, argv, "f:l:p:sn:", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "f:l:p:sSn:", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'f':
 				input_col = xstrdup_nofail(optarg);
@@ -121,6 +124,11 @@ main(int argc, char *argv[])
 				break;
 			case 's':
 				show = true;
+				show_full = false;
+				break;
+			case 'S':
+				show = true;
+				show_full = true;
 				break;
 			case 'l':
 				if (strtoul_safe(optarg, &params.length, 0))
@@ -142,7 +150,7 @@ main(int argc, char *argv[])
 	}
 
 	if (show)
-		csv_show();
+		csv_show(show_full);
 
 	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
 

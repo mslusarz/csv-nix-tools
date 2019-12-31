@@ -376,7 +376,7 @@ csv_find(const struct col_header *headers, size_t nheaders, const char *name)
 }
 
 void
-csv_show(void)
+csv_show(bool full)
 {
 	int fds[2];
 	pid_t pid;
@@ -393,7 +393,15 @@ csv_show(void)
 	}
 
 	if (pid > 0) {
-		char *show[] = {"csv-show", NULL};
+		char *show[3];
+		show[0] = "csv-show";
+		show[2] = NULL;
+
+		if (full) {
+			show[1] = NULL;
+		} else {
+			show[1] = "--ui=none";
+		}
 
 		if (close(fds[1])) {
 			perror("close");
@@ -669,4 +677,28 @@ csvci_print_row(const void *row, const struct column_info *columns,
 
 	columns[ncolumns - 1].print(row);
 	putc('\n', stdout);
+}
+
+void
+describe_show(FILE *out)
+{
+	fprintf(out, "  -s, --show                 print output in table format\n");
+}
+
+void
+describe_show_full(FILE *out)
+{
+	fprintf(out, "  -S, --show-full            print output in table format with pager\n");
+}
+
+void
+describe_help(FILE *out)
+{
+	fprintf(out, "      --help                 display this help and exit\n");
+}
+
+void
+describe_version(FILE *out)
+{
+	fprintf(out, "      --version              output version information and exit\n");
 }

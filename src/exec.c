@@ -51,8 +51,8 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-exec [OPTION]...\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "      --help\n");
-	fprintf(out, "      --version\n");
+	describe_help(out);
+	describe_version(out);
 }
 
 struct subst {

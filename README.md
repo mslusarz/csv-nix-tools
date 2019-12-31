@@ -70,7 +70,7 @@ Filtering/processing:
 
 Sink:
 - csv-exec - executes an external command for each row
-- csv-show - formats data in human-readable form (also available as a "-s" option in all source and processing tools)
+- csv-show - formats data in human-readable form (also available as a "-s/-S" option in all source and processing tools)
 
 # Examples
 
@@ -99,6 +99,20 @@ type_mode:string,nlink:int,owner_name:string,group_name:string,size:int,mtime:st
 -rwxr-xr-x ,1,marcin,marcin,825,2019-12-23 01:25:09.873956973,csv-tac.1.md,
 -rwxr-xr-x ,1,marcin,marcin,710,2019-12-23 02:15:38.110135517,csv-tail.1.md,
 ```
+
+or in table form:
+
+```
+$ csv-ls -ls doc
+type_mode     nlink   owner_name   group_name   size   mtime                           name                 symlink
+-rwxr-xr-x    1       marcin       marcin       773    2019-12-23 01:24:58.478029642   csv-cat.1.md         
+-rwxr-xr-x    1       marcin       marcin       721    2019-12-23 02:15:21.074174728   csv-head.1.md        
+-rwxr-xr-x    1       marcin       marcin       1673   2019-12-23 02:16:07.494064188   csv-nix-tools.7.md   
+-rwxr-xr-x    1       marcin       marcin       1476   2019-12-23 02:43:08.227018848   csv-show.1.md        
+-rwxr-xr-x    1       marcin       marcin       825    2019-12-23 01:25:09.873956973   csv-tac.1.md         
+-rwxr-xr-x    1       marcin       marcin       710    2019-12-23 02:15:38.110135517   csv-tail.1.md        
+```
+
 
 Extended^3 information about files in one directory:
 
@@ -427,7 +441,6 @@ raw        ::                    58         ::                     0            
 - rpn/sql: binary number parsing
 - write down data format spec
 - strict column name verification
-- show: exit if output fits on screen?
 
 ## Random ideas
 - export data as bash/python/etc script?
