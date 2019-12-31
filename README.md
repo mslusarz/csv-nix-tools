@@ -47,6 +47,7 @@ Filtering/processing:
 - csv-add-exec - pipes data to standard input of an external command and creates new column from its standard output
 - csv-add-replace - performs string substitution on column(s) (similar to sed s/$str/$str/)
 - csv-add-rpn - creates new column from RPN expression
+- csv-add-split - splits one column into two using a delimiter
 - csv-avg - takes an average of numerical column(s)
 - csv-cat - concatenates multiple csv files
 - csv-count - counts the number of columns and/or rows
@@ -59,7 +60,6 @@ Filtering/processing:
 - csv-merge - merges multiple input streams
 - csv-min - takes a minimum value of numerical or string column(s)
 - csv-sort - sorts input by column(s)
-- csv-split - splits one column into two using a delimiter
 - csv-sql - processes input data using simplified (but very fast) SQL-based syntax (WIP)
 - csv-sqlite - processes input data using SQLite (requires loading the whole input before processing)
 - csv-substring - extracts part of a column
@@ -205,7 +205,7 @@ $ csv-ls -c size,name . | csv-sort -c size | csv-tail -n 4
 List of files, split name into base and extension:
 
 ```
-$ csv-ls -c size,name | csv-split -c name -e . -n base,ext -r
+$ csv-ls -c size,name | csv-add-split -c name -e . -n base,ext -r
 size:int,name:string,base:string,ext:string
 123,file1,file1,
 456,file2.ext,file2,ext
@@ -215,7 +215,7 @@ size:int,name:string,base:string,ext:string
 Sum of sizes of all files with the "png" extension:
 
 ```
-$ csv-ls -l . | csv-split -c name -e . -n base,ext -r |
+$ csv-ls -l . | csv-add-split -c name -e . -n base,ext -r |
 csv-grep -c ext -x -F png | csv-sum -c size | csv-header --remove
 94877
 ```

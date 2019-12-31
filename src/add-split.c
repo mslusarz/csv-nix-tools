@@ -53,7 +53,7 @@ static const struct option opts[] = {
 static void
 usage(FILE *out)
 {
-	fprintf(out, "Usage: csv-split [OPTION]...\n");
+	fprintf(out, "Usage: csv-add-split [OPTION]...\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -c name\n");
 	fprintf(out, "  -e separator\n");

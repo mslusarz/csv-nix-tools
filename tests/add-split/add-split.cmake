@@ -29,20 +29,20 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-test("csv-split -c column3 -n before,after -e,"
-	data/commas.csv split/commas.csv data/empty.txt 0
-	split_commas)
+test("csv-add-split -c column3 -n before,after -e,"
+	data/commas.csv add-split/commas.csv data/empty.txt 0
+	add-split_commas)
 
-test("csv-split -c column3 -n before,after -e, -r"
-	data/commas.csv split/commas-reverse.csv data/empty.txt 0
-	split_commas_reverse)
+test("csv-add-split -c column3 -n before,after -e, -r"
+	data/commas.csv add-split/commas-reverse.csv data/empty.txt 0
+	add-split_commas_reverse)
 
-test("csv-split -c column3 -n before,after -e, -s"
-	data/commas.csv split/commas.txt data/empty.txt 0
-	split_commas_-s)
+test("csv-add-split -c column3 -n before,after -e, -s"
+	data/commas.csv add-split/commas.txt data/empty.txt 0
+	add-split_commas_-s)
 
-test("csv-split --help" data/empty.csv split/help.txt data/empty.txt 2
-	split_help)
+test("csv-add-split --help" data/empty.csv add-split/help.txt data/empty.txt 2
+	add-split_help)
 
-test("csv-split --version" data/empty.csv data/git-version.txt data/empty.txt 0
-	split_version)
+test("csv-add-split --version" data/empty.csv data/git-version.txt data/empty.txt 0
+	add-split_version)
