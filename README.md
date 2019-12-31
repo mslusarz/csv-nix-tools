@@ -43,12 +43,12 @@ Source:
 - csv-users - lists system users
 
 Filtering/processing:
-- csv-add-concat - concatenates columns and user-defined strings
-- csv-add-exec - pipes data to standard input of an external command and creates new column from its standard output
-- csv-add-replace - performs string substitution on column(s) (similar to sed s/$str/$str/)
-- csv-add-rpn - creates new column from RPN expression
-- csv-add-split - splits one column into two using a delimiter
-- csv-add-substring - extracts part of a column
+- csv-add-concat - adds a new column by concatenation of columns and user-defined strings
+- csv-add-exec - pipes data to standard input of an external command and creates a new column from its standard output
+- csv-add-replace - adds a new column by performing a string substitution on another column (similar to sed s/$str/$str/)
+- csv-add-rpn - adds a new column from RPN expression
+- csv-add-split - adds two new columns by splitting another one using a delimiter
+- csv-add-substring - adds a new column by extracting a substring of another column
 - csv-avg - takes an average of numerical column(s)
 - csv-cat - concatenates multiple csv files
 - csv-count - counts the number of columns and/or rows
