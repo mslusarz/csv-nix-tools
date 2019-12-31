@@ -56,8 +56,8 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 
 # COMMON OPTIONS FOR ALL SOURCE TOOLS #
 
--f, --fields=name1[,name2...]
-:   XXX
+-c, --columns=name1[,name2...]
+:   choose the list of columns
 
 -M, --merge
 :   XXX
@@ -71,7 +71,10 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 # COMMON OPTIONS FOR ALL SOURCE AND PROCESSING TOOLS #
 
 -s, --show
-:   pipe output to **csv-show**(1)
+:   print output in table format
+
+-S, --show-full
+:   print output in table format with pager
 
 # COMMON OPTIONS FOR ALL TOOLS #
 

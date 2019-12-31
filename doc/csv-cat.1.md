@@ -21,7 +21,10 @@ order can be different between files. csv-cat chooses the order of the first
 input file.
 
 -s, --show
-:   pipe output to **csv-show**(1)
+:   print output in table format
+
+-S, --show-full
+:   print output in table format with pager
 
 --help
 :   display this help and exit
