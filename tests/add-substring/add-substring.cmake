@@ -29,20 +29,20 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-test("csv-substring -c name -n substr2 -p 2"
-	data/3-columns-3-rows.csv substring/p2.csv data/empty.txt 0
-	substring_p2)
+test("csv-add-substring -c name -n substr2 -p 2"
+	data/3-columns-3-rows.csv add-substring/p2.csv data/empty.txt 0
+	add-substring_p2)
 
-test("csv-substring -c name -n substr2 -p 2 -s"
-	data/3-columns-3-rows.csv substring/p2.txt data/empty.txt 0
-	substring_p2_-s)
+test("csv-add-substring -c name -n substr2 -p 2 -s"
+	data/3-columns-3-rows.csv add-substring/p2.txt data/empty.txt 0
+	add-substring_p2_-s)
 
-test("csv-substring -c name -n last_char -p -1 -l 1"
-	data/3-columns-3-rows.csv substring/p-1.csv data/empty.txt 0
-	substring_p_1)
+test("csv-add-substring -c name -n last_char -p -1 -l 1"
+	data/3-columns-3-rows.csv add-substring/p-1.csv data/empty.txt 0
+	add-substring_p_1)
 
-test("csv-substring --help" data/empty.csv substring/help.txt data/empty.txt 2
-	substring_help)
+test("csv-add-substring --help" data/empty.csv add-substring/help.txt data/empty.txt 2
+	add-substring_help)
 
-test("csv-substring --version" data/empty.csv data/git-version.txt data/empty.txt 0
-	substring_version)
+test("csv-add-substring --version" data/empty.csv data/git-version.txt data/empty.txt 0
+	add-substring_version)

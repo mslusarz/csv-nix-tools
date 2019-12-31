@@ -29,6 +29,7 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 - **csv-add-replace**(1)
 - **csv-add-rpn**(1)
 - **csv-add-split**(1)
+- **csv-add-substring**(1)
 - **csv-avg**(1)
 - **csv-cat**(1) - concatenate CSV files and print on the standard output
 - **csv-count**(1)
@@ -43,7 +44,6 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 - **csv-sort**(1)
 - **csv-sql**(1)
 - **csv-sqlite**(1)
-- **csv-substring**(1)
 - **csv-sum**(1)
 - **csv-tac**(1) - concatenate CSV files and print on the standard output in reverse
 - **csv-tail**(1) - print on the standard output the end of a CSV file from standard input

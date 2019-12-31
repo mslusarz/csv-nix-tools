@@ -48,6 +48,7 @@ Filtering/processing:
 - csv-add-replace - performs string substitution on column(s) (similar to sed s/$str/$str/)
 - csv-add-rpn - creates new column from RPN expression
 - csv-add-split - splits one column into two using a delimiter
+- csv-add-substring - extracts part of a column
 - csv-avg - takes an average of numerical column(s)
 - csv-cat - concatenates multiple csv files
 - csv-count - counts the number of columns and/or rows
@@ -62,7 +63,6 @@ Filtering/processing:
 - csv-sort - sorts input by column(s)
 - csv-sql - processes input data using simplified (but very fast) SQL-based syntax (WIP)
 - csv-sqlite - processes input data using SQLite (requires loading the whole input before processing)
-- csv-substring - extracts part of a column
 - csv-sum - takes a sum of numerical or string column(s)
 - csv-tac - concatenates files in reverse
 - csv-tail - outputs the last N rows
@@ -250,7 +250,7 @@ sort.c
 or
 
 ```
-$ csv-ls | csv-substring -c name -n 2nd-char -p 2 -l 1 |
+$ csv-ls | csv-add-substring -c name -n 2nd-char -p 2 -l 1 |
 csv-grep -c 2nd-char -F o | csv-cut -c name
 name:string
 concat.c
