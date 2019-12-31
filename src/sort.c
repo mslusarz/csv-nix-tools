@@ -45,7 +45,7 @@
 #include "utils.h"
 
 static const struct option opts[] = {
-	{"fields",	required_argument,	NULL, 'f'},
+	{"columns",	required_argument,	NULL, 'c'},
 	{"reverse",	no_argument,		NULL, 'r'},
 	{"show",	no_argument,		NULL, 's'},
 	{"show-full",	no_argument,		NULL, 'S'},
@@ -59,7 +59,7 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-sort [OPTION]...\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -f, --fields=name1[,name2...]\n");
+	fprintf(out, "  -c, --columns=name1[,name2...]\n");
 	fprintf(out, "  -r, --reverse\n");
 	describe_show(out);
 	describe_show_full(out);
@@ -204,9 +204,9 @@ main(int argc, char *argv[])
 	sort_params.columns = NULL;
 	sort_params.ncolumns = 0;
 
-	while ((opt = getopt_long(argc, argv, "f:rsS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "c:rsS", opts, NULL)) != -1) {
 		switch (opt) {
-			case 'f':
+			case 'c':
 				cols = xstrdup_nofail(optarg);
 				break;
 			case 'r':
@@ -231,7 +231,7 @@ main(int argc, char *argv[])
 	}
 
 	if (!cols) {
-		fprintf(stderr, "missing -f option\n");
+		fprintf(stderr, "missing -c option\n");
 		usage(stderr);
 		exit(2);
 	}

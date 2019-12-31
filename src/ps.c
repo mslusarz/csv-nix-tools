@@ -61,7 +61,7 @@
 #include "utils.h"
 
 static const struct option opts[] = {
-	{"fields",		required_argument,	NULL, 'f'},
+	{"columns",		required_argument,	NULL, 'c'},
 	{"merge-with-stdin",	no_argument,		NULL, 'M'},
 	{"label",		required_argument,	NULL, 'L'},
 	{"pid",			required_argument,	NULL, 'p'},
@@ -79,8 +79,7 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-ps [OPTION]...\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -f, --fields=name1[,name2...]\n");
-	fprintf(out, "                             choose the list of columns\n");
+	describe_columns(out);
 	fprintf(out, "  -M, --merge-with-stdin     \n");
 	fprintf(out, "  -L, --label label          \n");
 	fprintf(out, "  -l                         use a longer listing format (can be used up to 4 times)\n");
@@ -1513,9 +1512,9 @@ main(int argc, char *argv[])
 	size_t ncolumns = ARRAY_SIZE(columns);
 	int level = 0;
 
-	while ((opt = getopt_long(argc, argv, "f:lL:Mp:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "c:lL:Mp:sS", opts, NULL)) != -1) {
 		switch (opt) {
-			case 'f':
+			case 'c':
 				cols = xstrdup_nofail(optarg);
 				break;
 			case 'l':

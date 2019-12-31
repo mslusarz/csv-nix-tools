@@ -29,15 +29,15 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-test("csv-split -f column3 -n before,after -e,"
+test("csv-split -c column3 -n before,after -e,"
 	data/commas.csv split/commas.csv data/empty.txt 0
 	split_commas)
 
-test("csv-split -f column3 -n before,after -e, -r"
+test("csv-split -c column3 -n before,after -e, -r"
 	data/commas.csv split/commas-reverse.csv data/empty.txt 0
 	split_commas_reverse)
 
-test("csv-split -f column3 -n before,after -e, -s"
+test("csv-split -c column3 -n before,after -e, -s"
 	data/commas.csv split/commas.txt data/empty.txt 0
 	split_commas_-s)
 

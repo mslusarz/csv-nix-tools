@@ -1,6 +1,6 @@
 Usage: csv-substring [OPTION]...
 Options:
-  -f name
+  -c name
   -n new-name
   -p start-pos
   -l length

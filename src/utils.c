@@ -680,6 +680,13 @@ csvci_print_row(const void *row, const struct column_info *columns,
 }
 
 void
+describe_columns(FILE *out)
+{
+	fprintf(out, "  -c, --columns=name1[,name2...]\n");
+	fprintf(out, "                             choose the list of columns\n");
+}
+
+void
 describe_show(FILE *out)
 {
 	fprintf(out, "  -s, --show                 print output in table format\n");

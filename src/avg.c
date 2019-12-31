@@ -43,7 +43,7 @@
 #include "utils.h"
 
 static const struct option opts[] = {
-	{"fields",	required_argument,	NULL, 'f'},
+	{"columns",	required_argument,	NULL, 'c'},
 	{"show",	no_argument,		NULL, 's'},
 	{"show-full",	no_argument,		NULL, 'S'},
 	{"version",	no_argument,		NULL, 'V'},
@@ -56,7 +56,7 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-avg [OPTION]...\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -f, --fields=name1[,name2...]\n");
+	fprintf(out, "  -c, --columns=name1[,name2...]\n");
 	describe_show(out);
 	describe_show_full(out);
 	describe_help(out);
@@ -115,9 +115,9 @@ main(int argc, char *argv[])
 	params.columns = NULL;
 	params.ncolumns = 0;
 
-	while ((opt = getopt_long(argc, argv, "f:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "c:sS", opts, NULL)) != -1) {
 		switch (opt) {
-			case 'f':
+			case 'c':
 				cols = xstrdup_nofail(optarg);
 				break;
 			case 's':

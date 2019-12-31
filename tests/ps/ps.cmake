@@ -46,10 +46,10 @@ test("csv-ps -lll | csv-count -c -R" data/empty.txt ps/columns-lll.csv data/empt
 test("csv-ps -llll | csv-count -c -R" data/empty.txt ps/columns-llll.csv data/empty.txt 0
 	ps_-llll_columns)
 
-test("csv-ps -M -f tid,cmd,age | csv-head -n 0" data/3-columns-3-rows-with-label.csv ps/columns-merged.csv data/empty.txt 0
+test("csv-ps -M -c tid,cmd,age | csv-head -n 0" data/3-columns-3-rows-with-label.csv ps/columns-merged.csv data/empty.txt 0
 	ps_merged)
 
-test("csv-ps -M -f tid,cmd,age -L meh | csv-head -n 0" data/3-columns-3-rows-with-label.csv ps/columns-merged-label.csv data/empty.txt 0
+test("csv-ps -M -c tid,cmd,age -L meh | csv-head -n 0" data/3-columns-3-rows-with-label.csv ps/columns-merged-label.csv data/empty.txt 0
 	ps_merged_label)
 
 test("csv-ps --help" data/empty.csv ps/help.txt data/empty.txt 2

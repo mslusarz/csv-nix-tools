@@ -29,13 +29,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-test("csv-uniq -f col1" uniq/input1.csv uniq/output1.csv data/empty.txt 0 uniq-1)
+test("csv-uniq -c col1" uniq/input1.csv uniq/output1.csv data/empty.txt 0 uniq-1)
 
-test("csv-uniq -f col3,col2,col1" uniq/input2.csv uniq/output2.csv data/empty.txt 0 uniq-2)
+test("csv-uniq -c col3,col2,col1" uniq/input2.csv uniq/output2.csv data/empty.txt 0 uniq-2)
 
-test("csv-uniq -f col3,col2,col1 -s" uniq/input2.csv uniq/output2.txt data/empty.txt 0 uniq-2-s)
+test("csv-uniq -c col3,col2,col1 -s" uniq/input2.csv uniq/output2.txt data/empty.txt 0 uniq-2-s)
 
-test("csv-uniq -f col3" uniq/input2.csv uniq/output3.csv data/empty.txt 0 uniq-3)
+test("csv-uniq -c col3" uniq/input2.csv uniq/output3.csv data/empty.txt 0 uniq-3)
 
 test("csv-uniq --help" data/empty.csv uniq/help.txt data/empty.txt 2
 	uniq_help)

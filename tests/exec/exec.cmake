@@ -29,7 +29,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-test_with_cwd("csv-exec -- csv-ls -f size %name" exec/files.csv exec/sizes.txt data/empty.txt 0
+test_with_cwd("csv-exec -- csv-ls -c size %name" exec/files.csv exec/sizes.txt data/empty.txt 0
 	exec_csv-ls_-f_size
 	${CMAKE_SOURCE_DIR}/tests/ls/files/)
 

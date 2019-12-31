@@ -1,9 +1,9 @@
 Usage: csv-replace [OPTION]...
 Options:
+  -c name
   -e regex
   -E eregex
   -F pattern
-  -f name
   -i, --ignore-case
   -n new-name
   -r replacement

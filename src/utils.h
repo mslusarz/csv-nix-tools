@@ -198,6 +198,7 @@ void csvci_print_header_with_prefix(struct column_info *columns,
 void csvci_print_row(const void *row, const struct column_info *columns,
 		size_t ncolumns);
 
+void describe_columns(FILE *out);
 void describe_help(FILE *out);
 void describe_version(FILE *out);
 void describe_show(FILE *out);

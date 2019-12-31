@@ -29,16 +29,16 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-test("csv-replace -f name -F ' i' -r 'STRING' -n new-col" data/3-columns-3-rows.csv replace/string.csv data/empty.txt 0
+test("csv-replace -c name -F ' i' -r 'STRING' -n new-col" data/3-columns-3-rows.csv replace/string.csv data/empty.txt 0
 	replace_string)
 
-test("csv-replace -f name -e '\\(.*\\)\\( i\\)\\(.*\\)' -r '%3 STRING %1' -n new-col" data/3-columns-3-rows.csv replace/regex.csv data/empty.txt 0
+test("csv-replace -c name -e '\\(.*\\)\\( i\\)\\(.*\\)' -r '%3 STRING %1' -n new-col" data/3-columns-3-rows.csv replace/regex.csv data/empty.txt 0
 	replace_regex)
 
-test("csv-replace -f name -E '(.*)( i)(.*)' -r '%3 STRING %1' -n new-col" data/3-columns-3-rows.csv replace/regex.csv data/empty.txt 0
+test("csv-replace -c name -E '(.*)( i)(.*)' -r '%3 STRING %1' -n new-col" data/3-columns-3-rows.csv replace/regex.csv data/empty.txt 0
 	replace_eregex)
 
-test("csv-replace -f name -E '(.*)( i)(.*)' -r '%3 STRING %1' -n new-col -s" data/3-columns-3-rows.csv replace/regex.txt data/empty.txt 0
+test("csv-replace -c name -E '(.*)( i)(.*)' -r '%3 STRING %1' -n new-col -s" data/3-columns-3-rows.csv replace/regex.txt data/empty.txt 0
 	replace_eregex_-s)
 
 test("csv-replace --help" data/empty.csv replace/help.txt data/empty.txt 2

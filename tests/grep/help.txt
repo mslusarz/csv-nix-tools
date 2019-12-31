@@ -1,6 +1,6 @@
 Usage: csv-grep [OPTION]...
 Options:
-  -f column
+  -c column
   -e regexp
   -E ext_regexp
   -F string

@@ -29,19 +29,19 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-test("csv-min -f id" data/id-column-3-rows.csv min/id.csv data/empty.txt 0
+test("csv-min -c id" data/id-column-3-rows.csv min/id.csv data/empty.txt 0
 	min)
 
-test("csv-min -f col1,col2,col3" data/3-numeric-columns-4-rows.csv min/3-columns.csv data/empty.txt 0
+test("csv-min -c col1,col2,col3" data/3-numeric-columns-4-rows.csv min/3-columns.csv data/empty.txt 0
 	min-3-columns)
 
-test("csv-min -f col3,col1" data/3-numeric-columns-4-rows.csv min/2-columns.csv data/empty.txt 0
+test("csv-min -c col3,col1" data/3-numeric-columns-4-rows.csv min/2-columns.csv data/empty.txt 0
 	min-2-columns)
 
-test("csv-min -f col3,col1 -s" data/3-numeric-columns-4-rows.csv min/2-columns.txt data/empty.txt 0
+test("csv-min -c col3,col1 -s" data/3-numeric-columns-4-rows.csv min/2-columns.txt data/empty.txt 0
 	min-2-columns-s)
 
-test("csv-min -f col1,col2,col3,col4" data/text1.csv min/text1.csv data/empty.txt 0
+test("csv-min -c col1,col2,col3,col4" data/text1.csv min/text1.csv data/empty.txt 0
 	min-text1)
 
 test("csv-min --help" data/empty.csv min/help.txt data/empty.txt 2

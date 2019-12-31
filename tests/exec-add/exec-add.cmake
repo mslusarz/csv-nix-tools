@@ -29,10 +29,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-test("csv-exec-add -n name2 -f name -- sed 's/file/name/g'" exec-add/files.csv exec-add/names.csv data/empty.txt 0
+test("csv-exec-add -n name2 -c name -- sed 's/file/name/g'" exec-add/files.csv exec-add/names.csv data/empty.txt 0
 	exec-add_sed)
 
-test("csv-exec-add -n name2 -f name -s -- sed 's/file/name/g'" exec-add/files.csv exec-add/names.txt data/empty.txt 0
+test("csv-exec-add -n name2 -c name -s -- sed 's/file/name/g'" exec-add/files.csv exec-add/names.txt data/empty.txt 0
 	exec-add_sed_-s)
 
 test("csv-exec-add --help" data/empty.csv exec-add/help.txt data/empty.txt 2

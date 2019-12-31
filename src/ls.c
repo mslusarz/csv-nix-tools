@@ -621,7 +621,7 @@ dirs_alloc_fail:
 static const struct option opts[] = {
 	{"all",			no_argument, 		NULL, 'a'},
 	{"directory",		no_argument,		NULL, 'd'},
-	{"fields",		required_argument,	NULL, 'f'},
+	{"columns",		required_argument,	NULL, 'c'},
 	{"merge-with-stdin",	no_argument,		NULL, 'M'},
 	{"label",		required_argument,	NULL, 'L'},
 	{"recursive",		no_argument,		NULL, 'R'},
@@ -638,9 +638,8 @@ usage(FILE *out)
 	fprintf(out, "Usage: csv-ls [OPTION]... [FILE]...\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -a, --all                  do not ignore entries starting with .\n");
+	describe_columns(out);
 	fprintf(out, "  -d, --directory            list directories themselves, not their contents\n");
-	fprintf(out, "  -f, --fields=name1[,name2...]\n");
-	fprintf(out, "                             choose the list of columns\n");
 	fprintf(out, "  -M, --merge-with-stdin     \n");
 	fprintf(out, "  -L, --label label          \n");
 	fprintf(out, "  -l                         use a longer listing format (can be used up to 3 times)\n");
@@ -724,16 +723,16 @@ main(int argc, char *argv[])
 	size_t ncolumns = ARRAY_SIZE(columns);
 	int level = 0;
 
-	while ((opt = getopt_long(argc, argv, "adf:lL:MRsSU", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "adc:lL:MRsSU", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'a':
 				all = 1;
 				break;
+			case 'c':
+				cols = xstrdup_nofail(optarg);
+				break;
 			case 'd':
 				dir = 1;
-				break;
-			case 'f':
-				cols = xstrdup_nofail(optarg);
 				break;
 			case 'l':
 				level++;

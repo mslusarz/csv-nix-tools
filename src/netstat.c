@@ -100,13 +100,13 @@
 #define REQUIRES_RESOLVING (1ULL << 31)
 
 static const struct option opts[] = {
-	{"fields",		required_argument,	NULL, 'f'},
+	{"columns",		required_argument,	NULL, 'c'},
 	{"merge-with-stdin",	no_argument,		NULL, 'M'},
 	{"label",		required_argument,	NULL, 'L'},
+//	{"sctp",		no_argument,		NULL, 'p'},
 	{"resolve",		no_argument,		NULL, 'r'},
 	{"show",		no_argument,		NULL, 's'},
 	{"show-full",		no_argument,		NULL, 'S'},
-//	{"sctp",		no_argument,		NULL, 'c'},
 	{"tcp",			no_argument,		NULL, 't'},
 	{"udp",			no_argument,		NULL, 'u'},
 //	{"udplite",		no_argument,		NULL, 'U'},
@@ -124,15 +124,14 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-netstat [OPTION]...\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -f, --fields=name1[,name2...]\n");
-	fprintf(out, "                             choose the list of columns\n");
+	describe_columns(out);
 	fprintf(out, "  -M, --merge-with-stdin     \n");
 	fprintf(out, "  -L, --label label          \n");
 	fprintf(out, "  -l                         use a longer listing format (can be used up to 3 times)\n");
 	fprintf(out, "  -r, --resolve              \n");
 	describe_show(out);
 	describe_show_full(out);
-//	fprintf(out, "  -c, --sctp                 \n");
+//	fprintf(out, "  -p, --sctp                 \n");
 	fprintf(out, "  -t, --tcp                  \n");
 	fprintf(out, "  -u, --udp                  \n");
 //	fprintf(out, "  -U, --udplite              \n");
@@ -1626,16 +1625,10 @@ main(int argc, char *argv[])
 	size_t ncolumns = ARRAY_SIZE(columns);
 	int level = 0;
 
-	while ((opt = getopt_long(argc, argv, "cf:lL:MrSstUuwx46", opts,
+	while ((opt = getopt_long(argc, argv, "c:lL:MprSstUuwx46", opts,
 			NULL)) != -1) {
 		switch (opt) {
 			case 'c':
-				fprintf(stderr,
-					"SCTP not supported yet (patches welcomed)\n");
-				exit(2);
-				/* protocols |= SCTP; */
-				break;
-			case 'f':
 				cols = xstrdup_nofail(optarg);
 				break;
 			case 'l':
@@ -1650,6 +1643,12 @@ main(int argc, char *argv[])
 				break;
 			case 'M':
 				merge_with_stdin = true;
+				break;
+			case 'p':
+				fprintf(stderr,
+					"SCTP not supported yet (patches welcomed)\n");
+				exit(2);
+				/* protocols |= SCTP; */
 				break;
 			case 'r':
 				for (size_t i = 0; i < ncolumns; ++i)

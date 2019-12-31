@@ -29,15 +29,15 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-test("csv-substring -f name -n substr2 -p 2"
+test("csv-substring -c name -n substr2 -p 2"
 	data/3-columns-3-rows.csv substring/p2.csv data/empty.txt 0
 	substring_p2)
 
-test("csv-substring -f name -n substr2 -p 2 -s"
+test("csv-substring -c name -n substr2 -p 2 -s"
 	data/3-columns-3-rows.csv substring/p2.txt data/empty.txt 0
 	substring_p2_-s)
 
-test("csv-substring -f name -n last_char -p -1 -l 1"
+test("csv-substring -c name -n last_char -p -1 -l 1"
 	data/3-columns-3-rows.csv substring/p-1.csv data/empty.txt 0
 	substring_p_1)
 

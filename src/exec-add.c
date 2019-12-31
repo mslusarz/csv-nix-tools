@@ -41,7 +41,7 @@
 #include "utils.h"
 
 static const struct option opts[] = {
-	{"field",	required_argument,	NULL, 'f'},
+	{"column",	required_argument,	NULL, 'c'},
 	{"new-name",	required_argument,	NULL, 'n'},
 	{"show",	no_argument,		NULL, 's'},
 	{"show-full",	no_argument,		NULL, 'S'},
@@ -55,7 +55,7 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-exec-add [OPTION]... -- command\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -f, --field=name\n");
+	fprintf(out, "  -c, --column=name\n");
 	fprintf(out, "  -n, --new-name=name\n");
 	describe_show(out);
 	describe_show_full(out);
@@ -271,9 +271,9 @@ main(int argc, char *argv[])
 
 	memset(&params, 0, sizeof(params));
 
-	while ((opt = getopt_long(argc, argv, "f:n:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "c:n:sS", opts, NULL)) != -1) {
 		switch (opt) {
-			case 'f':
+			case 'c':
 				stdin_colname = xstrdup_nofail(optarg);
 				break;
 			case 'n':

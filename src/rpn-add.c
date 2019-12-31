@@ -53,7 +53,7 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-rpn-add [OPTION]...\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -f new_column_name\n");
+	fprintf(out, "  -n new_column_name\n");
 	fprintf(out, "  -e RPN_expression\n");
 	describe_show(out);
 	describe_show_full(out);
@@ -173,7 +173,7 @@ main(int argc, char *argv[])
 
 	memset(&params, 0, sizeof(params));
 
-	while ((opt = getopt_long(argc, argv, "e:f:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "e:n:sS", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'e': {
 				if (!new_column) {
@@ -193,7 +193,7 @@ main(int argc, char *argv[])
 
 				break;
 			}
-			case 'f':
+			case 'n':
 				free(new_column);
 				new_column = xstrdup_nofail(optarg);
 				break;

@@ -64,7 +64,7 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-grep [OPTION]...\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -f column\n");
+	fprintf(out, "  -c column\n");
 	fprintf(out, "  -e regexp\n");
 	fprintf(out, "  -E ext_regexp\n");
 	fprintf(out, "  -F string\n");
@@ -204,9 +204,13 @@ main(int argc, char *argv[])
 	char *current_column = NULL;
 	bool whole = false;
 
-	while ((opt = getopt_long(argc, argv, "e:E:f:F:isSvx", opts,
+	while ((opt = getopt_long(argc, argv, "c:e:E:F:isSvx", opts,
 			NULL)) != -1) {
 		switch (opt) {
+			case 'c':
+				free(current_column);
+				current_column = xstrdup_nofail(optarg);
+				break;
 			case 'e': {
 				struct condition cond;
 
@@ -245,10 +249,6 @@ main(int argc, char *argv[])
 
 				break;
 			}
-			case 'f':
-				free(current_column);
-				current_column = xstrdup_nofail(optarg);
-				break;
 			case 'F': {
 				struct condition cond;
 

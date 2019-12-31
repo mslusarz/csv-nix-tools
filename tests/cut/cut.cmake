@@ -36,78 +36,78 @@ test("csv-cut" data/empty.txt data/empty.csv data/eof.txt 2
 test("csv-cut" data/one-column-one-row.csv data/empty.txt cut/help.txt 2
 	cut_simple_pass_through)
 
-test("csv-cut -f" data/one-column-one-row.csv cut/help.txt cut/no-fields-error.txt 2
+test("csv-cut -c" data/one-column-one-row.csv cut/help.txt cut/no-fields-error.txt 2
 	cut_simple_pass_through_with_-f)
 
-test("csv-cut -f name" data/one-column-one-row.csv data/one-column-one-row.csv data/empty.txt 0
+test("csv-cut -c name" data/one-column-one-row.csv data/one-column-one-row.csv data/empty.txt 0
 	cut_the_only_field_using_-f)
 
-test("csv-cut --fields name" data/one-column-one-row.csv data/one-column-one-row.csv data/empty.txt 0
+test("csv-cut --columns name" data/one-column-one-row.csv data/one-column-one-row.csv data/empty.txt 0
 	cut_the_only_field_using_--fields_with_space)
 
-test("csv-cut --fields=name" data/one-column-one-row.csv data/one-column-one-row.csv data/empty.txt 0
+test("csv-cut --columns=name" data/one-column-one-row.csv data/one-column-one-row.csv data/empty.txt 0
 	cut_the_only_field_using_--fields_with_=)
 
-test("csv-cut -f notExistingColumn" data/one-column-one-row.csv data/empty.txt cut/column-not-found.txt 2
+test("csv-cut -c notExistingColumn" data/one-column-one-row.csv data/empty.txt cut/column-not-found.txt 2
 	cut_not_existing_field_using_-f)
 
-test("csv-cut --fields notExistingColumn" data/one-column-one-row.csv data/empty.txt cut/column-not-found.txt 2
+test("csv-cut --columns notExistingColumn" data/one-column-one-row.csv data/empty.txt cut/column-not-found.txt 2
 	cut_not_existing_field_using_--fields_with_space)
 
-test("csv-cut --fields=notExistingColumn" data/one-column-one-row.csv data/empty.txt cut/column-not-found.txt 2
+test("csv-cut --columns=notExistingColumn" data/one-column-one-row.csv data/empty.txt cut/column-not-found.txt 2
 	cut_not_existing_field_using_--fields_with_=)
 
 
-test("csv-cut -f name" data/3-columns-3-rows.csv cut/name-column-3-rows.csv data/empty.txt 0
+test("csv-cut -c name" data/3-columns-3-rows.csv cut/name-column-3-rows.csv data/empty.txt 0
 	cut_the_name_field_using_-f)
 
-test("csv-cut --fields name" data/3-columns-3-rows.csv cut/name-column-3-rows.csv data/empty.txt 0
+test("csv-cut --columns name" data/3-columns-3-rows.csv cut/name-column-3-rows.csv data/empty.txt 0
 	cut_the_name_field_using_--fields_with_space)
 
-test("csv-cut --fields=name" data/3-columns-3-rows.csv cut/name-column-3-rows.csv data/empty.txt 0
+test("csv-cut --columns=name" data/3-columns-3-rows.csv cut/name-column-3-rows.csv data/empty.txt 0
 	cut_the_name_field_using_--fields_with_=)
 
 
-test("csv-cut -f id" data/3-columns-3-rows.csv data/id-column-3-rows.csv data/empty.txt 0
+test("csv-cut -c id" data/3-columns-3-rows.csv data/id-column-3-rows.csv data/empty.txt 0
 	cut_the_id_field_using_-f)
 
-test("csv-cut --fields id" data/3-columns-3-rows.csv data/id-column-3-rows.csv data/empty.txt 0
+test("csv-cut --columns id" data/3-columns-3-rows.csv data/id-column-3-rows.csv data/empty.txt 0
 	cut_the_id_field_using_--fields_with_space)
 
-test("csv-cut --fields=id" data/3-columns-3-rows.csv data/id-column-3-rows.csv data/empty.txt 0
+test("csv-cut --columns=id" data/3-columns-3-rows.csv data/id-column-3-rows.csv data/empty.txt 0
 	cut_the_id_field_using_--fields_with_=)
 
 
-test("csv-cut -f something" data/3-columns-3-rows.csv cut/something-column-3-rows.csv data/empty.txt 0
+test("csv-cut -c something" data/3-columns-3-rows.csv cut/something-column-3-rows.csv data/empty.txt 0
 	cut_the_something_field_using_-f)
 
-test("csv-cut --fields something" data/3-columns-3-rows.csv cut/something-column-3-rows.csv data/empty.txt 0
+test("csv-cut --columns something" data/3-columns-3-rows.csv cut/something-column-3-rows.csv data/empty.txt 0
 	cut_the_something_field_using_--fields_with_space)
 
-test("csv-cut --fields=something" data/3-columns-3-rows.csv cut/something-column-3-rows.csv data/empty.txt 0
+test("csv-cut --columns=something" data/3-columns-3-rows.csv cut/something-column-3-rows.csv data/empty.txt 0
 	cut_the_something_field_using_--fields_with_=)
 
 
-test("csv-cut -f name,something" data/3-columns-3-rows.csv data/2-columns-3-rows.csv data/empty.txt 0
+test("csv-cut -c name,something" data/3-columns-3-rows.csv data/2-columns-3-rows.csv data/empty.txt 0
 	cut_2_fields_using_-f)
 
-test("csv-cut -f name,something -s" data/3-columns-3-rows.csv cut/2-columns-3-rows.txt data/empty.txt 0
+test("csv-cut -c name,something -s" data/3-columns-3-rows.csv cut/2-columns-3-rows.txt data/empty.txt 0
 	cut_2_fields_using_-f_-s)
 
-test("csv-cut --fields name,something" data/3-columns-3-rows.csv data/2-columns-3-rows.csv data/empty.txt 0
+test("csv-cut --columns name,something" data/3-columns-3-rows.csv data/2-columns-3-rows.csv data/empty.txt 0
 	cut_2_fields_using_--fields_with_spaces)
 
-test("csv-cut --fields=name,something" data/3-columns-3-rows.csv data/2-columns-3-rows.csv data/empty.txt 0
+test("csv-cut --columns=name,something" data/3-columns-3-rows.csv data/2-columns-3-rows.csv data/empty.txt 0
 	cut_2_fields_using_--fields_with_=)
 
 
-test("csv-cut -f name,id,something" data/3-different-order-columns-3-rows.csv data/3-columns-3-rows.csv data/empty.txt 0
+test("csv-cut -c name,id,something" data/3-different-order-columns-3-rows.csv data/3-columns-3-rows.csv data/empty.txt 0
 	cut_3_fields_in_different_order_using_-f)
 
-test("csv-cut --fields name,id,something" data/3-different-order-columns-3-rows.csv data/3-columns-3-rows.csv data/empty.txt 0
+test("csv-cut --columns name,id,something" data/3-different-order-columns-3-rows.csv data/3-columns-3-rows.csv data/empty.txt 0
 	cut_3_fields_in_different_order_using_--fields_with_space)
 
-test("csv-cut --fields=name,id,something" data/3-different-order-columns-3-rows.csv data/3-columns-3-rows.csv data/empty.txt 0
+test("csv-cut --columns=name,id,something" data/3-different-order-columns-3-rows.csv data/3-columns-3-rows.csv data/empty.txt 0
 	cut_3_fields_in_different_order_using_--fields_with_=)
 
 test("csv-cut --help" data/empty.csv cut/help.txt data/empty.txt 2

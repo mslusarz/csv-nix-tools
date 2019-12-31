@@ -29,22 +29,22 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-test_with_cwd("csv-ls -f name"
+test_with_cwd("csv-ls -c name"
 	data/empty.txt ls/files_and_dirs.csv data/empty.txt 0
 	ls-files
 	${CMAKE_SOURCE_DIR}/tests/ls/files)
 
-test_with_cwd("csv-ls -f name,mode,symlink,type_name -ls"
+test_with_cwd("csv-ls -c name,mode,symlink,type_name -ls"
 	data/empty.txt ls/files_and_dirs.txt data/empty.txt 0
 	ls-files-s
 	${CMAKE_SOURCE_DIR}/tests/ls/files)
 
-test_with_cwd("csv-ls -f name -M"
+test_with_cwd("csv-ls -c name -M"
 	data/3-columns-3-rows-with-label.csv ls/files_and_dirs_merged.csv data/empty.txt 0
 	ls-merge
 	${CMAKE_SOURCE_DIR}/tests/ls/files)
 
-test_with_cwd("csv-ls -f name -M -L lorem"
+test_with_cwd("csv-ls -c name -M -L lorem"
 	data/3-columns-3-rows-with-label.csv ls/files_and_dirs_merged_label.csv data/empty.txt 0
 	ls-merge-new-label
 	${CMAKE_SOURCE_DIR}/tests/ls/files)

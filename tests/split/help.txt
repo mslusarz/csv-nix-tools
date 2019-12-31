@@ -1,7 +1,7 @@
 Usage: csv-split [OPTION]...
 Options:
+  -c name
   -e separator
-  -f name
   -n name1,name2
   -r, --reverse
   -p  --print-separator=yes/no/auto

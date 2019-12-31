@@ -29,16 +29,16 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-test("csv-avg -f id" data/id-column-3-rows.csv avg/id.csv data/empty.txt 0
+test("csv-avg -c id" data/id-column-3-rows.csv avg/id.csv data/empty.txt 0
 	avg)
 
-test("csv-avg -f col1,col2,col3" data/3-numeric-columns-4-rows.csv avg/3-columns.csv data/empty.txt 0
+test("csv-avg -c col1,col2,col3" data/3-numeric-columns-4-rows.csv avg/3-columns.csv data/empty.txt 0
 	avg-3-columns)
 
-test("csv-avg -f col3,col1" data/3-numeric-columns-4-rows.csv avg/2-columns.csv data/empty.txt 0
+test("csv-avg -c col3,col1" data/3-numeric-columns-4-rows.csv avg/2-columns.csv data/empty.txt 0
 	avg-2-columns)
 
-test("csv-avg -f col3,col1 -s" data/3-numeric-columns-4-rows.csv avg/2-columns-s.txt data/empty.txt 0
+test("csv-avg -c col3,col1 -s" data/3-numeric-columns-4-rows.csv avg/2-columns-s.txt data/empty.txt 0
 	avg-2-columns-s)
 
 test("csv-avg --help" data/empty.csv avg/help.txt data/empty.txt 2

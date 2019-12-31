@@ -59,10 +59,10 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-replace [OPTION]...\n");
 	fprintf(out, "Options:\n");
+	fprintf(out, "  -c name\n");
 	fprintf(out, "  -e regex\n");
 	fprintf(out, "  -E eregex\n");
 	fprintf(out, "  -F pattern\n");
-	fprintf(out, "  -f name\n");
 	fprintf(out, "  -i, --ignore-case\n");
 	fprintf(out, "  -n new-name\n");
 	fprintf(out, "  -r replacement\n");
@@ -316,10 +316,10 @@ main(int argc, char *argv[])
 
 	memset(&params, 0, sizeof(params));
 
-	while ((opt = getopt_long(argc, argv, "e:E:F:f:ir:sSn:", opts,
+	while ((opt = getopt_long(argc, argv, "c:e:E:F:ir:sSn:", opts,
 			NULL)) != -1) {
 		switch (opt) {
-			case 'f':
+			case 'c':
 				input_col = xstrdup_nofail(optarg);
 				break;
 			case 'n':

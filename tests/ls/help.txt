@@ -1,9 +1,9 @@
 Usage: csv-ls [OPTION]... [FILE]...
 Options:
   -a, --all                  do not ignore entries starting with .
-  -d, --directory            list directories themselves, not their contents
-  -f, --fields=name1[,name2...]
+  -c, --columns=name1[,name2...]
                              choose the list of columns
+  -d, --directory            list directories themselves, not their contents
   -M, --merge-with-stdin     
   -L, --label label          
   -l                         use a longer listing format (can be used up to 3 times)

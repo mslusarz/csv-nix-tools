@@ -53,7 +53,7 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-substring [OPTION]...\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -f name\n");
+	fprintf(out, "  -c name\n");
 	fprintf(out, "  -n new-name\n");
 	fprintf(out, "  -p start-pos\n");
 	fprintf(out, "  -l length\n");
@@ -110,9 +110,9 @@ main(int argc, char *argv[])
 	memset(&params, 0, sizeof(params));
 	params.length = SIZE_MAX;
 
-	while ((opt = getopt_long(argc, argv, "f:l:p:sSn:", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "c:l:p:sSn:", opts, NULL)) != -1) {
 		switch (opt) {
-			case 'f':
+			case 'c':
 				input_col = xstrdup_nofail(optarg);
 				break;
 			case 'n':

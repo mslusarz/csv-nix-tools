@@ -55,8 +55,8 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-split [OPTION]...\n");
 	fprintf(out, "Options:\n");
+	fprintf(out, "  -c name\n");
 	fprintf(out, "  -e separator\n");
-	fprintf(out, "  -f name\n");
 	fprintf(out, "  -n name1,name2\n");
 	fprintf(out, "  -r, --reverse\n");
 	fprintf(out, "  -p  --print-separator=yes/no/auto\n");
@@ -149,14 +149,14 @@ main(int argc, char *argv[])
 
 	memset(&params, 0, sizeof(params));
 
-	while ((opt = getopt_long(argc, argv, "e:f:p:sSn:r", opts,
+	while ((opt = getopt_long(argc, argv, "c:e:p:sSn:r", opts,
 			NULL)) != -1) {
 		switch (opt) {
+			case 'c':
+				col = xstrdup_nofail(optarg);
+				break;
 			case 'e':
 				params.separators = xstrdup_nofail(optarg);
-				break;
-			case 'f':
-				col = xstrdup_nofail(optarg);
 				break;
 			case 'n': {
 				char *comma = index(optarg, ',');

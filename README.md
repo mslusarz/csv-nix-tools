@@ -130,7 +130,7 @@ type_mode:string,nlink:int,owner_name:string,group_name:string,size:int,mtime:st
 All Makefiles in the current directory and below:
 
 ```
-$ csv-ls -f size,parent,name -R . | csv-grep -f name -x -F Makefile
+$ csv-ls -c size,parent,name -R . | csv-grep -c name -x -F Makefile
 size:int,parent:string,name:string
 55358,./build,Makefile
 6345,./build/tests,Makefile
@@ -139,7 +139,7 @@ size:int,parent:string,name:string
 Files and their sizes sorted by size and name, in descending order:
 
 ```
-$ csv-ls -f size,name | csv-sort -r -f size,name
+$ csv-ls -c size,name | csv-sort -r -c size,name
 size:int,name:string
 14660,ls.c
 7238,sort.c
@@ -163,28 +163,28 @@ size:int,name:string
 Files owned by user=1000:
 
 ```
-$ csv-ls -R -f parent,name,owner_id / 2>/dev/null | csv-grep -f owner_id -x -F 1000 | csv-cut -f parent,name
+$ csv-ls -R -c parent,name,owner_id / 2>/dev/null | csv-grep -c owner_id -x -F 1000 | csv-cut -c parent,name
 ...
 ```
 
 Files owned by user=marcin:
 
 ```
-$ csv-ls -R -f parent,name,owner_name / 2>/dev/null | csv-grep -f owner_name -x -F marcin | csv-cut -f parent,name
+$ csv-ls -R -c parent,name,owner_name / 2>/dev/null | csv-grep -c owner_name -x -F marcin | csv-cut -c parent,name
 ...
 ```
 
 Files anyone can read:
 
 ```
-$ csv-ls -R -f parent,name,other_read / 2>/dev/null | csv-grep -f other_read -x -F 1 | csv-cut -f parent,name
+$ csv-ls -R -c parent,name,other_read / 2>/dev/null | csv-grep -c other_read -x -F 1 | csv-cut -c parent,name
 ...
 ```
 
 Sum of sizes of all files in the current directory:
 
 ```
-$ csv-ls -l . | csv-sum -f size
+$ csv-ls -l . | csv-sum -c size
 sum(size):int
 78739
 ```
@@ -192,20 +192,20 @@ sum(size):int
 4 biggest files in the current directory:
 
 ```
-$ csv-ls -f size,name . | csv-sort -r -f size | csv-head -n 4
+$ csv-ls -c size,name . | csv-sort -r -c size | csv-head -n 4
 size:int,name:string
 14660,ls.c
 7238,sort.c
 6297,parse.c
 6189,grep.c
-$ csv-ls -f size,name . | csv-sort -f size | csv-tail -n 4
+$ csv-ls -c size,name . | csv-sort -c size | csv-tail -n 4
 ...
 ```
 
 List of files, split name into base and extension:
 
 ```
-$ csv-ls -f size,name | csv-split -f name -e . -n base,ext -r
+$ csv-ls -c size,name | csv-split -c name -e . -n base,ext -r
 size:int,name:string,base:string,ext:string
 123,file1,file1,
 456,file2.ext,file2,ext
@@ -215,8 +215,8 @@ size:int,name:string,base:string,ext:string
 Sum of sizes of all files with the "png" extension:
 
 ```
-$ csv-ls -l . | csv-split -f name -e . -n base,ext -r |
-csv-grep -f ext -x -F png | csv-sum -f size | csv-header --remove
+$ csv-ls -l . | csv-split -c name -e . -n base,ext -r |
+csv-grep -c ext -x -F png | csv-sum -c size | csv-header --remove
 94877
 ```
 
@@ -241,7 +241,7 @@ $ csv-ls -l | csv-show -s 1 --ui none --no-header
 List of files whose 2nd character is 'o':
 
 ```
-$ csv-ls -f name | csv-grep -f name -e '^.o'
+$ csv-ls | csv-grep -c name -e '^.o'
 name:string
 concat.c
 sort.c
@@ -250,8 +250,8 @@ sort.c
 or
 
 ```
-$ csv-ls -f name | csv-substring -f name -n 2nd-char -p 2 -l 1 |
-csv-grep -f 2nd-char -F o | csv-cut -f name
+$ csv-ls | csv-substring -c name -n 2nd-char -p 2 -l 1 |
+csv-grep -c 2nd-char -F o | csv-cut -c name
 name:string
 concat.c
 sort.c
@@ -260,20 +260,20 @@ sort.c
 Full paths of all files in current directory and below:
 
 ```
-$ csv-ls -R -f parent,name . | csv-concat full_path = %parent / %name | csv-cut -f full_path
+$ csv-ls -R -c parent,name . | csv-concat full_path = %parent / %name | csv-cut -c full_path
 ....
 ```
 or
 
 ```
-$ csv-ls -R -f full_path .
+$ csv-ls -R -c full_path .
 ```
 
 Sum of file sizes and real allocated blocks in the current directory:
 
 ```
-$ csv-ls -f size,blocks | csv-rpn-add -f space_used -e "%blocks 512 *" |
-csv-sum -f size,blocks,space_used
+$ csv-ls -c size,blocks | csv-rpn-add -n space_used -e "%blocks 512 *" |
+csv-sum -c size,blocks,space_used
 sum(size):int,sum(blocks):int,sum(space_used):int
 109679,288,147456
 ```
@@ -281,7 +281,7 @@ sum(size):int,sum(blocks):int,sum(space_used):int
 List of files whose size is between 2000 and 3000 bytes (from the slowest to the fastest method):
 
 ```
-$ csv-ls -f size,name | csv-sqlite "select size, name from input where size > 2000 and size < 3000"
+$ csv-ls -c size,name | csv-sqlite "select size, name from input where size > 2000 and size < 3000"
 size:int,name:string
 2204,parse.h
 ```
@@ -289,24 +289,24 @@ size:int,name:string
 or
 
 ```
-$ csv-ls -f size,name |
-csv-rpn-add -f range2k-3k -e "%size 2000 >= %size 3000 < and" |
-csv-grep -f range2k-3k -F 1 |
-csv-cut -f size,name
+$ csv-ls -c size,name |
+csv-rpn-add -n range2k-3k -e "%size 2000 >= %size 3000 < and" |
+csv-grep -c range2k-3k -F 1 |
+csv-cut -c size,name
 ...
 ```
 
 or
 
 ```
-$ csv-ls -f size,name | csv-sql "select size, name from input where size > 2000 and size < 3000"
+$ csv-ls -c size,name | csv-sql "select size, name from input where size > 2000 and size < 3000"
 ...
 ```
 
 or
 
 ```
-$ csv-ls -f size,name | csv-rpn-filter -e "%size 2000 >= %size 3000 < and"
+$ csv-ls -c size,name | csv-rpn-filter -e "%size 2000 >= %size 3000 < and"
 ...
 ```
 
@@ -314,11 +314,11 @@ $ csv-ls -f size,name | csv-rpn-filter -e "%size 2000 >= %size 3000 < and"
 Files and their permissions printed in human-readable format (simpler version of column type_mode):
 
 ```
-$ csv-ls -f mode,name | csv-rpn-add -f strmode -e "\
+$ csv-ls -c mode,name | csv-rpn-add -n strmode -e "\
 %mode 0400 & 'r' '-' if        %mode 0200 & 'w' '-' if concat %mode 0100 & 'x' '-' if concat \
 %mode  040 & 'r' '-' if concat %mode  020 & 'w' '-' if concat %mode  010 & 'x' '-' if concat \
 %mode   04 & 'r' '-' if concat %mode   02 & 'w' '-' if concat %mode   01 & 'x' '-' if concat" |
-csv-cut -f mode,strmode,name -s
+csv-cut -c mode,strmode,name -s
 
 mode   strmode     name
 0644   rw-r--r--   CMakeCache.txt
@@ -329,7 +329,7 @@ mode   strmode     name
 or
 
 ```
-$ csv-ls -f mode,name | csv-sql "select fmt_oct(mode) as 'mode',
+$ csv-ls -c mode,name | csv-sql "select fmt_oct(mode) as 'mode',
 if (mode & 0400, 'r', '-') || if (mode & 0200, 'w', '-') || if (mode & 0100, 'x', '-') ||
 if (mode & 040,  'r', '-') || if (mode & 020,  'w', '-') || if (mode & 010,  'x', '-') ||
 if (mode & 04,   'r', '-') || if (mode & 02,   'w', '-') || if (mode & 01,   'x', '-') as 'strmode', name" -s
@@ -343,23 +343,23 @@ mode   strmode     name
 Remove all temporary files (ending with "~"), even if path contains spaces or line breaks:
 
 ```
-$ csv-ls -R -f full_path . | csv-grep -f full_path -e '~$' | csv-exec -- rm -f %full_path
+$ csv-ls -R -c full_path . | csv-grep -c full_path -e '~$' | csv-exec -- rm -f %full_path
 ```
 
 If file has .c extension, then replace it with .o, otherwise leave it as is:
 
 ```
-$ csv-ls -R -f full_path . | csv-exec-add -f full_path -n new -- sed 's/.c$/.o/'
+$ csv-ls -R -c full_path . | csv-exec-add -c full_path -n new -- sed 's/.c$/.o/'
 ```
 or 130x faster:
 
 ```
-$ csv-ls -R -f full_path . | csv-replace -f full_path -E '(.*)\.c$' -r '%1.o' -n new
+$ csv-ls -R -c full_path . | csv-replace -c full_path -E '(.*)\.c$' -r '%1.o' -n new
 ```
 or 400x faster (3.1x faster than csv-replace):
 
 ```
-$ csv-ls -R -f full_path . | csv-rpn-add -f new -e "%full_path -1 1 substr 'c' == %full_path 1 %full_path strlen 1 - substr 'o' concat %full_path if"
+$ csv-ls -R -c full_path . | csv-rpn-add -n new -e "%full_path -1 1 substr 'c' == %full_path 1 %full_path strlen 1 - substr 'o' concat %full_path if"
 ```
 
 List all system users and the name of the default group they belong to:
@@ -371,13 +371,13 @@ $ csv-users -L user | csv-groups -M -L group | csv-sqlite -L "select user.name a
 List all network connections and processes they belong to:
 
 ```
-$ csv-ls -L file -f name,symlink /proc/*/fd/* 2>/dev/null |
-csv-grep -f file.symlink -E "socket:\[[0-9]*\]" |
-csv-replace -f file.name -E '/proc/([0-9]*)/.*' -r '%1' -n file.pid |
-csv-replace -f file.symlink -E 'socket:\[([0-9]*)\]' -r %1 -n file.inode |
+$ csv-ls -L file -c name,symlink /proc/*/fd/* 2>/dev/null |
+csv-grep -c file.symlink -E "socket:\[[0-9]*\]" |
+csv-replace -c file.name -E '/proc/([0-9]*)/.*' -r '%1' -n file.pid |
+csv-replace -c file.symlink -E 'socket:\[([0-9]*)\]' -r %1 -n file.inode |
 csv-netstat -M |
-csv-grep -v -f socket.family -x -F 'UNIX' |
-csv-ps -M -f pid,cmd |
+csv-grep -v -c socket.family -x -F 'UNIX' |
+csv-ps -M -c pid,cmd |
 csv-sqlite -L 'select socket.protocol, socket.src_ip, socket.src_port, socket.dst_ip, socket.dst_port, socket.state, socket.uid, file.pid, proc.cmd from socket left outer join file on socket.inode = file.inode left outer join proc on file.pid = proc.pid' -s
 
 protocol   src_ip                src_port   dst_ip                 dst_port   state         uid    pid     cmd
@@ -447,7 +447,7 @@ raw        ::                    58         ::                     0            
 - float support?
 - importing from other tools (lspci -mm?, strace?, lsof -F, ss, dpkg, rpm)?
 - loops and temporary variables in rpn?
-- built-in pipes? (csv "ls | grep -f size -F 0 | cut -f name")
+- built-in pipes? (csv "ls | grep -c size -F 0 | cut -c name")
 - shell?
 - what about unicode?
 - one multicommand binary? (csv ls, csv grep, ...)
