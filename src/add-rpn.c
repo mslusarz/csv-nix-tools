@@ -51,7 +51,7 @@ static const struct option opts[] = {
 static void
 usage(FILE *out)
 {
-	fprintf(out, "Usage: csv-rpn-add [OPTION]...\n");
+	fprintf(out, "Usage: csv-add-rpn [OPTION]...\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -n new_column_name\n");
 	fprintf(out, "  -e RPN_expression\n");
