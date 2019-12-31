@@ -43,12 +43,13 @@ Source:
 - csv-users - lists system users
 
 Filtering/processing:
+- csv-add-exec - pipes data to standard input of an external command and creates new column from its standard output
+- csv-add-rpn - creates new column from RPN expression
 - csv-avg - takes an average of numerical column(s)
 - csv-cat - concatenates multiple csv files
 - csv-concat - concatenates columns and user-defined strings
 - csv-count - counts the number of columns and/or rows
 - csv-cut - removes columns and reorders them
-- csv-exec-add - pipes data to standard input of an external command and creates new column from its standard output
 - csv-grep - filters rows matching a pattern
 - csv-grep-rpn - filters rows using RPN expression
 - csv-head - outputs the first N rows
@@ -57,7 +58,6 @@ Filtering/processing:
 - csv-merge - merges multiple input streams
 - csv-min - takes a minimum value of numerical or string column(s)
 - csv-replace - performs string substitution on column(s) (similar to sed s/$str/$str/)
-- csv-rpn-add - creates new column from RPN expression
 - csv-sort - sorts input by column(s)
 - csv-split - splits one column into two using a delimiter
 - csv-sql - processes input data using simplified (but very fast) SQL-based syntax (WIP)
@@ -272,7 +272,7 @@ $ csv-ls -R -c full_path .
 Sum of file sizes and real allocated blocks in the current directory:
 
 ```
-$ csv-ls -c size,blocks | csv-rpn-add -n space_used -e "%blocks 512 *" |
+$ csv-ls -c size,blocks | csv-add-rpn -n space_used -e "%blocks 512 *" |
 csv-sum -c size,blocks,space_used
 sum(size):int,sum(blocks):int,sum(space_used):int
 109679,288,147456
@@ -290,7 +290,7 @@ or
 
 ```
 $ csv-ls -c size,name |
-csv-rpn-add -n range2k-3k -e "%size 2000 >= %size 3000 < and" |
+csv-add-rpn -n range2k-3k -e "%size 2000 >= %size 3000 < and" |
 csv-grep -c range2k-3k -F 1 |
 csv-cut -c size,name
 ...
@@ -314,7 +314,7 @@ $ csv-ls -c size,name | csv-grep-rpn -e "%size 2000 >= %size 3000 < and"
 Files and their permissions printed in human-readable format (simpler version of column type_mode):
 
 ```
-$ csv-ls -c mode,name | csv-rpn-add -n strmode -e "\
+$ csv-ls -c mode,name | csv-add-rpn -n strmode -e "\
 %mode 0400 & 'r' '-' if        %mode 0200 & 'w' '-' if concat %mode 0100 & 'x' '-' if concat \
 %mode  040 & 'r' '-' if concat %mode  020 & 'w' '-' if concat %mode  010 & 'x' '-' if concat \
 %mode   04 & 'r' '-' if concat %mode   02 & 'w' '-' if concat %mode   01 & 'x' '-' if concat" |
@@ -349,7 +349,7 @@ $ csv-ls -R -c full_path . | csv-grep -c full_path -e '~$' | csv-exec -- rm -f %
 If file has .c extension, then replace it with .o, otherwise leave it as is:
 
 ```
-$ csv-ls -R -c full_path . | csv-exec-add -c full_path -n new -- sed 's/.c$/.o/'
+$ csv-ls -R -c full_path . | csv-add-exec -c full_path -n new -- sed 's/.c$/.o/'
 ```
 or 130x faster:
 
@@ -359,7 +359,7 @@ $ csv-ls -R -c full_path . | csv-replace -c full_path -E '(.*)\.c$' -r '%1.o' -n
 or 400x faster (3.1x faster than csv-replace):
 
 ```
-$ csv-ls -R -c full_path . | csv-rpn-add -n new -e "%full_path -1 1 substr 'c' == %full_path 1 %full_path strlen 1 - substr 'o' concat %full_path if"
+$ csv-ls -R -c full_path . | csv-add-rpn -n new -e "%full_path -1 1 substr 'c' == %full_path 1 %full_path strlen 1 - substr 'o' concat %full_path if"
 ```
 
 List all system users and the name of the default group they belong to:

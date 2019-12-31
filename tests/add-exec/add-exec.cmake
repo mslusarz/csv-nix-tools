@@ -29,14 +29,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-test("csv-exec-add -n name2 -c name -- sed 's/file/name/g'" exec-add/files.csv exec-add/names.csv data/empty.txt 0
-	exec-add_sed)
+test("csv-add-exec -n name2 -c name -- sed 's/file/name/g'" add-exec/files.csv add-exec/names.csv data/empty.txt 0
+	add-exec_sed)
 
-test("csv-exec-add -n name2 -c name -s -- sed 's/file/name/g'" exec-add/files.csv exec-add/names.txt data/empty.txt 0
-	exec-add_sed_-s)
+test("csv-add-exec -n name2 -c name -s -- sed 's/file/name/g'" add-exec/files.csv add-exec/names.txt data/empty.txt 0
+	add-exec_sed_-s)
 
-test("csv-exec-add --help" data/empty.csv exec-add/help.txt data/empty.txt 2
-	exec-add_help)
+test("csv-add-exec --help" data/empty.csv add-exec/help.txt data/empty.txt 2
+	add-exec_help)
 
-test("csv-exec-add --version" data/empty.csv data/git-version.txt data/empty.txt 0
-	exec-add_version)
+test("csv-add-exec --version" data/empty.csv data/git-version.txt data/empty.txt 0
+	add-exec_version)

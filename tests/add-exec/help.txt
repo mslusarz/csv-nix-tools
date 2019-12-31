@@ -1,4 +1,4 @@
-Usage: csv-exec-add [OPTION]... -- command
+Usage: csv-add-exec [OPTION]... -- command
 Options:
   -c, --column=name
   -n, --new-name=name

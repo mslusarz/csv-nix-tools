@@ -53,7 +53,7 @@ static const struct option opts[] = {
 static void
 usage(FILE *out)
 {
-	fprintf(out, "Usage: csv-exec-add [OPTION]... -- command\n");
+	fprintf(out, "Usage: csv-add-exec [OPTION]... -- command\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -c, --column=name\n");
 	fprintf(out, "  -n, --new-name=name\n");
