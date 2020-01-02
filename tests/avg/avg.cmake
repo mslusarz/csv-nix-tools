@@ -1,5 +1,5 @@
 #
-# Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -40,6 +40,12 @@ test("csv-avg -c col3,col1" data/3-numeric-columns-4-rows.csv avg/2-columns.csv 
 
 test("csv-avg -c col3,col1 -s" data/3-numeric-columns-4-rows.csv avg/2-columns-s.txt data/empty.txt 0
 	avg-2-columns-s)
+
+test("csv-avg -T t1 -c id,something" avg/2-tables.csv avg/2-tables-avg1.csv data/empty.txt 0
+	avg-2tables-avg1)
+
+test("csv-avg -T t2 -c id" avg/2-tables.csv avg/2-tables-avg2.csv data/empty.txt 0
+	avg-2tables-avg2)
 
 test("csv-avg --help" data/empty.csv avg/help.txt data/empty.txt 2
 	avg_help)

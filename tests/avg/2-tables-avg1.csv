@@ -1,0 +1,4 @@
+_table:string,t1.avg(id):int,t1.avg(something):int,t2.id:int,t2.name:string
+t2,,,7,aaa
+t2,,,9,bbb
+t1,2,0,,
