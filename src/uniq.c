@@ -206,21 +206,10 @@ main(int argc, char *argv[])
 
 	char *name = strtok(cols, ",");
 	while (name) {
-		size_t idx;
-		if (params.table)
-			idx = csv_find_by_table(headers, nheaders, params.table,
-					name);
-		else
-			idx = csv_find(headers, nheaders, name);
-		if (idx == CSV_NOT_FOUND) {
-			if (params.table)
-				fprintf(stderr, "column %s%c%s not found\n",
-						params.table, TABLE_SEPARATOR,
-						name);
-			else
-				fprintf(stderr, "column %s not found\n", name);
+		size_t idx = csv_find_loud(headers, nheaders, params.table,
+				name);
+		if (idx == CSV_NOT_FOUND)
 			exit(2);
-		}
 
 		params.cols[params.ncols++] = idx;
 

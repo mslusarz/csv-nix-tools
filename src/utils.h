@@ -83,6 +83,8 @@ size_t csv_find(const struct col_header *headers,
 		const char *column);
 size_t csv_find_by_table(const struct col_header *headers, size_t nheaders,
 		const char *table, const char *column);
+size_t csv_find_loud(const struct col_header *headers, size_t nheaders,
+		const char *table, const char *column);
 
 char *xstrdup(const char *str);
 char *xstrdup_nofail(const char *str);

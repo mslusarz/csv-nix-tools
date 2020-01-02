@@ -342,24 +342,11 @@ main(int argc, char *argv[])
 
 	for (size_t i = 0; i < nconditions; ++i) {
 		struct condition *c = &conditions[i];
-		if (params.table)
-			c->col_num = csv_find_by_table(headers, nheaders,
-					params.table, c->column);
-		else
-			c->col_num = csv_find(headers, nheaders, c->column);
-		if (c->col_num == CSV_NOT_FOUND) {
-			if (params.table) {
-				fprintf(stderr,
-					"column '%s%c%s' not found in input\n",
-					params.table, TABLE_SEPARATOR,
-					c->column);
-			} else {
-				fprintf(stderr,
-					"column '%s' not found in input\n",
-					c->column);
-			}
+		c->col_num = csv_find_loud(headers, nheaders, params.table,
+				c->column);
+		if (c->col_num == CSV_NOT_FOUND)
 			exit(2);
-		}
+
 		if (c->type == csv_match_string)
 			continue;
 

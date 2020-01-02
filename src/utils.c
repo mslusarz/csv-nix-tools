@@ -409,6 +409,28 @@ csv_find_by_table(const struct col_header *headers, size_t nheaders,
 	return CSV_NOT_FOUND;
 }
 
+size_t
+csv_find_loud(const struct col_header *headers, size_t nheaders,
+		const char *table, const char *column)
+{
+	size_t ret;
+	if (table)
+		ret = csv_find_by_table(headers, nheaders, table, column);
+	else
+		ret = csv_find(headers, nheaders, column);
+
+	if (ret == CSV_NOT_FOUND) {
+		if (table) {
+			fprintf(stderr, "column '%s%c%s' not found\n",
+				table, TABLE_SEPARATOR, column);
+		} else {
+			fprintf(stderr, "column '%s' not found\n", column);
+		}
+	}
+
+	return ret;
+}
+
 void
 csv_show(bool full)
 {
