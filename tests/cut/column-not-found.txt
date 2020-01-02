@@ -1,1 +1,1 @@
-column notExistingColumn not found
+column 'notExistingColumn' not found

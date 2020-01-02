@@ -1,6 +1,6 @@
 #
 # Copyright 2019, Sebastian Pidek <sebastian.pidek@gmail.com>
-# Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -109,6 +109,16 @@ test("csv-cut --columns name,id,something" data/3-different-order-columns-3-rows
 
 test("csv-cut --columns=name,id,something" data/3-different-order-columns-3-rows.csv data/3-columns-3-rows.csv data/empty.txt 0
 	cut_3_fields_in_different_order_using_--columns_with_=)
+
+
+test("csv-cut -T t1 -c id,something" cut/2-tables.csv cut/2-tables-cut1.csv data/empty.txt 0
+	cut-2tables-cut1)
+
+test("csv-cut -T t2 -c id" cut/2-tables.csv cut/2-tables-cut2.csv data/empty.txt 0
+	cut-2tables-cut2)
+
+test("csv-cut -T t1 -r -c id" cut/2-tables.csv cut/2-tables-cut3.csv data/empty.txt 0
+	cut-2tables-cut3)
 
 test("csv-cut --help" data/empty.csv cut/help.txt data/empty.txt 2
 	cut_help)
