@@ -1,5 +1,5 @@
 #
-# Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -354,3 +354,6 @@ test("csv-grep-rpn -e '2 not'" data/3-columns-3-rows.csv data/rpn-filter-no-rows
 
 test("csv-grep-rpn -e '%name 2 -1 substr %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/substring-invalid-length.txt 2
 	grep-rpn_valueerr_substr)
+
+test("csv-grep-rpn -T t1 -e \"%name '%or%' like\"" grep-rpn/2-tables.csv grep-rpn/2-tables-t1-or.csv data/empty.txt 0
+	grep-rpn_-T_t1_-e_name_or_like)

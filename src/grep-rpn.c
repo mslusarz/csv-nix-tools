@@ -43,6 +43,7 @@
 static const struct option opts[] = {
 	{"show",		no_argument,		NULL, 's'},
 	{"show-full",		no_argument,		NULL, 'S'},
+	{"table",		required_argument,	NULL, 'T'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{NULL,			0,			NULL, 0},
@@ -56,6 +57,7 @@ usage(FILE *out)
 	fprintf(out, "  -e \"RPN expression\"\n");
 	describe_Show(out);
 	describe_Show_full(out);
+	fprintf(out, "  -T, --table=name\n");
 	describe_help(out);
 	describe_version(out);
 }
@@ -63,6 +65,9 @@ usage(FILE *out)
 struct cb_params {
 	struct rpn_expression *expressions;
 	size_t count;
+
+	char *table;
+	size_t table_column;
 };
 
 static int
@@ -71,6 +76,15 @@ next_row(const char *buf, const size_t *col_offs,
 		void *arg)
 {
 	struct cb_params *params = arg;
+
+	if (params->table) {
+		const char *table = &buf[col_offs[params->table_column]];
+		if (strcmp(table, params->table) != 0) {
+			csv_print_line(stdout, buf, col_offs, nheaders, true);
+
+			return 0;
+		}
+	}
 
 	for (size_t i = 0; i < params->count; ++i) {
 		struct rpn_expression *exp = &params->expressions[i];
@@ -101,9 +115,11 @@ main(int argc, char *argv[])
 	bool show = false;
 	bool show_full;
 
-	memset(&params, 0, sizeof(params));
+	params.expressions = NULL;
+	params.count = 0;
+	params.table = NULL;
 
-	while ((opt = getopt_long(argc, argv, "e:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "e:sST:", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'e': {
 				expressions = xrealloc_nofail(expressions,
@@ -122,6 +138,9 @@ main(int argc, char *argv[])
 			case 'S':
 				show = true;
 				show_full = true;
+				break;
+			case 'T':
+				params.table = xstrdup_nofail(optarg);
 				break;
 			case 'V':
 				printf("git\n");
@@ -148,6 +167,14 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
+	if (params.table) {
+		params.table_column = csv_find(headers, nheaders, TABLE_COLUMN);
+		if (params.table_column == CSV_NOT_FOUND) {
+			fprintf(stderr, "column %s not found\n", TABLE_COLUMN);
+			exit(2);
+		}
+	}
+
 	params.count = nexpressions;
 	params.expressions = xcalloc_nofail(nexpressions, sizeof(params.expressions[0]));
 
@@ -155,7 +182,7 @@ main(int argc, char *argv[])
 		char *expstr = expressions[i];
 
 		struct rpn_expression *exp = &params.expressions[i];
-		if (rpn_parse(exp, expstr, headers, nheaders))
+		if (rpn_parse(exp, expstr, headers, nheaders, params.table))
 			exit(2);
 
 		if (strcmp(rpn_expression_type(exp, headers), "int") != 0) {
@@ -177,6 +204,7 @@ main(int argc, char *argv[])
 	for (size_t i = 0; i < nexpressions; ++i)
 		rpn_free(&params.expressions[i]);
 	free(params.expressions);
+	free(params.table);
 
 	return 0;
 }

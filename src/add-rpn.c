@@ -243,7 +243,7 @@ main(int argc, char *argv[])
 		}
 
 		struct rpn_expression *exp = &params.expressions[i];
-		if (rpn_parse(exp, expressions[i], headers, nheaders))
+		if (rpn_parse(exp, expressions[i], headers, nheaders, NULL))
 			exit(2);
 	}
 

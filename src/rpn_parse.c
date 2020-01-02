@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -114,7 +114,8 @@ token_next(struct str_tokens *ctx)
 
 int
 rpn_parse(struct rpn_expression *exp, char *str,
-		const struct col_header *headers, size_t nheaders)
+		const struct col_header *headers, size_t nheaders,
+		const char *table)
 {
 	struct str_tokens ctx;
 	token_init(&ctx, str);
@@ -125,13 +126,10 @@ rpn_parse(struct rpn_expression *exp, char *str,
 
 		if (token[0] == '%' && token[1] != 0) {
 			tkn.type = RPN_COLUMN;
-			tkn.colnum = csv_find(headers, nheaders, token + 1);
-			if (tkn.colnum == CSV_NOT_FOUND) {
-				fprintf(stderr,
-					"column '%s' not found in input\n",
+			tkn.colnum = csv_find_loud(headers, nheaders, table,
 					token + 1);
+			if (tkn.colnum == CSV_NOT_FOUND)
 				goto fail;
-			}
 		} else if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1]))) {
 			tkn.type = RPN_CONSTANT;
 			tkn.constant.type = RPN_LLONG;
