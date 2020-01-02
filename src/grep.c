@@ -72,7 +72,7 @@ usage(FILE *out)
 	fprintf(out, "  -i, --ignore-case\n");
 	describe_Show(out);
 	describe_Show_full(out);
-	fprintf(out, "  -T, --table=name\n");
+	describe_Table(out);
 	fprintf(out, "  -v, --invert\n");
 	fprintf(out, "  -x, --whole\n");
 	describe_help(out);

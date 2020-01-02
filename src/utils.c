@@ -773,6 +773,12 @@ describe_Show_full(FILE *out)
 }
 
 void
+describe_Table(FILE *out)
+{
+	fprintf(out, "  -T, --table=name\n");
+}
+
+void
 describe_help(FILE *out)
 {
 	fprintf(out, "      --help                 display this help and exit\n");

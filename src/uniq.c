@@ -57,7 +57,7 @@ usage(FILE *out)
 	fprintf(out, "  -c, --columns=name1[,name2...]\n");
 	describe_Show(out);
 	describe_Show_full(out);
-	fprintf(out, "  -T, --table=name\n");
+	describe_Table(out);
 	describe_help(out);
 	describe_version(out);
 }
