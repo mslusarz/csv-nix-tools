@@ -49,6 +49,7 @@ static const struct option opts[] = {
 	{"reverse",	no_argument,		NULL, 'r'},
 	{"show",	no_argument,		NULL, 's'},
 	{"show-full",	no_argument,		NULL, 'S'},
+	{"table",	required_argument,	NULL, 'T'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -63,6 +64,7 @@ usage(FILE *out)
 	fprintf(out, "  -r, --reverse\n");
 	describe_Show(out);
 	describe_Show_full(out);
+	describe_Table(out);
 	describe_help(out);
 	describe_version(out);
 }
@@ -76,6 +78,9 @@ struct cb_params {
 	struct line *lines;
 	size_t size;
 	size_t used;
+
+	size_t table_column;
+	char *table;
 };
 
 static int
@@ -84,6 +89,15 @@ next_row(const char *buf, const size_t *col_offs,
 		void *arg)
 {
 	struct cb_params *params = arg;
+
+	if (params->table) {
+		const char *table = &buf[col_offs[params->table_column]];
+		if (strcmp(table, params->table) != 0) {
+			csv_print_line(stdout, buf, col_offs, nheaders, true);
+
+			return 0;
+		}
+	}
 
 	if (params->used == params->size) {
 		if (params->size == 0)
@@ -202,8 +216,10 @@ main(int argc, char *argv[])
 
 	sort_params.columns = NULL;
 	sort_params.ncolumns = 0;
+	params.table = NULL;
+	params.table_column = SIZE_MAX;
 
-	while ((opt = getopt_long(argc, argv, "c:rsS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "c:rsST:", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'c':
 				cols = xstrdup_nofail(optarg);
@@ -218,6 +234,9 @@ main(int argc, char *argv[])
 			case 'S':
 				show = true;
 				show_full = true;
+				break;
+			case 'T':
+				params.table = xstrdup_nofail(optarg);
 				break;
 			case 'V':
 				printf("git\n");
@@ -247,13 +266,20 @@ main(int argc, char *argv[])
 
 	sort_params.columns = xmalloc_nofail(nheaders, sizeof(sort_params.columns[0]));
 
-	char *name = strtok(cols, ",");
-	while (name) {
-		size_t idx = csv_find(headers, nheaders, name);
-		if (idx == CSV_NOT_FOUND) {
-			fprintf(stderr, "column %s not found\n", name);
+	if (params.table) {
+		params.table_column = csv_find(headers, nheaders, TABLE_COLUMN);
+		if (params.table_column == CSV_NOT_FOUND) {
+			fprintf(stderr, "column %s not found\n", TABLE_COLUMN);
 			exit(2);
 		}
+	}
+
+	char *name = strtok(cols, ",");
+	while (name) {
+		size_t idx =
+			csv_find_loud(headers, nheaders, params.table, name);
+		if (idx == CSV_NOT_FOUND)
+			exit(2);
 
 		if (sort_params.ncolumns == nheaders) {
 			fprintf(stderr, "duplicated columns\n");
@@ -290,6 +316,7 @@ main(int argc, char *argv[])
 
 	free(row_idx);
 	free(params.lines);
+	free(params.table);
 	free(sort_params.columns);
 
 	csv_destroy_ctx(s);
