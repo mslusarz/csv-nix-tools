@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -43,6 +43,7 @@ static const struct option opts[] = {
 	{"columns",	required_argument,	NULL, 'c'},
 	{"show",	no_argument,		NULL, 's'},
 	{"show-full",	no_argument,		NULL, 'S'},
+	{"table",	required_argument,	NULL, 'T'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -56,6 +57,7 @@ usage(FILE *out)
 	fprintf(out, "  -c, --columns=name1[,name2...]\n");
 	describe_Show(out);
 	describe_Show_full(out);
+	fprintf(out, "  -T, --table=name\n");
 	describe_help(out);
 	describe_version(out);
 }
@@ -68,6 +70,9 @@ struct cb_params {
 
 	size_t *cols;
 	size_t ncols;
+
+	size_t table_column;
+	char *table;
 };
 
 static int
@@ -77,6 +82,16 @@ next_row(const char *buf, const size_t *col_offs,
 {
 	struct cb_params *params = arg;
 	bool print = false;
+
+	if (params->table) {
+		const char *table = &buf[col_offs[params->table_column]];
+		if (strcmp(table, params->table) != 0) {
+			csv_print_line_reordered(stdout, buf, col_offs,
+					params->ncols, true, params->cols);
+
+			return 0;
+		}
+	}
 
 	for (size_t i = 0; i < params->ncols; ++i) {
 		const char *col = &buf[col_offs[params->cols[i]]];
@@ -131,7 +146,10 @@ main(int argc, char *argv[])
 	bool show = false;
 	bool show_full;
 
-	while ((opt = getopt_long(argc, argv, "c:rsS", opts, NULL)) != -1) {
+	params.table = NULL;
+	params.table_column = SIZE_MAX;
+
+	while ((opt = getopt_long(argc, argv, "c:rsST:", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'c':
 				cols = xstrdup_nofail(optarg);
@@ -143,6 +161,9 @@ main(int argc, char *argv[])
 			case 'S':
 				show = true;
 				show_full = true;
+				break;
+			case 'T':
+				params.table = xstrdup_nofail(optarg);
 				break;
 			case 'V':
 				printf("git\n");
@@ -174,11 +195,30 @@ main(int argc, char *argv[])
 	params.ncols = 0;
 	params.bufs = NULL;
 
+	if (params.table) {
+		params.table_column = csv_find(headers, nheaders, TABLE_COLUMN);
+		if (params.table_column == CSV_NOT_FOUND) {
+			fprintf(stderr, "column %s not found\n", TABLE_COLUMN);
+			exit(2);
+		}
+		params.cols[params.ncols++] = params.table_column;
+	}
+
 	char *name = strtok(cols, ",");
 	while (name) {
-		size_t idx = csv_find(headers, nheaders, name);
+		size_t idx;
+		if (params.table)
+			idx = csv_find_by_table(headers, nheaders, params.table,
+					name);
+		else
+			idx = csv_find(headers, nheaders, name);
 		if (idx == CSV_NOT_FOUND) {
-			fprintf(stderr, "column %s not found\n", name);
+			if (params.table)
+				fprintf(stderr, "column %s%c%s not found\n",
+						params.table, TABLE_SEPARATOR,
+						name);
+			else
+				fprintf(stderr, "column %s not found\n", name);
 			exit(2);
 		}
 
@@ -187,6 +227,25 @@ main(int argc, char *argv[])
 		name = strtok(NULL, ",");
 	}
 	free(cols);
+
+	if (params.table) {
+		size_t table_len = strlen(params.table);
+
+		for (size_t i = 0; i < nheaders; ++i) {
+			const char *hname = headers[i].name;
+
+			/* skip columns from the same table */
+			if (strncmp(params.table, hname, table_len) == 0 &&
+					hname[table_len] == TABLE_SEPARATOR)
+				continue;
+
+			/* skip column with the table name */
+			if (i == params.cols[0])
+				continue;
+
+			params.cols[params.ncols++] = i;
+		}
+	}
 
 	params.cols = xrealloc_nofail(params.cols, params.ncols,
 			sizeof(params.cols[0]));
@@ -207,6 +266,7 @@ main(int argc, char *argv[])
 
 	free(params.cols);
 	free(params.bufs);
+	free(params.table);
 
 	csv_destroy_ctx(s);
 

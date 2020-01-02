@@ -1,0 +1,10 @@
+_table:string,t2.string:string,t1.str:string,t1.int:int
+t1,,lorem,3
+t1,,ipsum,4
+t1,,ipsum,4
+t2,something,,
+t1,,ipsum,4
+t1,,dolor,4
+t2,else,,
+t1,,sit,4
+t2,qwerty,,
