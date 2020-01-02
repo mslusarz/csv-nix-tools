@@ -49,14 +49,15 @@
 #include "utils.h"
 
 static const struct option opts[] = {
-	{"ignore-case",		no_argument,	NULL, 'i'},
-	{"show",		no_argument,	NULL, 's'},
-	{"show-full",		no_argument,	NULL, 'S'},
-	{"invert",		no_argument,	NULL, 'v'},
-	{"version",		no_argument,	NULL, 'V'},
-	{"whole",		no_argument,	NULL, 'x'},
-	{"help",		no_argument,	NULL, 'h'},
-	{NULL,			0,		NULL, 0},
+	{"ignore-case",		no_argument,		NULL, 'i'},
+	{"show",		no_argument,		NULL, 's'},
+	{"show-full",		no_argument,		NULL, 'S'},
+	{"table",		required_argument,	NULL, 'T'},
+	{"invert",		no_argument,		NULL, 'v'},
+	{"version",		no_argument,		NULL, 'V'},
+	{"whole",		no_argument,		NULL, 'x'},
+	{"help",		no_argument,		NULL, 'h'},
+	{NULL,			0,			NULL, 0},
 };
 
 static void
@@ -71,6 +72,7 @@ usage(FILE *out)
 	fprintf(out, "  -i, --ignore-case\n");
 	describe_Show(out);
 	describe_Show_full(out);
+	fprintf(out, "  -T, --table=name\n");
 	fprintf(out, "  -v, --invert\n");
 	fprintf(out, "  -x, --whole\n");
 	describe_help(out);
@@ -91,6 +93,9 @@ struct cb_params {
 	struct condition *conditions;
 	size_t nconditions;
 	bool invert;
+
+	char *table;
+	size_t table_column;
 };
 
 static bool
@@ -126,6 +131,15 @@ next_row(const char *buf, const size_t *col_offs,
 	struct condition *conditions = params->conditions;
 	size_t nconditions = params->nconditions;
 	bool invert = params->invert;
+
+	if (params->table) {
+		const char *table = &buf[col_offs[params->table_column]];
+		if (strcmp(table, params->table) != 0) {
+			csv_print_line(stdout, buf, col_offs, nheaders, true);
+
+			return 0;
+		}
+	}
 
 	if (invert) {
 		// !AA && !BB && !CC -> AA || BB || CC
@@ -203,8 +217,11 @@ main(int argc, char *argv[])
 	bool ignore_case = false;
 	char *current_column = NULL;
 	bool whole = false;
+	struct cb_params params;
 
-	while ((opt = getopt_long(argc, argv, "c:e:E:F:isSvx", opts,
+	params.table = NULL;
+
+	while ((opt = getopt_long(argc, argv, "c:e:E:F:isST:vx", opts,
 			NULL)) != -1) {
 		switch (opt) {
 			case 'c':
@@ -279,6 +296,9 @@ main(int argc, char *argv[])
 				show = true;
 				show_full = true;
 				break;
+			case 'T':
+				params.table = xstrdup_nofail(optarg);
+				break;
 			case 'v':
 				invert = true;
 				break;
@@ -312,12 +332,32 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
+	if (params.table) {
+		params.table_column = csv_find(headers, nheaders, TABLE_COLUMN);
+		if (params.table_column == CSV_NOT_FOUND) {
+			fprintf(stderr, "column %s not found\n", TABLE_COLUMN);
+			exit(2);
+		}
+	}
+
 	for (size_t i = 0; i < nconditions; ++i) {
 		struct condition *c = &conditions[i];
-		c->col_num = csv_find(headers, nheaders, c->column);
+		if (params.table)
+			c->col_num = csv_find_by_table(headers, nheaders,
+					params.table, c->column);
+		else
+			c->col_num = csv_find(headers, nheaders, c->column);
 		if (c->col_num == CSV_NOT_FOUND) {
-			fprintf(stderr, "column '%s' not found in input\n",
+			if (params.table) {
+				fprintf(stderr,
+					"column '%s%c%s' not found in input\n",
+					params.table, TABLE_SEPARATOR,
 					c->column);
+			} else {
+				fprintf(stderr,
+					"column '%s' not found in input\n",
+					c->column);
+			}
 			exit(2);
 		}
 		if (c->type == csv_match_string)
@@ -352,7 +392,6 @@ main(int argc, char *argv[])
 
 	csv_print_header(stdout, headers, nheaders);
 
-	struct cb_params params;
 	params.conditions = conditions;
 	params.nconditions = nconditions;
 	params.invert = invert;
@@ -369,6 +408,7 @@ main(int argc, char *argv[])
 	}
 
 	free(conditions);
+	free(params.table);
 
 	csv_destroy_ctx(s);
 

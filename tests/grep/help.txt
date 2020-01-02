@@ -7,6 +7,7 @@ Options:
   -i, --ignore-case
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
+  -T, --table=name
   -v, --invert
   -x, --whole
       --help                 display this help and exit

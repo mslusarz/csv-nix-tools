@@ -1,5 +1,5 @@
 #
-# Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -71,6 +71,9 @@ test("csv-grep -c name -F or.m" data/3-columns-3-rows.csv grep/not-found.csv dat
 
 test("csv-grep -c name -e or -v" data/3-columns-3-rows.csv grep/name-or-not.csv data/empty.txt 0
 	grep_-c_name_-e_or_-v)
+
+test("csv-grep -T t1 -c name -e or" grep/2-tables.csv grep/2-tables-t1-or.csv data/empty.txt 0
+	grep_-T_t1_-c_name_-e_or)
 
 test("csv-grep --help" data/empty.csv grep/help.txt data/empty.txt 2
 	grep_help)

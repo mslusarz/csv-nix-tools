@@ -372,11 +372,11 @@ List all network connections and processes they belong to:
 
 ```
 $ csv-ls -T -c name,symlink /proc/*/fd/* 2>/dev/null |
-csv-grep -c file.symlink -E "socket:\[[0-9]*\]" |
+csv-grep -T file -c symlink -E "socket:\[[0-9]*\]" |
 csv-add-replace -c file.name -E '/proc/([0-9]*)/.*' -r '%1' -n file.pid |
 csv-add-replace -c file.symlink -E 'socket:\[([0-9]*)\]' -r %1 -n file.inode |
 csv-netstat -M |
-csv-grep -v -c socket.family -x -F 'UNIX' |
+csv-grep -T socket -v -c family -x -F 'UNIX' |
 csv-ps -M -c pid,cmd |
 csv-sqlite -T 'select socket.protocol, socket.src_ip, socket.src_port, socket.dst_ip, socket.dst_port, socket.state, socket.uid, file.pid, proc.cmd from socket left outer join file on socket.inode = file.inode left outer join proc on file.pid = proc.pid' -s
 
