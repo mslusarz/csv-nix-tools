@@ -37,78 +37,78 @@ test("csv-cut" data/one-column-one-row.csv data/empty.txt cut/help.txt 2
 	cut_simple_pass_through)
 
 test("csv-cut -c" data/one-column-one-row.csv cut/help.txt cut/no-fields-error.txt 2
-	cut_simple_pass_through_with_-f)
+	cut_simple_pass_through_with_-c)
 
 test("csv-cut -c name" data/one-column-one-row.csv data/one-column-one-row.csv data/empty.txt 0
-	cut_the_only_field_using_-f)
+	cut_the_only_field_using_-c)
 
 test("csv-cut --columns name" data/one-column-one-row.csv data/one-column-one-row.csv data/empty.txt 0
-	cut_the_only_field_using_--fields_with_space)
+	cut_the_only_field_using_--columns_with_space)
 
 test("csv-cut --columns=name" data/one-column-one-row.csv data/one-column-one-row.csv data/empty.txt 0
-	cut_the_only_field_using_--fields_with_=)
+	cut_the_only_field_using_--columns_with_=)
 
 test("csv-cut -c notExistingColumn" data/one-column-one-row.csv data/empty.txt cut/column-not-found.txt 2
-	cut_not_existing_field_using_-f)
+	cut_not_existing_field_using_-c)
 
 test("csv-cut --columns notExistingColumn" data/one-column-one-row.csv data/empty.txt cut/column-not-found.txt 2
-	cut_not_existing_field_using_--fields_with_space)
+	cut_not_existing_field_using_--columns_with_space)
 
 test("csv-cut --columns=notExistingColumn" data/one-column-one-row.csv data/empty.txt cut/column-not-found.txt 2
-	cut_not_existing_field_using_--fields_with_=)
+	cut_not_existing_field_using_--columns_with_=)
 
 
 test("csv-cut -c name" data/3-columns-3-rows.csv cut/name-column-3-rows.csv data/empty.txt 0
-	cut_the_name_field_using_-f)
+	cut_the_name_field_using_-c)
 
 test("csv-cut --columns name" data/3-columns-3-rows.csv cut/name-column-3-rows.csv data/empty.txt 0
-	cut_the_name_field_using_--fields_with_space)
+	cut_the_name_field_using_--columns_with_space)
 
 test("csv-cut --columns=name" data/3-columns-3-rows.csv cut/name-column-3-rows.csv data/empty.txt 0
-	cut_the_name_field_using_--fields_with_=)
+	cut_the_name_field_using_--columns_with_=)
 
 
 test("csv-cut -c id" data/3-columns-3-rows.csv data/id-column-3-rows.csv data/empty.txt 0
-	cut_the_id_field_using_-f)
+	cut_the_id_field_using_-c)
 
 test("csv-cut --columns id" data/3-columns-3-rows.csv data/id-column-3-rows.csv data/empty.txt 0
-	cut_the_id_field_using_--fields_with_space)
+	cut_the_id_field_using_--columns_with_space)
 
 test("csv-cut --columns=id" data/3-columns-3-rows.csv data/id-column-3-rows.csv data/empty.txt 0
-	cut_the_id_field_using_--fields_with_=)
+	cut_the_id_field_using_--columns_with_=)
 
 
 test("csv-cut -c something" data/3-columns-3-rows.csv cut/something-column-3-rows.csv data/empty.txt 0
-	cut_the_something_field_using_-f)
+	cut_the_something_field_using_-c)
 
 test("csv-cut --columns something" data/3-columns-3-rows.csv cut/something-column-3-rows.csv data/empty.txt 0
-	cut_the_something_field_using_--fields_with_space)
+	cut_the_something_field_using_--columns_with_space)
 
 test("csv-cut --columns=something" data/3-columns-3-rows.csv cut/something-column-3-rows.csv data/empty.txt 0
-	cut_the_something_field_using_--fields_with_=)
+	cut_the_something_field_using_--columns_with_=)
 
 
 test("csv-cut -c name,something" data/3-columns-3-rows.csv data/2-columns-3-rows.csv data/empty.txt 0
-	cut_2_fields_using_-f)
+	cut_2_fields_using_-c)
 
 test("csv-cut -c name,something -s" data/3-columns-3-rows.csv cut/2-columns-3-rows.txt data/empty.txt 0
-	cut_2_fields_using_-f_-s)
+	cut_2_fields_using_-c_-s)
 
 test("csv-cut --columns name,something" data/3-columns-3-rows.csv data/2-columns-3-rows.csv data/empty.txt 0
-	cut_2_fields_using_--fields_with_spaces)
+	cut_2_fields_using_--columns_with_spaces)
 
 test("csv-cut --columns=name,something" data/3-columns-3-rows.csv data/2-columns-3-rows.csv data/empty.txt 0
-	cut_2_fields_using_--fields_with_=)
+	cut_2_fields_using_--columns_with_=)
 
 
 test("csv-cut -c name,id,something" data/3-different-order-columns-3-rows.csv data/3-columns-3-rows.csv data/empty.txt 0
-	cut_3_fields_in_different_order_using_-f)
+	cut_3_fields_in_different_order_using_-c)
 
 test("csv-cut --columns name,id,something" data/3-different-order-columns-3-rows.csv data/3-columns-3-rows.csv data/empty.txt 0
-	cut_3_fields_in_different_order_using_--fields_with_space)
+	cut_3_fields_in_different_order_using_--columns_with_space)
 
 test("csv-cut --columns=name,id,something" data/3-different-order-columns-3-rows.csv data/3-columns-3-rows.csv data/empty.txt 0
-	cut_3_fields_in_different_order_using_--fields_with_=)
+	cut_3_fields_in_different_order_using_--columns_with_=)
 
 test("csv-cut --help" data/empty.csv cut/help.txt data/empty.txt 2
 	cut_help)
