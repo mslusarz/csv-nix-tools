@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -244,7 +244,7 @@ next_row(const char *buf, const size_t *col_offs,
 		exit(4);
 	}
 
-	csv_print_line(stdout, buf, col_offs, headers, nheaders, false);
+	csv_print_line(stdout, buf, col_offs, nheaders, false);
 	fputc(',', stdout);
 
 	size_t readin = read_all(child_out[0], &input_buf, &input_buf_len);

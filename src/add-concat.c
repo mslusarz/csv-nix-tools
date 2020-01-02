@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -79,7 +79,7 @@ next_row(const char *buf, const size_t *col_offs,
 {
 	struct cb_params *params = arg;
 
-	csv_print_line(stdout, buf, col_offs, headers, nheaders, false);
+	csv_print_line(stdout, buf, col_offs, nheaders, false);
 	fputc(',', stdout);
 
 	size_t len = 0;

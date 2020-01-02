@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -50,7 +50,7 @@ void csv_print_header(FILE *out, const struct col_header *headers,
 		size_t nheaders);
 
 void csv_print_line(FILE *out, const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t nheaders, bool nl);
+		size_t ncols, bool nl);
 
 int strtoll_safe(const char *str, long long *val, int base);
 int strtoull_safe(const char *str, unsigned long long *val, int base);

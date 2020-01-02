@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -83,7 +83,7 @@ next_row(const char *buf, const size_t *col_offs,
 			abort();
 
 		if (ret.llong) {
-			csv_print_line(stdout, buf, col_offs, headers, nheaders, true);
+			csv_print_line(stdout, buf, col_offs, nheaders, true);
 			return 0;
 		}
 	}

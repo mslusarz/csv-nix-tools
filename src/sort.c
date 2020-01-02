@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -180,8 +180,7 @@ cmp(const void *p1, const void *p2, void *arg)
 static void
 print_line(struct line *line, const struct col_header *headers, size_t nheaders)
 {
-	csv_print_line(stdout, line->buf, line->col_offs, headers,
-			nheaders, true);
+	csv_print_line(stdout, line->buf, line->col_offs, nheaders, true);
 
 	free(line->buf);
 	free(line->col_offs);
