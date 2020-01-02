@@ -46,6 +46,7 @@ Filtering/processing:
 - csv-add-concat - adds a new column by concatenation of columns and user-defined strings
 - csv-add-exec - pipes data to standard input of an external command and creates a new column from its standard output
 - csv-add-replace - adds a new column by performing a string substitution on another column (similar to sed s/$str/$str/)
+- csv-add-rev - adds a new column by reversing another column characterwise
 - csv-add-rpn - adds a new column from RPN expression
 - csv-add-split - adds two new columns by splitting another one using a delimiter
 - csv-add-substring - adds a new column by extracting a substring of another column
@@ -416,7 +417,7 @@ raw        ::                    58         ::                     0            
 # TODO (high level)
 - more tests
 - more data collection tools (id, env, uname, w/who, df, free, ifconfig/ip, ipcs, lsattr, lsusb, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, etc)
-- more processing tools (nl, tr, rev, drop, paste?, etc)
+- more processing tools (nl, tr, paste?, etc)
 - more rpn operators/functions (split, rev, base64enc/dec, timestamp conversion, now, regex, sed/replace, tr)
 - exporting tools (to-xml, to-json, to-sql)
 - importing tools (from-xml, from-json)

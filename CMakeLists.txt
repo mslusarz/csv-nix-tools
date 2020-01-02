@@ -1,5 +1,5 @@
 #
-# Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -126,6 +126,7 @@ endfunction()
 build_tool(csv-add-concat	src/add-concat.c)
 build_tool(csv-add-exec		src/add-exec.c)
 build_tool(csv-add-replace	src/add-replace.c)
+build_tool(csv-add-rev		src/add-rev.c)
 build_tool(csv-add-rpn		src/add-rpn.c)
 build_tool(csv-add-split	src/add-split.c)
 build_tool(csv-add-substring	src/add-substring.c)

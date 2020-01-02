@@ -27,6 +27,7 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 - **csv-add-concat**(1)
 - **csv-add-exec**(1)
 - **csv-add-replace**(1)
+- **csv-add-rev**(1)
 - **csv-add-rpn**(1)
 - **csv-add-split**(1)
 - **csv-add-substring**(1)
