@@ -378,10 +378,31 @@ csv_unquot_in_place(char *str)
 #endif
 
 size_t
-csv_find(const struct col_header *headers, size_t nheaders, const char *name)
+csv_find(const struct col_header *headers, size_t nheaders, const char *column)
 {
 	for (size_t i = 0; i < nheaders; ++i) {
-		if (strcmp(name, headers[i].name) == 0)
+		if (strcmp(column, headers[i].name) == 0)
+			return i;
+	}
+
+	return CSV_NOT_FOUND;
+}
+
+size_t
+csv_find_by_table(const struct col_header *headers, size_t nheaders,
+		const char *table, const char *column)
+{
+	size_t table_len = strlen(table);
+	for (size_t i = 0; i < nheaders; ++i) {
+		const char *hname = headers[i].name;
+
+		if (strncmp(table, hname, table_len) != 0)
+			continue;
+
+		if (hname[table_len] != TABLE_SEPARATOR)
+			continue;
+
+		if (strcmp(column, hname + table_len + 1) == 0)
 			return i;
 	}
 

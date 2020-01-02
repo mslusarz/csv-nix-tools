@@ -80,7 +80,9 @@ void csv_unquot_in_place(char *str);
 #define CSV_NOT_FOUND SIZE_MAX
 size_t csv_find(const struct col_header *headers,
 		size_t nheaders,
-		const char *name);
+		const char *column);
+size_t csv_find_by_table(const struct col_header *headers, size_t nheaders,
+		const char *table, const char *column);
 
 char *xstrdup(const char *str);
 char *xstrdup_nofail(const char *str);
