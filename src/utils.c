@@ -432,6 +432,23 @@ csv_find_loud(const struct col_header *headers, size_t nheaders,
 }
 
 void
+csv_print_table_func_header(const struct col_header *h, const char *func,
+		const char *table, size_t table_len, char sep)
+{
+	if (table) {
+		if (strncmp(h->name, table, table_len) == 0 &&
+				h->name[table_len] == TABLE_SEPARATOR)
+			printf("%s.%s(%s):%s%c", table, func,
+					h->name + table_len + 1,
+					h->type, sep);
+		else
+			printf("%s:%s%c", h->name, h->type, sep);
+	} else {
+		printf("%s(%s):%s%c", func, h->name, h->type, sep);
+	}
+}
+
+void
 csv_show(bool full)
 {
 	int fds[2];
