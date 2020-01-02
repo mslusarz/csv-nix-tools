@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -117,12 +117,7 @@ next_row(const char *buf, const size_t *col_offs,
 static int
 print_row(const char *buf, const size_t *col_offs, size_t ncols, size_t *idx)
 {
-	for (size_t i = 0; i < ncols - 1; ++i) {
-		fputs(&buf[col_offs[idx[i]]], stdout);
-		fputc(',', stdout);
-	}
-	fputs(&buf[col_offs[idx[ncols - 1]]], stdout);
-	fputc('\n', stdout);
+	csv_print_line_reordered(stdout, buf, col_offs, ncols, true, idx);
 
 	return 0;
 }

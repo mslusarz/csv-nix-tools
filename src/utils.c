@@ -64,6 +64,19 @@ csv_print_line(FILE *out, const char *buf, const size_t *col_offs,
 		fputc('\n', out);
 }
 
+void
+csv_print_line_reordered(FILE *out, const char *buf, const size_t *col_offs,
+		size_t ncols, bool nl, const size_t *idx)
+{
+	for (size_t i = 0; i < ncols - 1; ++i) {
+		fputs(&buf[col_offs[idx[i]]], out);
+		fputc(',', out);
+	}
+	fputs(&buf[col_offs[idx[ncols - 1]]], out);
+	if (nl)
+		fputc('\n', out);
+}
+
 int
 strtoll_safe(const char *str, long long *val, int base)
 {

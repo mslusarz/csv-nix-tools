@@ -52,6 +52,10 @@ void csv_print_header(FILE *out, const struct col_header *headers,
 void csv_print_line(FILE *out, const char *buf, const size_t *col_offs,
 		size_t ncols, bool nl);
 
+void csv_print_line_reordered(FILE *out, const char *buf,
+		const size_t *col_offs, size_t ncols, bool nl,
+		const size_t *idx);
+
 int strtoll_safe(const char *str, long long *val, int base);
 int strtoull_safe(const char *str, unsigned long long *val, int base);
 int strtol_safe(const char *str, long *val, int base);
