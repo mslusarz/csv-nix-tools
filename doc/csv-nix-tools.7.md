@@ -35,6 +35,7 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 - **csv-cat**(1) - concatenate CSV files and print on the standard output
 - **csv-count**(1)
 - **csv-cut**(1)
+- **csv-env**(1)
 - **csv-grep**(1)
 - **csv-grep-rpn**(1)
 - **csv-head**(1) - print on the standard output the beginning of a CSV file from standard input

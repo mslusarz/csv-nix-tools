@@ -35,6 +35,7 @@ sudo make install
 # Available tools
 
 Source:
+- csv-env - lists environment variables
 - csv-groups - lists system groups
 - csv-group-members - lists system groups and users that belong to them
 - csv-ls - lists files
@@ -416,7 +417,7 @@ raw        ::                    58         ::                     0            
 
 # TODO (high level)
 - more tests
-- more data collection tools (id, env, uname, w/who, df, free, ifconfig/ip, ipcs, lsattr, lsusb, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, etc)
+- more data collection tools (id, uname, w/who, df, free, ifconfig/ip, ipcs, lsattr, lsusb, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, etc)
 - more processing tools (nl, tr, paste?, etc)
 - more rpn operators/functions (split, rev, base64enc/dec, timestamp conversion, now, regex, sed/replace, tr)
 - exporting tools (to-xml, to-json, to-sql)
