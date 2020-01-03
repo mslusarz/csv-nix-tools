@@ -1,4 +1,4 @@
 name                   id   something   name-reversed
-lorem ipsum            1    1           muspi merol
-not all that is gold   2    0           dlog si taht lla ton
-something else         3    1           esle gnihtemos
+lorem ipsum             1           1   muspi merol
+not all that is gold    2           0   dlog si taht lla ton
+something else          3           1   esle gnihtemos

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -52,6 +52,11 @@
 #include "utils.h"
 
 #define DEFAULT_SPACING 3
+
+enum alignment {
+	LEFT,
+	RIGHT,
+};
 
 static const struct option opts[] = {
 	{"no-header",	no_argument,		NULL, 'H'},
@@ -239,7 +244,8 @@ show(char **data, size_t ndata,
 	size_t first_line, size_t nlines,
 	int xoff,
 	size_t spacing,
-	bool print_header, bool print_types)
+	bool print_header, bool print_types,
+	enum alignment *alignments)
 {
 	size_t ypos = 0;
 	clear();
@@ -250,6 +256,12 @@ show(char **data, size_t ndata,
 		for (size_t i = 0; i < nheaders; ++i) {
 			int prev_xpos = xpos;
 			bool truncated;
+			size_t len = strlen(headers[i].name);
+			if (print_types)
+				len += 1 + strlen(headers[i].type);
+
+			if (alignments[i] == RIGHT)
+				xpos += max_lengths[i] - len;
 
 			nprint(0, xpos - xoff, headers[i].name, &truncated);
 			if (truncated)
@@ -284,15 +296,25 @@ show(char **data, size_t ndata,
 		for (size_t i = 0; i < nheaders; ++i) {
 			bool truncated;
 
+			size_t len = strlen(buf);
+
+			if (alignments[i] == RIGHT)
+				xpos += max_lengths[i] - len;
+
 			nprint(ypos, xpos - xoff, buf, &truncated);
 
 			if (truncated)
 				break;
 
-			buf += strlen(buf) + 1;
+			buf += len + 1;
+			xpos += len;
+
+			if (alignments[i] == LEFT)
+				if (i < nheaders - 1)
+					xpos += max_lengths[i] - len;
 
 			if (i < nheaders - 1)
-				xpos += max_lengths[i] + spacing;
+				xpos += spacing;
 		}
 	}
 }
@@ -300,7 +322,7 @@ show(char **data, size_t ndata,
 static void
 curses_ui(struct cb_params *params, const struct col_header *headers,
 		size_t nheaders, bool print_header, bool print_types,
-		size_t spacing)
+		size_t spacing, enum alignment *alignments)
 {
 	if (close(0)) {
 		perror("close");
@@ -358,7 +380,8 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 			headers, nheaders,
 			params->max_lengths,
 			first_line, nlines,
-			xoff, spacing, print_header, print_types);
+			xoff, spacing, print_header, print_types,
+			alignments);
 		refresh();
 
 		if (params->logfd >= 0)
@@ -470,20 +493,34 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 }
 #endif
 
+static inline void
+print_spaces(size_t s)
+{
+	for (size_t i = 0; i < s; ++i)
+		fputc(' ', stdout);
+}
+
 static void
-print_line(char *line, size_t *max_lengths, size_t columns, size_t spacing)
+print_line(char *line, size_t *max_lengths, size_t columns, size_t spacing,
+		enum alignment *alignments)
 {
 	const char *buf = line;
 
 	for (size_t i = 0; i < columns; ++i) {
 		size_t len = strlen(buf);
 
+		if (alignments[i] == RIGHT)
+			print_spaces(max_lengths[i] - len);
+
 		fwrite(buf, len, 1, stdout);
 		buf += len + 1;
 
+		if (alignments[i] == LEFT)
+			if (i < columns - 1)
+				print_spaces(max_lengths[i] - len);
+
 		if (i < columns - 1)
-			while (len++ < max_lengths[i] + spacing)
-				fputc(' ', stdout);
+			print_spaces(spacing);
 	}
 	fputc('\n', stdout);
 }
@@ -491,7 +528,7 @@ print_line(char *line, size_t *max_lengths, size_t columns, size_t spacing)
 static void
 static_ui(bool less, struct cb_params *params, const struct col_header *headers,
 		size_t nheaders, bool print_header, bool print_types,
-		size_t spacing)
+		size_t spacing, enum alignment *alignments)
 {
 	if (less)  {
 		int fds[2];
@@ -545,25 +582,33 @@ static_ui(bool less, struct cb_params *params, const struct col_header *headers,
 
 	if (print_header) {
 		for (size_t i = 0; i < nheaders; ++i) {
-			int written;
+			size_t len = strlen(headers[i].name);
+			if (print_types)
+				len += 1 + strlen(headers[i].type);
+
+			if (alignments[i] == RIGHT)
+				print_spaces(params->max_lengths[i] - len);
 
 			if (print_types) {
-				written = printf("%s:%s", headers[i].name,
+				printf("%s:%s", headers[i].name,
 						headers[i].type);
 			} else {
-				written = printf("%s", headers[i].name);
+				printf("%s", headers[i].name);
 			}
 
+			if (alignments[i] == LEFT)
+				if (i < nheaders - 1)
+					print_spaces(params->max_lengths[i] - len);
+
 			if (i < nheaders - 1)
-				while (written++ < params->max_lengths[i] + spacing)
-					fputc(' ', stdout);
+				print_spaces(spacing);
 		}
 		fputc('\n', stdout);
 	}
 
 	for (size_t i = 0; i < params->nlines; ++i) {
 		print_line(params->lines[i], params->max_lengths, nheaders,
-				spacing);
+				spacing, alignments);
 		free(params->lines[i]);
 	}
 }
@@ -659,6 +704,15 @@ main(int argc, char *argv[])
 
 	params.max_lengths = xcalloc_nofail(nheaders, sizeof(params.max_lengths[0]));
 
+	enum alignment *alignments =
+			xmalloc_nofail(nheaders, sizeof(alignments[0]));
+	for (size_t i = 0; i < nheaders; ++i) {
+		if (strcmp(headers[i].type, "int") == 0)
+			alignments[i] = RIGHT;
+		else
+			alignments[i] = LEFT;
+	}
+
 	if (print_header) {
 		for (size_t i = 0; i < nheaders; ++i) {
 			params.max_lengths[i] = strlen(headers[i].name);
@@ -672,11 +726,11 @@ main(int argc, char *argv[])
 	if (ui == NCURSES) {
 #ifdef NCURSES_ENABLED
 		curses_ui(&params, headers, nheaders, print_header,
-				print_types, spacing);
+				print_types, spacing, alignments);
 #endif
 	} else {
 		static_ui(ui == LESS, &params, headers, nheaders, print_header,
-				print_types, spacing);
+				print_types, spacing, alignments);
 	}
 
 	free(params.lines);

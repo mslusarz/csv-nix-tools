@@ -1,4 +1,4 @@
 _table   table1.name            table1.something
-table1   lorem ipsum            1
-table1   not all that is gold   0
-table1   something else         1
+table1   lorem ipsum                           1
+table1   not all that is gold                  0
+table1   something else                        1

@@ -1,5 +1,5 @@
 name                                 id   something
-lorem\tipsum                         1    1
-not\aall\bthat\eis\fgold             2    0
-some\rthing\velse                    3    1
-fourth\\row\x01contains\x1Fgarbage   4    2
+lorem\tipsum                          1           1
+not\aall\bthat\eis\fgold              2           0
+some\rthing\velse                     3           1
+fourth\\row\x01contains\x1Fgarbage    4           2

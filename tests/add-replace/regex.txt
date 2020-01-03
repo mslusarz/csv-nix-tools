@@ -1,4 +1,4 @@
 name                   id   something   new-col
-lorem ipsum            1    1           psum STRING lorem
-not all that is gold   2    0           s gold STRING not all that
-something else         3    1           something else
+lorem ipsum             1           1   psum STRING lorem
+not all that is gold    2           0   s gold STRING not all that
+something else          3           1   something else

@@ -107,12 +107,12 @@ or in table form:
 ```
 $ csv-ls -ls doc
 type_mode     nlink   owner_name   group_name   size   mtime                           name                 symlink
--rwxr-xr-x    1       marcin       marcin       773    2019-12-23 01:24:58.478029642   csv-cat.1.md         
--rwxr-xr-x    1       marcin       marcin       721    2019-12-23 02:15:21.074174728   csv-head.1.md        
--rwxr-xr-x    1       marcin       marcin       1673   2019-12-23 02:16:07.494064188   csv-nix-tools.7.md   
--rwxr-xr-x    1       marcin       marcin       1476   2019-12-23 02:43:08.227018848   csv-show.1.md        
--rwxr-xr-x    1       marcin       marcin       825    2019-12-23 01:25:09.873956973   csv-tac.1.md         
--rwxr-xr-x    1       marcin       marcin       710    2019-12-23 02:15:38.110135517   csv-tail.1.md        
+-rwxr-xr-x        1   marcin       marcin        773   2019-12-23 01:24:58.478029642   csv-cat.1.md         
+-rwxr-xr-x        1   marcin       marcin        721   2019-12-23 02:15:21.074174728   csv-head.1.md        
+-rwxr-xr-x        1   marcin       marcin       1673   2019-12-23 02:16:07.494064188   csv-nix-tools.7.md   
+-rwxr-xr-x        1   marcin       marcin       1476   2019-12-23 02:43:08.227018848   csv-show.1.md        
+-rwxr-xr-x        1   marcin       marcin        825   2019-12-23 01:25:09.873956973   csv-tac.1.md         
+-rwxr-xr-x        1   marcin       marcin        710   2019-12-23 02:15:38.110135517   csv-tail.1.md        
 ```
 
 
@@ -382,35 +382,35 @@ csv-grep -T socket -v -c family -x -F 'UNIX' |
 csv-ps -M -c pid,cmd |
 csv-sqlite -T 'select socket.protocol, socket.src_ip, socket.src_port, socket.dst_ip, socket.dst_port, socket.state, socket.uid, file.pid, proc.cmd from socket left outer join file on socket.inode = file.inode left outer join proc on file.pid = proc.pid' -s
 
-protocol   src_ip                src_port   dst_ip                 dst_port   state         uid    pid     cmd
-tcp        127.0.0.53            53         0.0.0.0                0          LISTEN        102            
-tcp        127.0.0.1             631        0.0.0.0                0          LISTEN        0              
-tcp        127.0.0.1             39455      0.0.0.0                0          LISTEN        0              
-tcp        192.168.1.14          52980      $IP                    443        ESTABLISHED   1000   16175   firefox
-tcp        192.168.1.14          39390      $IP                    443        ESTABLISHED   1000   16175   firefox
-tcp        192.168.1.14          49640      $IP                    8008       ESTABLISHED   1000   6504    chrome
-tcp        192.168.1.14          39220      $IP                    443        TIME_WAIT     0              
-tcp        192.168.1.14          47420      $IP                    443        ESTABLISHED   1000   6504    chrome
-tcp        192.168.1.14          51424      $IP                    443        ESTABLISHED   1000   6504    chrome
-tcp        192.168.1.14          58330      $IP                    443        ESTABLISHED   1000   16175   firefox
-tcp        192.168.1.14          48254      $IP                    8009       SYN_SENT      1000   6504    chrome
-tcp        192.168.1.14          43784      $IP                    443        TIME_WAIT     0              
-tcp        192.168.1.14          54018      $IP                    443        ESTABLISHED   1000   6504    chrome
-tcp        192.168.1.14          48250      $IP                    8009       FIN_WAIT1     0              
-tcp        ::1                   631        ::                     0          LISTEN        0              
-tcp        ::ffff:192.168.0.14   37610      ::ffff:$IP             80         CLOSE_WAIT    1000   27184   WebKitWebProces
-tcp        ::ffff:192.168.0.14   37610      ::ffff:$IP             80         CLOSE_WAIT    1000   8337    java
-udp        127.0.0.53            53         0.0.0.0                0                        102            
-udp        0.0.0.0               68         0.0.0.0                0                        0              
-udp        0.0.0.0               631        0.0.0.0                0                        0              
-udp        224.0.0.251           5353       0.0.0.0                0                        1000   6504    chrome
-udp        224.0.0.251           5353       0.0.0.0                0                        1000   6470    chrome
-udp        224.0.0.251           5353       0.0.0.0                0                        1000   6504    chrome
-udp        0.0.0.0               5353       0.0.0.0                0                        107            
-udp        0.0.0.0               46599      0.0.0.0                0                        107            
-udp        ::                    59934      ::                     0                        107            
-udp        ::                    5353       ::                     0                        107            
-raw        ::                    58         ::                     0                        0              
+protocol   src_ip                src_port   dst_ip       dst_port   state          uid     pid   cmd
+tcp        127.0.0.53                  53   0.0.0.0             0   LISTEN         102           
+tcp        127.0.0.1                  631   0.0.0.0             0   LISTEN           0           
+tcp        127.0.0.1                39455   0.0.0.0             0   LISTEN           0           
+tcp        192.168.1.14             52980   $IP               443   ESTABLISHED   1000   16175   firefox
+tcp        192.168.1.14             39390   $IP               443   ESTABLISHED   1000   16175   firefox
+tcp        192.168.1.14             49640   $IP              8008   ESTABLISHED   1000    6504   chrome
+tcp        192.168.1.14             39220   $IP               443   TIME_WAIT        0           
+tcp        192.168.1.14             47420   $IP               443   ESTABLISHED   1000    6504   chrome
+tcp        192.168.1.14             51424   $IP               443   ESTABLISHED   1000    6504   chrome
+tcp        192.168.1.14             58330   $IP               443   ESTABLISHED   1000   16175   firefox
+tcp        192.168.1.14             48254   $IP              8009   SYN_SENT      1000    6504   chrome
+tcp        192.168.1.14             43784   $IP               443   TIME_WAIT        0           
+tcp        192.168.1.14             54018   $IP               443   ESTABLISHED   1000    6504   chrome
+tcp        192.168.1.14             48250   $IP              8009   FIN_WAIT1        0           
+tcp        ::1                        631   ::                  0   LISTEN           0           
+tcp        ::ffff:192.168.0.14      37610   ::ffff:$IP         80   CLOSE_WAIT    1000   27184   WebKitWebProces
+tcp        ::ffff:192.168.0.14      37610   ::ffff:$IP         80   CLOSE_WAIT    1000    8337   java
+udp        127.0.0.53                  53   0.0.0.0             0                  102           
+udp        0.0.0.0                     68   0.0.0.0             0                    0           
+udp        0.0.0.0                    631   0.0.0.0             0                    0           
+udp        224.0.0.251               5353   0.0.0.0             0                 1000    6504   chrome
+udp        224.0.0.251               5353   0.0.0.0             0                 1000    6470   chrome
+udp        224.0.0.251               5353   0.0.0.0             0                 1000    6504   chrome
+udp        0.0.0.0                   5353   0.0.0.0             0                  107           
+udp        0.0.0.0                  46599   0.0.0.0             0                  107           
+udp        ::                       59934   ::                  0                  107           
+udp        ::                        5353   ::                  0                  107           
+raw        ::                          58   ::                  0                    0           
 
 ```
 
