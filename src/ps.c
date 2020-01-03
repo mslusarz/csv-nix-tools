@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -191,32 +191,6 @@ struct proc_data {
 	struct timespec start_time_ts;
 	struct timespec age_ts;
 };
-
-static void
-print_size_human(size_t size)
-{
-	if (size < 10 * 1024) {
-		printf("%lu B", size);
-		return;
-	}
-	size /= 1024;
-	if (size < 10 * 1024) {
-		printf("%lu KiB", size);
-		return;
-	}
-	size /= 1024;
-	if (size < 10 * 1024) {
-		printf("%lu MiB", size);
-		return;
-	}
-	size /= 1024;
-	if (size < 10 * 1024) {
-		printf("%lu GiB", size);
-		return;
-	}
-	size /= 1024;
-	printf("%lu TiB", size);
-}
 
 static void
 print_tid(const void *p)
@@ -537,10 +511,10 @@ print_vm_size_bytes(const void *p)
 }
 
 static void
-print_vm_size(const void *p)
+print_vm_size_KiB(const void *p)
 {
 	const struct proc_data *pd = p;
-	print_size_human(pd->proc->vm_size * 1024);
+	printf("%lu", pd->proc->vm_size);
 }
 
 static void
@@ -558,10 +532,10 @@ print_vm_rss_bytes(const void *p)
 }
 
 static void
-print_vm_rss(const void *p)
+print_vm_rss_KiB(const void *p)
 {
 	const struct proc_data *pd = p;
-	print_size_human(pd->proc->vm_rss * 1024);
+	printf("%lu", pd->proc->vm_rss);
 }
 
 static void
@@ -1385,8 +1359,8 @@ main(int argc, char *argv[])
 		{ true,  0, 0, "pid",           TYPE_INT,    print_tgid, DEF },
 		{ true,  0, 0, "ppid",          TYPE_INT,    print_ppid, STAT_OR_STATUS },
 		{ true,  0, 0, "%cpu",          TYPE_INT,    print_cpu_percent, STAT | AGE },
-		{ true,  0, 0, "vm_size",       TYPE_STRING, print_vm_size, STATUS },
-		{ true,  0, 0, "vm_rss",        TYPE_STRING, print_vm_rss, STATUS },
+		{ true,  0, 0, "vm_size_KiB",   TYPE_INT,    print_vm_size_KiB, STATUS },
+		{ true,  0, 0, "vm_rss_KiB",    TYPE_INT,    print_vm_rss_KiB, STATUS },
 		{ true,  0, 0, "tty_id",        TYPE_INT,    print_tty_id, STAT },
 		{ true,  0, 0, "state",         TYPE_STRING, print_state, STAT_OR_STATUS },
 		{ true,  0, 0, "start_time",    TYPE_STRING, print_start_time, STAT | START_TIME },
