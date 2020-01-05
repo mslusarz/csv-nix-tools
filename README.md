@@ -438,7 +438,9 @@ raw        ::                          58   ::                  0               
 - fuzzing
 
 # TODO (low level)
-- sql, exec: add support for tables
+- add-sql
+- add-*: add --table parameter
+- source-tools: add option to add and remove columns
 - header: implement add, add-types, change-type, guess-type, remove-types, rename
 - ps: lots of work, detailed in ps.c
 - show: ability to lock columns (make them always visible)
@@ -449,6 +451,7 @@ raw        ::                          58   ::                  0               
 - netstat: translate interface number to interface name
 - netstat: figure out how to print inet\_diag\_info
 - rpn/sql: binary number parsing
+- sql, exec: add support for tables
 - write down data format spec
 - strict column name verification
 
