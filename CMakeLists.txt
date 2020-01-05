@@ -203,12 +203,16 @@ if (BISON_FOUND AND FLEX_FOUND)
 	configure_file(${CMAKE_SOURCE_DIR}/src/sql.y.in ${CMAKE_CURRENT_BINARY_DIR}/sql.y)
 	set(PROG condition)
 	configure_file(${CMAKE_SOURCE_DIR}/src/sql.y.in ${CMAKE_CURRENT_BINARY_DIR}/grep-sql.y)
+	set(PROG columns-exprs)
+	configure_file(${CMAKE_SOURCE_DIR}/src/sql.y.in ${CMAKE_CURRENT_BINARY_DIR}/add-sql.y)
 
 	FLEX_TARGET(SQLLexer src/sql.l ${CMAKE_CURRENT_BINARY_DIR}/sql_lexer.c)
 	BISON_TARGET(SQLParser ${CMAKE_CURRENT_BINARY_DIR}/sql.y ${CMAKE_CURRENT_BINARY_DIR}/sql_parser.c)
 	BISON_TARGET(GREPSQLParser ${CMAKE_CURRENT_BINARY_DIR}/grep-sql.y ${CMAKE_CURRENT_BINARY_DIR}/grep-sql_parser.c
 			COMPILE_FLAGS -Wno-other) # -Wno-other to quiet down wanings about unused rules which *are* used in the full parser
-	ADD_FLEX_BISON_DEPENDENCY(SQLLexer SQLParser GREPSQLParser)
+	BISON_TARGET(ADDSQLParser ${CMAKE_CURRENT_BINARY_DIR}/add-sql.y ${CMAKE_CURRENT_BINARY_DIR}/add-sql_parser.c
+			COMPILE_FLAGS -Wno-other) # -Wno-other to quiet down wanings about unused rules which *are* used in the full parser
+	ADD_FLEX_BISON_DEPENDENCY(SQLLexer SQLParser GREPSQLParser ADDSQLParser)
 
 	build_tool(csv-sql src/sql.c
 			${BISON_SQLParser_OUTPUTS}
@@ -218,15 +222,23 @@ if (BISON_FOUND AND FLEX_FOUND)
 			${BISON_GREPSQLParser_OUTPUTS}
 			${FLEX_SQLLexer_OUTPUTS})
 
+	build_tool(csv-add-sql src/add-sql.c
+			${BISON_ADDSQLParser_OUTPUTS}
+			${FLEX_SQLLexer_OUTPUTS})
+
 	target_include_directories(csv-sql PRIVATE src)
 	target_include_directories(csv-grep-sql PRIVATE src)
+	target_include_directories(csv-add-sql PRIVATE src)
 
 	target_link_libraries(csv-sql ${FLEX_LIBRARIES})
 	target_link_libraries(csv-grep-sql ${FLEX_LIBRARIES})
+	target_link_libraries(csv-add-sql ${FLEX_LIBRARIES})
+
 	target_link_libraries(csv-sql csvrpn)
 	target_link_libraries(csv-grep-sql csvrpn)
+	target_link_libraries(csv-add-sql csvrpn)
 else()
-	message(WARNING "bison or flex not found. csv-sql and csv-grep-sql won't be built.")
+	message(WARNING "bison or flex not found. csv-sql, csv-grep-sql and csv-add-sql won't be built.")
 endif()
 
 if(LIBPROCPS_FOUND)

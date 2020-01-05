@@ -50,6 +50,7 @@ Filtering/processing:
 - csv-add-rev - adds a new column by reversing another column characterwise
 - csv-add-rpn - adds a new column from RPN expression
 - csv-add-split - adds two new columns by splitting another one using a delimiter
+- csv-add-sql - adds a new column from SQL expression
 - csv-add-substring - adds a new column by extracting a substring of another column
 - csv-avg - takes an average of numerical column(s)
 - csv-cat - concatenates multiple csv files
@@ -281,6 +282,14 @@ sum(size):int,sum(blocks):int,sum(space_used):int
 109679,288,147456
 ```
 
+or
+
+```
+$ csv-ls -c size,blocks | csv-add-sql -e "blocks * 512 AS space_used" |
+csv-sum -c size,blocks,space_used
+...
+```
+
 List of files whose size is between 2000 and 3000 bytes (from the slowest to the fastest method):
 
 ```
@@ -438,7 +447,6 @@ raw        ::                          58   ::                  0               
 - fuzzing
 
 # TODO (low level)
-- add-sql
 - add-*: add --table parameter
 - source-tools: add option to add and remove columns
 - header: implement add, add-types, change-type, guess-type, remove-types, rename

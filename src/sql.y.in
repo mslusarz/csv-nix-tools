@@ -64,10 +64,13 @@ column:
 	| expr AS LITERAL		{ sql_named_column_done($3); }
 	| expr AS STRING		{ sql_named_column_done($3); }
 
+columns-exprs:
+	column
+	| columns-exprs COMMA column
+
 columns:
 	MUL			{ sql_all_columns(); }
-	| column
-	| columns COMMA column
+	| columns-exprs
 
 table: STRING { dbg_printf("BISON: table '%s'\n", $1); sql_from($1); }
 

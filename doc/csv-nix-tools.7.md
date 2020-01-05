@@ -30,6 +30,7 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 - **csv-add-rev**(1)
 - **csv-add-rpn**(1)
 - **csv-add-split**(1)
+- **csv-add-sql**(1)
 - **csv-add-substring**(1)
 - **csv-avg**(1)
 - **csv-cat**(1) - concatenate CSV files and print on the standard output
