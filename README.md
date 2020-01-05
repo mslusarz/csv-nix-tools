@@ -17,8 +17,8 @@ are welcomed.
 - cmake >= 3.3
 - glibc-devel
 - sqlite >= 3 (optional, required by csv-sqlite)
-- flex (optional, required by csv-sql)
-- bison (optional, required by csv-sql)
+- flex (optional, required by csv-sql and csv-grep-sql)
+- bison (optional, required by csv-sql and csv-grep-sql)
 - libprocps (optional, required by csv-ps)
 - ncurses (optional, used by csv-show)
 - libmnl (optional, required by csv-netstat)
