@@ -225,6 +225,8 @@ if (BISON_FOUND AND FLEX_FOUND)
 	target_link_libraries(csv-grep-sql ${FLEX_LIBRARIES})
 	target_link_libraries(csv-sql csvrpn)
 	target_link_libraries(csv-grep-sql csvrpn)
+else()
+	message(WARNING "bison or flex not found. csv-sql and csv-grep-sql won't be built.")
 endif()
 
 if(LIBPROCPS_FOUND)
