@@ -309,14 +309,14 @@ $ csv-ls -c size,name | csv-sql "select size, name from input where size > 2000 
 or
 
 ```
-$ csv-ls -c size,name | csv-grep-rpn -e "%size 2000 >= %size 3000 < and"
+$ csv-ls -c size,name | csv-grep-sql -e "size > 2000 and size < 3000"
 ...
 ```
 
 or
 
 ```
-$ csv-ls -c size,name | csv-grep-sql -e "size > 2000 and size < 3000"
+$ csv-ls -c size,name | csv-grep-rpn -e "%size 2000 >= %size 3000 < and"
 ...
 ```
 
