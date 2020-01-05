@@ -29,6 +29,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+if (BISON_FOUND AND FLEX_FOUND)
+
 test("csv-grep-sql -e 'id == 2'" data/3-columns-3-rows.csv data/rpn-filter-row-2.csv data/empty.txt 0
 	grep-sql_eq)
 
@@ -260,3 +262,5 @@ test("csv-grep-sql -e 'substr(name, 2, -1) == name'" data/3-columns-3-rows.csv d
 
 test("csv-grep-sql -T t1 -e \"name like '%or%'\"" grep-rpn/2-tables.csv grep-rpn/2-tables-t1-or.csv data/empty.txt 0
 	grep-sql_-T_t1_-e_name_or_like)
+
+endif(BISON_FOUND AND FLEX_FOUND)
