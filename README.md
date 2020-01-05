@@ -57,6 +57,7 @@ Filtering/processing:
 - csv-cut - removes columns and reorders them
 - csv-grep - filters rows matching a pattern
 - csv-grep-rpn - filters rows using RPN expression
+- csv-grep-sql - filters rows using SQL expression
 - csv-head - outputs the first N rows
 - csv-header - processes data header
 - csv-max - takes a maximum value of numerical or string column(s)
@@ -309,6 +310,13 @@ or
 
 ```
 $ csv-ls -c size,name | csv-grep-rpn -e "%size 2000 >= %size 3000 < and"
+...
+```
+
+or
+
+```
+$ csv-ls -c size,name | csv-grep-sql -e "size > 2000 and size < 3000"
 ...
 ```
 

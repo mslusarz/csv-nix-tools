@@ -199,18 +199,32 @@ find_package(BISON)
 find_package(FLEX)
 
 if (BISON_FOUND AND FLEX_FOUND)
+	set(PROG query)
+	configure_file(${CMAKE_SOURCE_DIR}/src/sql.y.in ${CMAKE_CURRENT_BINARY_DIR}/sql.y)
+	set(PROG condition)
+	configure_file(${CMAKE_SOURCE_DIR}/src/sql.y.in ${CMAKE_CURRENT_BINARY_DIR}/grep-sql.y)
+
 	FLEX_TARGET(SQLLexer src/sql.l ${CMAKE_CURRENT_BINARY_DIR}/sql_lexer.c)
-	BISON_TARGET(SQLParser src/sql.y ${CMAKE_CURRENT_BINARY_DIR}/sql_parser.c)
-	ADD_FLEX_BISON_DEPENDENCY(SQLLexer SQLParser)
+	BISON_TARGET(SQLParser ${CMAKE_CURRENT_BINARY_DIR}/sql.y ${CMAKE_CURRENT_BINARY_DIR}/sql_parser.c)
+	BISON_TARGET(GREPSQLParser ${CMAKE_CURRENT_BINARY_DIR}/grep-sql.y ${CMAKE_CURRENT_BINARY_DIR}/grep-sql_parser.c
+			COMPILE_FLAGS -Wno-other) # -Wno-other to quiet down wanings about unused rules which *are* used in the full parser
+	ADD_FLEX_BISON_DEPENDENCY(SQLLexer SQLParser GREPSQLParser)
 
 	build_tool(csv-sql src/sql.c
 			${BISON_SQLParser_OUTPUTS}
 			${FLEX_SQLLexer_OUTPUTS})
 
+	build_tool(csv-grep-sql src/grep-sql.c
+			${BISON_GREPSQLParser_OUTPUTS}
+			${FLEX_SQLLexer_OUTPUTS})
+
 	target_include_directories(csv-sql PRIVATE src)
+	target_include_directories(csv-grep-sql PRIVATE src)
 
 	target_link_libraries(csv-sql ${FLEX_LIBRARIES})
+	target_link_libraries(csv-grep-sql ${FLEX_LIBRARIES})
 	target_link_libraries(csv-sql csvrpn)
+	target_link_libraries(csv-grep-sql csvrpn)
 endif()
 
 if(LIBPROCPS_FOUND)

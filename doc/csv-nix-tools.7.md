@@ -38,6 +38,7 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 - **csv-env**(1)
 - **csv-grep**(1)
 - **csv-grep-rpn**(1)
+- **csv-grep-sql**(1)
 - **csv-head**(1) - print on the standard output the beginning of a CSV file from standard input
 - **csv-header**(1)
 - **csv-max**(1)

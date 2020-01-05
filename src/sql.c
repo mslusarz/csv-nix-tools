@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -126,71 +126,9 @@ next_row(const char *buf, const size_t *col_offs,
 	return 0;
 }
 
-static const struct col_header *Headers;
-static size_t Nheaders;
-static struct rpn_token *Tokens;
-static size_t Ntokens;
 static struct cb_params Params;
 
-void
-sql_stack_push(const struct rpn_token *token)
-{
-	Tokens = xrealloc_nofail(Tokens, Ntokens + 1, sizeof(Tokens[0]));
-
-	Tokens[Ntokens++] = *token;
-}
-
-void
-sql_stack_push_string(char *str)
-{
-	struct rpn_token tk;
-
-	tk.type = RPN_COLUMN;
-	tk.colnum = csv_find(Headers, Nheaders, str);
-
-	if (tk.colnum == CSV_NOT_FOUND) {
-		fprintf(stderr, "column '%s' not found\n", str);
-		exit(2);
-	}
-
-	sql_stack_push(&tk);
-
-	free(str);
-}
-
-void
-sql_stack_push_llong(long long l)
-{
-	struct rpn_token tk;
-
-	tk.type = RPN_CONSTANT;
-	tk.constant.type = RPN_LLONG;
-	tk.constant.llong = l;
-
-	sql_stack_push(&tk);
-}
-
-void
-sql_stack_push_literal(char *str)
-{
-	struct rpn_token tk;
-
-	tk.type = RPN_CONSTANT;
-	tk.constant.type = RPN_PCHAR;
-	tk.constant.pchar = str;
-
-	sql_stack_push(&tk);
-}
-
-void
-sql_stack_push_op(enum rpn_operator op)
-{
-	struct rpn_token tk;
-	tk.type = RPN_OPERATOR;
-	tk.operator = op;
-
-	sql_stack_push(&tk);
-}
+#include "sql-shared.h"
 
 void
 sql_column_done(void)
