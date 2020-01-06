@@ -41,6 +41,9 @@ test("csv-add-substring -c name -n last_char -p -1 -l 1"
 	data/3-columns-3-rows.csv add-substring/p-1.csv data/empty.txt 0
 	add-substring_p_1)
 
+test("csv-add-substring -T t1 -c name -p 2 -l 4 -n substr" add-substring/2-tables.csv add-substring/2-tables-add1.csv data/empty.txt 0
+	add-substring_2tables-add1)
+
 test("csv-add-substring --help" data/empty.csv add-substring/help.txt data/empty.txt 2
 	add-substring_help)
 
