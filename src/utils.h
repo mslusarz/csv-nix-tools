@@ -85,6 +85,8 @@ size_t csv_find_by_table(const struct col_header *headers, size_t nheaders,
 		const char *table, const char *column);
 size_t csv_find_loud(const struct col_header *headers, size_t nheaders,
 		const char *table, const char *column);
+void csv_column_doesnt_exist(const struct col_header *headers, size_t nheaders,
+		const char *table, const char *column);
 
 void csv_print_table_func_header(const struct col_header *h, const char *func,
 		const char *table, size_t table_len, char sep);

@@ -432,6 +432,28 @@ csv_find_loud(const struct col_header *headers, size_t nheaders,
 }
 
 void
+csv_column_doesnt_exist(const struct col_header *headers, size_t nheaders,
+		const char *table, const char *column)
+{
+	size_t ret;
+	if (table)
+		ret = csv_find_by_table(headers, nheaders, table, column);
+	else
+		ret = csv_find(headers, nheaders, column);
+
+	if (ret != CSV_NOT_FOUND) {
+		if (table) {
+			fprintf(stderr, "column '%s%c%s' already exists\n",
+				table, TABLE_SEPARATOR, column);
+		} else {
+			fprintf(stderr, "column '%s' already exists\n", column);
+		}
+
+		exit(2);
+	}
+}
+
+void
 csv_print_table_func_header(const struct col_header *h, const char *func,
 		const char *table, size_t table_len, char sep)
 {

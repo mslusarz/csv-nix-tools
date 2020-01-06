@@ -99,6 +99,8 @@ sql_column_done(void)
 		exit(2);
 	}
 
+	csv_column_doesnt_exist(Headers, Nheaders, Table, New_name);
+
 	Params.columns = xrealloc_nofail(Params.columns,
 			Params.columns_count + 1,
 			sizeof(Params.columns[0]));
@@ -134,6 +136,8 @@ sql_named_column_done(char *name)
 			New_name, name);
 		exit(2);
 	}
+
+	csv_column_doesnt_exist(Headers, Nheaders, Table, name);
 
 	Params.columns = xrealloc_nofail(Params.columns,
 			Params.columns_count + 1,
