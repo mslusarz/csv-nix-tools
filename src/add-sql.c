@@ -30,6 +30,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/* for asprintf */
+#define _GNU_SOURCE
+
 #include <assert.h>
 #include <getopt.h>
 #include <stdbool.h>
@@ -45,6 +48,7 @@
 static const struct option opts[] = {
 	{"show",		no_argument,		NULL, 's'},
 	{"show-full",		no_argument,		NULL, 'S'},
+	{"table",		required_argument,	NULL, 'T'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{NULL,			0,			NULL, 0},
@@ -59,6 +63,7 @@ usage(FILE *out)
 	fprintf(out, "  -e SQL_expression\n");
 	describe_Show(out);
 	describe_Show_full(out);
+	describe_Table(out);
 	describe_help(out);
 	describe_version(out);
 }
@@ -71,6 +76,9 @@ struct column {
 struct cb_params {
 	struct column *columns;
 	size_t columns_count;
+
+	size_t table_column;
+	char *table;
 };
 
 #include "sql-shared.h"
@@ -97,7 +105,15 @@ sql_column_done(void)
 	struct column *col = &Params.columns[Params.columns_count];
 
 	col->expr = exp;
-	col->name = New_name;
+	if (Table) {
+		if (asprintf(&col->name, "%s.%s", Table, New_name) < 0) {
+			perror("asprintf");
+			exit(2);
+		}
+		free(New_name);
+	} else {
+		col->name = New_name;
+	}
 
 	Params.columns_count++;
 	Tokens = NULL;
@@ -125,7 +141,15 @@ sql_named_column_done(char *name)
 
 	struct column *col = &Params.columns[Params.columns_count];
 	col->expr = exp;
-	col->name = name;
+	if (Table) {
+		if (asprintf(&col->name, "%s.%s", Table, name) < 0) {
+			perror("asprintf");
+			exit(2);
+		}
+		free(name);
+	} else {
+		col->name = name;
+	}
 
 	Params.columns_count++;
 	Tokens = NULL;
@@ -160,6 +184,20 @@ next_row(const char *buf, const size_t *col_offs,
 {
 	struct cb_params *params = arg;
 	struct rpn_expression *exp;
+
+	if (params->table) {
+		const char *table = &buf[col_offs[params->table_column]];
+		if (strcmp(table, params->table) != 0) {
+			csv_print_line(stdout, buf, col_offs, nheaders, false);
+
+			for (size_t i = 0; i < params->columns_count; ++i)
+				putchar(',');
+
+			putchar('\n');
+
+			return 0;
+		}
+	}
 
 	csv_print_line(stdout, buf, col_offs, nheaders, false);
 	fputc(',', stdout);
@@ -199,8 +237,10 @@ main(int argc, char *argv[])
 
 	Params.columns = NULL;
 	Params.columns_count = 0;
+	Params.table = NULL;
+	Params.table_column = SIZE_MAX;
 
-	while ((opt = getopt_long(argc, argv, "e:n:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "e:n:sST:", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'e': {
 				names = xrealloc_nofail(names, nexpressions + 1,
@@ -228,6 +268,9 @@ main(int argc, char *argv[])
 				show = true;
 				show_full = true;
 				break;
+			case 'T':
+				Params.table = xstrdup_nofail(optarg);
+				break;
 			case 'V':
 				printf("git\n");
 				return 0;
@@ -254,6 +297,15 @@ main(int argc, char *argv[])
 
 	Nheaders = csv_get_headers(s, &Headers);
 
+	if (Params.table) {
+		Params.table_column = csv_find(Headers, Nheaders, TABLE_COLUMN);
+		if (Params.table_column == CSV_NOT_FOUND) {
+			fprintf(stderr, "column %s not found\n", TABLE_COLUMN);
+			exit(2);
+		}
+	}
+
+	Table = Params.table;
 	for (size_t i = 0; i < nexpressions; ++i) {
 		FILE *in = fmemopen(expressions[i], strlen(expressions[i]), "r");
 		if (!in) {
@@ -271,6 +323,7 @@ main(int argc, char *argv[])
 
 		assert(New_name == NULL);
 	}
+	Table = NULL;
 
 	for (size_t i = 0; i < nexpressions; ++i)
 		free(expressions[i]);
@@ -295,6 +348,7 @@ main(int argc, char *argv[])
 	}
 
 	free(Params.columns);
+	free(Params.table);
 
 	return 0;
 }

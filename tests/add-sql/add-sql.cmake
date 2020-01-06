@@ -172,6 +172,12 @@ test("csv-add-sql -n str1_like_%12 -e \"str1 like '%12'\"\
 #	data/rpn-add-num-base.csv data/rpn-add-convert.csv data/empty.txt 0
 #	add-sql_str_to_int)
 
+test("csv-add-sql -T t1 -n name_len -e 'length(name)'" add-sql/2-tables.csv add-sql/2-tables-add1.csv data/empty.txt 0
+	add-sql_2tables-add1)
+
+test("csv-add-sql -T t2 -n name_plus_id_squared -e 'name || tostring(id * id)'" add-sql/2-tables.csv add-sql/2-tables-add2.csv data/empty.txt 0
+	add-sql_2tables-add2)
+
 test("csv-add-sql --help" data/empty.csv add-sql/help.txt data/empty.txt 2
 	add-sql_help)
 
