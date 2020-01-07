@@ -41,6 +41,9 @@ test("csv-add-rev -c id -n id-reversed"
 	data/3-columns-3-rows.csv data/empty.txt add-rev/rev-int.txt 2
 	add-rev_int)
 
+test("csv-add-rev -T t1 -c name -n rev-name" add-rev/2-tables.csv add-rev/2-tables-add1.csv data/empty.txt 0
+	add-rev_2tables-add1)
+
 test("csv-add-rev --help" data/empty.csv add-rev/help.txt data/empty.txt 2
 	add-rev_help)
 
