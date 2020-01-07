@@ -1,0 +1,6 @@
+_table:string,t1.name:string,t1.id:int,t1.something:int,t2.id:int,t2.name:string,t2.concat:string
+t1,lorem ipsum,1,1,,,
+t2,,,,7,aaa,aaa7
+t1,not all that is gold,2,0,,,
+t2,,,,9,bbb,bbb9
+t1,something else,3,1,,,

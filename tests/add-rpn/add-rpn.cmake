@@ -1,5 +1,5 @@
 #
-# Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -166,6 +166,12 @@ test("csv-add-rpn -n str_to_int -e '%str toint'\
 		  -n num_to_string16 -e '%num tostring_base16'"
 	data/rpn-add-num-base.csv data/rpn-add-convert.csv data/empty.txt 0
 	add-rpn_str_to_int)
+
+test("csv-add-rpn -T t1 -n concat -e '%name %id tostring concat'" add-rpn/2-tables.csv add-rpn/2-tables-add1.csv data/empty.txt 0
+	add-rpn_2tables-add1)
+
+test("csv-add-rpn -T t2 -n concat -e '%name %id tostring concat'" add-rpn/2-tables.csv add-rpn/2-tables-add2.csv data/empty.txt 0
+	add-rpn_2tables-add2)
 
 test("csv-add-rpn --help" data/empty.csv add-rpn/help.txt data/empty.txt 2
 	add-rpn_help)

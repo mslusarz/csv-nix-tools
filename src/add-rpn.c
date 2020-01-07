@@ -43,6 +43,7 @@
 static const struct option opts[] = {
 	{"show",		no_argument,		NULL, 's'},
 	{"show-full",		no_argument,		NULL, 'S'},
+	{"table",		required_argument,	NULL, 'T'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{NULL,			0,			NULL, 0},
@@ -57,6 +58,7 @@ usage(FILE *out)
 	fprintf(out, "  -e RPN_expression\n");
 	describe_Show(out);
 	describe_Show_full(out);
+	describe_Table(out);
 	describe_help(out);
 	describe_version(out);
 	fprintf(out, "\n");
@@ -112,6 +114,9 @@ usage(FILE *out)
 struct cb_params {
 	struct rpn_expression *expressions;
 	size_t count;
+
+	size_t table_column;
+	char *table;
 };
 
 static void
@@ -143,6 +148,18 @@ next_row(const char *buf, const size_t *col_offs,
 	struct cb_params *params = arg;
 	struct rpn_expression *exp;
 
+	if (params->table) {
+		const char *table = &buf[col_offs[params->table_column]];
+		if (strcmp(table, params->table) != 0) {
+			csv_print_line(stdout, buf, col_offs, nheaders, false);
+
+			putchar(',');
+			putchar('\n');
+
+			return 0;
+		}
+	}
+
 	csv_print_line(stdout, buf, col_offs, nheaders, false);
 	fputc(',', stdout);
 
@@ -172,8 +189,10 @@ main(int argc, char *argv[])
 	char *new_column = NULL;
 
 	memset(&params, 0, sizeof(params));
+	params.table = NULL;
+	params.table_column = SIZE_MAX;
 
-	while ((opt = getopt_long(argc, argv, "e:n:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "e:n:sST:", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'e': {
 				if (!new_column) {
@@ -204,6 +223,9 @@ main(int argc, char *argv[])
 			case 'S':
 				show = true;
 				show_full = true;
+				break;
+			case 'T':
+				params.table = xstrdup_nofail(optarg);
 				break;
 			case 'V':
 				printf("git\n");
@@ -236,23 +258,36 @@ main(int argc, char *argv[])
 	params.expressions = xcalloc_nofail(nexpressions, sizeof(params.expressions[0]));
 
 	for (size_t i = 0; i < nexpressions; ++i) {
-		if (csv_find(headers, nheaders, names[i]) != CSV_NOT_FOUND) {
-			fprintf(stderr, "column '%s' already exists in input\n",
-					names[i]);
-			exit(2);
-		}
+		csv_column_doesnt_exist(headers, nheaders, params.table, names[i]);
 
 		struct rpn_expression *exp = &params.expressions[i];
-		if (rpn_parse(exp, expressions[i], headers, nheaders, NULL))
+		if (rpn_parse(exp, expressions[i], headers, nheaders, params.table))
 			exit(2);
+	}
+
+	if (params.table) {
+		params.table_column = csv_find(headers, nheaders, TABLE_COLUMN);
+		if (params.table_column == CSV_NOT_FOUND) {
+			fprintf(stderr, "column %s not found\n", TABLE_COLUMN);
+			exit(2);
+		}
 	}
 
 	for (size_t i = 0; i < nheaders; ++i)
 		printf("%s:%s,", headers[i].name, headers[i].type);
-	for (size_t i = 0; i < nexpressions - 1; ++i)
+
+	for (size_t i = 0; i < nexpressions - 1; ++i) {
+		if (params.table)
+			printf("%s.", params.table);
+
 		printf("%s:%s,", names[i],
 			rpn_expression_type(&params.expressions[i],
 					headers));
+	}
+
+	if (params.table)
+		printf("%s.", params.table);
+
 	printf("%s:%s\n", names[nexpressions - 1],
 		rpn_expression_type(&params.expressions[nexpressions - 1],
 					headers));
@@ -273,6 +308,7 @@ main(int argc, char *argv[])
 		rpn_free(&params.expressions[i]);
 
 	free(params.expressions);
+	free(params.table);
 
 	return 0;
 }
