@@ -111,13 +111,13 @@ test("csv-cut --columns=name,id,something" data/3-different-order-columns-3-rows
 	cut_3_fields_in_different_order_using_--columns_with_=)
 
 
-test("csv-cut -T t1 -c id,something" cut/2-tables.csv cut/2-tables-cut1.csv data/empty.txt 0
+test("csv-cut -T t1 -c id,something" data/2-tables.csv cut/2-tables-cut1.csv data/empty.txt 0
 	cut-2tables-cut1)
 
-test("csv-cut -T t2 -c id" cut/2-tables.csv cut/2-tables-cut2.csv data/empty.txt 0
+test("csv-cut -T t2 -c id" data/2-tables.csv cut/2-tables-cut2.csv data/empty.txt 0
 	cut-2tables-cut2)
 
-test("csv-cut -T t1 -r -c id" cut/2-tables.csv cut/2-tables-cut3.csv data/empty.txt 0
+test("csv-cut -T t1 -r -c id" data/2-tables.csv cut/2-tables-cut3.csv data/empty.txt 0
 	cut-2tables-cut3)
 
 test("csv-cut --help" data/empty.csv cut/help.txt data/empty.txt 2

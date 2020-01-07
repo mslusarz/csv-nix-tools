@@ -44,10 +44,10 @@ test("csv-min -c col3,col1 -s" data/3-numeric-columns-4-rows.csv min/2-columns.t
 test("csv-min -c col1,col2,col3,col4" data/text1.csv min/text1.csv data/empty.txt 0
 	min-text1)
 
-test("csv-min -T t1 -c id,something" min/2-tables.csv min/2-tables-min1.csv data/empty.txt 0
+test("csv-min -T t1 -c id,something" data/2-tables.csv min/2-tables-min1.csv data/empty.txt 0
 	min-2tables-min1)
 
-test("csv-min -T t2 -c id" min/2-tables.csv min/2-tables-min2.csv data/empty.txt 0
+test("csv-min -T t2 -c id" data/2-tables.csv min/2-tables-min2.csv data/empty.txt 0
 	min-2tables-min2)
 
 test("csv-min --help" data/empty.csv min/help.txt data/empty.txt 2

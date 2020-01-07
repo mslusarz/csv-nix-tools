@@ -44,10 +44,10 @@ test("csv-max -c col3,col1 -s" data/3-numeric-columns-4-rows.csv max/2-columns.t
 test("csv-max -c col1,col2,col3,col4" data/text1.csv max/text1.csv data/empty.txt 0
 	max-text1)
 
-test("csv-max -T t1 -c id,something" max/2-tables.csv max/2-tables-max1.csv data/empty.txt 0
+test("csv-max -T t1 -c id,something" data/2-tables.csv max/2-tables-max1.csv data/empty.txt 0
 	max-2tables-max1)
 
-test("csv-max -T t2 -c id" max/2-tables.csv max/2-tables-max2.csv data/empty.txt 0
+test("csv-max -T t2 -c id" data/2-tables.csv max/2-tables-max2.csv data/empty.txt 0
 	max-2tables-max2)
 
 test("csv-max --help" data/empty.csv max/help.txt data/empty.txt 2

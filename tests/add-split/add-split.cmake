@@ -41,7 +41,7 @@ test("csv-add-split -c column3 -n before,after -e, -s"
 	data/commas.csv add-split/commas.txt data/empty.txt 0
 	add-split_commas_-s)
 
-test("csv-add-split -T t1 -c name -e ' ' -n first_word,rest" add-split/2-tables.csv add-split/2-tables-add1.csv data/empty.txt 0
+test("csv-add-split -T t1 -c name -e ' ' -n first_word,rest" data/2-tables.csv add-split/2-tables-add1.csv data/empty.txt 0
 	add-split_2tables-add1)
 
 test("csv-add-split --help" data/empty.csv add-split/help.txt data/empty.txt 2

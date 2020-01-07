@@ -47,10 +47,10 @@ test("csv-sum -c col1,col2,col3,col4" data/text1.csv sum/text1.csv data/empty.tx
 test("csv-sum --separator=, -c col1,col2,col3,col4" data/text1.csv sum/text2.csv data/empty.txt 0
 	sum-text2)
 
-test("csv-sum -T t1 -c id,something" sum/2-tables.csv sum/2-tables-sum1.csv data/empty.txt 0
+test("csv-sum -T t1 -c id,something" data/2-tables.csv sum/2-tables-sum1.csv data/empty.txt 0
 	sum-2tables-sum1)
 
-test("csv-sum -T t2 -c id" sum/2-tables.csv sum/2-tables-sum2.csv data/empty.txt 0
+test("csv-sum -T t2 -c id" data/2-tables.csv sum/2-tables-sum2.csv data/empty.txt 0
 	sum-2tables-sum2)
 
 test("csv-sum --help" data/empty.csv sum/help.txt data/empty.txt 2

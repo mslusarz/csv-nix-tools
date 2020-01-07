@@ -167,10 +167,10 @@ test("csv-add-rpn -n str_to_int -e '%str toint'\
 	data/rpn-add-num-base.csv data/rpn-add-convert.csv data/empty.txt 0
 	add-rpn_str_to_int)
 
-test("csv-add-rpn -T t1 -n concat -e '%name %id tostring concat'" add-rpn/2-tables.csv add-rpn/2-tables-add1.csv data/empty.txt 0
+test("csv-add-rpn -T t1 -n concat -e '%name %id tostring concat'" data/2-tables.csv add-rpn/2-tables-add1.csv data/empty.txt 0
 	add-rpn_2tables-add1)
 
-test("csv-add-rpn -T t2 -n concat -e '%name %id tostring concat'" add-rpn/2-tables.csv add-rpn/2-tables-add2.csv data/empty.txt 0
+test("csv-add-rpn -T t2 -n concat -e '%name %id tostring concat'" data/2-tables.csv add-rpn/2-tables-add2.csv data/empty.txt 0
 	add-rpn_2tables-add2)
 
 test("csv-add-rpn --help" data/empty.csv add-rpn/help.txt data/empty.txt 2
