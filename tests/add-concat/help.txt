@@ -2,5 +2,6 @@ Usage: csv-add-concat [OPTION]... -- new_name = [%name|str]...
 Options:
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
+  -T, --table=name
       --help                 display this help and exit
       --version              output version information and exit

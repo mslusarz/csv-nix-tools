@@ -43,6 +43,7 @@
 static const struct option opts[] = {
 	{"show",		no_argument,		NULL, 's'},
 	{"show-full",		no_argument,		NULL, 'S'},
+	{"table",		required_argument,	NULL, 'T'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{NULL,			0,			NULL, 0},
@@ -55,6 +56,7 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	describe_Show(out);
 	describe_Show_full(out);
+	describe_Table(out);
 	describe_help(out);
 	describe_version(out);
 }
@@ -70,6 +72,9 @@ struct elem {
 struct cb_params {
 	struct elem *elements;
 	size_t count;
+
+	size_t table_column;
+	char *table;
 };
 
 static int
@@ -78,6 +83,18 @@ next_row(const char *buf, const size_t *col_offs,
 		void *arg)
 {
 	struct cb_params *params = arg;
+
+	if (params->table) {
+		const char *table = &buf[col_offs[params->table_column]];
+		if (strcmp(table, params->table) != 0) {
+			csv_print_line(stdout, buf, col_offs, nheaders, false);
+
+			putchar(',');
+			putchar('\n');
+
+			return 0;
+		}
+	}
 
 	csv_print_line(stdout, buf, col_offs, nheaders, false);
 	fputc(',', stdout);
@@ -136,8 +153,10 @@ main(int argc, char *argv[])
 	bool show_full;
 
 	memset(&params, 0, sizeof(params));
+	params.table = NULL;
+	params.table_column = SIZE_MAX;
 
-	while ((opt = getopt_long(argc, argv, "sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "sST:", opts, NULL)) != -1) {
 		switch (opt) {
 			case 's':
 				show = true;
@@ -146,6 +165,9 @@ main(int argc, char *argv[])
 			case 'S':
 				show = true;
 				show_full = true;
+				break;
+			case 'T':
+				params.table = xstrdup_nofail(optarg);
 				break;
 			case 'V':
 				printf("git\n");
@@ -191,24 +213,26 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
-	if (csv_find(headers, nheaders, new_name) != CSV_NOT_FOUND) {
-		fprintf(stderr, "column '%s' already exists in input\n",
-				new_name);
-		exit(2);
-	}
+	csv_column_doesnt_exist(headers, nheaders, params.table, new_name);
 
 	for (size_t i = 0; i < params.count; ++i) {
 		if (!params.elements[i].is_column)
 			continue;
 
-		size_t idx = csv_find(headers, nheaders, params.elements[i].str);
-		if (idx == CSV_NOT_FOUND) {
-			fprintf(stderr, "column '%s' not found in input\n",
-					params.elements[i].str);
+		size_t idx = csv_find_loud(headers, nheaders, params.table,
+				params.elements[i].str);
+		if (idx == CSV_NOT_FOUND)
 			exit(2);
-		}
 
 		params.elements[i].colnum = idx;
+	}
+
+	if (params.table) {
+		params.table_column = csv_find(headers, nheaders, TABLE_COLUMN);
+		if (params.table_column == CSV_NOT_FOUND) {
+			fprintf(stderr, "column %s not found\n", TABLE_COLUMN);
+			exit(2);
+		}
 	}
 
 	if (show)
@@ -216,6 +240,9 @@ main(int argc, char *argv[])
 
 	for (size_t i = 0; i < nheaders; ++i)
 		printf("%s:%s,", headers[i].name, headers[i].type);
+
+	if (params.table)
+		printf("%s.", params.table);
 	printf("%s:string\n", new_name);
 
 	csv_read_all_nofail(s, &next_row, &params);
@@ -223,6 +250,7 @@ main(int argc, char *argv[])
 	csv_destroy_ctx(s);
 
 	free(params.elements);
+	free(params.table);
 
 	return 0;
 }
