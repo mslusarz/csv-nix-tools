@@ -447,7 +447,6 @@ raw        ::                          58   ::                  0               
 - fuzzing
 
 # TODO (low level)
-- add-*: add --table parameter
 - source-tools: add option to add and remove columns
 - header: implement add, add-types, change-type, guess-type, remove-types, rename
 - ps: lots of work, detailed in ps.c
