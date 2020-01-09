@@ -348,7 +348,7 @@ mode   strmode     name
 or
 
 ```
-$ csv-ls -c mode,name | csv-sql "select fmt_oct(mode) as 'mode',
+$ csv-ls -c mode,name | csv-sql "select tostring(mode, 8) as 'mode',
 if (mode & 0400, 'r', '-') || if (mode & 0200, 'w', '-') || if (mode & 0100, 'x', '-') ||
 if (mode & 040,  'r', '-') || if (mode & 020,  'w', '-') || if (mode & 010,  'x', '-') ||
 if (mode & 04,   'r', '-') || if (mode & 02,   'w', '-') || if (mode & 01,   'x', '-') as 'strmode', name" -s

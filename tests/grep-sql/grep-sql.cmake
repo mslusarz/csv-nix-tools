@@ -199,17 +199,8 @@ test("csv-grep-sql -e '2 like name == name'" data/3-columns-3-rows.csv data/rpn-
 test("csv-grep-sql -e 'name like 2 == name'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/like-invalid-types.txt 2
 	grep-sql_typeerr_like_arg2)
 
-test("csv-grep-sql -e 'fmt_bin(name) == name'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/tostring-invalid-types.txt 2
-	grep-sql_typeerr_fmt_bin)
-
-test("csv-grep-sql -e 'fmt_oct(name) == name'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/tostring-invalid-types.txt 2
-	grep-sql_typeerr_fmt_oct)
-
-test("csv-grep-sql -e 'fmt_dec(name) == name'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/tostring-invalid-types.txt 2
-	grep-sql_typeerr_fmt_dec)
-
-test("csv-grep-sql -e 'fmt_hex(name) == name'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/tostring-invalid-types.txt 2
-	grep-sql_typeerr_fmt_hex)
+test("csv-grep-sql -e 'tostring(name, 2) == name'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/tostring-invalid-types.txt 2
+	grep-sql_typeerr_tostring)
 
 test("csv-grep-sql -e 'length(id) == id'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/strlen-invalid-types.txt 2
 	grep-sql_typeerr_length)

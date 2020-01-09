@@ -49,11 +49,7 @@ literal2 \"[^"]*\"
 "length"	{ dbg_printf("LEX: matching LENGTH\n"); return LENGTH; }
 "substr"	{ dbg_printf("LEX: matching SUBSTR\n"); return SUBSTR; }
 "like"		{ dbg_printf("LEX: matching LIKE\n"); return LIKE; }
-"fmt_hex"	{ dbg_printf("LEX: matching FMT_HEX\n"); return FMT_HEX; }
-"fmt_oct"	{ dbg_printf("LEX: matching FMT_OCT\n"); return FMT_OCT; }
-"fmt_dec"	{ dbg_printf("LEX: matching FMT_DEC\n"); return FMT_DEC; }
-"fmt_bin"	{ dbg_printf("LEX: matching FMT_BIN\n"); return FMT_BIN; }
-"tostring"	{ dbg_printf("LEX: matching FMT_DEC\n"); return FMT_DEC; }
+"tostring"	{ dbg_printf("LEX: matching TOSTRING\n"); return TOSTRING; }
 "("		{ dbg_printf("LEX: matching LPAREN\n"); return LPAREN; }
 ")"		{ dbg_printf("LEX: matching RPAREN\n"); return RPAREN; }
 "if"		{ dbg_printf("LEX: matching IF\n"); return IF; }
