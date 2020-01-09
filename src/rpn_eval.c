@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -40,6 +40,52 @@
 #include <string.h>
 
 #include "utils.h"
+
+static char *
+tostring(long long val, long long base)
+{
+	char *str;
+
+	if (base == 2) {
+		if (val == 0)
+			return xstrdup_nofail("0b0");
+
+		str = xmalloc_nofail(68, 1);
+		int idx = 0;
+		if (val < 0) {
+			str[idx++] = '-';
+			val = -val;
+		}
+		str[idx++] = '0';
+		str[idx++] = 'b';
+		long long msb = 1LL << (63 - __builtin_clzll(val));
+		while (msb) {
+			str[idx++] = (val & msb) ? '1' : '0';
+			msb >>= 1;
+		}
+		str[idx] = 0;
+	} else if (base == 8) {
+		if (asprintf(&str, "0%llo", val) < 0) {
+			perror("asprintf");
+			str = NULL;
+		}
+	} else if (base == 10) {
+		if (asprintf(&str, "%lld", val) < 0) {
+			perror("asprintf");
+			str = NULL;
+		}
+	} else if (base == 16) {
+		if (asprintf(&str, "0x%llx", val) < 0) {
+			perror("asprintf");
+			str = NULL;
+		}
+	} else {
+		/* not possible, checked earlier */
+		abort();
+	}
+
+	return str;
+}
 
 static int
 eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
@@ -120,17 +166,27 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 			return -1;
 		}
 		break;
-	case RPN_TOSTRING_BASE2:
-	case RPN_TOSTRING_BASE8:
-	case RPN_TOSTRING_BASE10:
-	case RPN_TOSTRING_BASE16:
-		if (height < 1) {
+	case RPN_TOSTRING:
+		if (height < 2) {
 			fprintf(stderr, "not enough stack entries\n");
 			return -1;
 		}
 
+		height--;
 		if (stack[height - 1].type != RPN_LLONG) {
 			fprintf(stderr, "tostring can operate only on numeric values\n");
+			return -1;
+		}
+
+		if (stack[height].type != RPN_LLONG) {
+			fprintf(stderr, "base must be a numeric value\n");
+			return -1;
+		}
+
+		if (stack[height].llong != 2 && stack[height].llong != 8 &&
+				stack[height].llong != 10 && stack[height].llong != 16) {
+			fprintf(stderr,
+				"base must be one of these values: 2, 8, 10, 16\n");
 			return -1;
 		}
 
@@ -384,64 +440,12 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 
 		break;
 	}
-	case RPN_TOSTRING_BASE2: {
-		long long l = stack[height - 1].llong;
-		if (!l) {
-			stack[height - 1].type = RPN_PCHAR;
-			stack[height - 1].pchar = xstrdup_nofail("0b0");
-			break;
-		}
-
-		char *buf = xmalloc_nofail(68, 1);
-		int idx = 0;
-		if (stack[height - 1].llong < 0) {
-			buf[idx++] = '-';
-			l = -l;
-		}
-		buf[idx++] = '0';
-		buf[idx++] = 'b';
-		long long msb = 1LL << (63 - __builtin_clzll(l));
-		while (msb) {
-			buf[idx++] = (l & msb) ? '1' : '0';
-			msb >>= 1;
-		}
-		buf[idx] = 0;
-
-		stack[height - 1].type = RPN_PCHAR;
-		stack[height - 1].pchar = buf;
-
-		break;
-	}
-	case RPN_TOSTRING_BASE8: {
-		char *str;
-		if (asprintf(&str, "0%llo", stack[height - 1].llong) < 0) {
-			perror("asprintf");
+	case RPN_TOSTRING: {
+		long long val = stack[height - 1].llong;
+		long long base = stack[height].llong;
+		char *str = tostring(val, base);
+		if (!str)
 			return -1;
-		}
-
-		stack[height - 1].type = RPN_PCHAR;
-		stack[height - 1].pchar = str;
-
-		break;
-	}
-	case RPN_TOSTRING_BASE10: {
-		char *str;
-		if (asprintf(&str, "%lld", stack[height - 1].llong) < 0) {
-			perror("asprintf");
-			return -1;
-		}
-
-		stack[height - 1].type = RPN_PCHAR;
-		stack[height - 1].pchar = str;
-
-		break;
-	}
-	case RPN_TOSTRING_BASE16: {
-		char *str;
-		if (asprintf(&str, "0x%llx", stack[height - 1].llong) < 0) {
-			perror("asprintf");
-			return -1;
-		}
 
 		stack[height - 1].type = RPN_PCHAR;
 		stack[height - 1].pchar = str;

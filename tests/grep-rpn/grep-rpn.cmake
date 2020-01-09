@@ -121,7 +121,7 @@ test("csv-grep-rpn -e \"%name '%ing|%' like\"" grep-rpn/special-chars.csv grep-r
 test("csv-grep-rpn -e \"%name '.suffix' concat 'lorem ipsum.suffix' ==\"" data/3-columns-3-rows.csv data/rpn-filter-row-1.csv data/empty.txt 0
 	grep-rpn_concat)
 
-test("csv-grep-rpn -e \"%id tostring '2' ==\"" data/3-columns-3-rows.csv data/rpn-filter-row-2.csv data/empty.txt 0
+test("csv-grep-rpn -e \"%id 10 tostring '2' ==\"" data/3-columns-3-rows.csv data/rpn-filter-row-2.csv data/empty.txt 0
 	grep-rpn_tostring)
 
 test("csv-grep-rpn --help" data/empty.csv grep-rpn/help.txt data/empty.txt 2
@@ -185,17 +185,17 @@ test("csv-grep-rpn -e '%name concat %name =='" data/3-columns-3-rows.csv data/rp
 test("csv-grep-rpn -e '%name like %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/stack-low.txt 2
 	grep-rpn_stackerr_like)
 
-test("csv-grep-rpn -e 'tostring_base2 %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/stack-low.txt 2
-	grep-rpn_stackerr_tostring_base2)
+test("csv-grep-rpn -e '2 tostring %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/stack-low.txt 2
+	grep-rpn_stackerr_tostring2)
 
-test("csv-grep-rpn -e 'tostring_base8 %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/stack-low.txt 2
-	grep-rpn_stackerr_tostring_base8)
+test("csv-grep-rpn -e '8 tostring %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/stack-low.txt 2
+	grep-rpn_stackerr_tostring8)
 
-test("csv-grep-rpn -e 'tostring_base10 %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/stack-low.txt 2
-	grep-rpn_stackerr_tostring_base10)
+test("csv-grep-rpn -e '10 tostring %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/stack-low.txt 2
+	grep-rpn_stackerr_tostring10)
 
-test("csv-grep-rpn -e 'tostring_base16 %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/stack-low.txt 2
-	grep-rpn_stackerr_tostring_base16)
+test("csv-grep-rpn -e '16 tostring %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/stack-low.txt 2
+	grep-rpn_stackerr_tostring16)
 
 test("csv-grep-rpn -e 'strlen %id =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/stack-low.txt 2
 	grep-rpn_stackerr_strlen)
@@ -291,17 +291,17 @@ test("csv-grep-rpn -e '2 %name like %name =='" data/3-columns-3-rows.csv data/rp
 test("csv-grep-rpn -e '%name 2 like %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/like-invalid-types.txt 2
 	grep-rpn_typeerr_like_arg2)
 
-test("csv-grep-rpn -e '%name tostring_base2 %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/tostring-invalid-types.txt 2
-	grep-rpn_typeerr_tostring_base2)
+test("csv-grep-rpn -e '%name 2 tostring %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/tostring-invalid-types.txt 2
+	grep-rpn_typeerr_tostring2)
 
-test("csv-grep-rpn -e '%name tostring_base8 %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/tostring-invalid-types.txt 2
-	grep-rpn_typeerr_tostring_base8)
+test("csv-grep-rpn -e '%name 8 tostring %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/tostring-invalid-types.txt 2
+	grep-rpn_typeerr_tostring8)
 
-test("csv-grep-rpn -e '%name tostring_base10 %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/tostring-invalid-types.txt 2
-	grep-rpn_typeerr_tostring_base10)
+test("csv-grep-rpn -e '%name 10 tostring %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/tostring-invalid-types.txt 2
+	grep-rpn_typeerr_tostring10)
 
-test("csv-grep-rpn -e '%name tostring_base16 %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/tostring-invalid-types.txt 2
-	grep-rpn_typeerr_tostring_base16)
+test("csv-grep-rpn -e '%name 16 tostring %name =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/tostring-invalid-types.txt 2
+	grep-rpn_typeerr_tostring16)
 
 test("csv-grep-rpn -e '%id strlen %id =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/strlen-invalid-types.txt 2
 	grep-rpn_typeerr_strlen)

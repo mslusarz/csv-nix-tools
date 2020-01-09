@@ -1,5 +1,5 @@
 #
-# Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -235,11 +235,11 @@ test("csv-sql 'select str1, str2, str1 like \"%12\" as \"str1_like_%12\", str1 l
 
 # toint doesn't exists in sql, XXX implement CAST?
 #test("csv-sql 'select num, str, toint(str) as str_to_int,\
-#			 tostring(num) as num_to_string,\
-#			 tostring_base2(num) as num_to_string2,\
-#			 tostring_base8(num) as num_to_string8,\
-#			 tostring_base10(num) as num_to_string10,\
-#			 tostring_base16(num) as num_to_string16\
+#			 tostring(num, 10) as num_to_string,\
+#			 tostring(num, 2) as num_to_string2,\
+#			 tostring(num, 8) as num_to_string8,\
+#			 tostring(num, 10) as num_to_string10,\
+#			 tostring(num, 16) as num_to_string16\
 #		    from input'"
 #	data/rpn-add-num-base.csv data/rpn-add-convert.csv data/empty.txt 0
 #	sql_str_to_int)

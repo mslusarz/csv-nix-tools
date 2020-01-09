@@ -103,10 +103,10 @@ expr:     LPAREN expr RPAREN
 	| SUBSTR LPAREN expr COMMA expr RPAREN { sql_stack_push_llong(LLONG_MAX); sql_stack_push_op(RPN_SUBSTR); }
 	| LENGTH LPAREN expr RPAREN	{ sql_stack_push_op(RPN_STRLEN); }
 	| IF LPAREN expr COMMA expr COMMA expr	RPAREN { sql_stack_push_op(RPN_IF); }
-	| FMT_DEC LPAREN expr RPAREN	{ sql_stack_push_op(RPN_TOSTRING_BASE10); }
-	| FMT_HEX LPAREN expr RPAREN	{ sql_stack_push_op(RPN_TOSTRING_BASE16); }
-	| FMT_OCT LPAREN expr RPAREN	{ sql_stack_push_op(RPN_TOSTRING_BASE8); }
-	| FMT_BIN LPAREN expr RPAREN	{ sql_stack_push_op(RPN_TOSTRING_BASE2); }
+	| FMT_DEC LPAREN expr RPAREN	{ sql_stack_push_llong(10); sql_stack_push_op(RPN_TOSTRING); }
+	| FMT_HEX LPAREN expr RPAREN	{ sql_stack_push_llong(16); sql_stack_push_op(RPN_TOSTRING); }
+	| FMT_OCT LPAREN expr RPAREN	{ sql_stack_push_llong(8); sql_stack_push_op(RPN_TOSTRING); }
+	| FMT_BIN LPAREN expr RPAREN	{ sql_stack_push_llong(2); sql_stack_push_op(RPN_TOSTRING); }
 	| expr LIKE expr		{ sql_stack_push_op(RPN_LIKE); }
 	| LIKE LPAREN expr COMMA expr RPAREN	{ sql_stack_push_op(RPN_LIKE); }
 

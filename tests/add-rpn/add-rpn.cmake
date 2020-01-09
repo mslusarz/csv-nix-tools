@@ -60,27 +60,27 @@ test("csv-add-rpn -n 'num2_mod_num3' -e '%num2 %num3 %'\
 	add-rpn_num_mod)
 
 
-test("csv-add-rpn -n 'num2_bit_and_num3' -e '%num2 %num3 & tostring_base16'"
+test("csv-add-rpn -n 'num2_bit_and_num3' -e '%num2 %num3 & 16 tostring'"
 	data/rpn-add-num-hex.csv data/rpn-add-num-bit-and.csv data/empty.txt 0
 	add-rpn_num_bit_and)
 
-test("csv-add-rpn -n 'num2_bit_or_num' -e '%num2 %num | tostring_base16'"
+test("csv-add-rpn -n 'num2_bit_or_num' -e '%num2 %num | 16 tostring'"
 	data/rpn-add-num-hex.csv data/rpn-add-num-bit-or.csv data/empty.txt 0
 	add-rpn_num_bit_or)
 
-test("csv-add-rpn -n 'num2_bit_xor_num' -e '%num2 %num ^ tostring_base16'"
+test("csv-add-rpn -n 'num2_bit_xor_num' -e '%num2 %num ^ 16 tostring'"
 	data/rpn-add-num-hex.csv data/rpn-add-num-bit-xor.csv data/empty.txt 0
 	add-rpn_num_bit_xor)
 
-test("csv-add-rpn -n 'bit_neg_num2' -e '%num2 ~ tostring_base16'"
+test("csv-add-rpn -n 'bit_neg_num2' -e '%num2 ~ 16 tostring'"
 	data/rpn-add-num-hex.csv data/rpn-add-num-bit-neg.csv data/empty.txt 0
 	add-rpn_num_bit_neg)
 
-test("csv-add-rpn -n 'num2_lshift_num' -e '%num2 %num << tostring_base16'"
+test("csv-add-rpn -n 'num2_lshift_num' -e '%num2 %num << 16 tostring'"
 	data/rpn-add-num-hex.csv data/rpn-add-num-bit-lshift.csv data/empty.txt 0
 	add-rpn_num_bit_lshift)
 
-test("csv-add-rpn -n 'num2_rshift_num' -e '%num2 %num >> tostring_base16'"
+test("csv-add-rpn -n 'num2_rshift_num' -e '%num2 %num >> 16 tostring'"
 	data/rpn-add-num-hex.csv data/rpn-add-num-bit-rshift.csv data/empty.txt 0
 	add-rpn_num_bit_rshift)
 
@@ -159,18 +159,18 @@ test("csv-add-rpn -n str1_like_%12 -e \"%str1 '%12' like\"\
 
 
 test("csv-add-rpn -n str_to_int -e '%str toint'\
-		  -n num_to_string   -e '%num tostring'\
-		  -n num_to_string2  -e '%num tostring_base2'\
-		  -n num_to_string8  -e '%num tostring_base8'\
-		  -n num_to_string10 -e '%num tostring_base10'\
-		  -n num_to_string16 -e '%num tostring_base16'"
+		  -n num_to_string   -e '%num 10 tostring'\
+		  -n num_to_string2  -e '%num 2 tostring'\
+		  -n num_to_string8  -e '%num 8 tostring'\
+		  -n num_to_string10 -e '%num 10 tostring'\
+		  -n num_to_string16 -e '%num 16 tostring'"
 	data/rpn-add-num-base.csv data/rpn-add-convert.csv data/empty.txt 0
 	add-rpn_str_to_int)
 
-test("csv-add-rpn -T t1 -n concat -e '%name %id tostring concat'" data/2-tables.csv add-rpn/2-tables-add1.csv data/empty.txt 0
+test("csv-add-rpn -T t1 -n concat -e '%name %id 10 tostring concat'" data/2-tables.csv add-rpn/2-tables-add1.csv data/empty.txt 0
 	add-rpn_2tables-add1)
 
-test("csv-add-rpn -T t2 -n concat -e '%name %id tostring concat'" data/2-tables.csv add-rpn/2-tables-add2.csv data/empty.txt 0
+test("csv-add-rpn -T t2 -n concat -e '%name %id 10 tostring concat'" data/2-tables.csv add-rpn/2-tables-add2.csv data/empty.txt 0
 	add-rpn_2tables-add2)
 
 test("csv-add-rpn --help" data/empty.csv add-rpn/help.txt data/empty.txt 2

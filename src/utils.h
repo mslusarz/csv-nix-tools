@@ -128,10 +128,7 @@ enum rpn_operator {
 	RPN_STRLEN,		/* string length */
 	RPN_CONCAT,		/* concatenation of 2 strings */
 	RPN_LIKE,		/* SQL LIKE operator */
-	RPN_TOSTRING_BASE2,	/* convert int to string encoded as binary */
-	RPN_TOSTRING_BASE8,	/* convert int to string encoded as octal */
-	RPN_TOSTRING_BASE10,	/* convert int to string encoded as decimal */
-	RPN_TOSTRING_BASE16,	/* convert int to string encoded as hexadecimal */
+	RPN_TOSTRING,		/* convert int to string */
 	RPN_TOINT,		/* convert string to int */
 	RPN_LT,			/* less */
 	RPN_LE,			/* less or equal */

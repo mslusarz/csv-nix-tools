@@ -46,9 +46,5 @@ Operators/functions:
   strlen            string length                   %str strlen
   concat            concatenation                   %str1 %str2 concat
   like              match pattern                   %str 'patt%' like
-  tostring          convert to decimal notation     %num tostring
-  tostring_base2    convert to binary notation      %num tostring_base2
-  tostring_base8    convert to octal notation       %num tostring_base8
-  tostring_base10   convert to decimal notation     %num tostring_base10
-  tostring_base16   convert to hexadecimal notation %num tostring_base16
+  tostring          convert to string               %num %base tostring
   toint             convert to integer              %str toint

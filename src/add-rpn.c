@@ -103,11 +103,7 @@ usage(FILE *out)
 	fprintf(out, "  strlen            string length                   %%str strlen\n");
 	fprintf(out, "  concat            concatenation                   %%str1 %%str2 concat\n");
 	fprintf(out, "  like              match pattern                   %%str 'patt%%' like\n");
-	fprintf(out, "  tostring          convert to decimal notation     %%num tostring\n");
-	fprintf(out, "  tostring_base2    convert to binary notation      %%num tostring_base2\n");
-	fprintf(out, "  tostring_base8    convert to octal notation       %%num tostring_base8\n");
-	fprintf(out, "  tostring_base10   convert to decimal notation     %%num tostring_base10\n");
-	fprintf(out, "  tostring_base16   convert to hexadecimal notation %%num tostring_base16\n");
+	fprintf(out, "  tostring          convert to string               %%num %%base tostring\n");
 	fprintf(out, "  toint             convert to integer              %%str toint\n");
 }
 
