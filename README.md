@@ -452,13 +452,13 @@ raw        ::                          58   ::                  0               
 - ps: lots of work, detailed in ps.c
 - show: ability to lock columns (make them always visible)
 - show: implement "search" and "help" in the ncurses backend
-- rpn/sql: make naming of functions consistent (if->case?, strlen->length, toint->cast)
+- sql: implement case, cast
 - rpn: cache compiled regex
 - netstat: support more protocols
 - netstat: translate interface number to interface name
 - netstat: figure out how to print inet\_diag\_info
 - rpn/sql: binary number parsing
-- sql, exec: add support for tables
+- sql: add support for tables
 - write down data format spec
 - strict column name verification
 
