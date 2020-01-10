@@ -162,15 +162,14 @@ test("csv-add-sql -n str1_like_%12 -e \"str1 like '%12'\"\
 	add-sql_str_like)
 
 
-# XXX toint doesn't exist
-#test("csv-add-sql -n str_to_int -e 'toint(str)'\
-#		  -n num_to_string   -e 'tostring(num)'\
-#		  -n num_to_string2  -e 'tostring(num, 2)'\
-#		  -n num_to_string8  -e 'tostring(num, 8)'\
-#		  -n num_to_string10 -e 'tostring(num, 10)'\
-#		  -n num_to_string16 -e 'tostring(num, 16)'"
-#	data/rpn-add-num-base.csv data/rpn-add-convert.csv data/empty.txt 0
-#	add-sql_str_to_int)
+test("csv-add-sql -n str_to_int -e 'toint(str, 10)'\
+		  -n num_to_string   -e 'tostring(num)'\
+		  -n num_to_string2  -e 'tostring(num, 2)'\
+		  -n num_to_string8  -e 'tostring(num, 8)'\
+		  -n num_to_string10 -e 'tostring(num, 10)'\
+		  -n num_to_string16 -e 'tostring(num, 16)'"
+	data/rpn-add-num-base.csv data/rpn-add-convert-noparse.csv data/empty.txt 0
+	add-sql_str_to_int_num_to_str)
 
 test("csv-add-sql -T t1 -n name_len -e 'length(name)'" data/2-tables.csv add-sql/2-tables-add1.csv data/empty.txt 0
 	add-sql_2tables-add1)

@@ -49,6 +49,7 @@ literal2 \"[^"]*\"
 "length"	{ dbg_printf("LEX: matching LENGTH\n"); return LENGTH; }
 "substr"	{ dbg_printf("LEX: matching SUBSTR\n"); return SUBSTR; }
 "like"		{ dbg_printf("LEX: matching LIKE\n"); return LIKE; }
+"toint"		{ dbg_printf("LEX: matching TOINT\n"); return TOINT; }
 "tostring"	{ dbg_printf("LEX: matching TOSTRING\n"); return TOSTRING; }
 "("		{ dbg_printf("LEX: matching LPAREN\n"); return LPAREN; }
 ")"		{ dbg_printf("LEX: matching RPAREN\n"); return RPAREN; }

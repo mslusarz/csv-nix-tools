@@ -233,16 +233,25 @@ test("csv-sql 'select str1, str2, str1 like \"%12\" as \"str1_like_%12\", str1 l
 	data/rpn-add-str.csv data/rpn-add-str-like.csv data/empty.txt 0
 	sql_str_like)
 
-# toint doesn't exists in sql, XXX implement CAST?
-#test("csv-sql 'select num, str, toint(str) as str_to_int,\
-#			 tostring(num) as num_to_string,\
-#			 tostring(num, 2) as num_to_string2,\
-#			 tostring(num, 8) as num_to_string8,\
-#			 tostring(num, 10) as num_to_string10,\
-#			 tostring(num, 16) as num_to_string16\
-#		    from input'"
-#	data/rpn-add-num-base.csv data/rpn-add-convert.csv data/empty.txt 0
-#	sql_str_to_int)
+test("csv-sql 'select num, str, toint(str, 10) as str_to_int,\
+			 tostring(num) as num_to_string,\
+			 tostring(num, 2) as num_to_string2,\
+			 tostring(num, 8) as num_to_string8,\
+			 tostring(num, 10) as num_to_string10,\
+			 tostring(num, 16) as num_to_string16\
+		    from input'"
+	data/rpn-add-num-base.csv data/rpn-add-convert.csv data/empty.txt 0
+	sql_str_to_int_int_to_str)
+
+test("csv-sql 'select num, str, toint(str) as str_to_int,\
+			 tostring(num) as num_to_string,\
+			 tostring(num, 2) as num_to_string2,\
+			 tostring(num, 8) as num_to_string8,\
+			 tostring(num, 10) as num_to_string10,\
+			 tostring(num, 16) as num_to_string16\
+		    from input'"
+	data/rpn-add-num-base.csv data/rpn-add-convert.csv data/empty.txt 0
+	sql_str_to_int_int_to_str2)
 
 test("csv-sql --help" data/empty.csv sql/help.txt data/empty.txt 2
 	sql_help)
