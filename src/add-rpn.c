@@ -71,8 +71,7 @@ usage(FILE *out)
 	fprintf(out, "  [-][1-9][0-9]*    decimal integer                 1, 1294, -89\n");
 	fprintf(out, "  [-]0x[0-9a-fA-F]+ hexadecimal integer             0x1, 0x1A34, -0x8A\n");
 	fprintf(out, "  [-]0[0-9]+        octal integer                   01, 01234, -067\n");
-// not supported yet
-//	fprintf(out, "  [-]0b[01]+        binary integer                  0b1, 0b1101, -0b10\n");
+	fprintf(out, "  [-]0b[01]+        binary integer                  0b1, 0b1101, -0b10\n");
 	fprintf(out, "  '[^']*'           string                          'text'\n");
 //	fprintf(out, "  \"[^\"]*\"           string                          \"text\"\n");
 	fprintf(out, "\n");

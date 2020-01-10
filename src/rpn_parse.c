@@ -130,11 +130,46 @@ rpn_parse(struct rpn_expression *exp, char *str,
 					token + 1);
 			if (tkn.colnum == CSV_NOT_FOUND)
 				goto fail;
-		} else if (isdigit(token[0]) || (token[0] == '-' && isdigit(token[1]))) {
+		} else if (isdigit(token[0])) {
 			tkn.type = RPN_CONSTANT;
 			tkn.constant.type = RPN_LLONG;
-			if (strtoll_safe(token, &tkn.constant.llong, 0))
+			int base = 0;
+
+			if (token[0] == '0' && token[1] == 'b') {
+				/* 0b-0 is not a valid binary number */
+				if (token[2] == '-') {
+					fprintf(stderr,
+						"value '%s' is not an integer\n",
+						token);
+					goto fail;
+				}
+
+				base = 2;
+				token += 2;
+			}
+
+			if (strtoll_safe(token, &tkn.constant.llong, base))
 				goto fail;
+		} else if (token[0] == '-' && isdigit(token[1])) {
+			tkn.type = RPN_CONSTANT;
+			tkn.constant.type = RPN_LLONG;
+
+			if (token[1] == '0' && token[2] == 'b') {
+				/* -0b-0 is not a valid binary number */
+				if (token[3] == '-') {
+					fprintf(stderr,
+						"value '%s' is not an integer\n",
+						token);
+					goto fail;
+				}
+
+				if (strtoll_safe(token + 3, &tkn.constant.llong, 2))
+					goto fail;
+				tkn.constant.llong = -tkn.constant.llong;
+			} else {
+				if (strtoll_safe(token, &tkn.constant.llong, 0))
+					goto fail;
+			}
 		} else if (token[0] == '\'') {
 			tkn.type = RPN_CONSTANT;
 			tkn.constant.type = RPN_PCHAR;

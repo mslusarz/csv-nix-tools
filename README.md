@@ -457,7 +457,6 @@ raw        ::                          58   ::                  0               
 - netstat: support more protocols
 - netstat: translate interface number to interface name
 - netstat: figure out how to print inet\_diag\_info
-- rpn/sql: binary number parsing
 - sql: add support for tables
 - write down data format spec
 - strict column name verification
