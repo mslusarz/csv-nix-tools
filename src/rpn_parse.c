@@ -185,6 +185,8 @@ rpn_parse(struct rpn_expression *exp, char *str,
 				tkn.operator = RPN_SUBSTR;
 			else if (strcmp(token, "strlen") == 0)
 				tkn.operator = RPN_STRLEN;
+			else if (strcmp(token, "length") == 0)
+				tkn.operator = RPN_STRLEN;
 			else if (strcmp(token, "concat") == 0)
 				tkn.operator = RPN_CONCAT;
 			else if (strcmp(token, "like") == 0)
