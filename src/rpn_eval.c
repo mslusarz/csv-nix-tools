@@ -467,7 +467,12 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 	}
 	case RPN_TOINT: {
 		long long ret;
-		if (strtoll_safe(stack[height - 1].pchar, &ret, (int)stack[height].llong) < 0)
+		const char *str = stack[height - 1].pchar;
+		int base = (int)stack[height].llong;
+		if (str[0] == '0' && str[1] == 'b' && base == 2)
+			str += 2;
+
+		if (strtoll_safe(str, &ret, base) < 0)
 			return -1;
 
 		free(stack[height - 1].pchar);
