@@ -47,4 +47,4 @@ Operators/functions:
   concat            concatenation                   %str1 %str2 concat
   like              match pattern                   %str 'patt%' like
   tostring          convert to string               %num %base tostring
-  toint             convert to integer              %str toint
+  toint             convert to integer              %str %base toint

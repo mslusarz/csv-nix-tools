@@ -204,13 +204,26 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 
 		break;
 	case RPN_TOINT:
-		if (height < 1) {
+		if (height < 2) {
 			fprintf(stderr, "not enough stack entries\n");
 			return -1;
 		}
+		height--;
 
 		if (stack[height - 1].type != RPN_PCHAR) {
-			fprintf(stderr, "toint can operate only on string values\n");
+			fprintf(stderr, "1st argument of toint must be a string\n");
+			return -1;
+		}
+
+		if (stack[height].type != RPN_LLONG) {
+			fprintf(stderr, "2nd argument of toint must be a number\n");
+			return -1;
+		}
+
+		/* 2 and 36 come from strtoll man page */
+		if (stack[height].llong < 2 || stack[height].llong > 36) {
+			fprintf(stderr,
+				"2nd argument of toint must be between 2 and 36\n");
 			return -1;
 		}
 
@@ -454,7 +467,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 	}
 	case RPN_TOINT: {
 		long long ret;
-		if (strtoll_safe(stack[height - 1].pchar, &ret, 0) < 0)
+		if (strtoll_safe(stack[height - 1].pchar, &ret, (int)stack[height].llong) < 0)
 			return -1;
 
 		free(stack[height - 1].pchar);

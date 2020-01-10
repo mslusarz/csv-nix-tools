@@ -104,7 +104,7 @@ usage(FILE *out)
 	fprintf(out, "  concat            concatenation                   %%str1 %%str2 concat\n");
 	fprintf(out, "  like              match pattern                   %%str 'patt%%' like\n");
 	fprintf(out, "  tostring          convert to string               %%num %%base tostring\n");
-	fprintf(out, "  toint             convert to integer              %%str toint\n");
+	fprintf(out, "  toint             convert to integer              %%str %%base toint\n");
 }
 
 struct cb_params {

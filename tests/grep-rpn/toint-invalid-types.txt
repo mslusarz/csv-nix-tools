@@ -1,1 +1,1 @@
-toint can operate only on string values
+1st argument of toint must be a string

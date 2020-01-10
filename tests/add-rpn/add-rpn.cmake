@@ -158,13 +158,13 @@ test("csv-add-rpn -n str1_like_%12 -e \"%str1 '%12' like\"\
 	add-rpn_str_like)
 
 
-test("csv-add-rpn -n str_to_int -e '%str toint'\
+test("csv-add-rpn -n str_to_int -e '%str 10 toint'\
 		  -n num_to_string   -e '%num 10 tostring'\
 		  -n num_to_string2  -e '%num 2 tostring'\
 		  -n num_to_string8  -e '%num 8 tostring'\
 		  -n num_to_string10 -e '%num 10 tostring'\
 		  -n num_to_string16 -e '%num 16 tostring'"
-	data/rpn-add-num-base.csv data/rpn-add-convert.csv data/empty.txt 0
+	data/rpn-add-num-base.csv data/rpn-add-convert-noparse.csv data/empty.txt 0
 	add-rpn_str_to_int)
 
 test("csv-add-rpn -T t1 -n concat -e '%name %id 10 tostring concat'" data/2-tables.csv add-rpn/2-tables-add1.csv data/empty.txt 0

@@ -200,7 +200,7 @@ test("csv-grep-rpn -e '16 tostring %name =='" data/3-columns-3-rows.csv data/rpn
 test("csv-grep-rpn -e 'strlen %id =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/stack-low.txt 2
 	grep-rpn_stackerr_strlen)
 
-test("csv-grep-rpn -e 'toint %id =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/stack-low.txt 2
+test("csv-grep-rpn -e '10 toint %id =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/stack-low.txt 2
 	grep-rpn_stackerr_toint)
 
 test("csv-grep-rpn -e '%id <'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/stack-low.txt 2
@@ -306,7 +306,7 @@ test("csv-grep-rpn -e '%name 16 tostring %name =='" data/3-columns-3-rows.csv da
 test("csv-grep-rpn -e '%id strlen %id =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/strlen-invalid-types.txt 2
 	grep-rpn_typeerr_strlen)
 
-test("csv-grep-rpn -e '%id toint %id =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/toint-invalid-types.txt 2
+test("csv-grep-rpn -e '10 %id toint %id =='" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/toint-invalid-types.txt 2
 	grep-rpn_typeerr_toint)
 
 test("csv-grep-rpn -e '%id %name <'" data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/comparison-invalid-types.txt 2
