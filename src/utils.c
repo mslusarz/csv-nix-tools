@@ -30,9 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* for strcasestr */
-#define _GNU_SOURCE
-
 #include <ctype.h>
 #include <errno.h>
 #include <limits.h>
@@ -104,7 +101,7 @@ csv_str_replace(const char *str, const char *pattern, const char *replacement,
 		if (case_sensitive)
 			found = strstr(str, pattern);
 		else
-			found = strcasestr(str, pattern);
+			found = csv_strcasestr(str, pattern);
 
 		if (found == NULL) {
 			if (!replaced)

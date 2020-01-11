@@ -33,6 +33,7 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 
 int
 csv_asprintf(char **strp, const char *fmt, ...)
@@ -43,4 +44,10 @@ csv_asprintf(char **strp, const char *fmt, ...)
 	ret = vasprintf(strp, fmt, ap);
 	va_end(ap);
 	return ret;
+}
+
+char *
+csv_strcasestr(const char *haystack, const char *needle)
+{
+	return strcasestr(haystack, needle);
 }

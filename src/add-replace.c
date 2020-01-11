@@ -30,9 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* for strcasestr */
-#define _GNU_SOURCE
-
 #include <ctype.h>
 #include <getopt.h>
 #include <regex.h>

@@ -226,5 +226,6 @@ void describe_Show_full(FILE *out);
 void describe_Table(FILE *out);
 
 int csv_asprintf(char **strp, const char *fmt, ...);
+char *csv_strcasestr(const char *haystack, const char *needle);
 
 #endif

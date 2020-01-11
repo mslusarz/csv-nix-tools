@@ -30,12 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- * for:
- * - strcasestr
- */
-#define _GNU_SOURCE
-
 #include <getopt.h>
 #include <regex.h>
 #include <stdbool.h>
@@ -112,7 +106,7 @@ matches(const char *str, const struct condition *c)
 		}
 	} else {
 		if (c->ignore_case) {
-			ret = strcasestr(str, c->value) != NULL;
+			ret = csv_strcasestr(str, c->value) != NULL;
 		} else {
 			ret = strstr(str, c->value) != NULL;
 		}
