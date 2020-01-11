@@ -160,6 +160,13 @@ sql_named_column_done(char *name)
 	Ntokens = 0;
 }
 
+void
+sql_all_columns(void)
+{
+	fprintf(stderr, "* is forbidden in csv-add-sql\n");
+	exit(2);
+}
+
 static void
 process_exp(struct rpn_expression *exp, const char *buf, const size_t *col_offs,
 		const struct col_header *headers, char sep)

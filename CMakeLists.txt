@@ -203,7 +203,7 @@ if (BISON_FOUND AND FLEX_FOUND)
 	configure_file(${CMAKE_SOURCE_DIR}/src/sql.y.in ${CMAKE_CURRENT_BINARY_DIR}/sql.y)
 	set(PROG condition)
 	configure_file(${CMAKE_SOURCE_DIR}/src/sql.y.in ${CMAKE_CURRENT_BINARY_DIR}/grep-sql.y)
-	set(PROG columns-exprs)
+	set(PROG columns)
 	configure_file(${CMAKE_SOURCE_DIR}/src/sql.y.in ${CMAKE_CURRENT_BINARY_DIR}/add-sql.y)
 
 	FLEX_TARGET(SQLLexer src/sql.l ${CMAKE_CURRENT_BINARY_DIR}/sql_lexer.c)
