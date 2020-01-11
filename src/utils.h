@@ -227,5 +227,8 @@ void describe_Table(FILE *out);
 
 int csv_asprintf(char **strp, const char *fmt, ...);
 char *csv_strcasestr(const char *haystack, const char *needle);
+void csv_qsort_r(void *base, size_t nmemb, size_t size,
+                  int (*compar)(const void *, const void *, void *),
+                  void *arg);
 
 #endif

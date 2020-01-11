@@ -30,9 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* required to get qsort_r */
-#define _GNU_SOURCE
-
 #include <errno.h>
 #include <getopt.h>
 #include <limits.h>
@@ -304,7 +301,7 @@ main(int argc, char *argv[])
 	sort_params.headers = headers;
 	sort_params.lines = params.lines;
 	sort_params.nlines = params.used;
-	qsort_r(row_idx, params.used, sizeof(row_idx[0]), cmp, &sort_params);
+	csv_qsort_r(row_idx, params.used, sizeof(row_idx[0]), cmp, &sort_params);
 
 	if (reverse) {
 		for (size_t i = params.used; i > 0; --i)
