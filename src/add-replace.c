@@ -118,16 +118,6 @@ struct cb_params {
 	char *table;
 };
 
-static void
-check_space(struct cb_params *params, size_t used, size_t len)
-{
-	if (used + len < params->buf_len)
-		return;
-
-	params->buf_len += len + 1;
-	params->buf = xrealloc_nofail(params->buf, params->buf_len, 1);
-}
-
 static int
 next_row(const char *buf, const size_t *col_offs,
 		const struct col_header *headers, size_t nheaders,
@@ -168,7 +158,7 @@ next_row(const char *buf, const size_t *col_offs,
 		if (print_buf) {
 			used = strlen(unquoted) - params->s.pattern_len
 					+ params->s.replacement_len;
-			check_space(params, 0, used);
+			csv_check_space(&params->buf, &params->buf_len, 0, used);
 			size_t pos = found - unquoted;
 
 			memcpy(params->buf, unquoted, pos);
@@ -200,7 +190,9 @@ next_row(const char *buf, const size_t *col_offs,
 					&params->r.elements[i];
 
 				if (e->type == CONST_STR) {
-					check_space(params, used,
+					csv_check_space(&params->buf,
+							&params->buf_len,
+							used,
 							e->const_str_len);
 
 					memcpy(&params->buf[used], e->const_str,
@@ -214,7 +206,10 @@ next_row(const char *buf, const size_t *col_offs,
 					regoff_t end = m->rm_eo;
 					size_t len = end - start;
 
-					check_space(params, used, len);
+					csv_check_space(&params->buf,
+							&params->buf_len,
+							used,
+							len);
 
 					memcpy(&params->buf[used],
 						unquoted + start, len);
@@ -448,7 +443,7 @@ main(int argc, char *argv[])
 	free(new_name);
 	new_name = NULL;
 
-	check_space(&params, 0, 1);
+	csv_check_space(&params.buf, &params.buf_len, 0, 1);
 
 	csv_read_all_nofail(s, &next_row, &params);
 

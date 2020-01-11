@@ -77,6 +77,16 @@ csv_print_line_reordered(FILE *out, const char *buf, const size_t *col_offs,
 		fputc('\n', out);
 }
 
+void
+csv_check_space(char **buf, size_t *buflen, size_t used, size_t len)
+{
+	if (used + len < *buflen)
+		return;
+
+	*buflen += len;
+	*buf = xrealloc_nofail(*buf, *buflen, 1);
+}
+
 int
 strtoll_safe(const char *str, long long *val, int base)
 {

@@ -208,6 +208,7 @@ void csvci_print_header_with_prefix(struct column_info *columns,
 		size_t ncolumns, const char *prefix);
 void csvci_print_row(const void *row, const struct column_info *columns,
 		size_t ncolumns);
+void csv_check_space(char **buf, size_t *buflen, size_t used, size_t len);
 
 void describe_Merge(FILE *out);
 void describe_table_Name(FILE *out);
