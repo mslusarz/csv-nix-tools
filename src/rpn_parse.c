@@ -269,6 +269,11 @@ rpn_parse(struct rpn_expression *exp, char *str,
 		token = token_next(&ctx);
 	}
 
+	if (exp->count == 0) {
+		fprintf(stderr, "empty expression\n");
+		goto fail;
+	}
+
 	return 0;
 
 fail:
