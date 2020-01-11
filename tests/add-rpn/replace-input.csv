@@ -1,0 +1,5 @@
+num:int,str:string
+0,pattern
+1,PATTERN
+2,pattern separator pattern
+3,prefix pattern separator patter suffix

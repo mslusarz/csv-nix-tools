@@ -49,3 +49,4 @@ Operators/functions:
   like              match pattern                   %str 'patt%' like
   tostring          convert to string               %num %base tostring
   toint             convert to integer              %str %base toint
+  replace           replace string                  %str 'pattern' 'replacement' %casesensitive replace

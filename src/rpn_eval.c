@@ -258,6 +258,20 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 			return -1;
 		}
 		break;
+	case RPN_REPLACE:
+		if (height < 4) {
+			fprintf(stderr, "not enough stack entries\n");
+			return -1;
+		}
+		height -= 3;
+		if (stack[height - 1].type != RPN_PCHAR ||
+				stack[height].type != RPN_PCHAR ||
+				stack[height + 1].type != RPN_PCHAR ||
+				stack[height + 2].type != RPN_LLONG) {
+			fprintf(stderr, "invalid types for replace operator\n");
+			return -1;
+		}
+		break;
 	default:
 		abort();
 	}
@@ -571,6 +585,28 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		}
 
 		break;
+	case RPN_REPLACE: {
+		char *str = stack[height - 1].pchar;
+		char *pattern = stack[height].pchar;
+		char *replacement = stack[height + 1].pchar;
+		long long case_sensitive = stack[height + 2].llong;
+		char *buf = NULL;
+		size_t buflen = 0;
+
+		if (csv_str_replace(str, pattern, replacement, case_sensitive,
+				&buf, &buflen)) {
+			stack[height - 1].pchar = buf;
+			free(str);
+		} else {
+			stack[height - 1].pchar = str;
+			free(buf);
+		}
+
+		free(pattern);
+		free(replacement);
+
+		break;
+	}
 	default:
 		abort();
 	}

@@ -173,6 +173,12 @@ test("csv-add-rpn -T t1 -n concat -e '%name %id 10 tostring concat'" data/2-tabl
 test("csv-add-rpn -T t2 -n concat -e '%name %id 10 tostring concat'" data/2-tables.csv add-rpn/2-tables-add2.csv data/empty.txt 0
 	add-rpn_2tables-add2)
 
+test("csv-add-rpn -n x -e \"%str 'pattern' 'replacement' 1 replace\"" add-rpn/replace-input.csv add-rpn/replace-output1.csv data/empty.txt 0
+	add-rpn_replace1)
+
+test("csv-add-rpn -n x -e \"%str 'pattern' 'replacement' 0 replace\"" add-rpn/replace-input.csv add-rpn/replace-output2.csv data/empty.txt 0
+	add-rpn_replace2)
+
 test("csv-add-rpn --help" data/empty.csv add-rpn/help.txt data/empty.txt 2
 	add-rpn_help)
 

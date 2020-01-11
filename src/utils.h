@@ -141,6 +141,7 @@ enum rpn_operator {
 	RPN_LOGIC_NOT,		/* logic not */
 	RPN_LOGIC_XOR,		/* logic xor */
 	RPN_IF,			/* if then else */
+	RPN_REPLACE,		/* replace string */
 };
 
 enum rpn_variant_type {
@@ -209,6 +210,9 @@ void csvci_print_header_with_prefix(struct column_info *columns,
 void csvci_print_row(const void *row, const struct column_info *columns,
 		size_t ncolumns);
 void csv_check_space(char **buf, size_t *buflen, size_t used, size_t len);
+bool csv_str_replace(const char *str, const char *pattern,
+		const char *replacement, bool case_sensitive, char **buf,
+		size_t *buflen);
 
 void describe_Merge(FILE *out);
 void describe_table_Name(FILE *out);

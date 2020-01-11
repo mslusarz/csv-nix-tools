@@ -104,6 +104,7 @@ usage(FILE *out)
 	fprintf(out, "  like              match pattern                   %%str 'patt%%' like\n");
 	fprintf(out, "  tostring          convert to string               %%num %%base tostring\n");
 	fprintf(out, "  toint             convert to integer              %%str %%base toint\n");
+	fprintf(out, "  replace           replace string                  %%str 'pattern' 'replacement' %%casesensitive replace\n");
 }
 
 struct cb_params {

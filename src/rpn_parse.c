@@ -252,6 +252,8 @@ rpn_parse(struct rpn_expression *exp, char *str,
 				tkn.operator = RPN_LOGIC_NOT;
 			else if (strcmp(token, "if") == 0)
 				tkn.operator = RPN_IF;
+			else if (strcmp(token, "replace") == 0)
+				tkn.operator = RPN_REPLACE;
 			else {
 				fprintf(stderr, "unknown operator '%s'\n",
 						token);
@@ -321,6 +323,7 @@ expression_type(const struct rpn_expression *exp,
 				case RPN_SUBSTR:
 				case RPN_CONCAT:
 				case RPN_TOSTRING:
+				case RPN_REPLACE:
 					return "string";
 				case RPN_IF:
 					return expression_type(exp, headers,

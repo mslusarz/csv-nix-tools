@@ -30,6 +30,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/* for strcasestr */
+#define _GNU_SOURCE
+
 #include <ctype.h>
 #include <errno.h>
 #include <limits.h>
@@ -85,6 +88,51 @@ csv_check_space(char **buf, size_t *buflen, size_t used, size_t len)
 
 	*buflen += len;
 	*buf = xrealloc_nofail(*buf, *buflen, 1);
+}
+
+bool
+csv_str_replace(const char *str, const char *pattern, const char *replacement,
+		bool case_sensitive, char **buf, size_t *buflen)
+{
+	const char *found;
+	size_t plen = strlen(pattern);
+	size_t rlen = strlen(replacement);
+	size_t buf_used = 0;
+	bool replaced = false;
+
+	while (1) {
+		if (case_sensitive)
+			found = strstr(str, pattern);
+		else
+			found = strcasestr(str, pattern);
+
+		if (found == NULL) {
+			if (!replaced)
+				return false;
+
+			size_t slen = strlen(str);
+			csv_check_space(buf, buflen, buf_used, slen + 1);
+			memcpy((*buf) + buf_used, str, slen + 1);
+			return true;
+		}
+
+		replaced = true;
+		size_t unmatched = (uintptr_t)found - (uintptr_t)str;
+		if (unmatched) {
+			csv_check_space(buf, buflen, buf_used, unmatched + 1);
+			memcpy((*buf) + buf_used, str, unmatched);
+			buf_used += unmatched;
+			str += unmatched; /* skip copied part */
+		}
+
+		str += plen; /* skip found pattern */
+
+		if (rlen) {
+			csv_check_space(buf, buflen, buf_used, rlen + 1);
+			memcpy((*buf) + buf_used, replacement, rlen);
+			buf_used += rlen;
+		}
+	}
 }
 
 int
