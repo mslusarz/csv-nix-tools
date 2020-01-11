@@ -225,4 +225,6 @@ void describe_Show(FILE *out);
 void describe_Show_full(FILE *out);
 void describe_Table(FILE *out);
 
+int csv_asprintf(char **strp, const char *fmt, ...);
+
 #endif

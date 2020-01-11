@@ -30,9 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* for asprintf */
-#define _GNU_SOURCE
-
 #include <assert.h>
 #include <getopt.h>
 #include <stdbool.h>
@@ -108,7 +105,7 @@ sql_column_done(void)
 
 	col->expr = exp;
 	if (Table) {
-		if (asprintf(&col->name, "%s.%s", Table, New_name) < 0) {
+		if (csv_asprintf(&col->name, "%s.%s", Table, New_name) < 0) {
 			perror("asprintf");
 			exit(2);
 		}
@@ -146,7 +143,7 @@ sql_named_column_done(char *name)
 	struct column *col = &Params.columns[Params.columns_count];
 	col->expr = exp;
 	if (Table) {
-		if (asprintf(&col->name, "%s.%s", Table, name) < 0) {
+		if (csv_asprintf(&col->name, "%s.%s", Table, name) < 0) {
 			perror("asprintf");
 			exit(2);
 		}

@@ -30,9 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* asprintf */
-#define _GNU_SOURCE
-
 #include <ctype.h>
 #include <regex.h>
 #include <stdlib.h>
@@ -65,17 +62,17 @@ tostring(long long val, long long base)
 		}
 		str[idx] = 0;
 	} else if (base == 8) {
-		if (asprintf(&str, "0%llo", val) < 0) {
+		if (csv_asprintf(&str, "0%llo", val) < 0) {
 			perror("asprintf");
 			str = NULL;
 		}
 	} else if (base == 10) {
-		if (asprintf(&str, "%lld", val) < 0) {
+		if (csv_asprintf(&str, "%lld", val) < 0) {
 			perror("asprintf");
 			str = NULL;
 		}
 	} else if (base == 16) {
-		if (asprintf(&str, "0x%llx", val) < 0) {
+		if (csv_asprintf(&str, "0x%llx", val) < 0) {
 			perror("asprintf");
 			str = NULL;
 		}

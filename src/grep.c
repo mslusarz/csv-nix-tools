@@ -33,7 +33,6 @@
 /*
  * for:
  * - strcasestr
- * - asprintf
  */
 #define _GNU_SOURCE
 
@@ -352,7 +351,7 @@ main(int argc, char *argv[])
 
 		char *pattern = c->value;
 		if (c->whole) {
-			if (asprintf(&pattern, "^%s$", c->value) == -1) {
+			if (csv_asprintf(&pattern, "^%s$", c->value) == -1) {
 				perror("asprintf");
 				exit(2);
 			}

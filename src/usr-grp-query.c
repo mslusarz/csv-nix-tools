@@ -35,7 +35,6 @@
  *  hcreate_r
  *  hdestroy_t
  *  hsearch_r
- *  asprintf
  */
 #define _GNU_SOURCE
 
@@ -156,7 +155,7 @@ get_user_slow(void *uidp)
 	if (passwd)
 		return xstrdup(passwd->pw_name);
 
-	if (asprintf(&ret, "%d", uid) < 0) {
+	if (csv_asprintf(&ret, "%d", uid) < 0) {
 		perror("asprintf");
 		ret = NULL;
 	}
@@ -182,7 +181,7 @@ get_group_slow(void *gidp)
 	if (gr)
 		return xstrdup(gr->gr_name);
 
-	if (asprintf(&ret, "%d", gid) < 0) {
+	if (csv_asprintf(&ret, "%d", gid) < 0) {
 		perror("asprintf");
 		ret = NULL;
 	}

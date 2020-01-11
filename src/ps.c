@@ -37,9 +37,6 @@
  * 	wchan, tty, tpgid, exit_signal, *signals*, alarm, kstk*, flags
  */
 
-/* for asprintf */
-#define _GNU_SOURCE
-
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -1158,7 +1155,7 @@ estimate_boottime()
 	char *path = NULL;
 	const char *cache = getenv("XDG_CACHE_HOME");
 	if (cache) {
-		if (asprintf(&path, "%s/csv-ps", cache) < 0) {
+		if (csv_asprintf(&path, "%s/csv-ps", cache) < 0) {
 			perror("asprintf");
 			return;
 		}
@@ -1166,7 +1163,7 @@ estimate_boottime()
 		const char *home = getenv("HOME");
 		if (!home)
 			return;
-		if (asprintf(&path, "%s/.cache", home) < 0) {
+		if (csv_asprintf(&path, "%s/.cache", home) < 0) {
 			perror("asprintf");
 			return;
 		}
@@ -1179,7 +1176,7 @@ estimate_boottime()
 		}
 		free(path);
 
-		if (asprintf(&path, "%s/.cache/csv-ps", home) < 0) {
+		if (csv_asprintf(&path, "%s/.cache/csv-ps", home) < 0) {
 			perror("asprintf");
 			return;
 		}
