@@ -147,27 +147,11 @@ next_row(const char *buf, const size_t *col_offs,
 	params->buf[0] = 0;
 
 	if (params->type == csv_string) {
-		const char *found;
-		if (params->s.ignore_case)
-			found = strcasestr(unquoted, params->s.pattern);
-		else
-			found = strstr(unquoted, params->s.pattern);
-
-		print_buf = found != NULL;
-
-		if (print_buf) {
-			used = strlen(unquoted) - params->s.pattern_len
-					+ params->s.replacement_len;
-			csv_check_space(&params->buf, &params->buf_len, 0, used);
-			size_t pos = found - unquoted;
-
-			memcpy(params->buf, unquoted, pos);
-			memcpy(params->buf + pos, params->s.replacement,
-					params->s.replacement_len);
-			strcpy(params->buf + pos + params->s.replacement_len,
-					unquoted + pos + params->s.pattern_len);
-
-		}
+		print_buf = csv_str_replace(unquoted, params->s.pattern,
+				params->s.replacement, !params->s.ignore_case,
+				&params->buf, &params->buf_len);
+		if (print_buf)
+			used = strlen(params->buf);
 	} else {
 		print_buf = regexec(&params->r.regex, unquoted, MAX_MATCHES,
 				params->r.matches, 0) == 0;
