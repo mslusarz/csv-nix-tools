@@ -253,6 +253,15 @@ test("csv-sql 'select num, str, toint(str) as str_to_int,\
 	data/rpn-add-num-base.csv data/rpn-add-convert.csv data/empty.txt 0
 	sql_str_to_int_int_to_str2)
 
+test("csv-sql \"select *, replace(str, 'pattern', 'replacement', 1) as x\"" add-rpn/replace-input.csv add-rpn/replace-output1.csv data/empty.txt 0
+	sql_replace1)
+
+test("csv-sql \"select *, replace(str, 'pattern', 'replacement') as x\"" add-rpn/replace-input.csv add-rpn/replace-output1.csv data/empty.txt 0
+	sql_replace1a)
+
+test("csv-sql \"select *, replace(str, 'pattern', 'replacement', 0) as x\"" add-rpn/replace-input.csv add-rpn/replace-output2.csv data/empty.txt 0
+	sql_replace2)
+
 test("csv-sql --help" data/empty.csv sql/help.txt data/empty.txt 2
 	sql_help)
 

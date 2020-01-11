@@ -177,6 +177,15 @@ test("csv-add-sql -T t1 -n name_len -e 'length(name)'" data/2-tables.csv add-sql
 test("csv-add-sql -T t2 -n name_plus_id_squared -e 'name || tostring(id * id)'" data/2-tables.csv add-sql/2-tables-add2.csv data/empty.txt 0
 	add-sql_2tables-add2)
 
+test("csv-add-sql -n x -e \"replace(str, 'pattern', 'replacement', 1)\"" add-rpn/replace-input.csv add-rpn/replace-output1.csv data/empty.txt 0
+	add-sql_replace1)
+
+test("csv-add-sql -n x -e \"replace(str, 'pattern', 'replacement')\"" add-rpn/replace-input.csv add-rpn/replace-output1.csv data/empty.txt 0
+	add-sql_replace1a)
+
+test("csv-add-sql -n x -e \"replace(str, 'pattern', 'replacement', 0)\"" add-rpn/replace-input.csv add-rpn/replace-output2.csv data/empty.txt 0
+	add-sql_replace2)
+
 test("csv-add-sql --help" data/empty.csv add-sql/help.txt data/empty.txt 2
 	add-sql_help)
 
