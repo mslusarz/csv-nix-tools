@@ -33,6 +33,7 @@
 #ifndef CSV_UTILS_H
 #define CSV_UTILS_H
 
+#include <search.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -230,5 +231,10 @@ char *csv_strcasestr(const char *haystack, const char *needle);
 void csv_qsort_r(void *base, size_t nmemb, size_t size,
                   int (*compar)(const void *, const void *, void *),
                   void *arg);
+
+struct csv_ht;
+int csv_hcreate_r(size_t nel, struct csv_ht **htab);
+int csv_hsearch_r(ENTRY item, ACTION action, ENTRY **retval, struct csv_ht *ht);
+void csv_hdestroy_r(struct csv_ht **ht);
 
 #endif

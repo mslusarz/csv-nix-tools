@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,15 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- * required to get:
- *  hcreate_r
- *  hdestroy_t
- *  hsearch_r
- */
-#define _GNU_SOURCE
-
-#include <search.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -48,7 +39,7 @@
 
 struct ht {
 	size_t keys_max;
-	struct hsearch_data ht;
+	struct csv_ht *ht;
 
 	ENTRY *table;
 	size_t table_size;
@@ -69,7 +60,7 @@ ht_init(struct ht *ht)
 	if (!ht->table)
 		return 2;
 
-	if (hcreate_r(ht->keys_max, &ht->ht) == 0) {
+	if (csv_hcreate_r(ht->keys_max, &ht->ht) == 0) {
 		perror("hcreate_r");
 		free(ht->table);
 		ht->table = NULL;
@@ -82,7 +73,7 @@ ht_init(struct ht *ht)
 static void
 ht_destroy(struct ht *ht)
 {
-	hdestroy_r(&ht->ht);
+	csv_hdestroy_r(&ht->ht);
 	for (size_t u = 0; u < ht->inserted; ++u) {
 		free(ht->table[u].key);
 		free(ht->table[u].data);
@@ -99,13 +90,13 @@ get_value(struct ht *ht, char *key, void *(*cb)(void *), void *cb_data)
 	e.key = key;
 	e.data = NULL;
 
-	if (hsearch_r(e, ENTER, &entry, &ht->ht) == 0) {
+	if (csv_hsearch_r(e, ENTER, &entry, ht->ht) == 0) {
 		/* hash map too small, recreate it */
-		hdestroy_r(&ht->ht);
+		csv_hdestroy_r(&ht->ht);
 		memset(&ht->ht, 0, sizeof(ht->ht));
 		ht->keys_max *= 2;
 
-		if (hcreate_r(ht->keys_max, &ht->ht) == 0) {
+		if (csv_hcreate_r(ht->keys_max, &ht->ht) == 0) {
 			perror("hcreate_r");
 			exit(2); /* no sane way to handle */
 		}
@@ -114,7 +105,7 @@ get_value(struct ht *ht, char *key, void *(*cb)(void *), void *cb_data)
 			e.key = ht->table[u].key;
 			e.data = NULL;
 
-			if (hsearch_r(e, ENTER, &entry, &ht->ht) == 0)
+			if (csv_hsearch_r(e, ENTER, &entry, ht->ht) == 0)
 				exit(2); /* impossible */
 
 			entry->key = ht->table[u].key;
