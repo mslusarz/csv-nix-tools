@@ -186,6 +186,24 @@ test("csv-add-sql -n x -e \"replace(str, 'pattern', 'replacement')\"" add-rpn/re
 test("csv-add-sql -n x -e \"replace(str, 'pattern', 'replacement', 0)\"" add-rpn/replace-input.csv add-rpn/replace-output2.csv data/empty.txt 0
 	add-sql_replace2)
 
+test("csv-add-sql -n x -e \"replace_ere(str, '([^e]*)e(.*)', '%1 XXX %2', 1)\"" add-rpn/replace-input.csv add-rpn/replace_re-output1.csv data/empty.txt 0
+	add-sql_replace_ere1)
+
+test("csv-add-sql -n x -e \"replace_ere(str, '([^e]*)e(.*)', '%1 XXX %2')\"" add-rpn/replace-input.csv add-rpn/replace_re-output1.csv data/empty.txt 0
+	add-sql_replace_ere1a)
+
+test("csv-add-sql -n x -e \"replace_ere(str, '([^e]*)e(.*)', '%1 XXX %2', 0)\"" add-rpn/replace-input.csv add-rpn/replace_re-output2.csv data/empty.txt 0
+	add-sql_replace_ere2)
+
+test("csv-add-sql -n x -e \"replace_bre(str, '\\([^e]*\\)e\\(.*\\)', '%1 XXX %2', 1)\"" add-rpn/replace-input.csv add-rpn/replace_re-output1.csv data/empty.txt 0
+	add-sql_replace_bre1)
+
+test("csv-add-sql -n x -e \"replace_bre(str, '\\([^e]*\\)e\\(.*\\)', '%1 XXX %2')\"" add-rpn/replace-input.csv add-rpn/replace_re-output1.csv data/empty.txt 0
+	add-sql_replace_bre1a)
+
+test("csv-add-sql -n x -e \"replace_bre(str, '\\([^e]*\\)e\\(.*\\)', '%1 XXX %2', 0)\"" add-rpn/replace-input.csv add-rpn/replace_re-output2.csv data/empty.txt 0
+	add-sql_replace_bre2)
+
 test("csv-add-sql --help" data/empty.csv add-sql/help.txt data/empty.txt 2
 	add-sql_help)
 

@@ -53,6 +53,8 @@ literal2 \"[^"]*\"
 "toint"		{ dbg_printf("LEX: matching TOINT\n"); return TOINT; }
 "tostring"	{ dbg_printf("LEX: matching TOSTRING\n"); return TOSTRING; }
 "replace"	{ dbg_printf("LEX: matching REPLACE\n"); return REPLACE; }
+"replace_bre"	{ dbg_printf("LEX: matching REPLACE_BRE\n"); return REPLACE_BRE; }
+"replace_ere"	{ dbg_printf("LEX: matching REPLACE_ERE\n"); return REPLACE_ERE; }
 "("		{ dbg_printf("LEX: matching LPAREN\n"); return LPAREN; }
 ")"		{ dbg_printf("LEX: matching RPAREN\n"); return RPAREN; }
 "if"		{ dbg_printf("LEX: matching IF\n"); return IF; }

@@ -262,6 +262,24 @@ test("csv-sql \"select *, replace(str, 'pattern', 'replacement') as x\"" add-rpn
 test("csv-sql \"select *, replace(str, 'pattern', 'replacement', 0) as x\"" add-rpn/replace-input.csv add-rpn/replace-output2.csv data/empty.txt 0
 	sql_replace2)
 
+test("csv-sql \"select *, replace_ere(str, '([^e]*)e(.*)', '%1 XXX %2', 1) as x\"" add-rpn/replace-input.csv add-rpn/replace_re-output1.csv data/empty.txt 0
+	sql_replace_ere1)
+
+test("csv-sql \"select *, replace_ere(str, '([^e]*)e(.*)', '%1 XXX %2') as x\"" add-rpn/replace-input.csv add-rpn/replace_re-output1.csv data/empty.txt 0
+	sql_replace_ere1a)
+
+test("csv-sql \"select *, replace_ere(str, '([^e]*)e(.*)', '%1 XXX %2', 0) as x\"" add-rpn/replace-input.csv add-rpn/replace_re-output2.csv data/empty.txt 0
+	sql_replace_ere2)
+
+test("csv-sql \"select *, replace_bre(str, '\\([^e]*\\)e\\(.*\\)', '%1 XXX %2', 1) as x\"" add-rpn/replace-input.csv add-rpn/replace_re-output1.csv data/empty.txt 0
+	sql_replace_bre1)
+
+test("csv-sql \"select *, replace_bre(str, '\\([^e]*\\)e\\(.*\\)', '%1 XXX %2') as x\"" add-rpn/replace-input.csv add-rpn/replace_re-output1.csv data/empty.txt 0
+	sql_replace_bre1a)
+
+test("csv-sql \"select *, replace_bre(str, '\\([^e]*\\)e\\(.*\\)', '%1 XXX %2', 0) as x\"" add-rpn/replace-input.csv add-rpn/replace_re-output2.csv data/empty.txt 0
+	sql_replace_bre2)
+
 test("csv-sql --help" data/empty.csv sql/help.txt data/empty.txt 2
 	sql_help)
 
