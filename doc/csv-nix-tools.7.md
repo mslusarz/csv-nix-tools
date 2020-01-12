@@ -15,6 +15,7 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 
 # SOURCE TOOLS #
 
+- **csv-env**(1)
 - **csv-group-members**(1)
 - **csv-groups**(1)
 - **csv-ls**(1)
@@ -36,7 +37,6 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 - **csv-cat**(1) - concatenate CSV files and print on the standard output
 - **csv-count**(1)
 - **csv-cut**(1)
-- **csv-env**(1)
 - **csv-grep**(1)
 - **csv-grep-rpn**(1)
 - **csv-grep-sql**(1)
