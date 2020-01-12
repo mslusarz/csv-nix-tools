@@ -125,7 +125,7 @@ endfunction()
 
 build_tool(csv-add-concat	src/add-concat.c)
 build_tool(csv-add-exec		src/add-exec.c)
-build_tool(csv-add-replace	src/add-replace.c)
+build_tool(csv-add-replace	src/add-replace.c src/regex_cache.c)
 build_tool(csv-add-rev		src/add-rev.c)
 build_tool(csv-add-rpn		src/add-rpn.c)
 build_tool(csv-add-split	src/add-split.c)

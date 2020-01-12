@@ -40,6 +40,7 @@
 #include <string.h>
 
 #include "parse.h"
+#include "regex_cache.h"
 #include "utils.h"
 
 static const struct option opts[] = {
@@ -89,7 +90,7 @@ struct cb_params {
 
 	union {
 		struct {
-			regex_t regex;
+			regex_t *regex;
 
 #define MAX_MATCHES 9
 			regmatch_t matches[MAX_MATCHES + 1];
@@ -150,7 +151,7 @@ next_row(const char *buf, const size_t *col_offs,
 		if (print_buf)
 			used = strlen(params->buf);
 	} else {
-		print_buf = regexec(&params->r.regex, unquoted, MAX_MATCHES,
+		print_buf = regexec(params->r.regex, unquoted, MAX_MATCHES,
 				params->r.matches, 0) == 0;
 
 		if (print_buf) {
@@ -397,18 +398,11 @@ main(int argc, char *argv[])
 		params.s.replacement = replacement;
 		params.s.replacement_len = strlen(replacement);
 	} else {
-		int ret = regcomp(&params.r.regex, regex,
+		int ret = csv_regex_get(&params.r.regex, regex,
 				(ignore_case ? REG_ICASE : 0) |
 				(params.type == csv_eregexp ? REG_EXTENDED : 0));
-		if (ret) {
-			size_t len = regerror(ret, &params.r.regex, NULL, 0);
-			char *errbuf = xmalloc_nofail(len, 1);
-			regerror(ret, &params.r.regex, errbuf, len);
-			fprintf(stderr,
-				"compilation of expression '%s' failed: %s\n",
-				regex, errbuf);
+		if (ret)
 			exit(2);
-		}
 
 		free(regex);
 		parse_replacement(replacement, &params);
@@ -434,13 +428,12 @@ main(int argc, char *argv[])
 	if (params.type == csv_string) {
 		free(params.s.pattern);
 	} else {
-		regfree(&params.r.regex);
-
 		for (size_t i = 0; i < params.r.nelements; ++i) {
 			if (params.r.elements[i].type == CONST_STR)
 				free(params.r.elements[i].const_str);
 		}
 		free(params.r.elements);
+		csv_regex_clear_cache();
 	}
 
 	free(params.buf);
