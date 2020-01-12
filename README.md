@@ -65,7 +65,7 @@ Filtering/processing:
 - csv-merge - merges multiple input streams
 - csv-min - takes a minimum value of numerical or string column(s)
 - csv-sort - sorts input by column(s)
-- csv-sql - processes input data using simplified (but very fast) SQL-based syntax (WIP)
+- csv-sql - processes input data using simplified (but very fast) SQL-based syntax
 - csv-sqlite - processes input data using SQLite (requires loading the whole input before processing)
 - csv-sum - takes a sum of numerical or string column(s)
 - csv-tac - concatenates files in reverse
