@@ -53,7 +53,9 @@ XXX
 
 # EXAMPLE #
 
-XXX
+```
+csv-ls -c full_path | csv-add-replace -c full_path -E '(.*)\.c$' -r '%1.o' -n new
+```
 
 # SEE ALSO #
 

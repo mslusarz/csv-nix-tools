@@ -32,7 +32,9 @@ XXX
 
 # EXAMPLE #
 
-XXX
+```
+$ csv-ls -R -c parent,name . | csv-add-concat full_path = %parent / %name
+```
 
 # SEE ALSO #
 

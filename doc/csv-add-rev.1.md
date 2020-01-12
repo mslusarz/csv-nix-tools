@@ -38,7 +38,9 @@ XXX
 
 # EXAMPLE #
 
-XXX
+```
+csv-ls | csv-add-rev -c name -n reversed_name
+```
 
 # SEE ALSO #
 

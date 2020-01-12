@@ -38,7 +38,11 @@ XXX
 
 # EXAMPLE #
 
-XXX
+```
+
+$ csv-ls -c full_path | csv-add-exec -c full_path -n new -- sed 's/.c$/.o/'
+
+```
 
 # SEE ALSO #
 
