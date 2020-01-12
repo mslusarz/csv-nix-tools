@@ -52,3 +52,5 @@ Operators/functions:
   replace           replace string                  %str 'pattern' 'replacement' %casesensitive replace
   replace_bre       replace string using basic RE   %str 'pattern' 'replacement' %casesensitive replace_bre
   replace_ere       replace string using ext. RE    %str 'pattern' 'replacement' %casesensitive replace_ere
+  matches_bre       string matches basic RE         %str 'pattern' %casesensitive matches_bre
+  matches_ere       string matches extended RE      %str 'pattern' %casesensitive matches_ere

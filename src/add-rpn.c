@@ -107,6 +107,8 @@ usage(FILE *out)
 	fprintf(out, "  replace           replace string                  %%str 'pattern' 'replacement' %%casesensitive replace\n");
 	fprintf(out, "  replace_bre       replace string using basic RE   %%str 'pattern' 'replacement' %%casesensitive replace_bre\n");
 	fprintf(out, "  replace_ere       replace string using ext. RE    %%str 'pattern' 'replacement' %%casesensitive replace_ere\n");
+	fprintf(out, "  matches_bre       string matches basic RE         %%str 'pattern' %%casesensitive matches_bre\n");
+	fprintf(out, "  matches_ere       string matches extended RE      %%str 'pattern' %%casesensitive matches_ere\n");
 }
 
 struct cb_params {

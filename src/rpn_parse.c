@@ -258,6 +258,10 @@ rpn_parse(struct rpn_expression *exp, char *str,
 				tkn.operator = RPN_REPLACE_BRE;
 			else if (strcmp(token, "replace_ere") == 0)
 				tkn.operator = RPN_REPLACE_ERE;
+			else if (strcmp(token, "matches_bre") == 0)
+				tkn.operator = RPN_MATCHES_BRE;
+			else if (strcmp(token, "matches_ere") == 0)
+				tkn.operator = RPN_MATCHES_ERE;
 			else {
 				fprintf(stderr, "unknown operator '%s'\n",
 						token);
@@ -322,6 +326,8 @@ expression_type(const struct rpn_expression *exp,
 				case RPN_GE:
 				case RPN_EQ:
 				case RPN_NE:
+				case RPN_MATCHES_BRE:
+				case RPN_MATCHES_ERE:
 					return "int";
 
 				case RPN_SUBSTR:

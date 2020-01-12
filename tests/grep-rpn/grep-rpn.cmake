@@ -80,6 +80,12 @@ test("csv-grep-rpn -e \"%name 3 1 substr 'r' ==\"" data/3-columns-3-rows.csv dat
 test("csv-grep-rpn -e \"%name '%th%' like\"" data/3-columns-3-rows.csv data/rpn-filter-rows-2-3.csv data/empty.txt 0
 	grep-rpn_like)
 
+test("csv-grep-rpn -e \"%name '.*th.*' 1 matches_ere\"" data/3-columns-3-rows.csv data/rpn-filter-rows-2-3.csv data/empty.txt 0
+	grep-rpn_matches_ere)
+
+test("csv-grep-rpn -e \"%name '.*th.*' 1 matches_bre\"" data/3-columns-3-rows.csv data/rpn-filter-rows-2-3.csv data/empty.txt 0
+	grep-rpn_matches_bre)
+
 
 test("csv-grep-rpn -e \"%name '%ing.%' like\"" grep-rpn/special-chars.csv grep-rpn/special-chars-found1.csv data/empty.txt 0
 	grep-rpn_like_escape_dot)

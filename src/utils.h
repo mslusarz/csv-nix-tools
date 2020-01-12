@@ -144,6 +144,8 @@ enum rpn_operator {
 	RPN_REPLACE,		/* replace string */
 	RPN_REPLACE_BRE,	/* replace string using basic regular expression */
 	RPN_REPLACE_ERE,	/* replace string using extended regular expression */
+	RPN_MATCHES_BRE,	/* string matches basic regular expression */
+	RPN_MATCHES_ERE,	/* string matches extended regular expression */
 };
 
 enum rpn_variant_type {

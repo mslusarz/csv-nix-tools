@@ -335,6 +335,20 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 			return -1;
 		}
 		break;
+	case RPN_MATCHES_BRE:
+	case RPN_MATCHES_ERE:
+		if (height < 3) {
+			fprintf(stderr, "not enough stack entries\n");
+			return -1;
+		}
+		height -= 2;
+		if (stack[height - 1].type != RPN_PCHAR ||
+				stack[height].type != RPN_PCHAR ||
+				stack[height + 1].type != RPN_LLONG) {
+			fprintf(stderr, "invalid types for matches* operator\n");
+			return -1;
+		}
+		break;
 	default:
 		abort();
 	}
@@ -688,6 +702,33 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 
 		free(pattern);
 		free(replacement);
+
+		break;
+	}
+	case RPN_MATCHES_BRE:
+	case RPN_MATCHES_ERE: {
+		char *str = stack[height - 1].pchar;
+		char *pattern = stack[height].pchar;
+		long long case_sensitive = stack[height + 1].llong;
+
+		regex_t *preg;
+
+		int ret = csv_regex_get(&preg, pattern,
+				REG_NOSUB |
+				(case_sensitive ? 0 : REG_ICASE) |
+				(oper == RPN_MATCHES_ERE ? REG_EXTENDED : 0));
+		if (ret)
+			return -1;
+		free(pattern);
+
+		stack[height - 1].type = RPN_LLONG;
+
+		if (regexec(preg, str, 0, NULL, 0) == 0)
+			stack[height - 1].llong = 1;
+		else
+			stack[height - 1].llong = 0;
+
+		free(str);
 
 		break;
 	}
