@@ -17,8 +17,8 @@ are welcomed.
 - cmake >= 3.3
 - glibc-devel
 - sqlite >= 3 (optional, required by csv-sqlite)
-- flex (optional, required by csv-sql and csv-grep-sql)
-- bison (optional, required by csv-sql and csv-grep-sql)
+- flex (optional, required by csv-sql, csv-grep-sql and csv-add-sql)
+- bison (optional, required by csv-sql, csv-grep-sql and csv-add-sql)
 - libprocps (optional, required by csv-ps)
 - ncurses (optional, used by csv-show)
 - libmnl (optional, required by csv-netstat)
@@ -168,21 +168,18 @@ Files owned by user=1000:
 
 ```
 $ csv-ls -R -c parent,name,owner_id / 2>/dev/null | csv-grep -c owner_id -x -F 1000 | csv-cut -c parent,name
-...
 ```
 
 Files owned by user=marcin:
 
 ```
 $ csv-ls -R -c parent,name,owner_name / 2>/dev/null | csv-grep -c owner_name -x -F marcin | csv-cut -c parent,name
-...
 ```
 
 Files anyone can read:
 
 ```
 $ csv-ls -R -c parent,name,other_read / 2>/dev/null | csv-grep -c other_read -x -F 1 | csv-cut -c parent,name
-...
 ```
 
 Sum of sizes of all files in the current directory:
@@ -236,10 +233,9 @@ List of files formatted in human-readable format (similar to ls -l) with disable
 
 ```
 $ csv-ls -l | csv-show -s 1 --ui none --no-header
--rwxr-xr-x  1 marcin marcin 5089  2019-12-23 00:23:36.438335394 avg.c           
--rwxr-xr-x  1 marcin marcin 5108  2019-12-23 00:22:44.362494798 cat.c           
--rwxr-xr-x  1 marcin marcin 5353  2019-12-14 22:19:16.197571951 concat.c        
-...
+-rwxr-xr-x  1 marcin marcin 5089 2019-12-23 00:23:36.438335394 avg.c           
+-rwxr-xr-x  1 marcin marcin 5108 2019-12-23 00:22:44.362494798 cat.c           
+-rwxr-xr-x  1 marcin marcin 5353 2019-12-14 22:19:16.197571951 concat.c        
 ```
 
 List of files whose 2nd character is 'o':
@@ -256,16 +252,25 @@ or
 ```
 $ csv-ls | csv-add-substring -c name -n 2nd-char -p 2 -l 1 |
 csv-grep -c 2nd-char -F o | csv-cut -c name
-name:string
-concat.c
-sort.c
 ```
 
-Full paths of all files in current directory and below:
+or
+
+```
+$ csv-ls | csv-grep-rpn -e "%name 2 1 substr 'o' =="
+```
+
+or
+
+```
+$ csv-ls | csv-grep-sql -e "substr(name, 2, 1) == 'o'"
+```
+
+
+Full paths of all files in the current directory and below:
 
 ```
 $ csv-ls -R -c parent,name . | csv-add-concat full_path = %parent / %name | csv-cut -c full_path
-....
 ```
 or
 
@@ -287,7 +292,6 @@ or
 ```
 $ csv-ls -c size,blocks | csv-add-sql -e "blocks * 512 AS space_used" |
 csv-sum -c size,blocks,space_used
-...
 ```
 
 List of files whose size is between 2000 and 3000 bytes (from the slowest to the fastest method):
@@ -305,28 +309,24 @@ $ csv-ls -c size,name |
 csv-add-rpn -n range2k-3k -e "%size 2000 >= %size 3000 < and" |
 csv-grep -c range2k-3k -F 1 |
 csv-cut -c size,name
-...
 ```
 
 or
 
 ```
 $ csv-ls -c size,name | csv-sql "select size, name from input where size > 2000 and size < 3000"
-...
 ```
 
 or
 
 ```
 $ csv-ls -c size,name | csv-grep-sql -e "size > 2000 and size < 3000"
-...
 ```
 
 or
 
 ```
 $ csv-ls -c size,name | csv-grep-rpn -e "%size 2000 >= %size 3000 < and"
-...
 ```
 
 
@@ -343,7 +343,6 @@ mode   strmode     name
 0644   rw-r--r--   CMakeCache.txt
 0755   rwxr-xr-x   CMakeFiles
 0600   rw-------   core
-...
 ```
 or
 
@@ -380,6 +379,13 @@ or 400x faster (3.1x faster than csv-add-replace):
 ```
 $ csv-ls -R -c full_path . | csv-add-rpn -n new -e "%full_path -1 1 substr 'c' == %full_path 1 %full_path strlen 1 - substr 'o' concat %full_path if"
 ```
+
+or as fast as the above:
+
+```
+$ csv-ls -R -c full_path . | csv-add-sql -n new -e "if (substr(full_path, -1, 1) == 'c', substr(full_path, 1, strlen(full_path) - 1) || 'o', full_path)"
+```
+
 
 List all system users and the name of the default group they belong to:
 
