@@ -204,6 +204,14 @@ test("csv-add-sql -n x -e \"replace_bre(str, '\\([^e]*\\)e\\(.*\\)', '%1 XXX %2'
 test("csv-add-sql -n x -e \"replace_bre(str, '\\([^e]*\\)e\\(.*\\)', '%1 XXX %2', 0)\"" add-rpn/replace-input.csv add-rpn/replace_re-output2.csv data/empty.txt 0
 	add-sql_replace_bre2)
 
+test("csv-add-sql -n 'num' -e \"next('a')\""
+	data/3-columns-3-rows.csv data/rpn-add-next.csv data/empty.txt 0
+	add-sql_next1)
+
+test("csv-add-sql -n 'num' -e \"next()\""
+	data/3-columns-3-rows.csv data/rpn-add-next.csv data/empty.txt 0
+	add-sql_next2)
+
 test("csv-add-sql --help" data/empty.csv add-sql/help.txt data/empty.txt 2
 	add-sql_help)
 
