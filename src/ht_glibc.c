@@ -1,5 +1,6 @@
+
 /*
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,87 +30,36 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#define _GNU_SOURCE
 
 #include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 
-#include "ht.h"
+#include "ht_internal.h"
 #include "utils.h"
-#include "usr-grp-query.h"
 
-static struct csv_ht *users_ht;
-static struct csv_ht *groups_ht;
+struct csv_ht_internal {
+	struct hsearch_data d;
+};
 
-static void *
-get_user_slow(void *uidp)
+int
+csv_hcreate_r(size_t nel, struct csv_ht_internal **ht)
 {
-	char *ret;
-	uid_t uid = *(uid_t *)uidp;
-	struct passwd *passwd = getpwuid(uid);
-	if (passwd)
-		return xstrdup(passwd->pw_name);
+	*ht = xcalloc_nofail(1, sizeof(**ht));
 
-	if (csv_asprintf(&ret, "%d", uid) < 0) {
-		perror("asprintf");
-		ret = NULL;
-	}
-
-	return ret;
-}
-
-const char *
-get_user(uid_t uid)
-{
-	char key[30];
-	sprintf(key, "%d", uid);
-
-	return csv_ht_get_value(users_ht, key, get_user_slow, &uid);
-}
-
-static void *
-get_group_slow(void *gidp)
-{
-	char *ret;
-	gid_t gid = *(uid_t *)gidp;
-	struct group *gr = getgrgid(gid);
-	if (gr)
-		return xstrdup(gr->gr_name);
-
-	if (csv_asprintf(&ret, "%d", gid) < 0) {
-		perror("asprintf");
-		ret = NULL;
-	}
-
-	return ret;
-}
-
-const char *
-get_group(gid_t gid)
-{
-	char key[30];
-	sprintf(key, "%d", gid);
-
-	return csv_ht_get_value(groups_ht, key, get_group_slow, &gid);
+	return hcreate_r(nel, &(*ht)->d);
 }
 
 int
-usr_grp_query_init(void)
+csv_hsearch_r(ENTRY item, ACTION action, ENTRY **retval,
+              struct csv_ht_internal *ht)
 {
-	if (csv_ht_init(&users_ht))
-		return 2;
-
-	if (csv_ht_init(&groups_ht)) {
-		csv_ht_destroy(&users_ht);
-		return 2;
-	}
-
-	return 0;
+	return hsearch_r(item, action, retval, &ht->d);
 }
 
 void
-usr_grp_query_fini(void)
+csv_hdestroy_r(struct csv_ht_internal **ht)
 {
-	csv_ht_destroy(&users_ht);
-	csv_ht_destroy(&groups_ht);
+	hdestroy_r(&(*ht)->d);
+	free(*ht);
+	*ht = NULL;
 }

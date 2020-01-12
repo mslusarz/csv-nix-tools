@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,86 +30,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#ifndef CSV_HT_INTERNAL_H
+#define CSV_HT_INTERNAL_H
 
-#include "ht.h"
-#include "utils.h"
-#include "usr-grp-query.h"
+#include <search.h>
+#include <stddef.h>
 
-static struct csv_ht *users_ht;
-static struct csv_ht *groups_ht;
+struct csv_ht_internal;
+int csv_hcreate_r(size_t nel, struct csv_ht_internal **htab);
+int csv_hsearch_r(ENTRY item, ACTION action, ENTRY **retval, struct csv_ht_internal *ht);
+void csv_hdestroy_r(struct csv_ht_internal **ht);
 
-static void *
-get_user_slow(void *uidp)
-{
-	char *ret;
-	uid_t uid = *(uid_t *)uidp;
-	struct passwd *passwd = getpwuid(uid);
-	if (passwd)
-		return xstrdup(passwd->pw_name);
-
-	if (csv_asprintf(&ret, "%d", uid) < 0) {
-		perror("asprintf");
-		ret = NULL;
-	}
-
-	return ret;
-}
-
-const char *
-get_user(uid_t uid)
-{
-	char key[30];
-	sprintf(key, "%d", uid);
-
-	return csv_ht_get_value(users_ht, key, get_user_slow, &uid);
-}
-
-static void *
-get_group_slow(void *gidp)
-{
-	char *ret;
-	gid_t gid = *(uid_t *)gidp;
-	struct group *gr = getgrgid(gid);
-	if (gr)
-		return xstrdup(gr->gr_name);
-
-	if (csv_asprintf(&ret, "%d", gid) < 0) {
-		perror("asprintf");
-		ret = NULL;
-	}
-
-	return ret;
-}
-
-const char *
-get_group(gid_t gid)
-{
-	char key[30];
-	sprintf(key, "%d", gid);
-
-	return csv_ht_get_value(groups_ht, key, get_group_slow, &gid);
-}
-
-int
-usr_grp_query_init(void)
-{
-	if (csv_ht_init(&users_ht))
-		return 2;
-
-	if (csv_ht_init(&groups_ht)) {
-		csv_ht_destroy(&users_ht);
-		return 2;
-	}
-
-	return 0;
-}
-
-void
-usr_grp_query_fini(void)
-{
-	csv_ht_destroy(&users_ht);
-	csv_ht_destroy(&groups_ht);
-}
+#endif

@@ -30,86 +30,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#ifndef CSV_HT_H
+#define CSV_HT_H
 
-#include "ht.h"
-#include "utils.h"
-#include "usr-grp-query.h"
+struct csv_ht;
+int csv_ht_init(struct csv_ht **ht);
+void csv_ht_destroy(struct csv_ht **ht);
+void *csv_ht_get_value(struct csv_ht *ht, char *key,
+		void *(*cb)(void *), void *cb_data);
 
-static struct csv_ht *users_ht;
-static struct csv_ht *groups_ht;
-
-static void *
-get_user_slow(void *uidp)
-{
-	char *ret;
-	uid_t uid = *(uid_t *)uidp;
-	struct passwd *passwd = getpwuid(uid);
-	if (passwd)
-		return xstrdup(passwd->pw_name);
-
-	if (csv_asprintf(&ret, "%d", uid) < 0) {
-		perror("asprintf");
-		ret = NULL;
-	}
-
-	return ret;
-}
-
-const char *
-get_user(uid_t uid)
-{
-	char key[30];
-	sprintf(key, "%d", uid);
-
-	return csv_ht_get_value(users_ht, key, get_user_slow, &uid);
-}
-
-static void *
-get_group_slow(void *gidp)
-{
-	char *ret;
-	gid_t gid = *(uid_t *)gidp;
-	struct group *gr = getgrgid(gid);
-	if (gr)
-		return xstrdup(gr->gr_name);
-
-	if (csv_asprintf(&ret, "%d", gid) < 0) {
-		perror("asprintf");
-		ret = NULL;
-	}
-
-	return ret;
-}
-
-const char *
-get_group(gid_t gid)
-{
-	char key[30];
-	sprintf(key, "%d", gid);
-
-	return csv_ht_get_value(groups_ht, key, get_group_slow, &gid);
-}
-
-int
-usr_grp_query_init(void)
-{
-	if (csv_ht_init(&users_ht))
-		return 2;
-
-	if (csv_ht_init(&groups_ht)) {
-		csv_ht_destroy(&users_ht);
-		return 2;
-	}
-
-	return 0;
-}
-
-void
-usr_grp_query_fini(void)
-{
-	csv_ht_destroy(&users_ht);
-	csv_ht_destroy(&groups_ht);
-}
+#endif

@@ -31,7 +31,6 @@
  */
 #define _GNU_SOURCE
 
-#include <search.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -62,31 +61,4 @@ csv_qsort_r(void *base, size_t nmemb, size_t size,
                   void *arg)
 {
 	return qsort_r(base, nmemb, size, compar, arg);
-}
-
-struct csv_ht {
-	struct hsearch_data d;
-};
-
-int
-csv_hcreate_r(size_t nel, struct csv_ht **ht)
-{
-	*ht = xcalloc_nofail(1, sizeof(**ht));
-
-	return hcreate_r(nel, &(*ht)->d);
-}
-
-int
-csv_hsearch_r(ENTRY item, ACTION action, ENTRY **retval,
-              struct csv_ht *ht)
-{
-	return hsearch_r(item, action, retval, &ht->d);
-}
-
-void
-csv_hdestroy_r(struct csv_ht **ht)
-{
-	hdestroy_r(&(*ht)->d);
-	free(*ht);
-	*ht = NULL;
 }
