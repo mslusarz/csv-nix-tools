@@ -55,6 +55,8 @@ literal2 \"[^"]*\"
 "replace"	{ dbg_printf("LEX: matching REPLACE\n"); return REPLACE; }
 "replace_bre"	{ dbg_printf("LEX: matching REPLACE_BRE\n"); return REPLACE_BRE; }
 "replace_ere"	{ dbg_printf("LEX: matching REPLACE_ERE\n"); return REPLACE_ERE; }
+"matches_bre"	{ dbg_printf("LEX: matching MATCHES_BRE\n"); return MATCHES_BRE; }
+"matches_ere"	{ dbg_printf("LEX: matching MATCHES_ERE\n"); return MATCHES_ERE; }
 "("		{ dbg_printf("LEX: matching LPAREN\n"); return LPAREN; }
 ")"		{ dbg_printf("LEX: matching RPAREN\n"); return RPAREN; }
 "if"		{ dbg_printf("LEX: matching IF\n"); return IF; }

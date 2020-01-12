@@ -104,6 +104,14 @@ test("csv-sql \"select * from input where name like '%th%'\""
 	data/3-columns-3-rows.csv data/rpn-filter-rows-2-3.csv data/empty.txt 0
 	sql_select_all_from_input_where_name_like_th)
 
+test("csv-sql \"select * from input where matches_ere(name, '.*th.*')\""
+	data/3-columns-3-rows.csv data/rpn-filter-rows-2-3.csv data/empty.txt 0
+	sql_select_all_from_input_where_matches_ere_name_th)
+
+test("csv-sql \"select * from input where matches_bre(name, '.*th.*')\""
+	data/3-columns-3-rows.csv data/rpn-filter-rows-2-3.csv data/empty.txt 0
+	sql_select_all_from_input_where_matches_bre_name_th)
+
 test("csv-sql \"select * from input where name || '.suffix' == 'lorem ipsum.suffix'\""
 	data/3-columns-3-rows.csv data/rpn-filter-row-1.csv data/empty.txt 0
 	sql_select_all_from_input_where_name||.suffix==loremipsum.suffix)

@@ -82,6 +82,18 @@ test("csv-grep-sql -e \"substr(name, 3, 1) == 'r'\"" data/3-columns-3-rows.csv d
 test("csv-grep-sql -e \"name like '%th%'\"" data/3-columns-3-rows.csv data/rpn-filter-rows-2-3.csv data/empty.txt 0
 	grep-sql_like)
 
+test("csv-grep-sql -e \"matches_ere(name, '.*th.*', 1)\"" data/3-columns-3-rows.csv data/rpn-filter-rows-2-3.csv data/empty.txt 0
+	grep-sql_matches_ere1)
+
+test("csv-grep-sql -e \"matches_ere(name, '.*th.*')\"" data/3-columns-3-rows.csv data/rpn-filter-rows-2-3.csv data/empty.txt 0
+	grep-sql_matches_ere1a)
+
+test("csv-grep-sql -e \"matches_bre(name,'.*th.*', 1)\"" data/3-columns-3-rows.csv data/rpn-filter-rows-2-3.csv data/empty.txt 0
+	grep-sql_matches_bre1)
+
+test("csv-grep-sql -e \"matches_bre(name,'.*th.*')\"" data/3-columns-3-rows.csv data/rpn-filter-rows-2-3.csv data/empty.txt 0
+	grep-sql_matches_bre1a)
+
 
 test("csv-grep-sql -e \"name like '%ing.%'\"" grep-rpn/special-chars.csv grep-rpn/special-chars-found1.csv data/empty.txt 0
 	grep-sql_like_escape_dot)
