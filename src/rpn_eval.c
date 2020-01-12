@@ -85,6 +85,69 @@ tostring(long long val, long long base)
 	return str;
 }
 
+static char *
+replace_re(const char *str, const char *replacement, const regmatch_t *matches)
+{
+	size_t len = strlen(replacement);
+
+	size_t buflen = len + 1;
+	char *buf = xmalloc_nofail(buflen, 1);
+	size_t buf_used = 0;
+
+	for (size_t i = 0; i < len; ++i) {
+		if (replacement[i] != '%') {
+			csv_check_space(&buf, &buflen, buf_used, 1);
+			buf[buf_used++] = replacement[i];
+			continue;
+		}
+
+		if (i + 1 >= len) {
+			fprintf(stderr, "dangling '%%'\n");
+			exit(2);
+		}
+
+		if (replacement[i + 1] == '%') {
+			i++;
+			csv_check_space(&buf, &buflen, buf_used, 1);
+			buf[buf_used++] = '%';
+		} else if (isdigit(replacement[i + 1])) {
+			i++;
+			unsigned match_num = replacement[i] - '0';
+
+			const regmatch_t *m = &matches[match_num];
+			if (m->rm_so == -1) {
+				unsigned cnt = match_num;
+				while (cnt > 0 && matches[cnt].rm_so == -1)
+					cnt--;
+
+				fprintf(stderr,
+					"expression %u doesn't exist, last valid expressions number is %u\n",
+					match_num, cnt);
+					exit(2);
+			}
+
+			regoff_t start = m->rm_so;
+			regoff_t end = m->rm_eo;
+			size_t len = end - start;
+
+			csv_check_space(&buf, &buflen, buf_used, len);
+
+			memcpy(&buf[buf_used], str + start, len);
+
+			buf_used += len;
+		} else {
+			fprintf(stderr,
+				"incorrect syntax - character after %% is not a digit or %%\n");
+			exit(2);
+		}
+	}
+
+	csv_check_space(&buf, &buflen, buf_used, 1);
+	buf[buf_used] = 0;
+
+	return buf;
+}
+
 static int
 eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 {
@@ -257,6 +320,8 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		}
 		break;
 	case RPN_REPLACE:
+	case RPN_REPLACE_BRE:
+	case RPN_REPLACE_ERE:
 		if (height < 4) {
 			fprintf(stderr, "not enough stack entries\n");
 			return -1;
@@ -589,6 +654,37 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 			stack[height - 1].pchar = str;
 			free(buf);
 		}
+
+		free(pattern);
+		free(replacement);
+
+		break;
+	}
+	case RPN_REPLACE_BRE:
+	case RPN_REPLACE_ERE: {
+		char *str = stack[height - 1].pchar;
+		char *pattern = stack[height].pchar;
+		char *replacement = stack[height + 1].pchar;
+		long long case_sensitive = stack[height + 2].llong;
+
+		regex_t *preg;
+
+		int ret = csv_regex_get(&preg, pattern,
+				(case_sensitive ? 0 : REG_ICASE) |
+				(oper == RPN_REPLACE_ERE ? REG_EXTENDED : 0));
+		if (ret)
+			return -1;
+
+#define MAX_MATCHES 9
+		regmatch_t matches[MAX_MATCHES + 1];
+		if (regexec(preg, str, MAX_MATCHES, matches, 0) == 0) {
+			stack[height - 1].pchar =
+					replace_re(str, replacement, matches);
+			free(str);
+		} else {
+			stack[height - 1].pchar = str;
+		}
+#undef MAX_MATCHES
 
 		free(pattern);
 		free(replacement);

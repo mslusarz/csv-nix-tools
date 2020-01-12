@@ -50,3 +50,5 @@ Operators/functions:
   tostring          convert to string               %num %base tostring
   toint             convert to integer              %str %base toint
   replace           replace string                  %str 'pattern' 'replacement' %casesensitive replace
+  replace_bre       replace string using basic RE   %str 'pattern' 'replacement' %casesensitive replace_bre
+  replace_ere       replace string using ext. RE    %str 'pattern' 'replacement' %casesensitive replace_ere

@@ -179,6 +179,18 @@ test("csv-add-rpn -n x -e \"%str 'pattern' 'replacement' 1 replace\"" add-rpn/re
 test("csv-add-rpn -n x -e \"%str 'pattern' 'replacement' 0 replace\"" add-rpn/replace-input.csv add-rpn/replace-output2.csv data/empty.txt 0
 	add-rpn_replace2)
 
+test("csv-add-rpn -n x -e \"%str '([^e]*)e(.*)' '%1 XXX %2' 1 replace_ere\"" add-rpn/replace-input.csv add-rpn/replace_re-output1.csv data/empty.txt 0
+	add-rpn_replace_ere1)
+
+test("csv-add-rpn -n x -e \"%str '([^e]*)e(.*)' '%1 XXX %2' 0 replace_ere\"" add-rpn/replace-input.csv add-rpn/replace_re-output2.csv data/empty.txt 0
+	add-rpn_replace_ere2)
+
+test("csv-add-rpn -n x -e \"%str '\\([^e]*\\)e\\(.*\\)' '%1 XXX %2' 1 replace_bre\"" add-rpn/replace-input.csv add-rpn/replace_re-output1.csv data/empty.txt 0
+	add-rpn_replace_bre1)
+
+test("csv-add-rpn -n x -e \"%str '\\([^e]*\\)e\\(.*\\)' '%1 XXX %2' 0 replace_bre\"" add-rpn/replace-input.csv add-rpn/replace_re-output2.csv data/empty.txt 0
+	add-rpn_replace_bre2)
+
 test("csv-add-rpn --help" data/empty.csv add-rpn/help.txt data/empty.txt 2
 	add-rpn_help)
 

@@ -142,6 +142,8 @@ enum rpn_operator {
 	RPN_LOGIC_XOR,		/* logic xor */
 	RPN_IF,			/* if then else */
 	RPN_REPLACE,		/* replace string */
+	RPN_REPLACE_BRE,	/* replace string using basic regular expression */
+	RPN_REPLACE_ERE,	/* replace string using extended regular expression */
 };
 
 enum rpn_variant_type {

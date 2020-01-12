@@ -1,0 +1,5 @@
+num:int,str:string,x:string
+0,pattern,patt XXX rn
+1,PATTERN,PATTERN
+2,pattern separator pattern,patt XXX rn separator pattern
+3,prefix pattern separator patter suffix,pr XXX fix pattern separator patter suffix

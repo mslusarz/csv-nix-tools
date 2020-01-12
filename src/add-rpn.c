@@ -105,6 +105,8 @@ usage(FILE *out)
 	fprintf(out, "  tostring          convert to string               %%num %%base tostring\n");
 	fprintf(out, "  toint             convert to integer              %%str %%base toint\n");
 	fprintf(out, "  replace           replace string                  %%str 'pattern' 'replacement' %%casesensitive replace\n");
+	fprintf(out, "  replace_bre       replace string using basic RE   %%str 'pattern' 'replacement' %%casesensitive replace_bre\n");
+	fprintf(out, "  replace_ere       replace string using ext. RE    %%str 'pattern' 'replacement' %%casesensitive replace_ere\n");
 }
 
 struct cb_params {
