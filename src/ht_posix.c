@@ -48,10 +48,11 @@ struct csv_ht {
 	ENTRY *table;
 	size_t table_size;
 	size_t inserted;
+	void (*destroy_value)(void *);
 };
 
 int
-csv_ht_init(struct csv_ht **htp)
+csv_ht_init(struct csv_ht **htp, void (*destroy_value)(void *))
 {
 	struct csv_ht *ht;
 	ht = *htp = xmalloc(1, sizeof(*ht));
@@ -62,6 +63,7 @@ csv_ht_init(struct csv_ht **htp)
 	ht->table_size = 4;
 	ht->ht = NULL;
 	ht->inserted = 0;
+	ht->destroy_value = destroy_value;
 
 	ht->table = xmalloc(ht->table_size, sizeof(ht->table[0]));
 	if (!ht->table) {
@@ -89,7 +91,7 @@ csv_ht_destroy(struct csv_ht **htp)
 	csv_hdestroy_r(&ht->ht);
 	for (size_t u = 0; u < ht->inserted; ++u) {
 		free(ht->table[u].key);
-		free(ht->table[u].data);
+		ht->destroy_value(ht->table[u].data);
 	}
 	free(ht->table);
 	free(ht);

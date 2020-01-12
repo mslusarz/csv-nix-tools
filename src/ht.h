@@ -34,7 +34,7 @@
 #define CSV_HT_H
 
 struct csv_ht;
-int csv_ht_init(struct csv_ht **ht);
+int csv_ht_init(struct csv_ht **ht, void (*destroy_value)(void *));
 void csv_ht_destroy(struct csv_ht **ht);
 void *csv_ht_get_value(struct csv_ht *ht, char *key,
 		void *(*cb)(void *), void *cb_data);

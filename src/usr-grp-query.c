@@ -93,13 +93,20 @@ get_group(gid_t gid)
 	return csv_ht_get_value(groups_ht, key, get_group_slow, &gid);
 }
 
+static void
+destroy_value(void *v)
+{
+	/* the stuff allocated by get_user_slow & get_group_slow */
+	free(v);
+}
+
 int
 usr_grp_query_init(void)
 {
-	if (csv_ht_init(&users_ht))
+	if (csv_ht_init(&users_ht, &destroy_value))
 		return 2;
 
-	if (csv_ht_init(&groups_ht)) {
+	if (csv_ht_init(&groups_ht, &destroy_value)) {
 		csv_ht_destroy(&users_ht);
 		return 2;
 	}
