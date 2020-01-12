@@ -453,7 +453,6 @@ raw        ::                          58   ::                  0               
 - show: ability to lock columns (make them always visible)
 - show: implement "search" and "help" in the ncurses backend
 - sql: implement case, cast
-- rpn: cache compiled regex
 - netstat: support more protocols
 - netstat: translate interface number to interface name
 - netstat: figure out how to print inet\_diag\_info

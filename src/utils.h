@@ -184,6 +184,7 @@ const char *rpn_expression_type(const struct rpn_expression *exp,
 		const struct col_header *headers);
 
 void rpn_free(struct rpn_expression *exp);
+void rpn_fini(void);
 
 typedef void (*print_fn)(const void *ptr);
 

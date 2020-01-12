@@ -227,6 +227,7 @@ main(int argc, char *argv[])
 		rpn_free(&params.expressions[i]);
 	free(params.expressions);
 	free(params.table);
+	rpn_fini();
 
 	return 0;
 }

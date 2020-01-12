@@ -311,6 +311,7 @@ main(int argc, char *argv[])
 		rpn_free(Params.where);
 		free(Params.where);
 	}
+	rpn_fini();
 
 	return 0;
 }

@@ -357,6 +357,7 @@ main(int argc, char *argv[])
 
 	free(Params.columns);
 	free(Params.table);
+	rpn_fini();
 
 	return 0;
 }

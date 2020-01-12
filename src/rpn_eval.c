@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "regex_cache.h"
 #include "utils.h"
 
 static char *
@@ -436,28 +437,18 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		*o++ = '$';
 		*o++ = 0;
 
-		regex_t preg;
+		regex_t *preg;
 
-		/* TODO: cache compiled regex */
-		int ret = regcomp(&preg, n, REG_EXTENDED | REG_NOSUB);
-		if (ret) {
-			size_t len = regerror(ret, &preg, NULL, 0);
-			char *errbuf = xmalloc_nofail(len, 1);
-			regerror(ret, &preg, errbuf, len);
-			fprintf(stderr,
-				"compilation of expression '%s' failed: %s\n",
-				n, errbuf);
-			free(errbuf);
+		int ret = csv_regex_get(&preg, n, REG_EXTENDED | REG_NOSUB);
+		if (ret)
 			return -1;
-		}
 
-		if (regexec(&preg, str, 0, NULL, 0) == 0)
+		if (regexec(preg, str, 0, NULL, 0) == 0)
 			stack[height - 1].llong = 1;
 		else
 			stack[height - 1].llong = 0;
 		stack[height - 1].type = RPN_LLONG;
 
-		regfree(&preg);
 		free(str);
 		free(pattern);
 		free(n);
@@ -690,4 +681,10 @@ rpn_eval(struct rpn_expression *exp,
 fail:
 	free(stack);
 	return -1;
+}
+
+void
+rpn_fini(void)
+{
+	csv_regex_clear_cache();
 }
