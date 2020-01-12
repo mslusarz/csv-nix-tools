@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "ht.h"
 #include "regex_cache.h"
 #include "utils.h"
 
@@ -146,6 +147,29 @@ replace_re(const char *str, const char *replacement, const regmatch_t *matches)
 	buf[buf_used] = 0;
 
 	return buf;
+}
+
+static struct csv_ht *Seq;
+
+static void *
+first_value(void *notused)
+{
+	long long *l = xmalloc_nofail(1, sizeof(*l));
+	*l = 0;
+	return l;
+}
+
+long long
+next(char *name)
+{
+	if (!Seq && csv_ht_init(&Seq, free))
+		exit(2);
+
+	long long *v = csv_ht_get_value(Seq, name, first_value, NULL);
+
+	(*v)++;
+
+	return *v;
 }
 
 static int
@@ -346,6 +370,17 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 				stack[height].type != RPN_PCHAR ||
 				stack[height + 1].type != RPN_LLONG) {
 			fprintf(stderr, "invalid types for matches* operator\n");
+			return -1;
+		}
+		break;
+	case RPN_NEXT:
+		if (height < 1) {
+			fprintf(stderr, "not enough stack entries\n");
+			return -1;
+		}
+
+		if (stack[height - 1].type != RPN_PCHAR) {
+			fprintf(stderr, "invalid type for next operator\n");
 			return -1;
 		}
 		break;
@@ -732,6 +767,16 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 
 		break;
 	}
+	case RPN_NEXT: {
+		char *name = stack[height - 1].pchar;
+
+		stack[height - 1].type = RPN_LLONG;
+		stack[height - 1].llong = next(name);
+
+		free(name);
+
+		break;
+	}
 	default:
 		abort();
 	}
@@ -824,4 +869,6 @@ void
 rpn_fini(void)
 {
 	csv_regex_clear_cache();
+	if (Seq)
+		csv_ht_destroy(&Seq);
 }

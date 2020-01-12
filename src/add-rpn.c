@@ -109,6 +109,7 @@ usage(FILE *out)
 	fprintf(out, "  replace_ere       replace string using ext. RE    %%str 'pattern' 'replacement' %%casesensitive replace_ere\n");
 	fprintf(out, "  matches_bre       string matches basic RE         %%str 'pattern' %%casesensitive matches_bre\n");
 	fprintf(out, "  matches_ere       string matches extended RE      %%str 'pattern' %%casesensitive matches_ere\n");
+	fprintf(out, "  next              next integer from sequence      'sequence name' next\n");
 }
 
 struct cb_params {

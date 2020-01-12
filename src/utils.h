@@ -146,6 +146,7 @@ enum rpn_operator {
 	RPN_REPLACE_ERE,	/* replace string using extended regular expression */
 	RPN_MATCHES_BRE,	/* string matches basic regular expression */
 	RPN_MATCHES_ERE,	/* string matches extended regular expression */
+	RPN_NEXT,		/* next integer from named sequence */
 };
 
 enum rpn_variant_type {

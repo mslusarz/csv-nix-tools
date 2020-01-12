@@ -435,7 +435,7 @@ raw        ::                          58   ::                  0               
 # TODO (high level)
 - more tests
 - more data collection tools (id, uname, w/who, df, free, ifconfig/ip, ipcs, lsattr, lsusb, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, etc)
-- more processing tools (nl, tr, paste?, etc)
+- more processing tools (tr, other?)
 - more rpn operators/functions (split, rev, timestamp conversion, now, tr)
 - exporting tools (to-xml, to-json, to-sql)
 - importing tools (from-xml, from-json)
