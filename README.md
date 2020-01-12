@@ -16,6 +16,7 @@ are welcomed.
 # Dependencies
 - **cmake** >= 3.3
 - **glibc-devel**
+- **pandoc** (optional, required to generate man pages)
 - **bison** (optional, required by csv-sql, csv-grep-sql and csv-add-sql)
 - **flex** (optional, required by csv-sql, csv-grep-sql and csv-add-sql)
 - **libmnl-devel** (optional, required by csv-netstat)
