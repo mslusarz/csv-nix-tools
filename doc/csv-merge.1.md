@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-merge - XXX
+csv-merge - merge multiple CSV streams
 
 # SYNOPSIS #
 
@@ -15,10 +15,10 @@ csv-merge - XXX
 
 XXX
 
--N, --table-name name
+-N, --table-name *NAME*
 :   XXX
 
--p, --path-without-table path
+-p, --path-without-table *PATH*
 :   XXX
 
 -s, --show
@@ -27,7 +27,7 @@ XXX
 -S, --show-full
 :   print output in table format with pager
 
---path-with-table path
+--path-with-table *PATH*
 :   XXX
 
 --help

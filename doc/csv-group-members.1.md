@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-group-members - XXX
+csv-group-members - list system groups and users that belong to them in CSV format
 
 # SYNOPSIS #
 
@@ -15,13 +15,13 @@ csv-group-members - XXX
 
 XXX
 
--c, --columns=name1[,name2...]
+-c, --columns=*NAME1*[,*NAME2*...]
 :   choose the list of columns
 
 -M, --merge
 :   XXX
 
--N, --table-name name
+-N, --table-name *NAME*
 :   XXX
 
 -s, --show

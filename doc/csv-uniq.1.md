@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-uniq - XXX
+csv-uniq - merge adjacent duplicate rows of CSV file
 
 # SYNOPSIS #
 
@@ -15,8 +15,8 @@ csv-uniq - XXX
 
 XXX
 
--c, --columns=name1[,name2...]
-:   XXX
+-c, --columns=*NAME1*[,*NAME2*...]
+:   use these columns
 
 -s, --show
 :   print output in table format
@@ -24,8 +24,8 @@ XXX
 -S, --show-full
 :   print output in table format with pager
 
--T, --table=name
-:   XXX
+-T, --table=*NAME*
+:   apply to rows only with _table column equal *NAME*
 
 --help
 :   display this help and exit
@@ -35,7 +35,8 @@ XXX
 
 # EXAMPLE #
 
-XXX
+csv-ls -c owner_name | csv-uniq -c owner_name | csv-sort -c owner_name | csv-uniq -c owner_name
+:   list owners of all files in the current directory
 
 # SEE ALSO #
 

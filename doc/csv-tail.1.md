@@ -15,8 +15,8 @@ csv-tail - print on the standard output the end of a CSV file from standard inpu
 
 Print the last 10 rows of CSV file from standard input to standard output.
 
--n, --lines=NUM
-:   print the last NUM rows instead of the last 10, NUM must be >= 0
+-n, --lines=*NUM*
+:   print the last *NUM* rows instead of the last 10, *NUM* must be >= 0
 
 -s, --show
 :   print output in table format

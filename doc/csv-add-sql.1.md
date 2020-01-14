@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-add-sql - XXX
+csv-add-sql - add a new column from SQL expression
 
 # SYNOPSIS #
 
@@ -13,13 +13,15 @@ csv-add-sql - XXX
 
 # DESCRIPTION #
 
-XXX
+Read CSV stream from standard input and print it back to standard output with
+a new column produced by evaluation of SQL expression.
 
--n new_column_name
-:   XXX
+-n *NEW-NAME*
+:   create column *NEW-NAME* as an output
 
--e SQL_expression
-:   XXX
+-e *SQL-EXPR*
+:   use expression *SQL-EXPR* to create new column; SQL expressions use space
+as a separator, so this needs to be quoted
 
 -s, --show
 :   print output in table format
@@ -27,8 +29,8 @@ XXX
 -S, --show-full
 :   print output in table format with pager
 
--T, --table=name
-:   XXX
+-T, --table=*NAME*
+:   apply to rows only with _table column equal *NAME*
 
 --help
 :   display this help and exit
@@ -38,7 +40,8 @@ XXX
 
 # EXAMPLE #
 
-XXX
+csv-ls -c name,size,blocks | csv-add-sql -e "blocks * 512 AS space_used" -s
+:   list files and real space they use
 
 # SEE ALSO #
 

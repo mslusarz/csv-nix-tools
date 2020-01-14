@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-groups - XXX
+csv-groups - list system groups in CSV format
 
 # SYNOPSIS #
 
@@ -15,7 +15,7 @@ csv-groups - XXX
 
 XXX
 
--c, --columns=name1[,name2...]
+-c, --columns=*NAME1*[,*NAME2*...]
 :   choose the list of columns
 
 -l
@@ -24,7 +24,7 @@ XXX
 -M, --merge
 :   XXX
 
--N, --table-name name
+-N, --table-name *NAME*
 :   XXX
 
 -s, --show

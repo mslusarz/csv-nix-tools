@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-header - XXX
+csv-header - process header of a CSV file
 
 # SYNOPSIS #
 

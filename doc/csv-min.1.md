@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-min - XXX
+csv-min - take a minimum value of numerical or string column(s)
 
 # SYNOPSIS #
 
@@ -13,10 +13,11 @@ csv-min - XXX
 
 # DESCRIPTION #
 
-XXX
+Read CSV stream from standard input and print back to standard output minimum
+values of chosen columns.
 
--c, --columns=name1[,name2...]
-:   XXX
+-c, --columns=*NAME1*[,*NAME2*...]
+:   use these columns
 
 -s, --show
 :   print output in table format
@@ -24,8 +25,8 @@ XXX
 -S, --show-full
 :   print output in table format with pager
 
--T, --table=name
-:   XXX
+-T, --table=*NAME*
+:   apply to rows only with _table column equal *NAME*
 
 --help
 :   display this help and exit
@@ -35,7 +36,8 @@ XXX
 
 # EXAMPLE #
 
-XXX
+csv-ls -l | csv-min -c size
+:   print the smallest file in the current directory
 
 # SEE ALSO #
 

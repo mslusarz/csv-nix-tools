@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-grep - XXX
+csv-grep - filter rows of CSV stream matching a pattern
 
 # SYNOPSIS #
 
@@ -13,22 +13,23 @@ csv-grep - XXX
 
 # DESCRIPTION #
 
-XXX
+Searches for PATTERN in column of CSV file read from standard input and print
+to standard output only rows matching that pattern.
 
--c column
-:   XXX
+-c *NAME*
+:   apply the filter to column *NAME*
 
--e regexp
-:   XXX
+-e *PATTERN*
+:   use *PATTERN* as a basic regular expression pattern
 
--E ext_regexp
-:   XXX
+-E *PATTERN*
+:   use *PATTERN* as a extended regular expression pattern
 
--F string
-:   XXX
+-F *STRING*
+:   use *STRING* as a fixed string pattern
 
 -i, --ignore-case
-:   XXX
+:   ignore case distinction
 
 -s, --show
 :   print output in table format
@@ -36,14 +37,15 @@ XXX
 -S, --show-full
 :   print output in table format with pager
 
--T, --table=name
-:   XXX
+-T, --table=*NAME*
+:   apply the filter to rows only with _table column equal *NAME*
 
 -v, --invert
-:   XXX
+:   invert the sense of matching, selecting non-matching rows
 
 -x, --whole
-:   XXX
+:   the pattern used by -e, -E or -F options must match exactly (no preceding
+or succeeding characters before/after pattern)
 
 --help
 :   display this help and exit
@@ -53,8 +55,10 @@ XXX
 
 # EXAMPLE #
 
-XXX
+csv-ls -l | csv-grep -c name -e '.*\.c$' -s
+:   list files with .c extension
 
 # SEE ALSO #
 
-**grep**(1), **csv-grep-rpn**(1), **csv-grep-sql**(1), **csv-show**(1), **csv-nix-tools**(7)
+**grep**(1), **regex**(7), **csv-grep-rpn**(1), **csv-grep-sql**(1),
+**csv-show**(1), **csv-nix-tools**(7)

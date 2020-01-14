@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-add-exec - XXX
+csv-add-exec - add a new column by executing an external command
 
 # SYNOPSIS #
 
@@ -13,13 +13,15 @@ csv-add-exec - XXX
 
 # DESCRIPTION #
 
-XXX
+Read CSV stream from standard input and print it back to standard output with
+a new column produced by reading standard output of an external command whose
+standard input is fed with input column.
 
--c, --column=name
-:   XXX
+-c, --column=*NAME*
+:   use column *NAME* as an input
 
--n, --new-name=name
-:   XXX
+-n, --new-name=*NAME*
+:   create column *NAME* as an output
 
 -s, --show
 :   print output in table format
@@ -27,8 +29,8 @@ XXX
 -S, --show-full
 :   print output in table format with pager
 
--T, --table=name
-:   XXX
+-T, --table=*NAME*
+:   apply to rows only with _table column equal *NAME*
 
 --help
 :   display this help and exit
@@ -38,11 +40,8 @@ XXX
 
 # EXAMPLE #
 
-```
-
-$ csv-ls -c full_path | csv-add-exec -c full_path -n new -- sed 's/.c$/.o/'
-
-```
+csv-ls -c full_path | csv-add-exec -s -c full_path -n new -- sed 's/.c$/.o/'
+:   list files; if file has .c extension it will be replaced by .o extension
 
 # SEE ALSO #
 

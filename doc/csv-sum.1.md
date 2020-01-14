@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-sum - XXX
+csv-sum - take a sum of numerical or string column(s)
 
 # SYNOPSIS #
 
@@ -13,10 +13,11 @@ csv-sum - XXX
 
 # DESCRIPTION #
 
-XXX
+Read CSV stream from standard input and print back to standard output the sum of
+values of chosen columns.
 
--c, --columns=name1[,name2...]
-:   XXX
+-c, --columns=*NAME1*[,*NAME2*...]
+:   use these columns
 
 -s, --show
 :   print output in table format
@@ -24,8 +25,8 @@ XXX
 -S, --show-full
 :   print output in table format with pager
 
--T, --table=name
-:   XXX
+-T, --table=*NAME*
+:   apply to rows only with _table column equal *NAME*
 
 --help
 :   display this help and exit
@@ -35,7 +36,8 @@ XXX
 
 # EXAMPLE #
 
-XXX
+csv-ls -l | csv-sum -c size
+:   print the sum of sizes of all files in the current directory
 
 # SEE ALSO #
 

@@ -35,11 +35,11 @@ There are 3 backends: **ncurses**(3)-based, **less**(1)-based and no-backend.
 
 **none** backend simply prints everything to standard output.
 
--u, --ui curses/less/none
+-u, --ui *curses*/*less*/*none*
 :   use UI based on **ncurses**(3), **less**(1) or nothing(tm)
 
--s, --spacing NUM
-:   use NUM spaces between columns instead of 3
+-s, --spacing *NUM*
+:   use *NUM* spaces between columns instead of 3
 
 --with-types
 :   print types in column headers

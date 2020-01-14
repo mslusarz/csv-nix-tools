@@ -15,58 +15,58 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 
 # SOURCE TOOLS #
 
-- **csv-env**(1)
-- **csv-group-members**(1)
-- **csv-groups**(1)
-- **csv-ls**(1)
-- **csv-netstat**(1)
-- **csv-ps**(1)
-- **csv-users**(1)
+- **csv-env**(1) - list environment variables
+- **csv-group-members**(1) - list system groups and users that belong to them
+- **csv-groups**(1) - list system groups
+- **csv-ls**(1) - list files
+- **csv-netstat**(1) - list network connections
+- **csv-ps**(1) - list processes
+- **csv-users**(1) - list system users
 
 # PROCESSING TOOLS #
 
-- **csv-add-concat**(1)
-- **csv-add-exec**(1)
-- **csv-add-replace**(1)
-- **csv-add-rev**(1)
-- **csv-add-rpn**(1)
-- **csv-add-split**(1)
-- **csv-add-sql**(1)
-- **csv-add-substring**(1)
-- **csv-avg**(1)
+- **csv-add-concat**(1) - add a new column by concatenation of columns and fixed strings
+- **csv-add-exec**(1) - add a new column by executing an external command
+- **csv-add-replace**(1) - add a new column by performing a string substitution on another column
+- **csv-add-rev**(1) - add a new column by reversing another column characterwise
+- **csv-add-rpn**(1) - add a new column from RPN expression
+- **csv-add-split**(1) - add two new columns by splitting another one using a separator
+- **csv-add-sql**(1) - add a new column from SQL expression
+- **csv-add-substring**(1) - add a new column by extracting a substring of another column
+- **csv-avg**(1) - take an average of numerical column(s)
 - **csv-cat**(1) - concatenate CSV files and print on the standard output
-- **csv-count**(1)
-- **csv-cut**(1)
-- **csv-grep**(1)
-- **csv-grep-rpn**(1)
-- **csv-grep-sql**(1)
+- **csv-count**(1) - count the number of columns and/or rows
+- **csv-cut**(1) - remove and/or reorder columns
+- **csv-grep**(1) - filter rows matching a pattern
+- **csv-grep-rpn**(1) - filter rows for which RPN expression returns true
+- **csv-grep-sql**(1) - filter rows for which SQL expression returns true
 - **csv-head**(1) - print on the standard output the beginning of a CSV file from standard input
-- **csv-header**(1)
-- **csv-max**(1)
-- **csv-merge**(1)
-- **csv-min**(1)
-- **csv-sort**(1)
-- **csv-sql**(1)
-- **csv-sqlite**(1)
-- **csv-sum**(1)
+- **csv-header**(1) - process header of a CSV file
+- **csv-max**(1) - take a maximum value of numerical or string column(s)
+- **csv-merge**(1) - merge multiple CSV streams
+- **csv-min**(1) - take a minimum value of numerical or string column(s)
+- **csv-sort**(1) - sort CSV file by column(s)
+- **csv-sql**(1) - process CSV input data using simplified SQL syntax
+- **csv-sqlite**(1) - process CSV input data using SQLite
+- **csv-sum**(1) - take a sum of numerical or string column(s)
 - **csv-tac**(1) - concatenate CSV files and print on the standard output in reverse
 - **csv-tail**(1) - print on the standard output the end of a CSV file from standard input
-- **csv-uniq**(1)
+- **csv-uniq**(1) - merge adjacent duplicate rows
 
 # SINK TOOLS #
 
-- **csv-exec**(1)
-- **csv-show**(1) - print on the standard output a CSV file from standard input in human-readable format
+- **csv-exec**(1) - execute an external command for each row
+- **csv-show**(1) - print in human-readable format
 
 # COMMON OPTIONS FOR ALL SOURCE TOOLS #
 
--c, --columns=name1[,name2...]
+-c, --columns=*NAME1*[,*NAME2*...]
 :   choose the list of columns
 
 -M, --merge
 :   XXX
 
--N, --table-name=name
+-N, --table-name=*NAME*
 :   XXX
 
 -T, --as-table
@@ -79,6 +79,11 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 
 -S, --show-full
 :   print output in table format with pager
+
+# COMMON OPTIONS FOR PROCESSING TOOLS #
+
+-t, --table=*NAME*
+:   apply to rows only with _table column equal *NAME*
 
 # COMMON OPTIONS FOR ALL TOOLS #
 

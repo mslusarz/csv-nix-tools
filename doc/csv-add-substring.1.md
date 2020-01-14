@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-add-substring - XXX
+csv-add-substring - add a new column by extracting a substring of another column
 
 # SYNOPSIS #
 
@@ -13,19 +13,21 @@ csv-add-substring - XXX
 
 # DESCRIPTION #
 
-XXX
+Read CSV stream from standard input and print it back to standard output with
+a new column produced by extracting substring of another column.
 
--c name
-:   XXX
+-c *NAME*
+:   use column *NAME* as an input data
 
--n new-name
-:   XXX
+-n *NEW-NAME*
+:   create column *NEW-NAME* as an output
 
--p start-pos
-:   XXX
+-p *START-POS*
+:   start from position *START-POS*; first character has position 1; negative
+value mean starting from the end of string
 
--l length
-:   XXX
+-l *LENGTH*
+:   take *LENGTH* characters from string; must not be negative
 
 -s, --show
 :   print output in table format
@@ -33,8 +35,8 @@ XXX
 -S, --show-full
 :   print output in table format with pager
 
--T, --table=name
-:   XXX
+-T, --table=*NAME*
+:   apply to rows only with _table column equal *NAME*
 
 --help
 :   display this help and exit
@@ -44,7 +46,8 @@ XXX
 
 # EXAMPLE #
 
-XXX
+csv-ls -c name,mtime | csv-add-substring -c mtime -n myear -p 1 -l 4 -s
+:   list files and year they were last modified
 
 # SEE ALSO #
 

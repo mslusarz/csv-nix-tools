@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-sort - XXX
+csv-sort - sort CSV file by column(s)
 
 # SYNOPSIS #
 
@@ -15,7 +15,7 @@ csv-sort - XXX
 
 XXX
 
--c, --columns=name1[,name2...]
+-c, --columns=*NAME1*[,*NAME2*...]
 :   XXX
 
 -r, --reverse
@@ -27,8 +27,8 @@ XXX
 -S, --show-full
 :   print output in table format with pager
 
--T, --table=name
-:   XXX
+-T, --table=*NAME*
+:   apply to rows only with _table column equal *NAME*
 
 --help
 :   display this help and exit

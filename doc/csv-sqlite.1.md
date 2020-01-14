@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-sqlite - XXX
+csv-sqlite - process CSV input data using SQLite
 
 # SYNOPSIS #
 
@@ -15,7 +15,7 @@ csv-sqlite - XXX
 
 XXX
 
--i path
+-i *PATH*
 :   XXX
 
 -s, --show

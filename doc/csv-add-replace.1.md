@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-add-replace - XXX
+csv-add-replace - add a new column by performing a string substitution on another column
 
 # SYNOPSIS #
 
@@ -13,28 +13,33 @@ csv-add-replace - XXX
 
 # DESCRIPTION #
 
-XXX
+Read CSV stream from standard input and print it back to standard output with
+a new column produced by performing string substitution either using fixed
+strings or regular expression.
 
--c name
-:   XXX
+-c *NAME*
+:   use column *NAME* as an input data
 
--e regex
-:   XXX
+-e *REGEX*
+:   use *REGEX* as a basic regular expression
 
--E eregex
-:   XXX
+-E *EREGEX*
+:   use *EREGEX* as an extended regular expression
 
--F pattern
-:   XXX
+-F *PATTERN*
+:   use *PATTERN* as a fixed string pattern
 
 -i, --ignore-case
-:   XXX
+:   perform matching ignoring case distinction
 
--n new-name
-:   XXX
+-n *NEW-NAME*
+:   create column *NEW-NAME* as an output
 
--r replacement
-:   XXX
+-r *REPLACEMENT*
+:   use *REPLACEMENT* as an replacement for pattern; for fixed string pattern
+it is not interpreted, but for regular expression %1 to %9 are replaced
+by corresponding matching sub-expression, and %0 is the whole matching
+expression
 
 -s, --show
 :   print output in table format
@@ -42,8 +47,8 @@ XXX
 -S, --show-full
 :   print output in table format with pager
 
--T, --table=name
-:   XXX
+-T, --table=*NAME*
+:   apply to rows only with _table column equal *NAME*
 
 --help
 :   display this help and exit
@@ -53,10 +58,9 @@ XXX
 
 # EXAMPLE #
 
-```
-csv-ls -c full_path | csv-add-replace -c full_path -E '(.*)\.c$' -r '%1.o' -n new
-```
+csv-ls -c full_path | csv-add-replace -c full_path -E '(.*)\.c$' -r '%1.o' -n new -s
+:   list files; if file has .c extension it will be replaced by .o extension
 
 # SEE ALSO #
 
-**csv-show**(1), **csv-nix-tools**(7)
+**regex**(7), **sed**(1), **csv-show**(1), **csv-nix-tools**(7)

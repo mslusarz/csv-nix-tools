@@ -45,7 +45,7 @@ Source:
 - **csv-users** - lists system users
 
 Filtering/processing:
-- **csv-add-concat** - adds a new column by concatenation of columns and user-defined strings
+- **csv-add-concat** - adds a new column by concatenation of columns and fixed strings
 - **csv-add-exec** - pipes data to standard input of an external command and creates a new column from its standard output
 - **csv-add-replace** - adds a new column by performing a string substitution on another column (similar to sed s/$str/$str/)
 - **csv-add-rev** - adds a new column by reversing another column characterwise

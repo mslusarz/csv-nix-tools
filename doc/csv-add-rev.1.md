@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-add-rev - XXX
+csv-add-rev - add a new column by reversing another column characterwise
 
 # SYNOPSIS #
 
@@ -13,13 +13,14 @@ csv-add-rev - XXX
 
 # DESCRIPTION #
 
-XXX
+Read CSV stream from standard input and print it back to standard output with
+a new column produced by reversing another column characterwise.
 
--c name
-:   XXX
+-c *NAME*
+:   use column *NAME* as an input
 
--n new-name
-:   XXX
+-n *NEW-NAME*
+:   create column *NEW-NAME* as an output
 
 -s, --show
 :   print output in table format
@@ -27,8 +28,8 @@ XXX
 -S, --show-full
 :   print output in table format with pager
 
--T, --table=name
-:   XXX
+-T, --table=*NAME*
+:   apply the filter to rows only with _table column equal *NAME*
 
 --help
 :   display this help and exit
@@ -38,9 +39,8 @@ XXX
 
 # EXAMPLE #
 
-```
-csv-ls | csv-add-rev -c name -n reversed_name
-```
+csv-ls | csv-add-rev -c name -n reversed_name -s
+:   list files with names reversed
 
 # SEE ALSO #
 

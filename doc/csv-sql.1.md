@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-sql - XXX
+csv-sql - processes CSV input data using simplified SQL syntax
 
 # SYNOPSIS #
 

@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-ps - XXX
+csv-ps - list processes in CSV format
 
 # SYNOPSIS #
 
@@ -15,7 +15,7 @@ csv-ps - XXX
 
 XXX
 
--c, --columns=name1[,name2...]
+-c, --columns=*NAME1*[,*NAME2*...]
 :   choose the list of columns
 
 -l
@@ -24,10 +24,10 @@ XXX
 -M, --merge
 :   XXX
 
--N, --table-name name
+-N, --table-name *NAME*
 :   XXX
 
--p, --pid=pid1[,pid2...]
+-p, --pid=PID1[,PID2...]
 :   select processes from this list
 
 -s, --show

@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-count - XXX
+csv-count - count the number of columns and/or rows
 
 # SYNOPSIS #
 

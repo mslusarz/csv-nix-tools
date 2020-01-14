@@ -15,8 +15,8 @@ csv-head - print on the standard output the beginning of a CSV file from standar
 
 Print the first 10 rows of CSV file from standard input to standard output.
 
--n, --lines=NUM
-:   print the first NUM rows instead of the first 10, NUM must be >= 0
+-n, --lines=*NUM*
+:   print the first *NUM* rows instead of the first 10, *NUM* must be >= 0
 
 -s, --show
 :   print output in table format

@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-grep-rpn - XXX
+csv-grep-rpn - filter rows of CSV stream for which RPN expression returns true
 
 # SYNOPSIS #
 
@@ -15,7 +15,7 @@ csv-grep-rpn - XXX
 
 XXX
 
--e "RPN expression"
+-e *RPN-EXPR*
 :   XXX
 
 -s, --show
@@ -24,8 +24,8 @@ XXX
 -S, --show-full
 :   print output in table format with pager
 
--T, --table=name
-:   XXX
+-T, --table=*NAME*
+:   apply the filter to rows only with _table column equal *NAME*
 
 --help
 :   display this help and exit

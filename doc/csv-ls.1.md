@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-ls - XXX
+csv-ls - list files in CSV format
 
 # SYNOPSIS #
 
@@ -18,7 +18,7 @@ XXX
 -a, --all
 :   do not ignore entries starting with .
 
--c, --columns=name1[,name2...]
+-c, --columns=*NAME1*[,*NAME2*...]
 :   choose the list of columns
 
 -d, --directory
@@ -30,7 +30,7 @@ XXX
 -M, --merge
 :   XXX
 
--N, --table-name name
+-N, --table-name *NAME*
 :   XXX
 
 -R, --recursive

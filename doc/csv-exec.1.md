@@ -5,7 +5,7 @@ section: 1
 
 # NAME #
 
-csv-exec - XXX
+csv-exec - execute an external command for each row
 
 # SYNOPSIS #
 
