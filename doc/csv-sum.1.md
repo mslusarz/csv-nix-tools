@@ -34,7 +34,7 @@ values of chosen columns.
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
 csv-ls -l | csv-sum -c size
 :   print the sum of sizes of all files in the current directory

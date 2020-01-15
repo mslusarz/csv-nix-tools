@@ -53,7 +53,7 @@ There are 3 backends: **ncurses**(3)-based, **less**(1)-based and no-backend.
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
 csv-show < file1.csv
 :   print file1.csv in human-readable format

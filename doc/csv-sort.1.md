@@ -13,13 +13,14 @@ csv-sort - sort CSV file by column(s)
 
 # DESCRIPTION #
 
-XXX
+Read CSV stream from standard input, sort it by chosen column and print
+resulting file to standard output.
 
 -c, --columns=*NAME1*[,*NAME2*...]
-:   XXX
+:   sort first by column *NAME1*, then *NAME2*, etc.
 
 -r, --reverse
-:   XXX
+:   sort in descending order
 
 -s, --show
 :   print output in table format
@@ -36,9 +37,10 @@ XXX
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
-XXX
+csv-ls -c name,size | csv-sort -c size -r -s
+:   print files, sorted by size, in descending order
 
 # SEE ALSO #
 

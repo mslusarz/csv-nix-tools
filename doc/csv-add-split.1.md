@@ -47,7 +47,7 @@ than 1 separator and *no* if there's only one), defaults to *auto*
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
 csv-ls | csv-add-split -c name -e . -n base,ext -s
 :   list files with base and extension in columns base and ext

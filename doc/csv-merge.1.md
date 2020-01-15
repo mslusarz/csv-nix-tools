@@ -36,7 +36,7 @@ XXX
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
 XXX
 

@@ -37,7 +37,7 @@ a new column produced by reversing another column characterwise.
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
 csv-ls | csv-add-rev -c name -n reversed_name -s
 :   list files with names reversed

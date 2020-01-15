@@ -32,7 +32,7 @@ input file.
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
 csv-cat file1.csv - file2.csv
 :   output file1.csv contents, the standard input, then file2.contents

@@ -38,7 +38,7 @@ standard input is fed with input column.
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
 csv-ls -c full_path | csv-add-exec -s -c full_path -n new -- sed 's/.c$/.o/'
 :   list files; if file has .c extension it will be replaced by .o extension

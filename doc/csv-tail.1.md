@@ -30,7 +30,7 @@ Print the last 10 rows of CSV file from standard input to standard output.
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
 csv-tail < file1.csv
 :   output the last 10 rows of file1.csv

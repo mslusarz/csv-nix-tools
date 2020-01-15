@@ -30,7 +30,7 @@ Print the first 10 rows of CSV file from standard input to standard output.
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
 csv-head < file1.csv
 :   output the first 10 rows of file1.csv

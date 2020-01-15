@@ -13,7 +13,7 @@ csv-groups - list system groups in CSV format
 
 # DESCRIPTION #
 
-XXX
+Print to standard output the list of system groups in the CSV format.
 
 -c, --columns=*NAME1*[,*NAME2*...]
 :   choose the list of columns
@@ -22,10 +22,10 @@ XXX
 :   use a longer listing format (can be used once)
 
 -M, --merge
-:   XXX
+:   merge output with a CSV stream in table form from standard input
 
 -N, --table-name *NAME*
-:   XXX
+:   produce output as table *NAME*
 
 -s, --show
 :   print output in table format
@@ -34,7 +34,7 @@ XXX
 :   print output in table format with pager
 
 -T, --as-table
-:   XXX
+:   produce output as table *group*
 
 --help
 :   display this help and exit
@@ -42,9 +42,13 @@ XXX
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
-XXX
+csv-groups -s
+:   print the list of groups
+
+csv-groups -T -N grp | csv-users -M | csv-sqlite -T 'select user.name as user_name, grp.name as group_name from user, grp where user.gid = grp.gid' -s
+:   print user names and the group name of their default group
 
 # SEE ALSO #
 

@@ -34,7 +34,7 @@ values of chosen columns.
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
 csv-ls -l | csv-min -c size
 :   print the smallest file in the current directory

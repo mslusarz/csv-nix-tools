@@ -38,7 +38,7 @@ as a separator, so this needs to be quoted
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
 csv-ls -c name,size,blocks | csv-add-sql -e "blocks * 512 AS space_used" -s
 :   list files and real space they use

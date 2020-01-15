@@ -13,16 +13,17 @@ csv-group-members - list system groups and users that belong to them in CSV form
 
 # DESCRIPTION #
 
-XXX
+Print to standard output the list of system groups and users that belong to them
+in the CSV format.
 
 -c, --columns=*NAME1*[,*NAME2*...]
 :   choose the list of columns
 
 -M, --merge
-:   XXX
+:   merge output with a CSV stream in table form from standard input
 
 -N, --table-name *NAME*
-:   XXX
+:   produce output as table *NAME*
 
 -s, --show
 :   print output in table format
@@ -31,7 +32,7 @@ XXX
 :   print output in table format with pager
 
 -T, --as-table
-:   XXX
+:   produce output as table *group_member*
 
 --help
 :   display this help and exit
@@ -39,9 +40,13 @@ XXX
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
-XXX
+csv-group-members -s
+:   print groups and users
+
+csv-group-members -T | csv-grep -T group_member -c group_name -x -F audio | csv-users -M | csv-sqlite -T 'select user.uid from user, group_member where user.name = group_member.user_name' -s
+:   print user ids of users belonging to group 'audio'
 
 # SEE ALSO #
 

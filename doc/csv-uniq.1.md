@@ -13,7 +13,8 @@ csv-uniq - merge adjacent duplicate rows of CSV file
 
 # DESCRIPTION #
 
-XXX
+Read CSV stream from standard input, remove adjacent duplicate rows and
+print back to standard output the remaining rows.
 
 -c, --columns=*NAME1*[,*NAME2*...]
 :   use these columns
@@ -33,7 +34,7 @@ XXX
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
 csv-ls -c owner_name | csv-uniq -c owner_name | csv-sort -c owner_name | csv-uniq -c owner_name
 :   list owners of all files in the current directory

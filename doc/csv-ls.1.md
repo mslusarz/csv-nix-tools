@@ -13,7 +13,8 @@ csv-ls - list files in CSV format
 
 # DESCRIPTION #
 
-XXX
+List information about the FILEs (the current directory by default).
+Sort entries alphabetically if -U is not specified.
 
 -a, --all
 :   do not ignore entries starting with .
@@ -28,10 +29,10 @@ XXX
 :   use a longer listing format (can be used up to 3 times)
 
 -M, --merge
-:   XXX
+:   merge output with a CSV stream in table form from standard input
 
 -N, --table-name *NAME*
-:   XXX
+:   produce output as table *NAME*
 
 -R, --recursive
 :   list subdirectories recursively
@@ -43,7 +44,7 @@ XXX
 :   print output in table format with pager
 
 -T, --as-table
-:   XXX
+:   produce output as table *file*
 
 -U
 :   do not sort; list entries in directory order
@@ -54,9 +55,13 @@ XXX
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
-XXX
+csv-ls
+:   print files (just names) in the current directory
+
+csv-ls -l -s
+:   print files in the current directory, in a format similar to ls -l
 
 # SEE ALSO #
 

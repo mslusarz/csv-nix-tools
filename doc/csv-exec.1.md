@@ -13,7 +13,7 @@ csv-exec - execute an external command for each row
 
 # DESCRIPTION #
 
-XXX
+Read CSV stream from standard input and execute an external command for each row.
 
 --help
 :   display this help and exit
@@ -21,9 +21,10 @@ XXX
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
-XXX
+csv-ls -R -c full_path . | csv-grep -c full_path -e '~$' | csv-exec -- rm -f %full_path
+:   remove all backup files
 
 # SEE ALSO #
 

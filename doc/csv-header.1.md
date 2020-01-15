@@ -13,10 +13,26 @@ csv-header - process header of a CSV file
 
 # DESCRIPTION #
 
-XXX
+Read CSV stream from standard input and print back to standard output with
+the column header transformed.
+
+-A, --add-types *NAME1*:*TYPE1*[,*NAME2*:*TYPE2*]
+:   (NOT IMPLEMENTED YET) add type *TYPE1* to column *NAME1*, *TYPE2* to column *NAME2*, etc.
+
+-C, --change-type *NAME*:*TYPE*
+:   (NOT IMPLEMENTED YET) change type of column *NAME* to *TYPE*
+
+-G, --guess-types
+:   (NOT IMPLEMENTED YET) add types to columns by guessing based on their contents
+
+-M, --remove-types
+:   (NOT IMPLEMENTED YET) remove types from columns
 
 -m, --remove
-:   XXX
+:   remove column header
+
+-n, --rename *NAME*,*NEW-NAME*
+:   (NOT IMPLEMENTED YET) rename column *NAME* to *NEW-NAME*
 
 -s, --show
 :   print output in table format
@@ -30,9 +46,10 @@ XXX
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
-XXX
+csv-ls | csv-count -r | csv-header -m
+:   print number of files in the current directory without csv header
 
 # SEE ALSO #
 

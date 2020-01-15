@@ -31,7 +31,7 @@ a new column produced by concatenation of columns and fixed strings.
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
 csv-ls -R -c parent,name . | csv-add-concat -s -- full_path = %parent / %name
 :    list files with their full path

@@ -44,7 +44,7 @@ value mean starting from the end of string
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
 csv-ls -c name,mtime | csv-add-substring -c mtime -n myear -p 1 -l 4 -s
 :   list files and year they were last modified

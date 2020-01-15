@@ -100,7 +100,7 @@ Functions:
 | matches_ere | string matches extended RE    | %str 'pat' 1 matches_ere       |
 | next        | next integer from sequence    | 'sequence name' next           |
 
-# EXAMPLE #
+# EXAMPLES #
 
 csv-ls -c name,size,blocks | csv-add-rpn -n space_used -e "%blocks 512 *" -s
 :   list files and real space they use

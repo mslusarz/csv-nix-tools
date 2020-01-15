@@ -53,7 +53,7 @@ or succeeding characters before/after pattern)
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
 csv-ls -l | csv-grep -c name -e '.*\.c$' -s
 :   list files with .c extension

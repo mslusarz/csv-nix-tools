@@ -64,13 +64,16 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 :   choose the list of columns
 
 -M, --merge
-:   XXX
+:   merge output with a CSV stream in table form from standard input
 
 -N, --table-name=*NAME*
-:   XXX
+:   produce output as table *NAME*
 
 -T, --as-table
-:   XXX
+:   produce output as table
+
+Options -M/-N/-T can be used to merge output of multiple source tools, to
+be ultimately consumed by **csv-sqlite**(1).
 
 # COMMON OPTIONS FOR ALL SOURCE AND PROCESSING TOOLS #
 

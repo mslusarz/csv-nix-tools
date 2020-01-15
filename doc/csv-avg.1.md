@@ -34,7 +34,7 @@ of chosen columns.
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
 csv-ls -l | csv-avg -c size
 :   print average size of file in the current directory

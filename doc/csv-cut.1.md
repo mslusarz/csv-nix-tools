@@ -37,7 +37,7 @@ resulting file to standard output.
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
 csv-ls -l | csv-cut -c name,size -s
 :   list files and their sizes

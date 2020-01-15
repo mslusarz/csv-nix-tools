@@ -13,16 +13,16 @@ csv-env - list environment variables in CSV format
 
 # DESCRIPTION #
 
-XXX
+Print to standard output the list of environment variables in the CSV format.
 
 -c, --columns=*NAME1*[,*NAME2*...]
 :   choose the list of columns
 
 -M, --merge
-:   XXX
+:   merge output with a CSV stream in table form from standard input
 
 -N, --table-name *NAME*
-:   XXX
+:   produce output as table *NAME*
 
 -s, --show
 :   print output in table format
@@ -31,7 +31,7 @@ XXX
 :   print output in table format with pager
 
 -T, --as-table
-:   XXX
+:   produce output as table *env*
 
 --help
 :   display this help and exit
@@ -39,9 +39,10 @@ XXX
 --version
 :   output version information and exit
 
-# EXAMPLE #
+# EXAMPLES #
 
-XXX
+csv-env -s
+:   print environment variables
 
 # SEE ALSO #
 
