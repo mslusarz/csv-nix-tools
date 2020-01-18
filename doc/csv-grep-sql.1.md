@@ -39,10 +39,10 @@ a separator, so this needs to be quoted
 
 # EXAMPLES #
 
-csv-ls -c size,name | csv-grep-sql -e "size > 2000 and size < 3000" -s
+csv-ls -c size,name | csv-grep-sql -e `"`size > 2000 and size < 3000`"` -s
 :   print files whose size is between 2000 and 3000 bytes
 
-csv-ls | csv-grep-sql -e "substr(name, 2, 1) == 'o'"
+csv-ls | csv-grep-sql -e `"`substr(name, 2, 1) == 'o'`"`
 :   print files whose second character is 'o'
 
 # SEE ALSO #
