@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -100,8 +100,8 @@ main(int argc, char *argv[])
 
 	struct column_info columns[] = {
 			{ true,  0, 0, "name",        TYPE_STRING, print_name },
-			{ false, 0, 1, "passwd",      TYPE_STRING, print_passwd },
 			{ true,  0, 0, "gid",         TYPE_INT,    print_gid },
+			{ false, 0, 1, "passwd",      TYPE_STRING, print_passwd },
 	};
 
 	size_t ncolumns = ARRAY_SIZE(columns);
