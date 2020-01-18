@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -63,23 +63,6 @@ usage(FILE *out)
 	describe_help(out);
 	describe_version(out);
 }
-
-struct input {
-	char *path;
-	struct csv_ctx *csv_ctx;
-
-	struct table {
-		char *name;
-
-		struct col_header *headers;
-		size_t nheaders;
-
-		char *create;
-		char *insert;
-	} *tables;
-
-	size_t ntables;
-};
 
 struct cb_params {
 	sqlite3 *db;
@@ -301,7 +284,7 @@ sqlite_type_to_csv_name(int t)
 }
 
 static void
-add_file(FILE *f, size_t num, sqlite3 *db, struct input *input, bool tables)
+add_file(FILE *f, size_t num, sqlite3 *db, bool load_tables)
 {
 	struct csv_ctx *s = csv_create_ctx_nofail(f, stderr);
 
@@ -310,13 +293,21 @@ add_file(FILE *f, size_t num, sqlite3 *db, struct input *input, bool tables)
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
-	input->csv_ctx = s;
-	input->ntables = 0;
-	input->tables = NULL;
+	struct table {
+		char *name;
+
+		struct col_header *headers;
+		size_t nheaders;
+
+		char *create;
+		char *insert;
+	} *tables = NULL;
+
+	size_t ntables = 0;
 
 	size_t table_column = SIZE_MAX;
 
-	if (tables) {
+	if (load_tables) {
 		for (size_t i = 0; i < nheaders; ++i) {
 			if (strcmp(headers[i].name, TABLE_COLUMN) == 0) {
 				table_column = i;
@@ -336,20 +327,20 @@ add_file(FILE *f, size_t num, sqlite3 *db, struct input *input, bool tables)
 
 			struct table *t = NULL;
 			/* XXX optimize? */
-			for (size_t j = 0; j < input->ntables; ++j) {
+			for (size_t j = 0; j < ntables; ++j) {
 				if (strncmp(headers[i].name,
-						input->tables[j].name,
+						tables[j].name,
 						table_len) == 0) {
-					t = &input->tables[j];
+					t = &tables[j];
 					break;
 				}
 			}
 
 			if (!t) {
-				input->tables = xrealloc_nofail(input->tables,
-						input->ntables + 1,
-						sizeof(input->tables[0]));
-				t = &input->tables[input->ntables++];
+				tables = xrealloc_nofail(tables,
+						ntables + 1,
+						sizeof(tables[0]));
+				t = &tables[ntables++];
 				t->name = xstrndup_nofail(headers[i].name,
 						table_len);
 				t->headers = NULL;
@@ -366,8 +357,8 @@ add_file(FILE *f, size_t num, sqlite3 *db, struct input *input, bool tables)
 			t->nheaders++;
 		}
 
-		for (size_t i = 0; i < input->ntables; ++i) {
-			struct table *t = &input->tables[i];
+		for (size_t i = 0; i < ntables; ++i) {
+			struct table *t = &tables[i];
 
 			if (build_queries(t->headers, t->nheaders, &t->create,
 					&t->insert, t->name))
@@ -376,8 +367,8 @@ add_file(FILE *f, size_t num, sqlite3 *db, struct input *input, bool tables)
 	} else {
 		struct table *t;
 
-		input->ntables = 1;
-		input->tables = t = xmalloc_nofail(1, sizeof(input->tables[0]));
+		ntables = 1;
+		tables = t = xmalloc_nofail(1, sizeof(tables[0]));
 
 		/* not used when tables are disabled */
 		t->headers = NULL;
@@ -397,14 +388,13 @@ add_file(FILE *f, size_t num, sqlite3 *db, struct input *input, bool tables)
 
 	struct cb_params params;
 	params.db = db;
-	params.tables = tables;
-	params.ntables = input->ntables;
-	params.inserts = xcalloc_nofail(input->ntables,
-			sizeof(params.inserts[0]));
+	params.tables = load_tables;
+	params.ntables = ntables;
+	params.inserts = xcalloc_nofail(ntables, sizeof(params.inserts[0]));
 	params.table_column = table_column;
 
-	for (size_t i = 0; i < input->ntables; ++i) {
-		struct table *t = &input->tables[i];
+	for (size_t i = 0; i < ntables; ++i) {
+		struct table *t = &tables[i];
 		if (sqlite3_exec(db, t->create, NULL, NULL, NULL) != SQLITE_OK) {
 			fprintf(stderr, "sqlite3_exec(create='%s'): %s\n",
 					t->create,
@@ -426,8 +416,8 @@ add_file(FILE *f, size_t num, sqlite3 *db, struct input *input, bool tables)
 
 	csv_read_all_nofail(s, &next_row, &params);
 
-	for (size_t i = 0; i < input->ntables; ++i) {
-		struct table *t = &input->tables[i];
+	for (size_t i = 0; i < ntables; ++i) {
+		struct table *t = &tables[i];
 
 		if (sqlite3_finalize(params.inserts[i].insert) != SQLITE_OK) {
 			fprintf(stderr, "sqlite3_finalize(insert): %s\n",
@@ -442,14 +432,15 @@ add_file(FILE *f, size_t num, sqlite3 *db, struct input *input, bool tables)
 		t->name = NULL;
 	}
 
-	free(input->tables);
-	input->tables = NULL;
+	free(tables);
 
 	free(params.inserts);
+
+	csv_destroy_ctx(s);
 }
 
 static void
-print_col(sqlite3_stmt *select, size_t i, struct input *inputs, size_t ninputs)
+print_col(sqlite3_stmt *select, size_t i)
 {
 	const char *name = sqlite3_column_name(select, i);
 	int type = sqlite3_column_type(select, i);
@@ -489,7 +480,7 @@ main(int argc, char *argv[])
 	bool show = false;
 	bool show_full;
 	bool tables = false;
-	struct input *inputs = NULL;
+	char **inputs = NULL;
 	size_t ninputs = 0;
 
 	while ((opt = getopt_long(argc, argv, "i:sST", opts, NULL)) != -1) {
@@ -498,8 +489,7 @@ main(int argc, char *argv[])
 				inputs = xrealloc_nofail(inputs,
 						++ninputs, sizeof(inputs[0]));
 
-				inputs[ninputs - 1].path =
-						xstrdup_nofail(optarg);
+				inputs[ninputs - 1] = xstrdup_nofail(optarg);
 				break;
 			case 'T':
 				tables = true;
@@ -537,15 +527,12 @@ main(int argc, char *argv[])
 	}
 
 	if (ninputs == 0) {
-		inputs = xcalloc_nofail(1, sizeof(inputs[0]));
-		ninputs++;
-
-		add_file(stdin, SIZE_MAX, db, &inputs[0], tables);
+		add_file(stdin, SIZE_MAX, db, tables);
 	} else {
 		bool stdin_used = false;
 		for (size_t i = 0; i < ninputs; ++i) {
 			FILE *f;
-			char *path = inputs[i].path;
+			char *path = inputs[i];
 
 			if (strcmp(path, "-") == 0) {
 				if (stdin_used) {
@@ -564,11 +551,16 @@ main(int argc, char *argv[])
 				exit(2);
 			}
 
-			add_file(f, i + 1, db, &inputs[i], tables);
+			add_file(f, i + 1, db, tables);
 
 			if (strcmp(path, "-") != 0)
 				fclose(f);
+
+			free(path);
 		}
+
+		free(inputs);
+		inputs = NULL;
 	}
 
 	sqlite3_stmt *select;
@@ -617,11 +609,11 @@ main(int argc, char *argv[])
 	} while (1);
 
 	for (size_t i = 0; i < cnt - 1; ++i) {
-		print_col(select, i, inputs, ninputs);
+		print_col(select, i);
 		fputc(',', stdout);
 	}
 
-	print_col(select, cnt - 1, inputs, ninputs);
+	print_col(select, cnt - 1);
 	fputc('\n', stdout);
 
 	while (ret == SQLITE_ROW) {
@@ -652,13 +644,6 @@ main(int argc, char *argv[])
 		fprintf(stderr, "sqlite3_close: %s\n", sqlite3_errmsg(db));
 		exit(2);
 	}
-
-	for (size_t i = 0; i < ninputs; ++i) {
-		csv_destroy_ctx(inputs[i].csv_ctx);
-		free(inputs[i].path);
-	}
-
-	free(inputs);
 
 	return 0;
 }
