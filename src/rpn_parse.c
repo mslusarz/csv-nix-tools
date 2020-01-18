@@ -59,32 +59,33 @@ token_next(struct str_tokens *ctx)
 
 	char *ret = ctx->in_it;
 
-	if (*ret == '\'') {
+	if (*ret == '\'' || *ret == '"') {
+		char term = *ret;
 		char *in_it = ret + 1;
 		char *out_it = ret + 1;
 
 		while (1) {
-			while (*in_it != 0 && *in_it != '\'')
+			while (*in_it != 0 && *in_it != term)
 				*out_it++ = *in_it++;
 			if (*in_it == 0) {
 				fprintf(stderr, "unfinished string\n");
 				exit(2);
 			}
 
-			assert(*in_it == '\'');
+			assert(*in_it == term);
 
 			// quoting?
-			if (in_it[1] != '\'')
+			if (in_it[1] != term)
 				break;
 
-			// copy '
+			// copy quoted term character
 			*out_it++ = *in_it++;
 
 			// and skip the next one
 			in_it++;
 		}
 
-		// copy terminating '
+		// copy term
 		*out_it++ = *in_it++;
 
 		if (in_it[0] == 0) {
@@ -170,7 +171,7 @@ rpn_parse(struct rpn_expression *exp, char *str,
 				if (strtoll_safe(token, &tkn.constant.llong, 0))
 					goto fail;
 			}
-		} else if (token[0] == '\'') {
+		} else if (token[0] == '\'' || token[0] == '"') {
 			tkn.type = RPN_CONSTANT;
 			tkn.constant.type = RPN_PCHAR;
 			size_t len = strlen(token);

@@ -55,6 +55,7 @@ Constants:
 | [-]0[0-9]+       | octal integer                 | 01, 01234, -067           |
 | [-]0b[01]+       | binary integer                | 0b1, 0b1101, -0b10        |
 | '[^']*'          | string                        | 'text'                    |
+| "[^"]*"          | string                        | "text"                    |
 
 Operators:
 
