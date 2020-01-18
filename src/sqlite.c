@@ -572,24 +572,49 @@ main(int argc, char *argv[])
 	}
 
 	sqlite3_stmt *select;
-	if (sqlite3_prepare_v2(db, argv[optind], -1, &select, NULL) != SQLITE_OK) {
-		fprintf(stderr, "sqlite3_prepare_v2(select='%s'): %s\n",
-				argv[optind], sqlite3_errmsg(db));
-		exit(2);
-	}
+	int cnt;
+	int ret;
+	const char *stmt = argv[optind];
 
-	int ret = sqlite3_step(select);
-	if (ret != SQLITE_ROW && ret != SQLITE_DONE) {
-		fprintf(stderr, "sqlite3_step(select): %s\n",
-				sqlite3_errmsg(db));
-		exit(2);
-	}
+	do {
+		const char *tail = NULL;
+		if (sqlite3_prepare_v2(db, stmt, -1, &select, &tail) != SQLITE_OK) {
+			fprintf(stderr, "sqlite3_prepare_v2(select='%s'): %s\n",
+					argv[optind], sqlite3_errmsg(db));
+			exit(2);
+		}
 
-	int cnt = sqlite3_column_count(select);
-	if (cnt < 1) {
-		fprintf(stderr, "column count(%d) < 1\n", cnt);
-		exit(2);
-	}
+		ret = sqlite3_step(select);
+		if (ret != SQLITE_ROW && ret != SQLITE_DONE) {
+			fprintf(stderr, "sqlite3_step(select): %s\n",
+					sqlite3_errmsg(db));
+			exit(2);
+		}
+
+		cnt = sqlite3_column_count(select);
+		if (cnt == 0 && tail) {
+			/*
+			 * This means the previous statement wasn't a select
+			 * statement (it could be eg create index). Ignore it
+			 * and parse the next statement.
+			 */
+			if (sqlite3_finalize(select) != SQLITE_OK) {
+				fprintf(stderr, "sqlite3_finalize(select): %s\n",
+						sqlite3_errmsg(db));
+				exit(2);
+			}
+
+			stmt = tail;
+			continue;
+		}
+
+		if (cnt < 1) {
+			fprintf(stderr, "column count(%d) < 1\n", cnt);
+			exit(2);
+		}
+
+		break;
+	} while (1);
 
 	for (size_t i = 0; i < cnt - 1; ++i) {
 		print_col(select, i, inputs, ninputs);
