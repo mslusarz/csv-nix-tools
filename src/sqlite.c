@@ -441,6 +441,11 @@ add_file(FILE *f, size_t num, sqlite3 *db, struct input *input, bool tables)
 		free(t->name);
 		t->name = NULL;
 	}
+
+	free(input->tables);
+	input->tables = NULL;
+
+	free(params.inserts);
 }
 
 static void
