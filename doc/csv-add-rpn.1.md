@@ -85,21 +85,21 @@ Operators:
 
 Functions:
 
-| name        | description                   | example                        |
-|-------------|-------------------------------|--------------------------------|
-| if          | if then else                  | %bool %val1 %val2 if           |
-| substr      | substring                     | %str 1 3 substr                |
-| strlen      | string length                 | %str strlen                    |
-| concat      | concatenation                 | %str1 %str2 concat             |
-| like        | match pattern                 | %str 'patt%' like              |
-| tostring    | convert to string             | %num %base tostring            |
-| toint       | convert to integer            | %str %base toint               |
-| replace     | replace string                | %str 'pat' 'repl' 1 replace    |
-| replace_bre | replace string using basic RE | %str 'pat' 'bre' 1 replace_bre |
-| replace_ere | replace string using ext. RE  | %str 'pat' 'ere' 1 replace_ere |
-| matches_bre | string matches basic RE       | %str 'pat' 1 matches_bre       |
-| matches_ere | string matches extended RE    | %str 'pat' 1 matches_ere       |
-| next        | next integer from sequence    | 'sequence name' next           |
+| name         | description                   | example                        |
+|--------------|-------------------------------|--------------------------------|
+| if           | if then else                  | %bool %val1 %val2 if           |
+| substr       | substring                     | %str 1 3 substr                |
+| strlen/length| string length                 | %str strlen, %str length       |
+| concat       | concatenation                 | %str1 %str2 concat             |
+| like         | match pattern                 | %str 'patt%' like              |
+| tostring     | convert to string             | %num %base tostring            |
+| toint        | convert to integer            | %str %base toint               |
+| replace      | replace string                | %str 'pat' 'repl' 1 replace    |
+| replace_bre  | replace string using basic RE | %str 'pat' 'bre' 1 replace_bre |
+| replace_ere  | replace string using ext. RE  | %str 'pat' 'ere' 1 replace_ere |
+| matches_bre  | string matches basic RE       | %str 'pat' 1 matches_bre       |
+| matches_ere  | string matches extended RE    | %str 'pat' 1 matches_ere       |
+| next         | next integer from sequence    | 'sequence name' next           |
 
 # EXAMPLES #
 

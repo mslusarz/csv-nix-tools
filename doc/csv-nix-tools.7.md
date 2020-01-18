@@ -9,9 +9,24 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 
 # DESCRIPTION #
 
-- XXX format description
-- XXX types
-- XXX streams with tables
+**csv-nix-tools** is a collection of tools for gathering and processing system
+information using CSV (with minor extensions) as a intermediate format.
+
+The extensions are:
+
+- each column has a type, encoded in the name using name:type syntax
+- optional "_table" column having special meaning
+
+Currently used types are: string, int, string[], int[], although array types
+are not well supported at the moment (they are produced by some tools, but
+there's no easy way to process them).
+
+Column "_table" resolves a problem of storing multiple sets of data in one
+CSV stream. It allows:
+
+- merging of data from multiple sources,
+- processing of data from one table at the time,
+- combining data from multiple tables, based on relation between them
 
 # SOURCE TOOLS #
 
@@ -62,6 +77,9 @@ csv-nix-tools - collection of tools for gathering and processing system informat
 
 -c, --columns=*NAME1*[,*NAME2*...]
 :   choose the list of columns
+
+-l
+:   use a longer listing format (can be used up multiple times)
 
 -M, --merge
 :   merge output with a CSV stream in table form from standard input
