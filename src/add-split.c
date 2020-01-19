@@ -55,12 +55,22 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-add-split [OPTION]...\n");
+	fprintf(out,
+"Read CSV stream from standard input and print it back to standard output with\n"
+"a new column produced by splitting another one using a separator.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -c name\n");
-	fprintf(out, "  -e separator\n");
-	fprintf(out, "  -n name1,name2\n");
-	fprintf(out, "  -r, --reverse\n");
-	fprintf(out, "  -p  --print-separator=yes/no/auto\n");
+	fprintf(out, "  -c NAME                    use column NAME as an input data\n");
+	fprintf(out, "  -e SEPARATOR               use all characters from SEPARATOR as separators\n");
+	fprintf(out, "  -n NAME1,NAME2             create columns NAME1 and NAME2 as an output\n");
+	fprintf(out,
+"  -r, --reverse              start looking for separator from the end of input\n"
+"                             string\n");
+	fprintf(out,
+"  -p  --print-separator=yes/no/auto\n"
+"                             include separator in 2nd output column (auto means\n"
+"                             yes if there's more than 1 separator and no if\n"
+"                             there's only one), defaults to auto\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_Table(out);

@@ -53,9 +53,13 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-add-rev [OPTION]...\n");
+	fprintf(out,
+"Read CSV stream from standard input and print it back to standard output with\n"
+"a new column produced by reversing another column characterwise.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -c name\n");
-	fprintf(out, "  -n new-name\n");
+	fprintf(out, "  -c NAME                    use column NAME as an input\n");
+	fprintf(out, "  -n NEW-NAME                create column NEW-NAME as an output\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_Table(out);

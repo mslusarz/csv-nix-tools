@@ -55,8 +55,14 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-min [OPTION]...\n");
+	fprintf(out,
+"Read CSV stream from standard input and print back to standard output minimum\n"
+"values of chosen columns.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -c, --columns=name1[,name2...]\n");
+	fprintf(out,
+"  -c, --columns=NAME1[,NAME2...]\n"
+"                             use these columns\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_Table(out);

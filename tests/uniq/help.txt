@@ -1,8 +1,12 @@
 Usage: csv-uniq [OPTION]...
+Read CSV stream from standard input, remove adjacent duplicate rows and
+print back to standard output the remaining rows.
+
 Options:
-  -c, --columns=name1[,name2...]
+  -c, --columns=NAME1[,NAME2...]
+                             use these columns
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
-  -T, --table=name
+  -T, --table=NAME           apply to rows only with _table column equal NAME
       --help                 display this help and exit
       --version              output version information and exit

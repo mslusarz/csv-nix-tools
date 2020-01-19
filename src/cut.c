@@ -55,9 +55,17 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-cut [OPTION]...\n");
+	fprintf(out,
+"Read CSV stream from standard input, remove and/or reorder columns and print\n"
+"resulting file to standard output.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -c, --columns=name1[,name2...]\n");
-	fprintf(out, "  -r, --reverse\n");
+	fprintf(out,
+"  -c, --columns=NAME1[,NAME2...]\n"
+"                             select only these columns\n");
+	fprintf(out,
+"  -r, --reverse              apply --columns filter in reverse,\n"
+"                             removing only selected columns\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_Table(out);

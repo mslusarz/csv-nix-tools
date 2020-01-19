@@ -1,8 +1,11 @@
 Usage: csv-show [OPTION]...
+Print CSV file from standard input in human-readable format, using tables,
+without types.
+
 Options:
-  -u, --ui curses/less/none
-  -s, --spacing NUM
-      --with-types
-      --no-header
+  -u, --ui curses/less/none  use UI based on ncurses, less or nothing(tm)
+  -s, --spacing NUM          use NUM spaces between columns instead of 3
+      --with-types           print types in column headers
+      --no-header            remove column headers
       --help                 display this help and exit
       --version              output version information and exit

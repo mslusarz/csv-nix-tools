@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -637,6 +637,10 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-ls [OPTION]... [FILE]...\n");
+	fprintf(out,
+"List information about the FILEs (the current directory by default).\n"
+"Sort entries alphabetically if -U is not specified.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -a, --all                  do not ignore entries starting with .\n");
 	describe_Columns(out);
@@ -647,7 +651,7 @@ usage(FILE *out)
 	fprintf(out, "  -R, --recursive            list subdirectories recursively\n");
 	describe_Show(out);
 	describe_Show_full(out);
-	describe_as_Table(out);
+	describe_as_Table(out, "file");
 	fprintf(out, "  -U                         do not sort; list entries in directory order\n");
 	describe_help(out);
 	describe_version(out);

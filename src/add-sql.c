@@ -55,9 +55,16 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-add-sql [OPTION]...\n");
+	fprintf(out,
+"Read CSV stream from standard input and print it back to standard output with\n"
+"a new column produced by evaluation of SQL expression.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -n new_column_name\n");
-	fprintf(out, "  -e SQL_expression\n");
+	fprintf(out,
+"  -e SQL-EXPR                use expression SQL-EXPR to create new column;\n"
+"                             SQL expressions use space as a separator, so this\n"
+"                             needs to be quoted\n");
+	fprintf(out, "  -n NEW-NAME                create column NEW-NAME as an output\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_Table(out);

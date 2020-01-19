@@ -1,9 +1,13 @@
 Usage: csv-sort [OPTION]...
+Read CSV stream from standard input, sort it by chosen column and print
+resulting file to standard output.
+
 Options:
-  -c, --columns=name1[,name2...]
-  -r, --reverse
+  -c, --columns=NAME1[,NAME2...]
+                             sort first by column NAME1, then NAME2, etc.
+  -r, --reverse              sort in descending order
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
-  -T, --table=name
+  -T, --table=NAME           apply to rows only with _table column equal NAME
       --help                 display this help and exit
       --version              output version information and exit

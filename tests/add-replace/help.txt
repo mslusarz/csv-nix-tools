@@ -1,14 +1,22 @@
 Usage: csv-add-replace [OPTION]...
+Read CSV stream from standard input and print it back to standard output with
+a new column produced by performing string substitution either using fixed
+strings or regular expression.
+
 Options:
-  -c name
-  -e regex
-  -E eregex
-  -F pattern
-  -i, --ignore-case
-  -n new-name
-  -r replacement
+  -c NAME                    use column NAME as an input data
+  -e REGEX                   use REGEX as a basic regular expression
+  -E EREGEX                  use EREGEX as an extended regular expression
+  -F PATTERN                 use PATTERN as a fixed string pattern
+  -i, --ignore-case          perform matching ignoring case distinction
+  -n NEW-NAME                create column NEW-NAME as an output
+  -r REPLACEMENT             use REPLACEMENT as an replacement for pattern;
+                             for fixed string pattern it is not interpreted,
+                             but for regular expression %1 to %9 are replaced
+                             by corresponding matching sub-expression,
+                             and %0 is the whole matching expression
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
-  -T, --table=name
+  -T, --table=NAME           apply to rows only with _table column equal NAME
       --help                 display this help and exit
       --version              output version information and exit

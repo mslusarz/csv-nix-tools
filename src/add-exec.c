@@ -55,9 +55,14 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-add-exec [OPTION]... -- command\n");
+	fprintf(out,
+"Read CSV stream from standard input and print it back to standard output with\n"
+"a new column produced by reading standard output of an external command whose\n"
+"standard input is fed with input column.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -c, --column=name\n");
-	fprintf(out, "  -n, --new-name=name\n");
+	fprintf(out, "  -c, --column=NAME          use column NAME as an input\n");
+	fprintf(out, "  -n, --new-name=NAME        create column NAME as an output\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_Table(out);

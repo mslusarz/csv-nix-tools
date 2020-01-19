@@ -57,14 +57,24 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-add-replace [OPTION]...\n");
+	fprintf(out,
+"Read CSV stream from standard input and print it back to standard output with\n"
+"a new column produced by performing string substitution either using fixed\n"
+"strings or regular expression.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -c name\n");
-	fprintf(out, "  -e regex\n");
-	fprintf(out, "  -E eregex\n");
-	fprintf(out, "  -F pattern\n");
-	fprintf(out, "  -i, --ignore-case\n");
-	fprintf(out, "  -n new-name\n");
-	fprintf(out, "  -r replacement\n");
+	fprintf(out, "  -c NAME                    use column NAME as an input data\n");
+	fprintf(out, "  -e REGEX                   use REGEX as a basic regular expression\n");
+	fprintf(out, "  -E EREGEX                  use EREGEX as an extended regular expression\n");
+	fprintf(out, "  -F PATTERN                 use PATTERN as a fixed string pattern\n");
+	fprintf(out, "  -i, --ignore-case          perform matching ignoring case distinction\n");
+	fprintf(out, "  -n NEW-NAME                create column NEW-NAME as an output\n");
+	fprintf(out,
+"  -r REPLACEMENT             use REPLACEMENT as an replacement for pattern;\n"
+"                             for fixed string pattern it is not interpreted,\n"
+"                             but for regular expression %%1 to %%9 are replaced\n"
+"                             by corresponding matching sub-expression,\n"
+"                             and %%0 is the whole matching expression\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_Table(out);

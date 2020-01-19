@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -124,23 +124,25 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-netstat [OPTION]...\n");
+	fprintf(out, "Print to standard output the list of network sockets in the CSV format.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
 	describe_Columns(out);
 	fprintf(out, "  -l                         use a longer listing format (can be used up to 3 times)\n");
 	describe_Merge(out);
 	describe_table_Name(out);
-	fprintf(out, "  -r, --resolve              \n");
+	fprintf(out, "  -r, --resolve              resolve IPs and ports\n");
 	describe_Show(out);
 	describe_Show_full(out);
-//	fprintf(out, "  -p, --sctp                 \n");
-	describe_as_Table(out);
-	fprintf(out, "  -t, --tcp                  \n");
-	fprintf(out, "  -u, --udp                  \n");
-//	fprintf(out, "  -U, --udplite              \n");
-	fprintf(out, "  -w, --raw                  \n");
-	fprintf(out, "  -x, --unix                 \n");
-	fprintf(out, "  -4, --inet4                \n");
-	fprintf(out, "  -6, --inet6                \n");
+//	fprintf(out, "  -p, --sctp                 print information only about SCTP sockets\n");
+	describe_as_Table(out, "socket");
+	fprintf(out, "  -t, --tcp                  print information only about TCP sockets\n");
+	fprintf(out, "  -u, --udp                  print information only about UDP sockets\n");
+//	fprintf(out, "  -U, --udplite              print information only about UDPLITE sockets\n");
+	fprintf(out, "  -w, --raw                  print information only about RAW sockets\n");
+	fprintf(out, "  -x, --unix                 print information only about UNIX sockets\n");
+	fprintf(out, "  -4, --inet4                print information only about IPv4 sockets\n");
+	fprintf(out, "  -6, --inet6                print information only about IPv6 sockets\n");
 	describe_help(out);
 	describe_version(out);
 }

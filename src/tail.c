@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -53,8 +53,12 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-tail [OPTION]...\n");
+	fprintf(out, "Print the last 10 rows of CSV file from standard input to standard output.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -n, --lines=NUM\n");
+	fprintf(out,
+"  -n, --lines=NUM            print the last NUM rows instead of the last 10,\n"
+"                             NUM must be >= 0\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_help(out);

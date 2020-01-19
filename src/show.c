@@ -73,11 +73,15 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-show [OPTION]...\n");
+	fprintf(out,
+"Print CSV file from standard input in human-readable format, using tables,\n"
+"without types.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -u, --ui curses/less/none\n");
-	fprintf(out, "  -s, --spacing NUM\n");
-	fprintf(out, "      --with-types\n");
-	fprintf(out, "      --no-header\n");
+	fprintf(out, "  -u, --ui curses/less/none  use UI based on ncurses, less or nothing(tm)\n");
+	fprintf(out, "  -s, --spacing NUM          use NUM spaces between columns instead of 3\n");
+	fprintf(out, "      --with-types           print types in column headers\n");
+	fprintf(out, "      --no-header            remove column headers\n");
 	describe_help(out);
 	describe_version(out);
 }

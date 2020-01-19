@@ -222,7 +222,7 @@ bool csv_str_replace(const char *str, const char *pattern,
 
 void describe_Merge(FILE *out);
 void describe_table_Name(FILE *out);
-void describe_as_Table(FILE *out);
+void describe_as_Table(FILE *out, const char *name);
 
 void describe_Columns(FILE *out);
 void describe_help(FILE *out);

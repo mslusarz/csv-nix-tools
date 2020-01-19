@@ -55,11 +55,21 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-sqlite [OPTION] sql-query\n");
+	fprintf(out,
+"Read CSV stream from standard input, load it into memory-backed sqlite database,\n"
+"execute an SQL query and print back to standard output its result.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -i path\n");
+	fprintf(out,
+"  -i FILE                    ignore standard input and read from FILE instead;\n"
+"                             can be used multiple times; '-' means standard\n"
+"                             input\n");
 	describe_Show(out);
 	describe_Show_full(out);
-	fprintf(out, "  -T, --use-tables\n");
+	fprintf(out,
+"  -T, --use-tables           interpret input as \"table\" stream (as _table\n"
+"                             column and columns with \"table.\" prefixes) and\n"
+"                             import each csv table into its own sql table\n");
 	describe_help(out);
 	describe_version(out);
 }

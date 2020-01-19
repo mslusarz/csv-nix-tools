@@ -1,14 +1,20 @@
 Usage: csv-grep [OPTION]...
+Searches for PATTERN in column of CSV file read from standard input and print
+to standard output only rows matching that pattern.
+
 Options:
-  -c column
-  -e regexp
-  -E ext_regexp
-  -F string
-  -i, --ignore-case
+  -c NAME                    apply the filter to column NAME
+  -e PATTERN                 use PATTERN as a basic regular expression pattern
+  -E PATTERN                 use PATTERN as an extended regular expression pattern
+  -F STRING                  use STRING as a fixed string pattern
+  -i, --ignore-case          ignore case distinction
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
-  -T, --table=name
-  -v, --invert
-  -x, --whole
+  -T, --table=NAME           apply to rows only with _table column equal NAME
+  -v, --invert               invert the sense of matching, selecting
+                             non-matching rows
+  -x, --whole                the pattern used by -e, -E or -F options must
+                             match exactly (no preceding or succeeding
+                             characters before/after pattern)
       --help                 display this help and exit
       --version              output version information and exit

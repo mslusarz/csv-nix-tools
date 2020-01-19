@@ -54,8 +54,15 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-grep-sql [OPTION]...\n");
+	fprintf(out,
+"Read CSV stream from standard input, compute SQL expression for each row\n"
+"and print back to standard output rows for which expression is non-zero.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -e \"RPN expression\"\n");
+	fprintf(out,
+"  -e SQL-EXPR                use expression SQL-EXPR to filter;\n"
+"                             SQL expressions use space as a separator,\n"
+"                             so this needs to be quoted\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_Table(out);

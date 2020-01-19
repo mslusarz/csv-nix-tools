@@ -52,6 +52,10 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-tac [OPTION]... [FILE]...\n");
+	fprintf(out,
+"Concatenate CSV FILE(s) to standard output, last row first. With no FILE, or\n"
+"when FILE is -, read standard input.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
 	describe_Show(out);
 	describe_Show_full(out);

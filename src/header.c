@@ -40,13 +40,12 @@
 #include "utils.h"
 
 static const struct option opts[] = {
-//	{"add",		required_argument,	NULL, 'a'},
-//	{"add-types",	required_argument,	NULL, 'A'},
-//	{"change-type",	required_argument,	NULL, 'C'},
-//	{"guess-types",	no_argument,		NULL, 'G'},
+	{"add-types",	required_argument,	NULL, 'A'},
+	{"change-type",	required_argument,	NULL, 'C'},
+	{"guess-types",	no_argument,		NULL, 'G'},
 	{"remove",	no_argument,		NULL, 'm'},
-//	{"remove-types",no_argument,		NULL, 'M'},
-//	{"rename",	required_argument,	NULL, 'n'},
+	{"remove-types",no_argument,		NULL, 'M'},
+	{"rename",	required_argument,	NULL, 'n'},
 	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
@@ -57,14 +56,31 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-header [OPTION]...\n");
+	fprintf(out,
+"Read CSV stream from standard input and print back to standard output with\n"
+"the column header transformed.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-//	fprintf(out, "  -a, --add col1:type1[,col2:type2]\n");
-//	fprintf(out, "  -A, --add-types col1:type1[,col2:type2]\n");
-//	fprintf(out, "  -C, --change-type col:type\n");
-//	fprintf(out, "  -G, --guess-types\n");
-	fprintf(out, "  -m, --remove\n");
-//	fprintf(out, "  -M, --remove-types\n");
-//	fprintf(out, "  -n, --rename original,new\n");
+	fprintf(out,
+"  -A, --add-types NAME1:TYPE1[,NAME1:TYPE2...]\n"
+"                             add type TYPE1 to column NAME1, TYPE2 to\n"
+"                             column NAME2, etc.\n"
+"                             (NOT IMPLEMENTED YET)\n");
+	fprintf(out,
+"  -C, --change-type NAME:TYPE\n"
+"                             change type of column NAME to TYPE\n"
+"                             (NOT IMPLEMENTED YET)\n");
+	fprintf(out,
+"  -G, --guess-types          add types to columns by guessing based on their\n"
+"                             contents\n"
+"                             (NOT IMPLEMENTED YET)\n");
+	fprintf(out, "  -m, --remove               remove column header\n");
+	fprintf(out,
+"  -M, --remove-types         remove types from columns\n"
+"                             (NOT IMPLEMENTED YET)\n");
+	fprintf(out,
+"  -n, --rename NAME,NEW-NAME rename column NAME to NEW-NAME\n"
+"                             (NOT IMPLEMENTED YET)\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_help(out);
@@ -103,10 +119,8 @@ main(int argc, char *argv[])
 
 //	char **columns = NULL;
 
-	while ((opt = getopt_long(argc, argv, "a:A:C:GmMn:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "A:C:GmMn:sS", opts, NULL)) != -1) {
 		switch (opt) {
-//			case 'a': /* add col1:type1[,col2:type2] */
-//				break;
 //			case 'A': /* add-types col1:type1[,col2:type2] */
 //				break;
 //			case 'C': /* change-type col:type */

@@ -53,6 +53,10 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-add-concat [OPTION]... -- new_name = [%%name|str]...\n");
+	fprintf(out,
+"Read CSV stream from standard input and print it back to standard output with\n"
+"a new column produced by concatenation of columns and fixed strings.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
 	describe_Show(out);
 	describe_Show_full(out);

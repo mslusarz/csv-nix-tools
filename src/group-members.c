@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -55,13 +55,17 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-group-members [OPTION]...\n");
+	fprintf(out,
+"Print to standard output the list of system groups and users that belong to them\n"
+"in the CSV format.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
 	describe_Columns(out);
 	describe_Merge(out);
 	describe_table_Name(out);
 	describe_Show(out);
 	describe_Show_full(out);
-	describe_as_Table(out);
+	describe_as_Table(out, "group_member");
 	describe_help(out);
 	describe_version(out);
 }

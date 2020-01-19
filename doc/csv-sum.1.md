@@ -19,6 +19,9 @@ values of chosen columns.
 -c, --columns=*NAME1*[,*NAME2*...]
 :   use these columns
 
+-e, --separator=*STR*
+:   put *STR* between (string) values
+
 -s, --show
 :   print output in table format
 

@@ -23,7 +23,7 @@ to standard output only rows matching that pattern.
 :   use *PATTERN* as a basic regular expression pattern
 
 -E *PATTERN*
-:   use *PATTERN* as a extended regular expression pattern
+:   use *PATTERN* as an extended regular expression pattern
 
 -F *STRING*
 :   use *STRING* as a fixed string pattern

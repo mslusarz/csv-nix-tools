@@ -1,11 +1,17 @@
 Usage: csv-add-substring [OPTION]...
+Read CSV stream from standard input and print it back to standard output with
+a new column produced by extracting substring of another column.
+
 Options:
-  -c name
-  -n new-name
-  -p start-pos
-  -l length
+  -c NAME                    use column NAME as an input data
+  -n NEW-NAME                create column NEW-NAME as an output
+  -p START-POS               start from position START-POS;
+                             first character has position 1; negative value
+                             mean starting from the end of string
+  -l LENGTH                  take LENGTH characters from string; must not be
+                             negative
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
-  -T, --table=name
+  -T, --table=NAME           apply to rows only with _table column equal NAME
       --help                 display this help and exit
       --version              output version information and exit

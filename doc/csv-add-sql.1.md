@@ -16,12 +16,12 @@ csv-add-sql - add a new column from SQL expression
 Read CSV stream from standard input and print it back to standard output with
 a new column produced by evaluation of SQL expression.
 
--n *NEW-NAME*
-:   create column *NEW-NAME* as an output
-
 -e *SQL-EXPR*
 :   use expression *SQL-EXPR* to create new column; SQL expressions use space
 as a separator, so this needs to be quoted
+
+-n *NEW-NAME*
+:   create column *NEW-NAME* as an output
 
 -s, --show
 :   print output in table format

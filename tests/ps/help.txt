@@ -1,13 +1,16 @@
 Usage: csv-ps [OPTION]...
+Print to standard output the list of system processes in the CSV format.
+
 Options:
-  -c, --columns=name1[,name2...]
+  -c, --columns=NAME1[,NAME2...]
                              choose the list of columns
   -l                         use a longer listing format (can be used up to 4 times)
-  -M, --merge                
-  -N, --table-name name      
+  -M, --merge                merge output with a CSV stream in table form from
+                             standard input
+  -N, --table-name NAME      produce output as table NAME
   -p, --pid=pid1[,pid2...]   select processes from this list
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
-  -T, --as-table             
+  -T, --as-table             produce output as table 'proc'
       --help                 display this help and exit
       --version              output version information and exit

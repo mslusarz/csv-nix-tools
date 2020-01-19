@@ -1,9 +1,13 @@
 Usage: csv-add-exec [OPTION]... -- command
+Read CSV stream from standard input and print it back to standard output with
+a new column produced by reading standard output of an external command whose
+standard input is fed with input column.
+
 Options:
-  -c, --column=name
-  -n, --new-name=name
+  -c, --column=NAME          use column NAME as an input
+  -n, --new-name=NAME        create column NAME as an output
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
-  -T, --table=name
+  -T, --table=NAME           apply to rows only with _table column equal NAME
       --help                 display this help and exit
       --version              output version information and exit

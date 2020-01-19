@@ -53,6 +53,10 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-sql [OPTION] sql-query\n");
+	fprintf(out,
+"Read CSV stream from standard input, process it using simplified SQL query\n"
+"and print back to standard output its result.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
 	describe_Show(out);
 	describe_Show_full(out);

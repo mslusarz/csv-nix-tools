@@ -16,7 +16,7 @@ csv-header - process header of a CSV file
 Read CSV stream from standard input and print back to standard output with
 the column header transformed.
 
--A, --add-types *NAME1*:*TYPE1*[,*NAME2*:*TYPE2*]
+-A, --add-types *NAME1*:*TYPE1*[,*NAME2*:*TYPE2*...]
 :   (NOT IMPLEMENTED YET) add type *TYPE1* to column *NAME1*, *TYPE2* to column *NAME2*, etc.
 
 -C, --change-type *NAME*:*TYPE*

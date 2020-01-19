@@ -832,25 +832,27 @@ csvci_print_row(const void *row, const struct column_info *columns,
 void
 describe_Merge(FILE *out)
 {
-	fprintf(out, "  -M, --merge                \n");
+	fprintf(out,
+"  -M, --merge                merge output with a CSV stream in table form from\n"
+"                             standard input\n");
 }
 
 void
 describe_table_Name(FILE *out)
 {
-	fprintf(out, "  -N, --table-name name      \n");
+	fprintf(out, "  -N, --table-name NAME      produce output as table NAME\n");
 }
 
 void
-describe_as_Table(FILE *out)
+describe_as_Table(FILE *out, const char *name)
 {
-	fprintf(out, "  -T, --as-table             \n");
+	fprintf(out, "  -T, --as-table             produce output as table '%s'\n", name);
 }
 
 void
 describe_Columns(FILE *out)
 {
-	fprintf(out, "  -c, --columns=name1[,name2...]\n");
+	fprintf(out, "  -c, --columns=NAME1[,NAME2...]\n");
 	fprintf(out, "                             choose the list of columns\n");
 }
 
@@ -869,7 +871,7 @@ describe_Show_full(FILE *out)
 void
 describe_Table(FILE *out)
 {
-	fprintf(out, "  -T, --table=name\n");
+	fprintf(out, "  -T, --table=NAME           apply to rows only with _table column equal NAME\n");
 }
 
 void

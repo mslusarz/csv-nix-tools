@@ -76,6 +76,8 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-ps [OPTION]...\n");
+	fprintf(out, "Print to standard output the list of system processes in the CSV format.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
 	describe_Columns(out);
 	fprintf(out, "  -l                         use a longer listing format (can be used up to 4 times)\n");
@@ -84,7 +86,7 @@ usage(FILE *out)
 	fprintf(out, "  -p, --pid=pid1[,pid2...]   select processes from this list\n");
 	describe_Show(out);
 	describe_Show_full(out);
-	describe_as_Table(out);
+	describe_as_Table(out, "proc");
 	describe_help(out);
 	describe_version(out);
 }

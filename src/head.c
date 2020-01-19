@@ -52,8 +52,12 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-head [OPTION]...\n");
+	fprintf(out, "Print the first 10 rows of CSV file from standard input to standard output.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -n, --lines=NUM\n");
+	fprintf(out,
+"  -n, --lines=NUM            print the first NUM rows instead of the first 10,\n"
+"                             NUM must be >= 0\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_help(out);

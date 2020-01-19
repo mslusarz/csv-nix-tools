@@ -53,11 +53,20 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-add-substring [OPTION]...\n");
+	fprintf(out,
+"Read CSV stream from standard input and print it back to standard output with\n"
+"a new column produced by extracting substring of another column.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -c name\n");
-	fprintf(out, "  -n new-name\n");
-	fprintf(out, "  -p start-pos\n");
-	fprintf(out, "  -l length\n");
+	fprintf(out, "  -c NAME                    use column NAME as an input data\n");
+	fprintf(out, "  -n NEW-NAME                create column NEW-NAME as an output\n");
+	fprintf(out,
+"  -p START-POS               start from position START-POS;\n"
+"                             first character has position 1; negative value\n"
+"                             mean starting from the end of string\n");
+	fprintf(out,
+"  -l LENGTH                  take LENGTH characters from string; must not be\n"
+"                             negative\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_Table(out);

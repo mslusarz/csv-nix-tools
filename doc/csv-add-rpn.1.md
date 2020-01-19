@@ -16,12 +16,12 @@ csv-add-rpn - add a new column from RPN expression
 Read CSV stream from standard input and print it back to standard output with
 a new column produced by evaluation of RPN (reverse Polish notation) expression.
 
--n *NEW-NAME*
-:   create column *NEW-NAME* as an output
-
 -e *RPN-EXPR*
 :   use expression *RPN-EXPR* to create new column; RPN expressions use space
 as a separator, so this needs to be quoted
+
+-n *NEW-NAME*
+:   create column *NEW-NAME* as an output
 
 -s, --show
 :   print output in table format
@@ -89,7 +89,7 @@ Functions:
 |--------------|-------------------------------|--------------------------------|
 | if           | if then else                  | %bool %val1 %val2 if           |
 | substr       | substring                     | %str 1 3 substr                |
-| strlen/length| string length                 | %str strlen, %str length       |
+| strlen,length| string length                 | %str strlen, %str length       |
 | concat       | concatenation                 | %str1 %str2 concat             |
 | like         | match pattern                 | %str 'patt%' like              |
 | tostring     | convert to string             | %num %base tostring            |

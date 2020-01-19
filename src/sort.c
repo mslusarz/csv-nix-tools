@@ -56,9 +56,15 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-sort [OPTION]...\n");
+	fprintf(out,
+"Read CSV stream from standard input, sort it by chosen column and print\n"
+"resulting file to standard output.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -c, --columns=name1[,name2...]\n");
-	fprintf(out, "  -r, --reverse\n");
+	fprintf(out,
+"  -c, --columns=NAME1[,NAME2...]\n"
+"                             sort first by column NAME1, then NAME2, etc.\n");
+	fprintf(out, "  -r, --reverse              sort in descending order\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_Table(out);

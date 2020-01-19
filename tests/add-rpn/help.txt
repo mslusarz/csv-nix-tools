@@ -1,10 +1,15 @@
 Usage: csv-add-rpn [OPTION]...
+Read CSV stream from standard input and print it back to standard output with
+a new column produced by evaluation of RPN (reverse Polish notation) expression.
+
 Options:
-  -n new_column_name
-  -e RPN_expression
+  -e RPN-EXPR                use expression RPN-EXPR to create new column;
+                             RPN expressions use space as a separator, so this
+                             needs to be quoted
+  -n NEW-NAME                create column NEW-NAME as an output
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
-  -T, --table=name
+  -T, --table=NAME           apply to rows only with _table column equal NAME
       --help                 display this help and exit
       --version              output version information and exit
 
@@ -19,6 +24,7 @@ Constants:
   [-]0[0-9]+        octal integer                   01, 01234, -067
   [-]0b[01]+        binary integer                  0b1, 0b1101, -0b10
   '[^']*'           string                          'text'
+  "[^"]*"           string                          "text"
 
 Operators/functions:
   +                 addition                        %num 5 +
@@ -44,14 +50,14 @@ Operators/functions:
   not               logical negation                %bool1 not
   if                if first then second else third %bool %val1 %val2 if
   substr            substring                       %str 1 3 substr
-  strlen            string length                   %str strlen
+  strlen, length    string length                   %str strlen, %str length
   concat            concatenation                   %str1 %str2 concat
   like              match pattern                   %str 'patt%' like
   tostring          convert to string               %num %base tostring
   toint             convert to integer              %str %base toint
-  replace           replace string                  %str 'pattern' 'replacement' %casesensitive replace
-  replace_bre       replace string using basic RE   %str 'pattern' 'replacement' %casesensitive replace_bre
-  replace_ere       replace string using ext. RE    %str 'pattern' 'replacement' %casesensitive replace_ere
-  matches_bre       string matches basic RE         %str 'pattern' %casesensitive matches_bre
-  matches_ere       string matches extended RE      %str 'pattern' %casesensitive matches_ere
+  replace           replace string                  %str 'pat' 'repl' %casesens replace
+  replace_bre       replace string using basic RE   %str 'pat' 'bre' %casesens replace_bre
+  replace_ere       replace string using ext. RE    %str 'pat' 'ere' %casesens replace_ere
+  matches_bre       string matches basic RE         %str 'pat' %casesens matches_bre
+  matches_ere       string matches extended RE      %str 'pat' %casesens matches_ere
   next              next integer from sequence      'sequence name' next

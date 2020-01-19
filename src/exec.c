@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -50,6 +50,8 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-exec [OPTION]...\n");
+	fprintf(out, "Read CSV stream from standard input and execute an external command for each row.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
 	describe_help(out);
 	describe_version(out);

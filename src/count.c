@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -53,9 +53,13 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-count [OPTION]...\n");
+	fprintf(out,
+"Read CSV stream from standard input and print back to standard output\n"
+"the number of columns or rows.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -c, --columns\n");
-	fprintf(out, "  -r, --rows\n");
+	fprintf(out, "  -c, --columns              print number of columns\n");
+	fprintf(out, "  -r, --rows                 print number of rows\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_help(out);

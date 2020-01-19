@@ -1,7 +1,10 @@
 Usage: csv-add-concat [OPTION]... -- new_name = [%name|str]...
+Read CSV stream from standard input and print it back to standard output with
+a new column produced by concatenation of columns and fixed strings.
+
 Options:
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
-  -T, --table=name
+  -T, --table=NAME           apply to rows only with _table column equal NAME
       --help                 display this help and exit
       --version              output version information and exit

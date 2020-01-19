@@ -1,8 +1,13 @@
 Usage: csv-grep-rpn [OPTION]...
+ead CSV stream from standard input, compute RPN expression for each row
+and print back to standard output rows for which expression is non-zero.
+
 Options:
-  -e "RPN expression"
+  -e RPN-EXPR                use expression RPN-EXPR to filter;
+                             RPN expressions use space as a separator,
+                             so this needs to be quoted
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
-  -T, --table=name
+  -T, --table=NAME           apply to rows only with _table column equal NAME
       --help                 display this help and exit
       --version              output version information and exit

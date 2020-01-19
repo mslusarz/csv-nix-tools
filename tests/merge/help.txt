@@ -1,9 +1,18 @@
 Usage: csv-merge [OPTION]...
+Read multiple CSV streams (from standard input or files)
+and print back to standard output a merged CSV with tables.
+
 Options:
-  -N, --table-name name
-  -p, --path-without-table path
+  -N, --table-name NAME      set NAME as a table name for future table-less
+                             file (-p)
+  -p, --path-without-table FILE
+                             read CSV stream without table from FILE and use
+                             name set by -N as its name; '-' means standard
+                             input
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
-      --path-with-table path
+      --path-with-table FILE
+                             read CSV stream with table from FILE;
+                             '-' means standard input
       --help                 display this help and exit
       --version              output version information and exit

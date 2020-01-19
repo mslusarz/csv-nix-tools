@@ -53,8 +53,15 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-grep-rpn [OPTION]...\n");
+	fprintf(out,
+"ead CSV stream from standard input, compute RPN expression for each row\n"
+"and print back to standard output rows for which expression is non-zero.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -e \"RPN expression\"\n");
+	fprintf(out,
+"  -e RPN-EXPR                use expression RPN-EXPR to filter;\n"
+"                             RPN expressions use space as a separator,\n"
+"                             so this needs to be quoted\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_Table(out);

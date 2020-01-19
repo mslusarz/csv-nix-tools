@@ -57,17 +57,26 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-grep [OPTION]...\n");
+	fprintf(out,
+"Searches for PATTERN in column of CSV file read from standard input and print\n"
+"to standard output only rows matching that pattern.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -c column\n");
-	fprintf(out, "  -e regexp\n");
-	fprintf(out, "  -E ext_regexp\n");
-	fprintf(out, "  -F string\n");
-	fprintf(out, "  -i, --ignore-case\n");
+	fprintf(out, "  -c NAME                    apply the filter to column NAME\n");
+	fprintf(out, "  -e PATTERN                 use PATTERN as a basic regular expression pattern\n");
+	fprintf(out, "  -E PATTERN                 use PATTERN as an extended regular expression pattern\n");
+	fprintf(out, "  -F STRING                  use STRING as a fixed string pattern\n");
+	fprintf(out, "  -i, --ignore-case          ignore case distinction\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_Table(out);
-	fprintf(out, "  -v, --invert\n");
-	fprintf(out, "  -x, --whole\n");
+	fprintf(out,
+"  -v, --invert               invert the sense of matching, selecting\n"
+"                             non-matching rows\n");
+	fprintf(out,
+"  -x, --whole                the pattern used by -e, -E or -F options must\n"
+"                             match exactly (no preceding or succeeding\n"
+"                             characters before/after pattern)\n");
 	describe_help(out);
 	describe_version(out);
 }

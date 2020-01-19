@@ -1,4 +1,7 @@
 Usage: csv-sql [OPTION] sql-query
+Read CSV stream from standard input, process it using simplified SQL query
+and print back to standard output its result.
+
 Options:
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager

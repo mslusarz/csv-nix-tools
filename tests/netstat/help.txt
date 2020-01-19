@@ -1,19 +1,22 @@
 Usage: csv-netstat [OPTION]...
+Print to standard output the list of network sockets in the CSV format.
+
 Options:
-  -c, --columns=name1[,name2...]
+  -c, --columns=NAME1[,NAME2...]
                              choose the list of columns
   -l                         use a longer listing format (can be used up to 3 times)
-  -M, --merge                
-  -N, --table-name name      
-  -r, --resolve              
+  -M, --merge                merge output with a CSV stream in table form from
+                             standard input
+  -N, --table-name NAME      produce output as table NAME
+  -r, --resolve              resolve IPs and ports
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
-  -T, --as-table             
-  -t, --tcp                  
-  -u, --udp                  
-  -w, --raw                  
-  -x, --unix                 
-  -4, --inet4                
-  -6, --inet6                
+  -T, --as-table             produce output as table 'socket'
+  -t, --tcp                  print information only about TCP sockets
+  -u, --udp                  print information only about UDP sockets
+  -w, --raw                  print information only about RAW sockets
+  -x, --unix                 print information only about UNIX sockets
+  -4, --inet4                print information only about IPv4 sockets
+  -6, --inet6                print information only about IPv6 sockets
       --help                 display this help and exit
       --version              output version information and exit

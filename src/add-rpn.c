@@ -53,9 +53,16 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-add-rpn [OPTION]...\n");
+	fprintf(out,
+"Read CSV stream from standard input and print it back to standard output with\n"
+"a new column produced by evaluation of RPN (reverse Polish notation) expression.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -n new_column_name\n");
-	fprintf(out, "  -e RPN_expression\n");
+	fprintf(out,
+"  -e RPN-EXPR                use expression RPN-EXPR to create new column;\n"
+"                             RPN expressions use space as a separator, so this\n"
+"                             needs to be quoted\n");
+	fprintf(out, "  -n NEW-NAME                create column NEW-NAME as an output\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_Table(out);
@@ -73,7 +80,7 @@ usage(FILE *out)
 	fprintf(out, "  [-]0[0-9]+        octal integer                   01, 01234, -067\n");
 	fprintf(out, "  [-]0b[01]+        binary integer                  0b1, 0b1101, -0b10\n");
 	fprintf(out, "  '[^']*'           string                          'text'\n");
-//	fprintf(out, "  \"[^\"]*\"           string                          \"text\"\n");
+	fprintf(out, "  \"[^\"]*\"           string                          \"text\"\n");
 	fprintf(out, "\n");
 	fprintf(out, "Operators/functions:\n");
 	fprintf(out, "  +                 addition                        %%num 5 +\n");
@@ -99,16 +106,16 @@ usage(FILE *out)
 	fprintf(out, "  not               logical negation                %%bool1 not\n");
 	fprintf(out, "  if                if first then second else third %%bool %%val1 %%val2 if\n");
 	fprintf(out, "  substr            substring                       %%str 1 3 substr\n");
-	fprintf(out, "  strlen            string length                   %%str strlen\n");
+	fprintf(out, "  strlen, length    string length                   %%str strlen, %%str length\n");
 	fprintf(out, "  concat            concatenation                   %%str1 %%str2 concat\n");
 	fprintf(out, "  like              match pattern                   %%str 'patt%%' like\n");
 	fprintf(out, "  tostring          convert to string               %%num %%base tostring\n");
 	fprintf(out, "  toint             convert to integer              %%str %%base toint\n");
-	fprintf(out, "  replace           replace string                  %%str 'pattern' 'replacement' %%casesensitive replace\n");
-	fprintf(out, "  replace_bre       replace string using basic RE   %%str 'pattern' 'replacement' %%casesensitive replace_bre\n");
-	fprintf(out, "  replace_ere       replace string using ext. RE    %%str 'pattern' 'replacement' %%casesensitive replace_ere\n");
-	fprintf(out, "  matches_bre       string matches basic RE         %%str 'pattern' %%casesensitive matches_bre\n");
-	fprintf(out, "  matches_ere       string matches extended RE      %%str 'pattern' %%casesensitive matches_ere\n");
+	fprintf(out, "  replace           replace string                  %%str 'pat' 'repl' %%casesens replace\n");
+	fprintf(out, "  replace_bre       replace string using basic RE   %%str 'pat' 'bre' %%casesens replace_bre\n");
+	fprintf(out, "  replace_ere       replace string using ext. RE    %%str 'pat' 'ere' %%casesens replace_ere\n");
+	fprintf(out, "  matches_bre       string matches basic RE         %%str 'pat' %%casesens matches_bre\n");
+	fprintf(out, "  matches_ere       string matches extended RE      %%str 'pat' %%casesens matches_ere\n");
 	fprintf(out, "  next              next integer from sequence      'sequence name' next\n");
 }
 

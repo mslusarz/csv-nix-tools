@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -70,12 +70,25 @@ static void
 usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-merge [OPTION]...\n");
+	fprintf(out,
+"Read multiple CSV streams (from standard input or files)\n"
+"and print back to standard output a merged CSV with tables.\n");
+	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -N, --table-name name\n");
-	fprintf(out, "  -p, --path-without-table path\n");
+	fprintf(out,
+"  -N, --table-name NAME      set NAME as a table name for future table-less\n"
+"                             file (-p)\n");
+	fprintf(out,
+"  -p, --path-without-table FILE\n"
+"                             read CSV stream without table from FILE and use\n"
+"                             name set by -N as its name; '-' means standard\n"
+"                             input\n");
 	describe_Show(out);
 	describe_Show_full(out);
-	fprintf(out, "      --path-with-table path\n");
+	fprintf(out,
+"      --path-with-table FILE\n"
+"                             read CSV stream with table from FILE;\n"
+"                             '-' means standard input\n");
 	describe_help(out);
 	describe_version(out);
 }

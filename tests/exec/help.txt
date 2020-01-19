@@ -1,4 +1,6 @@
 Usage: csv-exec [OPTION]...
+Read CSV stream from standard input and execute an external command for each row.
+
 Options:
       --help                 display this help and exit
       --version              output version information and exit

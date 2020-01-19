@@ -1,9 +1,13 @@
 Usage: csv-sum [OPTION]...
+Read CSV stream from standard input and print back to standard output the sum of
+values of chosen columns.
+
 Options:
-  -c, --columns=name1[,name2...]
-  -e, --separator=str
+  -c, --columns=NAME1[,NAME2...]
+                             use these columns
+  -e, --separator=STR        put STR between (string) values
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
-  -T, --table=name
+  -T, --table=NAME           apply to rows only with _table column equal NAME
       --help                 display this help and exit
       --version              output version information and exit

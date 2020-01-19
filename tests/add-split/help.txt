@@ -1,12 +1,19 @@
 Usage: csv-add-split [OPTION]...
+Read CSV stream from standard input and print it back to standard output with
+a new column produced by splitting another one using a separator.
+
 Options:
-  -c name
-  -e separator
-  -n name1,name2
-  -r, --reverse
+  -c NAME                    use column NAME as an input data
+  -e SEPARATOR               use all characters from SEPARATOR as separators
+  -n NAME1,NAME2             create columns NAME1 and NAME2 as an output
+  -r, --reverse              start looking for separator from the end of input
+                             string
   -p  --print-separator=yes/no/auto
+                             include separator in 2nd output column (auto means
+                             yes if there's more than 1 separator and no if
+                             there's only one), defaults to auto
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
-  -T, --table=name
+  -T, --table=NAME           apply to rows only with _table column equal NAME
       --help                 display this help and exit
       --version              output version information and exit
