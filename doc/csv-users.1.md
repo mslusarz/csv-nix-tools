@@ -42,6 +42,21 @@ Print to standard output the list of system users in the CSV format.
 --version
 :   output version information and exit
 
+# COLUMNS #
+
+| name   | type   | description                     | level |
+|--------|--------|---------------------------------|-------|
+| name   | string | name                            | 0     |
+| uid    | int    | user id                         | 0     |
+| gid    | int    | default group id                | 0     |
+| dir    | string | home directory                  | 0     |
+| shell  | string | login shell                     | 0     |
+| gecos  | string | real name / contact information | 1     |
+| passwd | string | password                        | 2     |
+
+passwd column comes from /etc/passwd, so it is useless on modern systems,
+as a real password is stored somewhere else and is not visible to normal users.
+
 # EXAMPLES #
 
 csv-users -s

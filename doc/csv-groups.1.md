@@ -42,6 +42,17 @@ Print to standard output the list of system groups in the CSV format.
 --version
 :   output version information and exit
 
+# COLUMNS #
+
+| name   | type   | description | level |
+|--------|--------|-------------|-------|
+| name   | string | name        | 0     |
+| gid    | int    | group id    | 0     |
+| passwd | string | password    | 1     |
+
+passwd column comes from /etc/group, so it is useless on modern systems,
+as a real password is stored somewhere else and is not visible to normal users.
+
 # EXAMPLES #
 
 csv-groups -s

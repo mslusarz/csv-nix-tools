@@ -40,6 +40,13 @@ in the CSV format.
 --version
 :   output version information and exit
 
+# COLUMNS #
+
+| name       | type   |
+|------------|--------|
+| group_name | string |
+| user_name  | string |
+
 # EXAMPLES #
 
 csv-group-members -s

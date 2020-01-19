@@ -39,6 +39,13 @@ Print to standard output the list of environment variables in the CSV format.
 --version
 :   output version information and exit
 
+# COLUMNS #
+
+| name  | type   |
+|-------|--------|
+| name  | string |
+| value | string |
+
 # EXAMPLES #
 
 csv-env -s
