@@ -119,12 +119,14 @@ get_ugx(bool xset, bool setid)
 	if (xset) {
 		if (setid)
 			return 's';
+		else
+			return 'x';
 	} else {
 		if (setid)
 			return 'S';
+		else
+			return '-';
 	}
-
-	return 'x';
 }
 
 static inline char
@@ -133,12 +135,14 @@ get_ox(bool xset, bool sticky)
 	if (xset) {
 		if (sticky)
 			return 't';
+		else
+			return 'x';
 	} else {
 		if (sticky)
 			return 'T';
+		else
+			return '-';
 	}
-
-	return 'x';
 }
 
 static void
