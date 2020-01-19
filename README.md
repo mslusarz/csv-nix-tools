@@ -13,12 +13,13 @@ information storage, it's not **that** important aspect of this project.
 What is more important is that it allows **safely** processing structured data
 using *NIX-like philosophy, by employing pipes and tools with familiar names
 (grep, sort, etc). "Safe" processing means that handling of special characters,
-like new lines, is effort-less - it just works, without bothering user with
+like new lines, is effort-less - it just works, without bothering users with
 hacks like IFS.
 
 This project also solves the problem of combining data from multiple sources
 into a single stream (see -M/-N/-T options in source tools + csv-merge)
-and processing it in any way user wants to, including powerful SQL syntax.
+and processing it in any way user wants to, including powerful SQL syntax,
+without leaving the shell.
 
 # Status
 This project is in alpha stage. Everything listed below is functional,
