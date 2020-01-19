@@ -1,5 +1,4 @@
-name: csv-nix-tools
+title: csv-nix-tools
 description: Collection of tools for gathering and processing system information using CSV as an intermediate format.
-title: test
 theme: jekyll-theme-hacker
 google_analytics: UA-141178844-1

@@ -1,8 +1,7 @@
 ---
-title: Home
+title: Overview
 ---
 
-This is csv-nix-tools home page.
+[Man pages](manpages/csv-nix-tools.7.html)
 
-[Man page](manpages/csv-nix-tools.7.html)
 [Source code](https://github.com/mslusarz/csv-nix-tools)
