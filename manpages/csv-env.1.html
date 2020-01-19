@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>csv-env</title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<div id="header">
+<h1 class="title">csv-env</h1>
+</div>
+<h1 id="name">NAME</h1>
+<p>csv-env - list environment variables in CSV format</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-env</strong> [OPTION]...</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>Print to standard output the list of environment variables in the CSV format.</p>
+<dl>
+<dt>-c, --columns=<em>NAME1</em>[,<em>NAME2</em>...]</dt>
+<dd>choose the list of columns
+</dd>
+<dt>-M, --merge</dt>
+<dd>merge output with a CSV stream in table form from standard input
+</dd>
+<dt>-N, --table-name <em>NAME</em></dt>
+<dd>produce output as table <em>NAME</em>
+</dd>
+<dt>-s, --show</dt>
+<dd>print output in table format
+</dd>
+<dt>-S, --show-full</dt>
+<dd>print output in table format with pager
+</dd>
+<dt>-T, --as-table</dt>
+<dd>produce output as table <em>env</em>
+</dd>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="columns">COLUMNS</h1>
+<table>
+<thead>
+<tr class="header">
+<th>name</th>
+<th>type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>name</td>
+<td>string</td>
+</tr>
+<tr class="even">
+<td>value</td>
+<td>string</td>
+</tr>
+</tbody>
+</table>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt>csv-env -s</dt>
+<dd>print environment variables
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="http://man7.org/linux/man-pages/man1/printenv.1.html">printenv</a></strong>(1), <strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>

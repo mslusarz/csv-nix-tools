@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>csv-nix-tools</title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<div id="header">
+<h1 class="title">csv-nix-tools</h1>
+</div>
+<h1 id="name">NAME</h1>
+<p>csv-nix-tools - collection of tools for gathering and processing system information</p>
+<h1 id="description">DESCRIPTION</h1>
+<p><strong>csv-nix-tools</strong> is a collection of tools for gathering and processing system information using CSV (with minor extensions) as a intermediate format.</p>
+<p>The extensions are:</p>
+<ul>
+<li>each column has a type, encoded in the name using name:type syntax</li>
+<li>optional &quot;_table&quot; column having special meaning</li>
+</ul>
+<p>Currently used types are: string, int, string[], int[], although array types are not well supported at the moment (they are produced by some tools, but there's no easy way to process them).</p>
+<p>Column &quot;_table&quot; resolves a problem of storing multiple sets of data in one CSV stream. It allows:</p>
+<ul>
+<li>merging of data from multiple sources,</li>
+<li>processing of data from one table at the time,</li>
+<li>combining data from multiple tables, based on relation between them</li>
+</ul>
+<h1 id="source-tools">SOURCE TOOLS</h1>
+<ul>
+<li><strong><a href="csv-env.1.html">csv-env</a></strong>(1) - list environment variables</li>
+<li><strong><a href="csv-group-members.1.html">csv-group-members</a></strong>(1) - list system groups and users that belong to them</li>
+<li><strong><a href="csv-groups.1.html">csv-groups</a></strong>(1) - list system groups</li>
+<li><strong><a href="csv-ls.1.html">csv-ls</a></strong>(1) - list files</li>
+<li><strong><a href="csv-netstat.1.html">csv-netstat</a></strong>(1) - list network connections</li>
+<li><strong><a href="csv-ps.1.html">csv-ps</a></strong>(1) - list processes</li>
+<li><strong><a href="csv-users.1.html">csv-users</a></strong>(1) - list system users</li>
+</ul>
+<h1 id="processing-tools">PROCESSING TOOLS</h1>
+<ul>
+<li><strong><a href="csv-add-concat.1.html">csv-add-concat</a></strong>(1) - add a new column by concatenation of columns and fixed strings</li>
+<li><strong><a href="csv-add-exec.1.html">csv-add-exec</a></strong>(1) - add a new column by executing an external command</li>
+<li><strong><a href="csv-add-replace.1.html">csv-add-replace</a></strong>(1) - add a new column by performing a string substitution on another column</li>
+<li><strong><a href="csv-add-rev.1.html">csv-add-rev</a></strong>(1) - add a new column by reversing another column characterwise</li>
+<li><strong><a href="csv-add-rpn.1.html">csv-add-rpn</a></strong>(1) - add a new column from RPN expression</li>
+<li><strong><a href="csv-add-split.1.html">csv-add-split</a></strong>(1) - add two new columns by splitting another one using a separator</li>
+<li><strong><a href="csv-add-sql.1.html">csv-add-sql</a></strong>(1) - add a new column from SQL expression</li>
+<li><strong><a href="csv-add-substring.1.html">csv-add-substring</a></strong>(1) - add a new column by extracting a substring of another column</li>
+<li><strong><a href="csv-avg.1.html">csv-avg</a></strong>(1) - take an average of numerical column(s)</li>
+<li><strong><a href="csv-cat.1.html">csv-cat</a></strong>(1) - concatenate CSV files and print on the standard output</li>
+<li><strong><a href="csv-count.1.html">csv-count</a></strong>(1) - count the number of columns and/or rows</li>
+<li><strong><a href="csv-cut.1.html">csv-cut</a></strong>(1) - remove and/or reorder columns</li>
+<li><strong><a href="csv-grep.1.html">csv-grep</a></strong>(1) - filter rows matching a pattern</li>
+<li><strong><a href="csv-grep-rpn.1.html">csv-grep-rpn</a></strong>(1) - filter rows for which RPN expression returns true</li>
+<li><strong><a href="csv-grep-sql.1.html">csv-grep-sql</a></strong>(1) - filter rows for which SQL expression returns true</li>
+<li><strong><a href="csv-head.1.html">csv-head</a></strong>(1) - print on the standard output the beginning of a CSV file from standard input</li>
+<li><strong><a href="csv-header.1.html">csv-header</a></strong>(1) - process header of a CSV file</li>
+<li><strong><a href="csv-max.1.html">csv-max</a></strong>(1) - take a maximum value of numerical or string column(s)</li>
+<li><strong><a href="csv-merge.1.html">csv-merge</a></strong>(1) - merge multiple CSV streams</li>
+<li><strong><a href="csv-min.1.html">csv-min</a></strong>(1) - take a minimum value of numerical or string column(s)</li>
+<li><strong><a href="csv-sort.1.html">csv-sort</a></strong>(1) - sort CSV file by column(s)</li>
+<li><strong><a href="csv-sql.1.html">csv-sql</a></strong>(1) - process CSV input data using simplified SQL syntax</li>
+<li><strong><a href="csv-sqlite.1.html">csv-sqlite</a></strong>(1) - process CSV input data using SQLite</li>
+<li><strong><a href="csv-sum.1.html">csv-sum</a></strong>(1) - take a sum of numerical or string column(s)</li>
+<li><strong><a href="csv-tac.1.html">csv-tac</a></strong>(1) - concatenate CSV files and print on the standard output in reverse</li>
+<li><strong><a href="csv-tail.1.html">csv-tail</a></strong>(1) - print on the standard output the end of a CSV file from standard input</li>
+<li><strong><a href="csv-uniq.1.html">csv-uniq</a></strong>(1) - merge adjacent duplicate rows</li>
+</ul>
+<h1 id="sink-tools">SINK TOOLS</h1>
+<ul>
+<li><strong><a href="csv-exec.1.html">csv-exec</a></strong>(1) - execute an external command for each row</li>
+<li><strong><a href="csv-show.1.html">csv-show</a></strong>(1) - print in human-readable format</li>
+</ul>
+<h1 id="common-options-for-all-source-tools">COMMON OPTIONS FOR ALL SOURCE TOOLS</h1>
+<dl>
+<dt>-c, --columns=<em>NAME1</em>[,<em>NAME2</em>...]</dt>
+<dd>choose the list of columns
+</dd>
+<dt>-l</dt>
+<dd>use a longer listing format (can be used up multiple times)
+</dd>
+<dt>-M, --merge</dt>
+<dd>merge output with a CSV stream in table form from standard input
+</dd>
+<dt>-N, --table-name=<em>NAME</em></dt>
+<dd>produce output as table <em>NAME</em>
+</dd>
+<dt>-T, --as-table</dt>
+<dd>produce output as table
+</dd>
+</dl>
+<p>Options -M/-N/-T can be used to merge output of multiple source tools, to be ultimately consumed by <strong><a href="csv-sqlite.1.html">csv-sqlite</a></strong>(1).</p>
+<h1 id="common-options-for-all-source-and-processing-tools">COMMON OPTIONS FOR ALL SOURCE AND PROCESSING TOOLS</h1>
+<dl>
+<dt>-s, --show</dt>
+<dd>print output in table format
+</dd>
+<dt>-S, --show-full</dt>
+<dd>print output in table format with pager
+</dd>
+</dl>
+<h1 id="common-options-for-processing-tools">COMMON OPTIONS FOR PROCESSING TOOLS</h1>
+<dl>
+<dt>-t, --table=<em>NAME</em></dt>
+<dd>apply to rows only with _table column equal <em>NAME</em>
+</dd>
+</dl>
+<h1 id="common-options-for-all-tools">COMMON OPTIONS FOR ALL TOOLS</h1>
+<dl>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="https://github.com/mslusarz/csv-nix-tools" class="uri">https://github.com/mslusarz/csv-nix-tools</a></strong></p>
+</body>
+</html>

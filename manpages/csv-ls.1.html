@@ -1,0 +1,380 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>csv-ls</title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<div id="header">
+<h1 class="title">csv-ls</h1>
+</div>
+<h1 id="name">NAME</h1>
+<p>csv-ls - list files in CSV format</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-ls</strong> [OPTION]... [FILE]...</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>List information about the FILEs (the current directory by default). Sort entries alphabetically if -U is not specified.</p>
+<dl>
+<dt>-a, --all</dt>
+<dd>do not ignore entries starting with .
+</dd>
+<dt>-c, --columns=<em>NAME1</em>[,<em>NAME2</em>...]</dt>
+<dd>choose the list of columns
+</dd>
+<dt>-d, --directory</dt>
+<dd>list directories themselves, not their contents
+</dd>
+<dt>-l</dt>
+<dd>use a longer listing format (can be used up to 3 times)
+</dd>
+<dt>-M, --merge</dt>
+<dd>merge output with a CSV stream in table form from standard input
+</dd>
+<dt>-N, --table-name <em>NAME</em></dt>
+<dd>produce output as table <em>NAME</em>
+</dd>
+<dt>-R, --recursive</dt>
+<dd>list subdirectories recursively
+</dd>
+<dt>-s, --show</dt>
+<dd>print output in table format
+</dd>
+<dt>-S, --show-full</dt>
+<dd>print output in table format with pager
+</dd>
+<dt>-T, --as-table</dt>
+<dd>produce output as table <em>file</em>
+</dd>
+<dt>-U</dt>
+<dd>do not sort; list entries in directory order
+</dd>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="columns">COLUMNS</h1>
+<table>
+<thead>
+<tr class="header">
+<th>name</th>
+<th>type</th>
+<th>description</th>
+<th>level</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>type_mode</td>
+<td>string</td>
+<td>type and mode</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>nlink</td>
+<td>int</td>
+<td>number of hard links</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>owner_name</td>
+<td>string</td>
+<td>user name of owner</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>group_name</td>
+<td>string</td>
+<td>group name of owner</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>size</td>
+<td>int</td>
+<td>total size, in bytes</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>mtime</td>
+<td>string</td>
+<td>time of last modification, fmt</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>name</td>
+<td>string</td>
+<td>file name</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>symlink</td>
+<td>string</td>
+<td>symlink path (if a symlink)</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>parent</td>
+<td>string</td>
+<td>parent directory</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>type</td>
+<td>int</td>
+<td>type of file (S_IFMT)</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>type_name</td>
+<td>string</td>
+<td>type of file (as string)</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>mode</td>
+<td>int</td>
+<td>file type and mode</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>owner_read</td>
+<td>int</td>
+<td>owner has read permission</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td>0/1, S_IRUSR</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>owner_write</td>
+<td>int</td>
+<td>owner has write permission</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td>0/1, S_IWUSR</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>owner_execute</td>
+<td>int</td>
+<td>owner has execute permission</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td>0/1, S_IXUSR</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>group_read</td>
+<td>int</td>
+<td>group has read permission</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td>0/1, S_IRGRP</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>group_write</td>
+<td>int</td>
+<td>group has write permission</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td>0/1, S_IWGRP</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>group_execute</td>
+<td>int</td>
+<td>group has execute permission</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td>0/1, S_IXGRP</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>other_read</td>
+<td>int</td>
+<td>others has read permission</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td>0/1, S_IROTH</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>other_write</td>
+<td>int</td>
+<td>others has write permission</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td>0/1, S_IWOTH</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>other_execute</td>
+<td>int</td>
+<td>others has execute permission</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td>0/1, S_IXOTH</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>setuid</td>
+<td>int</td>
+<td>set-user-id set, 0/1, S_ISUID</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>setgid</td>
+<td>int</td>
+<td>set-group-id set, 0/1, S_ISGID</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>sticky</td>
+<td>int</td>
+<td>sticky, 0/1, S_ISVTX</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>owner_id</td>
+<td>int</td>
+<td>user id of owner</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>group_id</td>
+<td>int</td>
+<td>group id of owner</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>ctime</td>
+<td>string</td>
+<td>time of last status change, fmt</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>atime</td>
+<td>string</td>
+<td>time of last access, fmt</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>full_path</td>
+<td>string</td>
+<td>parent + name</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>mtime_sec</td>
+<td>int</td>
+<td>time of last modification (sec)</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>mtime_nsec</td>
+<td>int</td>
+<td>time of last modification (nsec)</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>ctime_sec</td>
+<td>int</td>
+<td>time of last status change (sec)</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>ctime_nsec</td>
+<td>int</td>
+<td>time of last status change (nsec)</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>atime_sec</td>
+<td>int</td>
+<td>time of last access (sec)</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>atime_nsec</td>
+<td>int</td>
+<td>time of last access (nsec)</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>dev</td>
+<td>int</td>
+<td>id of device containing file</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>ino</td>
+<td>int</td>
+<td>inode number</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>rdev</td>
+<td>int</td>
+<td>device id (if special file)</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>blksize</td>
+<td>int</td>
+<td>block size for filesystem I/O</td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>blocks</td>
+<td>int</td>
+<td>number of 512B blocks allocated</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt>csv-ls</dt>
+<dd>print files (just names) in the current directory
+</dd>
+<dt>csv-ls -l -s</dt>
+<dd>print files in the current directory, in a format similar to ls -l
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="http://man7.org/linux/man-pages/man1/ls.1.html">ls</a></strong>(1), <strong><a href="http://man7.org/linux/man-pages/man7/inode.7.html">inode</a></strong>(7), <strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>csv-group-members</title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<div id="header">
+<h1 class="title">csv-group-members</h1>
+</div>
+<h1 id="name">NAME</h1>
+<p>csv-group-members - list system groups and users that belong to them in CSV format</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-group-members</strong> [OPTION]...</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>Print to standard output the list of system groups and users that belong to them in the CSV format.</p>
+<dl>
+<dt>-c, --columns=<em>NAME1</em>[,<em>NAME2</em>...]</dt>
+<dd>choose the list of columns
+</dd>
+<dt>-M, --merge</dt>
+<dd>merge output with a CSV stream in table form from standard input
+</dd>
+<dt>-N, --table-name <em>NAME</em></dt>
+<dd>produce output as table <em>NAME</em>
+</dd>
+<dt>-s, --show</dt>
+<dd>print output in table format
+</dd>
+<dt>-S, --show-full</dt>
+<dd>print output in table format with pager
+</dd>
+<dt>-T, --as-table</dt>
+<dd>produce output as table <em>group_member</em>
+</dd>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="columns">COLUMNS</h1>
+<table>
+<thead>
+<tr class="header">
+<th>name</th>
+<th>type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>group_name</td>
+<td>string</td>
+</tr>
+<tr class="even">
+<td>user_name</td>
+<td>string</td>
+</tr>
+</tbody>
+</table>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt>csv-group-members -s</dt>
+<dd>print groups and users
+</dd>
+<dt>csv-group-members -T | csv-grep -T group_member -c group_name -x -F audio | csv-users -M | csv-sqlite -T 'select user.uid from user, group_member where user.name = group_member.user_name' -s</dt>
+<dd>print user ids of users belonging to group 'audio'
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="csv-groups.1.html">csv-groups</a></strong>(1), <strong><a href="csv-users.1.html">csv-users</a></strong>(1), <strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>

@@ -1,0 +1,527 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>csv-netstat</title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<div id="header">
+<h1 class="title">csv-netstat</h1>
+</div>
+<h1 id="name">NAME</h1>
+<p>csv-netstat - list network connections in CSV format</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-netstat</strong> [OPTION]...</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>Print to standard output the list of network sockets in the CSV format.</p>
+<dl>
+<dt>-c, --columns=<em>NAME1</em>[,<em>NAME2</em>...]</dt>
+<dd>choose the list of columns
+</dd>
+<dt>-l</dt>
+<dd>use a longer listing format (can be used up to 3 times)
+</dd>
+<dt>-M, --merge</dt>
+<dd>merge output with a CSV stream in table form from standard input
+</dd>
+<dt>-N, --table-name <em>NAME</em></dt>
+<dd>produce output as table <em>NAME</em>
+</dd>
+<dt>-r, --resolve</dt>
+<dd>resolve IPs and ports
+</dd>
+<dt>-s, --show</dt>
+<dd>print output in table format
+</dd>
+<dt>-S, --show-full</dt>
+<dd>print output in table format with pager
+</dd>
+<dt>-T, --as-table</dt>
+<dd>produce output as table <em>socket</em>
+</dd>
+<dt>-t, --tcp</dt>
+<dd>print information only about TCP sockets
+</dd>
+<dt>-u, --udp</dt>
+<dd>print information only about UDP sockets
+</dd>
+<dt>-w, --raw</dt>
+<dd>print information only about RAW sockets
+</dd>
+<dt>-x, --unix</dt>
+<dd>print information only about UNIX sockets
+</dd>
+<dt>-4, --inet4</dt>
+<dd>print information only about IPv4 sockets
+</dd>
+<dt>-6, --inet6</dt>
+<dd>print information only about IPv6 sockets
+</dd>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="columns">COLUMNS</h1>
+<table>
+<thead>
+<tr class="header">
+<th>name</th>
+<th>type</th>
+<th>description</th>
+<th>level</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>family</td>
+<td>string</td>
+<td>socket family (INET4, INET6, UNIX)</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>protocol</td>
+<td>string</td>
+<td>protocol (tcp, udp, raw)</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>src_ip</td>
+<td>string</td>
+<td>source IP</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>src_port</td>
+<td>int</td>
+<td>source port</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>dst_ip</td>
+<td>string</td>
+<td>destination IP</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>dst_port</td>
+<td>int</td>
+<td>destination port</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>src_name</td>
+<td>string</td>
+<td>source resolved name</td>
+<td>0 -r</td>
+</tr>
+<tr class="even">
+<td>src_port_name</td>
+<td>string</td>
+<td>source port name</td>
+<td>0 -r</td>
+</tr>
+<tr class="odd">
+<td>dst_name</td>
+<td>string</td>
+<td>destination resolved name</td>
+<td>0 -r</td>
+</tr>
+<tr class="even">
+<td>dst_port_name</td>
+<td>string</td>
+<td>destination port name</td>
+<td>0 -r</td>
+</tr>
+<tr class="odd">
+<td>state</td>
+<td>string</td>
+<td>socket state</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>name</td>
+<td>string</td>
+<td>name</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>inode</td>
+<td>int</td>
+<td>local inode number</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>peer_inode</td>
+<td>int</td>
+<td>remote inode number</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>type</td>
+<td>string</td>
+<td>type (DGRAM, PACKET, STREAM, SEQPACKET)</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>uid</td>
+<td>int</td>
+<td>user id of owner</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>interface</td>
+<td>int</td>
+<td>interface number</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>pending_conns</td>
+<td>int</td>
+<td>number of pending connections</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>incoming_data</td>
+<td>int</td>
+<td>?</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>backlog_length</td>
+<td>int</td>
+<td>?</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>outgoing_data</td>
+<td>int</td>
+<td>?</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>rmem_alloc</td>
+<td>int</td>
+<td>?</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>rcvbuf</td>
+<td>int</td>
+<td>?</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>wmem_alloc</td>
+<td>int</td>
+<td>?</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>sndbuf</td>
+<td>int</td>
+<td>?</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>fwd_alloc</td>
+<td>int</td>
+<td>? forward alloc</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>wmem_queued</td>
+<td>int</td>
+<td>?</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>optmem</td>
+<td>int</td>
+<td>?</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>backlog</td>
+<td>int</td>
+<td>? backlog queue length</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>drops</td>
+<td>int</td>
+<td>?</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>shutdown</td>
+<td>int</td>
+<td>?</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>vfs_dev</td>
+<td>int</td>
+<td>?</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>vfs_ino</td>
+<td>int</td>
+<td>?</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>timer</td>
+<td>string</td>
+<td>?</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>retransmits</td>
+<td>int</td>
+<td>? number of retransmitted packets</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>expires_ms</td>
+<td>int</td>
+<td>? timer expiration in milliseconds</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>rmem</td>
+<td>int</td>
+<td>?</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>wmem</td>
+<td>int</td>
+<td>?</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>fmem</td>
+<td>int</td>
+<td>?</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>tmem</td>
+<td>int</td>
+<td>?</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>ipv6only</td>
+<td>int</td>
+<td>is socket IPv6 only</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>user_protocol</td>
+<td>string</td>
+<td>protocol for raw sockets</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>cookie0</td>
+<td>int</td>
+<td>?</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>cookie1</td>
+<td>int</td>
+<td>?</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>icons</td>
+<td>int[]</td>
+<td>?</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>cong</td>
+<td>string</td>
+<td>name of congestion control</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>tos</td>
+<td>int</td>
+<td>? type of service</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>tclass</td>
+<td>int</td>
+<td>? traffic class</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>locals</td>
+<td>string</td>
+<td>?</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>peers</td>
+<td>string</td>
+<td>?</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>pad</td>
+<td>int</td>
+<td>?</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>mark</td>
+<td>int</td>
+<td>? (SO_MARK, man 7 socket)</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>class_id</td>
+<td>int</td>
+<td>?</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>md5sig</td>
+<td>string</td>
+<td>?</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>vegas_enabled</td>
+<td>int</td>
+<td>? TCP Vegas congestion control enabled</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>vegas_rttcnt</td>
+<td>int</td>
+<td>? number of RTTs measured within</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td>last RTT</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>vegas_rtt</td>
+<td>int</td>
+<td>? the minimum value of all Vegas RTT</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td>measurements seen (usec)</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>vegas_minrtt</td>
+<td>int</td>
+<td>? minimum of RTTs measured within</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td>last RTT (usec)</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>dctcp_enabled</td>
+<td>int</td>
+<td>? DCTCP congestion control enabled</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>dctcp_ce_state</td>
+<td>int</td>
+<td>? 0/1</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>dctcp_alpha</td>
+<td>int</td>
+<td>?</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>dctcp_ab_ecn</td>
+<td>int</td>
+<td>? acknowledged bytes ecn</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>dctcp_ab_tot</td>
+<td>int</td>
+<td>? acknowledged bytes total</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>bbr_bw_lo</td>
+<td>int</td>
+<td>? BBR congestion control, bw lo 32bit</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>bbr_bw_hi</td>
+<td>int</td>
+<td>? bw hi 32bit</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>bbr_min_rtt</td>
+<td>int</td>
+<td>? min-filtered RTT in usec</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>bbr_pacing_gain</td>
+<td>int</td>
+<td>? pacing gain &lt;&lt; 8</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>bbr_cwnd_gain</td>
+<td>int</td>
+<td>? cwnd gain &lt;&lt; 8</td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>info</td>
+<td>string</td>
+<td>?</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt>csv-netstat -ts</dt>
+<dd>print information about all TCP sockets
+</dd>
+<dt>csv-netstat -46s</dt>
+<dd>print information about all IPv4 and IPv6 sockets
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="http://man7.org/linux/man-pages/man8/netstat.8.html">netstat</a></strong>(8), <strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>

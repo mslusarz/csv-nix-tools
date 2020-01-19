@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>csv-header</title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<div id="header">
+<h1 class="title">csv-header</h1>
+</div>
+<h1 id="name">NAME</h1>
+<p>csv-header - process header of a CSV file</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-header</strong> [OPTION]...</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>Read CSV stream from standard input and print back to standard output with the column header transformed.</p>
+<dl>
+<dt>-A, --add-types <em>NAME1</em>:<em>TYPE1</em>[,<em>NAME2</em>:<em>TYPE2</em>]</dt>
+<dd>(NOT IMPLEMENTED YET) add type <em>TYPE1</em> to column <em>NAME1</em>, <em>TYPE2</em> to column <em>NAME2</em>, etc.
+</dd>
+<dt>-C, --change-type <em>NAME</em>:<em>TYPE</em></dt>
+<dd>(NOT IMPLEMENTED YET) change type of column <em>NAME</em> to <em>TYPE</em>
+</dd>
+<dt>-G, --guess-types</dt>
+<dd>(NOT IMPLEMENTED YET) add types to columns by guessing based on their contents
+</dd>
+<dt>-M, --remove-types</dt>
+<dd>(NOT IMPLEMENTED YET) remove types from columns
+</dd>
+<dt>-m, --remove</dt>
+<dd>remove column header
+</dd>
+<dt>-n, --rename <em>NAME</em>,<em>NEW-NAME</em></dt>
+<dd>(NOT IMPLEMENTED YET) rename column <em>NAME</em> to <em>NEW-NAME</em>
+</dd>
+<dt>-s, --show</dt>
+<dd>print output in table format
+</dd>
+<dt>-S, --show-full</dt>
+<dd>print output in table format with pager
+</dd>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt>csv-ls | csv-count -r | csv-header -m</dt>
+<dd>print number of files in the current directory without csv header
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>

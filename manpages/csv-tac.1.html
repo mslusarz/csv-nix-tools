@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>csv-tac</title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<div id="header">
+<h1 class="title">csv-tac</h1>
+</div>
+<h1 id="name">NAME</h1>
+<p>csv-tac - concatenate CSV files and print on the standard output in reverse</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-tac</strong> [OPTION]... [FILE]...</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>Concatenate CSV FILE(s) to standard output, last row first. With no FILE, or when FILE is -, read standard input.</p>
+<p>All files must have the same columns (number, names, and types), but their order can be different between files. csv-tac chooses the order of the first input file.</p>
+<dl>
+<dt>-s, --show</dt>
+<dd>print output in table format
+</dd>
+<dt>-S, --show-full</dt>
+<dd>print output in table format with pager
+</dd>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt>csv-tac file1.csv - file2.csv</dt>
+<dd>output file1.csv contents, the standard input, then file2.contents, each one in reverse
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="http://man7.org/linux/man-pages/man1/tac.1.html">tac</a></strong>(1), <strong><a href="csv-cat.1.html">csv-cat</a></strong>(1), <strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>

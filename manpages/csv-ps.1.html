@@ -1,0 +1,704 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>csv-ps</title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<div id="header">
+<h1 class="title">csv-ps</h1>
+</div>
+<h1 id="name">NAME</h1>
+<p>csv-ps - list processes in CSV format</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-ps</strong> [OPTION]...</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>Print to standard output the list of system processes in the CSV format.</p>
+<dl>
+<dt>-c, --columns=<em>NAME1</em>[,<em>NAME2</em>...]</dt>
+<dd>choose the list of columns
+</dd>
+<dt>-l</dt>
+<dd>use a longer listing format (can be used up to 4 times)
+</dd>
+<dt>-M, --merge</dt>
+<dd>merge output with a CSV stream in table form from standard input
+</dd>
+<dt>-N, --table-name <em>NAME</em></dt>
+<dd>produce output as table <em>NAME</em>
+</dd>
+<dt>-p, --pid=PID1[,PID2...]</dt>
+<dd>select processes from this list
+</dd>
+<dt>-s, --show</dt>
+<dd>print output in table format
+</dd>
+<dt>-S, --show-full</dt>
+<dd>print output in table format with pager
+</dd>
+<dt>-T, --as-table</dt>
+<dd>produce output as table <em>proc</em>
+</dd>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="columns">COLUMNS</h1>
+<table>
+<thead>
+<tr class="header">
+<th>name</th>
+<th>type</th>
+<th>description</th>
+<th>level</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>euid_name</td>
+<td>string</td>
+<td></td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>pid</td>
+<td>int</td>
+<td></td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>ppid</td>
+<td>int</td>
+<td></td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>%cpu</td>
+<td>int</td>
+<td></td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>vm_size_KiB</td>
+<td>int</td>
+<td></td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>vm_rss_KiB</td>
+<td>int</td>
+<td></td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>tty_id</td>
+<td>int</td>
+<td></td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>state</td>
+<td>string</td>
+<td></td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>start_time</td>
+<td>string</td>
+<td></td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>cpu_time</td>
+<td>string</td>
+<td></td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>processor</td>
+<td>int</td>
+<td></td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>command</td>
+<td>string</td>
+<td></td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>euid</td>
+<td>int</td>
+<td></td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>tid</td>
+<td>int</td>
+<td></td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>cpu_time_ms</td>
+<td>int</td>
+<td></td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>age</td>
+<td>string</td>
+<td></td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>egid_name</td>
+<td>string</td>
+<td></td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>ruid_name</td>
+<td>string</td>
+<td></td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>rgid_name</td>
+<td>string</td>
+<td></td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>suid_name</td>
+<td>string</td>
+<td></td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>sgid_name</td>
+<td>string</td>
+<td></td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>fuid_name</td>
+<td>string</td>
+<td></td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>fgid_name</td>
+<td>string</td>
+<td></td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>supgid_names</td>
+<td>string</td>
+<td></td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>egid</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>ruid</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>rgid</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>suid</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>sgid</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>fuid</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>fgid</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>supgid</td>
+<td>string</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>age_sec</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>age_msec</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>vm_size_B</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>vm_lock_B</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>vm_rss_B</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>vm_rss_anon_B</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>vm_rss_file_B</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>vm_rss_shared_B</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>vm_data_B</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>vm_stack_B</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>vm_swap_B</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>vm_exe_B</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>vm_lib_B</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>priority</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>nice</td>
+<td>int</td>
+<td></td>
+<td>2</td>
+</tr>
+<tr class="even">
+<td>cmd</td>
+<td>string</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>nlwp</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>wchan</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>pgrp</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>session</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>user_time_ms</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>system_time_ms</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>cumulative_user_time_ms</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>cumulative_system_time_ms</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>start_time_sec</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>start_time_msec</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>rss_B</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>rtprio</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>sched</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>min_flt</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>maj_flt</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>cmin_flt</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>cmaj_flt</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>tpgid</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>size_B</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>resident_B</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>share_B</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>trs_B</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>drs_B</td>
+<td>int</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>cmdline</td>
+<td>string[]</td>
+<td></td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>alarm</td>
+<td>int</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>start_code</td>
+<td>int</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>end_code</td>
+<td>int</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>start_stack</td>
+<td>int</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>kstk_esp</td>
+<td>int</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>kstk_eip</td>
+<td>int</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>vsize_B</td>
+<td>int</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>rss_rlim</td>
+<td>int</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>flags</td>
+<td>int</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>exit_signal</td>
+<td>int</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>pending_signals</td>
+<td>string</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>blocked_signals</td>
+<td>string</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>ignored_signals</td>
+<td>string</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>caught_signals</td>
+<td>string</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>pending_signals_per_task</td>
+<td>string</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>oom_score</td>
+<td>int</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>oom_adj</td>
+<td>int</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>ns_ipc</td>
+<td>int</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>ns_mnt</td>
+<td>int</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>ns_net</td>
+<td>int</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>ns_pid</td>
+<td>int</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>ns_user</td>
+<td>int</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>ns_uts</td>
+<td>int</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>sd_mach</td>
+<td>string</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>sd_ouid</td>
+<td>string</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>sd_seat</td>
+<td>string</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>sd_sess</td>
+<td>string</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>sd_slice</td>
+<td>string</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>sd_unit</td>
+<td>string</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>sd_uunit</td>
+<td>string</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>lxcname</td>
+<td>string</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="even">
+<td>environ</td>
+<td>string</td>
+<td></td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>cgroup</td>
+<td>string[]</td>
+<td></td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt>csv-ps -S</dt>
+<dd>browse all processes with custom pager
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="http://man7.org/linux/man-pages/man1/ps.1.html">ps</a></strong>(1), <strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>csv-sql</title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<div id="header">
+<h1 class="title">csv-sql</h1>
+</div>
+<h1 id="name">NAME</h1>
+<p>csv-sql - process CSV input data using simplified SQL syntax</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-sql</strong> [OPTION]... sql-query</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>Read CSV stream from standard input, process it using simplified SQL query and print back to standard output its result.</p>
+<dl>
+<dt>-s, --show</dt>
+<dd>print output in table format
+</dd>
+<dt>-S, --show-full</dt>
+<dd>print output in table format with pager
+</dd>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="simplified-sql-syntax">SIMPLIFIED SQL SYNTAX</h1>
+<p>Only queries in this form are supported:</p>
+<p><code>SELECT columns [FROM input] [WHERE condition]</code></p>
+<p>Only <strong>columns</strong> are required. FROM supports only &quot;input&quot; table and is thus optional. &quot;WHERE condition&quot; is optional. &quot;ORDER BY&quot; is not supported.</p>
+<p>No aggregate or window functions are supported.</p>
+<p>Columns is comma separated list of column names or expressions, with each one optonally followed by &quot;AS new-column-name&quot; giving it a new name.</p>
+<p>Constants:</p>
+<table>
+<thead>
+<tr class="header">
+<th>syntax</th>
+<th>description</th>
+<th>example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>[-][1-9][0-9]*</td>
+<td>decimal integer</td>
+<td>1, 1294, -89</td>
+</tr>
+<tr class="even">
+<td>[-]0x[0-9a-fA-F]+</td>
+<td>hexadecimal integer</td>
+<td>0x1, 0x1A34, -0x8A</td>
+</tr>
+<tr class="odd">
+<td>[-]0[0-9]+</td>
+<td>octal integer</td>
+<td>01, 01234, -067</td>
+</tr>
+<tr class="even">
+<td>[-]0b[01]+</td>
+<td>binary integer</td>
+<td>0b1, 0b1101, -0b10</td>
+</tr>
+<tr class="odd">
+<td>'[^']*'</td>
+<td>string</td>
+<td>'text'</td>
+</tr>
+<tr class="even">
+<td>&quot;[^&quot;]*&quot;</td>
+<td>string</td>
+<td>&quot;text&quot;</td>
+</tr>
+</tbody>
+</table>
+<p>Operators:</p>
+<table>
+<thead>
+<tr class="header">
+<th>name</th>
+<th>description</th>
+<th>example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>+</td>
+<td>addition</td>
+<td>expr + 5</td>
+</tr>
+<tr class="even">
+<td>-</td>
+<td>subtraction</td>
+<td>expr - 5</td>
+</tr>
+<tr class="odd">
+<td>*</td>
+<td>multiplication</td>
+<td>expr * 5</td>
+</tr>
+<tr class="even">
+<td>/</td>
+<td>division</td>
+<td>expr / 5</td>
+</tr>
+<tr class="odd">
+<td>%</td>
+<td>modulo</td>
+<td>expr % 5</td>
+</tr>
+<tr class="even">
+<td>|</td>
+<td>bitwise or</td>
+<td>expr | 5</td>
+</tr>
+<tr class="odd">
+<td>&amp;</td>
+<td>bitwise and</td>
+<td>expr &amp; 5</td>
+</tr>
+<tr class="even">
+<td>~</td>
+<td>bitwise negation</td>
+<td>~ expr</td>
+</tr>
+<tr class="odd">
+<td>^</td>
+<td>bitwise xor</td>
+<td>expr ^ 5</td>
+</tr>
+<tr class="even">
+<td>&lt;&lt;</td>
+<td>bitwise left shift</td>
+<td>expr &lt;&lt; 5</td>
+</tr>
+<tr class="odd">
+<td>&gt;&gt;</td>
+<td>bitwise right shift</td>
+<td>expr &gt;&gt; 5</td>
+</tr>
+<tr class="even">
+<td>&lt;</td>
+<td>less</td>
+<td>expr &lt; 5</td>
+</tr>
+<tr class="odd">
+<td>&lt;=</td>
+<td>less or equal</td>
+<td>expr &lt;= 5</td>
+</tr>
+<tr class="even">
+<td>&gt;</td>
+<td>greater</td>
+<td>expr &gt; 5</td>
+</tr>
+<tr class="odd">
+<td>&gt;=</td>
+<td>greater or equal</td>
+<td>expr &gt;= 5</td>
+</tr>
+<tr class="even">
+<td>==, =</td>
+<td>equal</td>
+<td>expr = 5, expr == 5</td>
+</tr>
+<tr class="odd">
+<td>!=, &lt;&gt;</td>
+<td>not equal</td>
+<td>expr &lt;&gt; 5, expr != 5</td>
+</tr>
+<tr class="even">
+<td>and</td>
+<td>logical and</td>
+<td>expr1 and expr2</td>
+</tr>
+<tr class="odd">
+<td>or</td>
+<td>logical or</td>
+<td>expr1 or expr2</td>
+</tr>
+<tr class="even">
+<td>xor</td>
+<td>logical exclusive or</td>
+<td>expr1 xor expr2</td>
+</tr>
+<tr class="odd">
+<td>not</td>
+<td>logical negation</td>
+<td>not expr</td>
+</tr>
+<tr class="even">
+<td>||</td>
+<td>concatenation</td>
+<td>expr1 || expr2</td>
+</tr>
+<tr class="odd">
+<td>like</td>
+<td>match pattern</td>
+<td>expr like 'patt%'</td>
+</tr>
+<tr class="even">
+<td>()</td>
+<td>expression grouping</td>
+<td>(expr1 + 5) == 7</td>
+</tr>
+</tbody>
+</table>
+<p>Functions:</p>
+<table>
+<thead>
+<tr class="header">
+<th>name</th>
+<th>description</th>
+<th>example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>if</td>
+<td>if then else</td>
+<td>if(bool_expr, expr2, expr3)</td>
+</tr>
+<tr class="even">
+<td>substr</td>
+<td>substring</td>
+<td>substr(str_expr, 1, 3)</td>
+</tr>
+<tr class="odd">
+<td>strlen, length</td>
+<td>string length</td>
+<td>strlen(str_expr), length(str_expr)</td>
+</tr>
+<tr class="even">
+<td>tostring</td>
+<td>convert to string</td>
+<td>tostring(int_expr, base_expr)</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td>tostring(int_expr)</td>
+</tr>
+<tr class="even">
+<td>toint</td>
+<td>convert to integer</td>
+<td>toint(str_expr, base_expr)</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td>toint(str_expr)</td>
+</tr>
+<tr class="even">
+<td>replace</td>
+<td>replace string</td>
+<td>replace(str_expr, 'pat', 'repl', 1)</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td>replace(str_expr, 'pat', 'repl')</td>
+</tr>
+<tr class="even">
+<td>replace_bre</td>
+<td>replace string using</td>
+<td>replace_bre(str_expr, 'pat', 'bre', 1)</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>basic regular expression</td>
+<td>replace_bre(str_expr, 'pat', 'bre')</td>
+</tr>
+<tr class="even">
+<td>replace_ere</td>
+<td>replace string using</td>
+<td>replace_ere(str_expr, 'pat', 'ere', 1)</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>extended regular expression</td>
+<td>replace_ere(str_expr, 'pat', 'ere')</td>
+</tr>
+<tr class="even">
+<td>matches_bre</td>
+<td>string matches basic</td>
+<td>matches_bre(str_expr, 'pat', 1)</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>regular expression</td>
+<td>matches_bre(str_expr, 'pat')</td>
+</tr>
+<tr class="even">
+<td>matches_ere</td>
+<td>string matches extended</td>
+<td>matches_ere(str_expr, 'pat', 1)</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>regular expression</td>
+<td>matches_ere(str_expr, 'pat')</td>
+</tr>
+<tr class="even">
+<td>next</td>
+<td>next integer from sequence</td>
+<td>next('sequence name')</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+<td>next()</td>
+</tr>
+</tbody>
+</table>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt>csv-ls -c size,name | csv-sql <code>&quot;</code>select size, name from input where size &gt; 2000 and size &lt; 3000<code>&quot;</code> -s</dt>
+<dd>print files whose size is between 2000 and 3000 bytes
+</dd>
+<dt>csv-ls -c name | csv-sql <code>&quot;</code>select size, name, matches_ere(name, '.txt$') as is_txt where name like 'a%'<code>&quot;</code></dt>
+<dd>print file names and a boolean saying whether name ends with '.txt' for files whose name starts with 'a'
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="csv-sqlite.1.html">csv-sqlite</a></strong>(1), <strong><a href="csv-add-sql.1.html">csv-add-sql</a></strong>(1), <strong><a href="csv-grep-sql.1.html">csv-grep-sql</a></strong>(1), <strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>

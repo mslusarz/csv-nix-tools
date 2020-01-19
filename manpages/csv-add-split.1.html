@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>csv-add-split</title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<div id="header">
+<h1 class="title">csv-add-split</h1>
+</div>
+<h1 id="name">NAME</h1>
+<p>csv-add-split - add two new columns by splitting another one using a separator</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-add-split</strong> [OPTION]...</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>Read CSV stream from standard input and print it back to standard output with a new column produced by splitting another one using a separator.</p>
+<dl>
+<dt>-c <em>NAME</em></dt>
+<dd>use column <em>NAME</em> as an input data
+</dd>
+<dt>-e <em>SEPARATOR</em></dt>
+<dd>use all characters from <em>SEPARATOR</em> as separators
+</dd>
+<dt>-n <em>NAME1</em>,<em>NAME2</em></dt>
+<dd>create columns <em>NAME1</em> and <em>NAME2</em> as an output
+</dd>
+<dt>-r, --reverse</dt>
+<dd>start looking for separator from the end of input string
+</dd>
+<dt>-p --print-separator=<em>yes</em>/<em>no</em>/<em>auto</em></dt>
+<dd>include separator in 2nd output column (<em>auto</em> means <em>yes</em> if there's more than 1 separator and <em>no</em> if there's only one), defaults to <em>auto</em>
+</dd>
+<dt>-s, --show</dt>
+<dd>print output in table format
+</dd>
+<dt>-S, --show-full</dt>
+<dd>print output in table format with pager
+</dd>
+<dt>-T, --table=<em>NAME</em></dt>
+<dd>apply to rows only with _table column equal <em>NAME</em>
+</dd>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt>csv-ls | csv-add-split -c name -e . -n base,ext -s</dt>
+<dd>list files with base and extension in columns base and ext
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>

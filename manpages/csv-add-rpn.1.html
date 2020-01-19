@@ -1,0 +1,306 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>csv-add-rpn</title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<div id="header">
+<h1 class="title">csv-add-rpn</h1>
+</div>
+<h1 id="name">NAME</h1>
+<p>csv-add-rpn - add a new column from RPN expression</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-add-rpn</strong> [OPTION]...</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>Read CSV stream from standard input and print it back to standard output with a new column produced by evaluation of RPN (reverse Polish notation) expression.</p>
+<dl>
+<dt>-n <em>NEW-NAME</em></dt>
+<dd>create column <em>NEW-NAME</em> as an output
+</dd>
+<dt>-e <em>RPN-EXPR</em></dt>
+<dd>use expression <em>RPN-EXPR</em> to create new column; RPN expressions use space as a separator, so this needs to be quoted
+</dd>
+<dt>-s, --show</dt>
+<dd>print output in table format
+</dd>
+<dt>-S, --show-full</dt>
+<dd>print output in table format with pager
+</dd>
+<dt>-T, --table=<em>NAME</em></dt>
+<dd>apply to rows only with _table column equal <em>NAME</em>
+</dd>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="rpn-syntax">RPN SYNTAX</h1>
+<p>Variables:</p>
+<table>
+<thead>
+<tr class="header">
+<th>syntax</th>
+<th>description</th>
+<th>example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>%.*</td>
+<td>value of column</td>
+<td>%name</td>
+</tr>
+</tbody>
+</table>
+<p>Constants:</p>
+<table>
+<thead>
+<tr class="header">
+<th>syntax</th>
+<th>description</th>
+<th>example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>[-][1-9][0-9]*</td>
+<td>decimal integer</td>
+<td>1, 1294, -89</td>
+</tr>
+<tr class="even">
+<td>[-]0x[0-9a-fA-F]+</td>
+<td>hexadecimal integer</td>
+<td>0x1, 0x1A34, -0x8A</td>
+</tr>
+<tr class="odd">
+<td>[-]0[0-9]+</td>
+<td>octal integer</td>
+<td>01, 01234, -067</td>
+</tr>
+<tr class="even">
+<td>[-]0b[01]+</td>
+<td>binary integer</td>
+<td>0b1, 0b1101, -0b10</td>
+</tr>
+<tr class="odd">
+<td>'[^']*'</td>
+<td>string</td>
+<td>'text'</td>
+</tr>
+<tr class="even">
+<td>&quot;[^&quot;]*&quot;</td>
+<td>string</td>
+<td>&quot;text&quot;</td>
+</tr>
+</tbody>
+</table>
+<p>Operators:</p>
+<table>
+<thead>
+<tr class="header">
+<th>name</th>
+<th>description</th>
+<th>example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>+</td>
+<td>addition</td>
+<td>%num 5 +</td>
+</tr>
+<tr class="even">
+<td>-</td>
+<td>subtraction</td>
+<td>%num 5 -</td>
+</tr>
+<tr class="odd">
+<td>*</td>
+<td>multiplication</td>
+<td>%num 5 *</td>
+</tr>
+<tr class="even">
+<td>/</td>
+<td>division</td>
+<td>%num 5 /</td>
+</tr>
+<tr class="odd">
+<td>%</td>
+<td>modulo</td>
+<td>%num 5 %</td>
+</tr>
+<tr class="even">
+<td>|</td>
+<td>bitwise or</td>
+<td>%num 5 |</td>
+</tr>
+<tr class="odd">
+<td>&amp;</td>
+<td>bitwise and</td>
+<td>%num 5 &amp;</td>
+</tr>
+<tr class="even">
+<td>~</td>
+<td>bitwise negation</td>
+<td>%num ~</td>
+</tr>
+<tr class="odd">
+<td>^</td>
+<td>bitwise xor</td>
+<td>%num 5 ^</td>
+</tr>
+<tr class="even">
+<td>&lt;&lt;</td>
+<td>bitwise left shift</td>
+<td>%num 5 &lt;&lt;</td>
+</tr>
+<tr class="odd">
+<td>&gt;&gt;</td>
+<td>bitwise right shift</td>
+<td>%num 5 &gt;&gt;</td>
+</tr>
+<tr class="even">
+<td>lt, &lt;</td>
+<td>less</td>
+<td>%num 5 lt, %num 5 &lt;</td>
+</tr>
+<tr class="odd">
+<td>le, &lt;=</td>
+<td>less or equal</td>
+<td>%num 5 le, %num 5 &lt;=</td>
+</tr>
+<tr class="even">
+<td>gt, &gt;</td>
+<td>greater</td>
+<td>%num 5 gt, %num 5 &gt;</td>
+</tr>
+<tr class="odd">
+<td>ge, &gt;=</td>
+<td>greater or equal</td>
+<td>%num 5 ge, %num 5 &gt;=</td>
+</tr>
+<tr class="even">
+<td>eq, ==</td>
+<td>equal</td>
+<td>%num 5 eq, %num 5 ==</td>
+</tr>
+<tr class="odd">
+<td>ne, !=</td>
+<td>not equal</td>
+<td>%num 5 ne, %num 5 !=</td>
+</tr>
+<tr class="even">
+<td>and</td>
+<td>logical and</td>
+<td>%bool1 %bool2 and</td>
+</tr>
+<tr class="odd">
+<td>or</td>
+<td>logical or</td>
+<td>%bool1 %bool2 or</td>
+</tr>
+<tr class="even">
+<td>xor</td>
+<td>logical exclusive or</td>
+<td>%bool1 %bool2 xor</td>
+</tr>
+<tr class="odd">
+<td>not</td>
+<td>logical negation</td>
+<td>%bool1 not</td>
+</tr>
+</tbody>
+</table>
+<p>Functions:</p>
+<table>
+<thead>
+<tr class="header">
+<th>name</th>
+<th>description</th>
+<th>example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>if</td>
+<td>if then else</td>
+<td>%bool %val1 %val2 if</td>
+</tr>
+<tr class="even">
+<td>substr</td>
+<td>substring</td>
+<td>%str 1 3 substr</td>
+</tr>
+<tr class="odd">
+<td>strlen/length</td>
+<td>string length</td>
+<td>%str strlen, %str length</td>
+</tr>
+<tr class="even">
+<td>concat</td>
+<td>concatenation</td>
+<td>%str1 %str2 concat</td>
+</tr>
+<tr class="odd">
+<td>like</td>
+<td>match pattern</td>
+<td>%str 'patt%' like</td>
+</tr>
+<tr class="even">
+<td>tostring</td>
+<td>convert to string</td>
+<td>%num %base tostring</td>
+</tr>
+<tr class="odd">
+<td>toint</td>
+<td>convert to integer</td>
+<td>%str %base toint</td>
+</tr>
+<tr class="even">
+<td>replace</td>
+<td>replace string</td>
+<td>%str 'pat' 'repl' 1 replace</td>
+</tr>
+<tr class="odd">
+<td>replace_bre</td>
+<td>replace string using basic RE</td>
+<td>%str 'pat' 'bre' 1 replace_bre</td>
+</tr>
+<tr class="even">
+<td>replace_ere</td>
+<td>replace string using ext. RE</td>
+<td>%str 'pat' 'ere' 1 replace_ere</td>
+</tr>
+<tr class="odd">
+<td>matches_bre</td>
+<td>string matches basic RE</td>
+<td>%str 'pat' 1 matches_bre</td>
+</tr>
+<tr class="even">
+<td>matches_ere</td>
+<td>string matches extended RE</td>
+<td>%str 'pat' 1 matches_ere</td>
+</tr>
+<tr class="odd">
+<td>next</td>
+<td>next integer from sequence</td>
+<td>'sequence name' next</td>
+</tr>
+</tbody>
+</table>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt>csv-ls -c name,size,blocks | csv-add-rpn -n space_used -e <code>&quot;</code>%blocks 512 *<code>&quot;</code> -s</dt>
+<dd>list files and real space they use
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="csv-grep-rpn.1.html">csv-grep-rpn</a></strong>(1), <strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>

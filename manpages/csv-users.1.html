@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>csv-users</title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<div id="header">
+<h1 class="title">csv-users</h1>
+</div>
+<h1 id="name">NAME</h1>
+<p>csv-users - list system users in CSV format</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-users</strong> [OPTION]...</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>Print to standard output the list of system users in the CSV format.</p>
+<dl>
+<dt>-c, --columns=<em>NAME1</em>[,<em>NAME2</em>...]</dt>
+<dd>choose the list of columns
+</dd>
+<dt>-l</dt>
+<dd>use a longer listing format (can be used up to 2 times)
+</dd>
+<dt>-M, --merge</dt>
+<dd>merge output with a CSV stream in table form from standard input
+</dd>
+<dt>-N, --table-name <em>NAME</em></dt>
+<dd>produce output as table <em>NAME</em>
+</dd>
+<dt>-s, --show</dt>
+<dd>print output in table format
+</dd>
+<dt>-S, --show-full</dt>
+<dd>print output in table format with pager
+</dd>
+<dt>-T, --as-table</dt>
+<dd>produce output as table <em>user</em>
+</dd>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="columns">COLUMNS</h1>
+<table>
+<thead>
+<tr class="header">
+<th>name</th>
+<th>type</th>
+<th>description</th>
+<th>level</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>name</td>
+<td>string</td>
+<td>name</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>uid</td>
+<td>int</td>
+<td>user id</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>gid</td>
+<td>int</td>
+<td>default group id</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>dir</td>
+<td>string</td>
+<td>home directory</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<td>shell</td>
+<td>string</td>
+<td>login shell</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<td>gecos</td>
+<td>string</td>
+<td>real name / contact information</td>
+<td>1</td>
+</tr>
+<tr class="odd">
+<td>passwd</td>
+<td>string</td>
+<td>password</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p>passwd column comes from /etc/passwd, so it is useless on modern systems, as a real password is stored somewhere else and is not visible to normal users.</p>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt>csv-users -s</dt>
+<dd>print system users
+</dd>
+<dt>csv-groups -T -N grp | csv-users -M | csv-sqlite -T 'select user.name as user_name, grp.name as group_name from user, grp where user.gid = grp.gid' -s</dt>
+<dd>print user names and the group name of their default group
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="csv-groups.1.html">csv-groups</a></strong>(1), <strong><a href="csv-group-members.1.html">csv-group-members</a></strong>(1), <strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>

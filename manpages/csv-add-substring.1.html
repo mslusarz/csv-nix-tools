@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>csv-add-substring</title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<div id="header">
+<h1 class="title">csv-add-substring</h1>
+</div>
+<h1 id="name">NAME</h1>
+<p>csv-add-substring - add a new column by extracting a substring of another column</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-add-substring</strong> [OPTION]...</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>Read CSV stream from standard input and print it back to standard output with a new column produced by extracting substring of another column.</p>
+<dl>
+<dt>-c <em>NAME</em></dt>
+<dd>use column <em>NAME</em> as an input data
+</dd>
+<dt>-n <em>NEW-NAME</em></dt>
+<dd>create column <em>NEW-NAME</em> as an output
+</dd>
+<dt>-p <em>START-POS</em></dt>
+<dd>start from position <em>START-POS</em>; first character has position 1; negative value mean starting from the end of string
+</dd>
+<dt>-l <em>LENGTH</em></dt>
+<dd>take <em>LENGTH</em> characters from string; must not be negative
+</dd>
+<dt>-s, --show</dt>
+<dd>print output in table format
+</dd>
+<dt>-S, --show-full</dt>
+<dd>print output in table format with pager
+</dd>
+<dt>-T, --table=<em>NAME</em></dt>
+<dd>apply to rows only with _table column equal <em>NAME</em>
+</dd>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt>csv-ls -c name,mtime | csv-add-substring -c mtime -n myear -p 1 -l 4 -s</dt>
+<dd>list files and year they were last modified
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>csv-sqlite</title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<div id="header">
+<h1 class="title">csv-sqlite</h1>
+</div>
+<h1 id="name">NAME</h1>
+<p>csv-sqlite - process CSV input data using SQLite</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-sqlite</strong> [OPTION]... sql-query</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>Read CSV stream from standard input, load it into memory-backed sqlite database, execute an SQL query and print back to standard output its result.</p>
+<dl>
+<dt>-i <em>FILE</em></dt>
+<dd>ignore standard input and read from <em>FILE</em> instead; can be used multiple times; '-' means standard input
+</dd>
+<dt>-s, --show</dt>
+<dd>print output in table format
+</dd>
+<dt>-S, --show-full</dt>
+<dd>print output in table format with pager
+</dd>
+<dt>-T, --use-tables</dt>
+<dd>interpret input as &quot;table&quot; stream (as _table column and columns with &quot;table.&quot; prefixes) and import each csv table into its own sql table
+</dd>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt>csv-ls -c size,name | csv-sqlite <code>&quot;</code>select size, name from input where size &gt; 2000 and size &lt; 3000<code>&quot;</code> -s</dt>
+<dd>print files whose size is between 2000 and 3000 bytes
+</dd>
+<dt>csv-users -T | csv-groups -M -N grp | csv-sqlite -T <code>&quot;</code>select user.name as user_name, grp.name as group_name from user, grp where user.gid = grp.gid<code>&quot;</code></dt>
+<dd>print all system users and the name of the default group they belong to
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="https://linux.die.net/man/1/sqlite3">sqlite3</a></strong>(1), <strong><a href="https://www.sqlite.org/lang.html" class="uri">https://www.sqlite.org/lang.html</a></strong>, <strong><a href="csv-sql.1.html">csv-sql</a></strong>(1), <strong><a href="csv-add-sql.1.html">csv-add-sql</a></strong>(1), <strong><a href="csv-grep-sql.1.html">csv-grep-sql</a></strong>(1), <strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>

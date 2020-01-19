@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title>csv-grep</title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<div id="header">
+<h1 class="title">csv-grep</h1>
+</div>
+<h1 id="name">NAME</h1>
+<p>csv-grep - filter rows of CSV stream matching a pattern</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-grep</strong> [OPTION]...</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>Searches for PATTERN in column of CSV file read from standard input and print to standard output only rows matching that pattern.</p>
+<dl>
+<dt>-c <em>NAME</em></dt>
+<dd>apply the filter to column <em>NAME</em>
+</dd>
+<dt>-e <em>PATTERN</em></dt>
+<dd>use <em>PATTERN</em> as a basic regular expression pattern
+</dd>
+<dt>-E <em>PATTERN</em></dt>
+<dd>use <em>PATTERN</em> as a extended regular expression pattern
+</dd>
+<dt>-F <em>STRING</em></dt>
+<dd>use <em>STRING</em> as a fixed string pattern
+</dd>
+<dt>-i, --ignore-case</dt>
+<dd>ignore case distinction
+</dd>
+<dt>-s, --show</dt>
+<dd>print output in table format
+</dd>
+<dt>-S, --show-full</dt>
+<dd>print output in table format with pager
+</dd>
+<dt>-T, --table=<em>NAME</em></dt>
+<dd>apply the filter to rows only with _table column equal <em>NAME</em>
+</dd>
+<dt>-v, --invert</dt>
+<dd>invert the sense of matching, selecting non-matching rows
+</dd>
+<dt>-x, --whole</dt>
+<dd>the pattern used by -e, -E or -F options must match exactly (no preceding or succeeding characters before/after pattern)
+</dd>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt>csv-ls -l | csv-grep -c name -e '.*.c$' -s</dt>
+<dd>list files with .c extension
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="http://man7.org/linux/man-pages/man1/grep.1.html">grep</a></strong>(1), <strong><a href="http://man7.org/linux/man-pages/man7/regex.7.html">regex</a></strong>(7), <strong><a href="csv-grep-rpn.1.html">csv-grep-rpn</a></strong>(1), <strong><a href="csv-grep-sql.1.html">csv-grep-sql</a></strong>(1), <strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>
