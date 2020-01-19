@@ -24,7 +24,11 @@ and processing it in any way user wants to, including powerful SQL syntax.
 This project is in alpha stage. Everything listed below is functional,
 but in the future many things can change (IOW don't run this in production yet).
 Currently it builds and runs on Linux with glibc only, but portability patches
-are welcomed.
+are welcomed. Although the project has NIX in the name and many source tools
+are Unix or even Linux-specific, porting to non-Unix systems is encouraged.
+
+If you discover any issue in the project or a missing feature, don't hestitate
+to file an issue. Any feedback is welcomed.
 
 # Dependencies
 - **cmake** >= 3.3
