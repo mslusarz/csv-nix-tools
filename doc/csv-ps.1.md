@@ -162,4 +162,5 @@ csv-ps -S
 
 # SEE ALSO #
 
-**ps**(1), **csv-show**(1), **csv-nix-tools**(7)
+**[ps](http://man7.org/linux/man-pages/man1/ps.1.html)**(1),
+**csv-show**(1), **csv-nix-tools**(7)

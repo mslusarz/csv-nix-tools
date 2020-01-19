@@ -278,13 +278,27 @@ endif()
 function(gen_doc name section)
 	add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/csv-${name}.${section}
 			MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/doc/csv-${name}.${section}.md
-			COMMAND ${PANDOC} -s -t man -o ${CMAKE_BINARY_DIR}/csv-${name}.${section} ${CMAKE_SOURCE_DIR}/doc/csv-${name}.${section}.md)
+			COMMAND cat ${CMAKE_SOURCE_DIR}/doc/csv-${name}.${section}.md |
+				sed 's/\\[\\\(\[a-z0-9-\]\*\\\)\\]\(http\[s\]*:\[^\)\]*\)/\\1/g' |
+				${PANDOC} -s -t man -o ${CMAKE_BINARY_DIR}/csv-${name}.${section})
+
+	add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/csv-${name}.${section}.html
+			MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/doc/csv-${name}.${section}.md
+			COMMAND cat ${CMAKE_SOURCE_DIR}/doc/csv-${name}.${section}.md |
+				sed 's/\\\*\\\*\\\(csv-[a-z-]*\\\)\\\*\\\*\(\\\([0-9]*\\\)\)/**\[\\1\]\(\\1.\\2.html\)**\(\\2\)/g' |
+				${PANDOC} -s -t html -o ${CMAKE_BINARY_DIR}/csv-${name}.${section}.html)
 
 	add_custom_target(doc-csv-${name}
 			DEPENDS ${CMAKE_BINARY_DIR}/csv-${name}.${section}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
+	add_custom_target(doc-csv-${name}-html
+			DEPENDS ${CMAKE_BINARY_DIR}/csv-${name}.${section}.html
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
 	add_dependencies(doc doc-csv-${name})
+
+	add_dependencies(doc-html doc-csv-${name}-html)
 
 	install(FILES ${CMAKE_BINARY_DIR}/csv-${name}.${section}
 			DESTINATION ${CMAKE_INSTALL_MANDIR}/man${section})
@@ -296,6 +310,7 @@ endfunction()
 
 if(PANDOC)
 	add_custom_target(doc ALL)
+	add_custom_target(doc-html)
 
 	gen_doc(nix-tools 7)
 

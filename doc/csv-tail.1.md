@@ -40,4 +40,5 @@ csv-tail -n 5 < file1.csv
 
 # SEE ALSO #
 
-**tail**(1), **csv-head**(1), **csv-show**(1), **csv-nix-tools**(7)
+**[tail](http://man7.org/linux/man-pages/man1/tail.1.html)**(1),
+**csv-head**(1), **csv-show**(1), **csv-nix-tools**(7)

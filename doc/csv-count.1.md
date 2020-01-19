@@ -41,4 +41,5 @@ csv-ls | csv-count -r
 
 # SEE ALSO #
 
-**wc**(1), **csv-show**(1), **csv-nix-tools**(7)
+**[wc](http://man7.org/linux/man-pages/man1/wc.1.html)**(1),
+**csv-show**(1), **csv-nix-tools**(7)

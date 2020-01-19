@@ -119,4 +119,7 @@ csv-ls -l -s
 
 # SEE ALSO #
 
-**ls**(1), **inode**(7), **csv-show**(1), **csv-nix-tools**(7)
+**[ls](http://man7.org/linux/man-pages/man1/ls.1.html)**(1),
+**[inode](http://man7.org/linux/man-pages/man7/inode.7.html)**(7),
+**csv-show**(1),
+**csv-nix-tools**(7)

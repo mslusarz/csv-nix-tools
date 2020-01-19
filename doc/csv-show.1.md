@@ -15,7 +15,8 @@ csv-show - print on the standard output a CSV file from standard input in human-
 
 Print CSV file from standard input in human-readable format, using tables, without types.
 
-There are 3 backends: **ncurses**(3)-based, **less**(1)-based and no-backend.
+There are 3 backends: **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3x.html)**(3)-based,
+**[less](http://man7.org/linux/man-pages/man1/less.1.html)**(1)-based and no-backend.
 
 **ncurses** backend:
 
@@ -36,7 +37,8 @@ There are 3 backends: **ncurses**(3)-based, **less**(1)-based and no-backend.
 **none** backend simply prints everything to standard output.
 
 -u, --ui *curses*/*less*/*none*
-:   use UI based on **ncurses**(3), **less**(1) or nothing(tm)
+:   use UI based on **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3x.html)**(3),
+**[less](http://man7.org/linux/man-pages/man1/less.1.html)**(1) or nothing(tm)
 
 -s, --spacing *NUM*
 :   use *NUM* spaces between columns instead of 3
@@ -63,4 +65,6 @@ csv-show --ui none < file1.csv
 
 # SEE ALSO #
 
-**ncurses**(3), **less**(1), **csv-nix-tools**(7)
+**[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3x.html)**(3),
+**[less](http://man7.org/linux/man-pages/man1/less.1.html)**(1),
+**csv-nix-tools**(7)

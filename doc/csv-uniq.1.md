@@ -41,4 +41,5 @@ csv-ls -c owner_name | csv-uniq -c owner_name | csv-sort -c owner_name | csv-uni
 
 # SEE ALSO #
 
-**uniq**(1), **csv-show**(1), **csv-nix-tools**(7)
+**[uniq](http://man7.org/linux/man-pages/man1/uniq.1.html)**(1),
+**csv-show**(1), **csv-nix-tools**(7)

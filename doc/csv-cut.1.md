@@ -44,4 +44,5 @@ csv-ls -l | csv-cut -c name,size -s
 
 # SEE ALSO #
 
-**cut**(1), **csv-show**(1), **csv-nix-tools**(7)
+**[cut](http://man7.org/linux/man-pages/man1/cut.1.html)**(1),
+**csv-show**(1), **csv-nix-tools**(7)

@@ -63,4 +63,7 @@ csv-ls -c full_path | csv-add-replace -c full_path -E '(.*)\.c$' -r '%1.o' -n ne
 
 # SEE ALSO #
 
-**regex**(7), **sed**(1), **csv-show**(1), **csv-nix-tools**(7)
+**[regex](http://man7.org/linux/man-pages/man7/regex.7.html)**(7),
+**[sed](http://man7.org/linux/man-pages/man1/sed.1.html)**(1),
+**csv-show**(1),
+**csv-nix-tools**(7)

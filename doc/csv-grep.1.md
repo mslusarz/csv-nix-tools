@@ -60,5 +60,6 @@ csv-ls -l | csv-grep -c name -e '.*\.c$' -s
 
 # SEE ALSO #
 
-**grep**(1), **regex**(7), **csv-grep-rpn**(1), **csv-grep-sql**(1),
-**csv-show**(1), **csv-nix-tools**(7)
+**[grep](http://man7.org/linux/man-pages/man1/grep.1.html)**(1),
+**[regex](http://man7.org/linux/man-pages/man7/regex.7.html)**(7),
+**csv-grep-rpn**(1), **csv-grep-sql**(1), **csv-show**(1), **csv-nix-tools**(7)

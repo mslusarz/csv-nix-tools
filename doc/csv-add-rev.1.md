@@ -44,4 +44,5 @@ csv-ls | csv-add-rev -c name -n reversed_name -s
 
 # SEE ALSO #
 
-**rev**(1), **csv-show**(1), **csv-nix-tools**(7)
+**[rev](http://man7.org/linux/man-pages/man1/rev.1.html)**(1),
+**csv-show**(1), **csv-nix-tools**(7)

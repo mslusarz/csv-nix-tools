@@ -44,4 +44,5 @@ csv-ls -c name,size | csv-sort -c size -r -s
 
 # SEE ALSO #
 
-**sort**(1), **csv-show**(1), **csv-nix-tools**(7)
+**[sort](http://man7.org/linux/man-pages/man1/sort.1.html)**(1),
+**csv-show**(1), **csv-nix-tools**(7)

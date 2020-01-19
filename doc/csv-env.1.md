@@ -53,4 +53,5 @@ csv-env -s
 
 # SEE ALSO #
 
-**printenv**(1), **csv-show**(1), **csv-nix-tools**(7)
+**[printenv](http://man7.org/linux/man-pages/man1/printenv.1.html)**(1),
+**csv-show**(1), **csv-nix-tools**(7)

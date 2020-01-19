@@ -45,6 +45,7 @@ csv-users -T | csv-groups -M -N grp | csv-sqlite -T `"`select user.name as user_
 
 # SEE ALSO #
 
-**sqlite3**(1), **<https://www.sqlite.org/lang.html>**,
+**[sqlite3](https://linux.die.net/man/1/sqlite3)**(1),
+**<https://www.sqlite.org/lang.html>**,
 **csv-sql**(1), **csv-add-sql**(1), **csv-grep-sql**(1),
 **csv-show**(1), **csv-nix-tools**(7)

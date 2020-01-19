@@ -150,4 +150,5 @@ csv-netstat -46s
 
 # SEE ALSO #
 
-**netstat**(1), **csv-show**(1), **csv-nix-tools**(7)
+**[netstat](http://man7.org/linux/man-pages/man8/netstat.8.html)**(8),
+**csv-show**(1), **csv-nix-tools**(7)
