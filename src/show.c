@@ -427,11 +427,21 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 			else
 				first_line = 0;
 		} else if (ch == KEY_HOME) {
+			if (first_line == 0)
+				beep();
+			else
+				first_line = 0;
+		} else if (ch == KEY_END) {
+			if (first_line == params->nlines - nlines)
+				beep();
+			else
+				first_line = params->nlines - nlines;
+		} else if (ch == KEY_SHOME) {
 			if (xoff == 0)
 				beep();
 			else
 				xoff = 0;
-		} else if (ch == KEY_END) {
+		} else if (ch == KEY_SEND) {
 			int newxoff;
 
 			if (max_line > COLS)

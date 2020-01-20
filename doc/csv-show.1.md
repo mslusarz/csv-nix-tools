@@ -27,8 +27,10 @@ There are 3 backends: **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3
     - half screen (left and right keys)
     - one line (up and down keys)
     - one screen (page up, backspace, page down and space keys)
-    - to the beginning of the line (home key)
-    - to the end of the line (end key)
+    - to the beginning of the file (home key)
+    - to the beginning of the line (shift + home key)
+    - to the end of the file (end key)
+    - to the end of the line (shift + end key)
 
 - doesn't support searching (yet)
 
