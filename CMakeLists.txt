@@ -313,6 +313,7 @@ if(PANDOC)
 	add_custom_target(doc-html)
 
 	gen_doc(nix-tools 7)
+	gen_doc(tables-tut 7)
 
 	gen1_doc(add-concat)
 	gen1_doc(add-exec)

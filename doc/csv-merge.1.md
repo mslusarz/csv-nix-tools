@@ -48,4 +48,4 @@ csv-users -T | csv-merge --path-with-table - -N file -p files.csv
 
 # SEE ALSO #
 
-**csv-sqlite**(1), **csv-show**(1), **csv-nix-tools**(7)
+**csv-tables-tut**(7), **csv-sqlite**(1), **csv-show**(1), **csv-nix-tools**(7)

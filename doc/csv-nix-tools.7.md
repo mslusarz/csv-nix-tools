@@ -28,6 +28,8 @@ CSV stream. It allows:
 - processing of data from one table at the time,
 - combining data from multiple tables, based on relation between them
 
+See **csv-tables-tut**(7) for introduction into tables support in csv-nix-tools.
+
 # SOURCE TOOLS #
 
 - **csv-env**(1) - list environment variables
@@ -91,7 +93,8 @@ CSV stream. It allows:
 :   produce output as table
 
 Options -M/-N/-T can be used to merge output of multiple source tools, to
-be ultimately consumed by **csv-sqlite**(1).
+be ultimately consumed by **csv-sqlite**(1). See **csv-tables-tut**(7) for
+one example.
 
 # COMMON OPTIONS FOR ALL SOURCE AND PROCESSING TOOLS #
 
