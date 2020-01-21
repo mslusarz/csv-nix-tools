@@ -17,7 +17,7 @@ like new lines, is effort-less - it just works, without bothering users with
 hacks like IFS.
 
 This project also solves the problem of combining data from multiple sources
-into a single stream (see **csv-tables-tut**(7)) and processing it in any way
+into a single stream (see **[csv-tables-tut]**) and processing it in any way
 user wants to, including powerful SQL syntax, without leaving the shell.
 
 # Status
@@ -96,7 +96,7 @@ Sink:
 
 # Documentation
 
-See the [man pages](https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-nix-tools.7.html)
+See the [man pages].
 
 # Examples
 
@@ -105,6 +105,9 @@ See [EXAMPLES](EXAMPLES.md)
 # TODO
 
 See [TODO](TODO.md)
+
+[man pages]:         https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-nix-tools.7.html
+[csv-tables-tut]:    https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-tables-tut.7.html
 
 [csv-env]:           https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-env.1.html
 [csv-groups]:        https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-groups.1.html
