@@ -12,12 +12,12 @@ information storage, it's not **that** important aspect of this project.
 
 What is more important is that it allows **safely** processing structured data
 using *NIX-like philosophy, by employing pipes and tools with familiar names
-(grep, sort, etc). "Safe" processing means that handling of special characters,
-like new lines, is effort-less - it just works, without bothering users with
-hacks like IFS.
+(grep, sort, etc, see [examples](EXAMPLES.md)). "Safe" processing means that
+handling of special characters, like new lines, is effort-less - it just works,
+without bothering users with hacks like IFS.
 
 This project also solves the problem of combining data from multiple sources
-into a single stream (see **[csv-tables-tut]**) and processing it in any way
+into a single stream (see the **[tables tutorial]**) and processing it in any way
 user wants to, including powerful SQL syntax, without leaving the shell.
 
 # Status
@@ -107,7 +107,7 @@ See [EXAMPLES](EXAMPLES.md)
 See [TODO](TODO.md)
 
 [man pages]:         https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-nix-tools.7.html
-[csv-tables-tut]:    https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-tables-tut.7.html
+[tables tutorial]:   https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-tables-tut.7.html
 
 [csv-env]:           https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-env.1.html
 [csv-groups]:        https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-groups.1.html
