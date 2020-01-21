@@ -17,7 +17,7 @@ handling of special characters, like new lines, is effort-less - it just works,
 without bothering users with hacks like IFS.
 
 This project also solves the problem of combining data from multiple sources
-into a single stream (see the **[tables tutorial]**) and processing it in any way
+into a single stream (see the [tables tutorial]) and processing it in any way
 user wants to, including powerful SQL syntax, without leaving the shell.
 
 # Status
