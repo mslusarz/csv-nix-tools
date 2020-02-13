@@ -40,7 +40,7 @@ optional. "WHERE condition" is optional. "ORDER BY" is not supported.
 No aggregate or window functions are supported.
 
 Columns is comma separated list of column names or expressions, with each one
-optonally followed by "AS new-column-name" giving it a new name.
+optionally followed by "AS new-column-name" giving it a new name.
 
 Constants:
 
