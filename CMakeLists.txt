@@ -165,7 +165,7 @@ if(NCURSES_FOUND)
 	target_compile_definitions(csv-show PRIVATE NCURSES_ENABLED)
 
 	if (NCURSES_INCLUDE_DIRS)
-		target_include_directories(csv-show ${NCURSES_INCLUDE_DIRS})
+		target_include_directories(csv-show PRIVATE ${NCURSES_INCLUDE_DIRS})
 	endif()
 
 	if(NOT ${CMAKE_VERSION} VERSION_LESS "3.13.0")
@@ -185,7 +185,7 @@ if(SQLITE3_FOUND)
 	build_tool(csv-sqlite src/sqlite.c)
 
 	if (SQLITE3_INCLUDE_DIRS)
-		target_include_directories(csv-sqlite ${SQLITE3_INCLUDE_DIRS})
+		target_include_directories(csv-sqlite PRIVATE ${SQLITE3_INCLUDE_DIRS})
 	endif()
 
 	if(NOT ${CMAKE_VERSION} VERSION_LESS "3.13.0")
