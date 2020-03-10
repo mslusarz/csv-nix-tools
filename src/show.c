@@ -44,7 +44,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#ifdef NCURSES_ENABLED
+#ifdef NCURSESW_ENABLED
 #include <curses.h>
 #endif
 
@@ -214,7 +214,7 @@ next_row(const char *buf, const size_t *col_offs,
 	return 0;
 }
 
-#ifdef NCURSES_ENABLED
+#ifdef NCURSESW_ENABLED
 
 static void
 nprint(int y, int x, const char *str, bool *truncated)
@@ -693,7 +693,7 @@ main(int argc, char *argv[])
 	}
 	if (ui == GUESS) {
 		if (isatty(1))
-#ifdef NCURSES_ENABLED
+#ifdef NCURSESW_ENABLED
 			ui = NCURSES;
 #else
 			ui = LESS;
@@ -702,7 +702,7 @@ main(int argc, char *argv[])
 			ui = NONE;
 	}
 
-#ifndef NCURSES_ENABLED
+#ifndef NCURSESW_ENABLED
 	if (ui == NCURSES) {
 		fprintf(stderr, "curses ui not compiled in\n");
 		exit(2);
@@ -738,7 +738,7 @@ main(int argc, char *argv[])
 	csv_read_all_nofail(s, &next_row, &params);
 
 	if (ui == NCURSES) {
-#ifdef NCURSES_ENABLED
+#ifdef NCURSESW_ENABLED
 		curses_ui(&params, headers, nheaders, print_header,
 				print_types, spacing, alignments);
 #endif

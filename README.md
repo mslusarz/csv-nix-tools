@@ -37,7 +37,7 @@ to file an issue. Any feedback is welcomed.
 - **bison** (optional, required by csv-sql, csv-grep-sql and csv-add-sql)
 - **flex** (optional, required by csv-sql, csv-grep-sql and csv-add-sql)
 - **libmnl-devel** (optional, required by csv-netstat)
-- **libncurses-devel** (optional, used by csv-show)
+- **libncursesw-devel** (optional, used by csv-show)
 - **libprocps-devel** (optional, required by csv-ps)
 - **libsqlite3-devel** (optional, required by csv-sqlite)
 

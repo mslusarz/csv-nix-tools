@@ -12,7 +12,7 @@ jobs:
     - name: update package lists
       run: sudo apt update
     - name: install dependencies
-      run: sudo apt install flex bison libsqlite3-dev libprocps-dev libncurses5-dev libmnl-dev pandoc tmux
+      run: sudo apt install flex bison libsqlite3-dev libprocps-dev libncursesw5-dev libmnl-dev pandoc tmux
     - name: create build directory
       run: mkdir build
     - name: configure

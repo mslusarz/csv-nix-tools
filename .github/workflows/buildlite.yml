@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: remove optional dependencies
-      run: sudo apt remove flex bison libsqlite3-dev libprocps-dev libncurses5-dev libmnl-dev pandoc tmux
+      run: sudo apt remove flex bison libsqlite3-dev libprocps-dev libncursesw5-dev libmnl-dev pandoc tmux
     - name: create build directory
       run: mkdir build
     - name: configure
