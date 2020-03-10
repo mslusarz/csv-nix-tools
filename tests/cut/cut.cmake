@@ -60,6 +60,9 @@ test("csv-cut --columns notExistingColumn" data/one-column-one-row.csv data/empt
 test("csv-cut --columns=notExistingColumn" data/one-column-one-row.csv data/empty.txt cut/column-not-found.txt 2
 	cut_not_existing_field_using_--columns_with_=)
 
+test("csv-cut -r -c name,id,something" data/3-columns-3-rows.csv data/empty.txt data/empty.txt 0
+	cut_reverse_all)
+
 
 test("csv-cut -c name" data/3-columns-3-rows.csv cut/name-column-3-rows.csv data/empty.txt 0
 	cut_the_name_field_using_-c)

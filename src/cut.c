@@ -197,6 +197,7 @@ main(int argc, char *argv[])
 						(params.ncols - s) *
 						sizeof(params.cols[0]));
 				params.ncols--;
+				params.cols[params.ncols] = SIZE_MAX;
 				found = true;
 				break;
 			}
