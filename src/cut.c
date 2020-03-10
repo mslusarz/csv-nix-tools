@@ -256,13 +256,15 @@ main(int argc, char *argv[])
 
 	free(cols);
 
-	for (size_t i = 0; i < params.ncols - 1; ++i)
-		printf("%s:%s,", headers[params.cols[i]].name,
-				headers[params.cols[i]].type);
-	printf("%s:%s\n", headers[params.cols[params.ncols - 1]].name,
-			headers[params.cols[params.ncols - 1]].type);
+	if (params.ncols > 0) {
+		for (size_t i = 0; i < params.ncols - 1; ++i)
+			printf("%s:%s,", headers[params.cols[i]].name,
+					headers[params.cols[i]].type);
+		printf("%s:%s\n", headers[params.cols[params.ncols - 1]].name,
+				headers[params.cols[params.ncols - 1]].type);
 
-	csv_read_all_nofail(s, &next_row, &params);
+		csv_read_all_nofail(s, &next_row, &params);
+	}
 
 	free(params.cols);
 	free(params.table);

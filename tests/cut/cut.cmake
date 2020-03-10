@@ -39,6 +39,9 @@ test("csv-cut" data/one-column-one-row.csv data/empty.txt cut/help.txt 2
 test("csv-cut -c" data/one-column-one-row.csv cut/help.txt cut/no-fields-error.txt 2
 	cut_simple_pass_through_with_-c)
 
+test("csv-cut -c ''" data/one-column-one-row.csv data/empty.txt data/empty.txt 0
+	cut_no_columns)
+
 test("csv-cut -c name" data/one-column-one-row.csv data/one-column-one-row.csv data/empty.txt 0
 	cut_the_only_field_using_-c)
 
