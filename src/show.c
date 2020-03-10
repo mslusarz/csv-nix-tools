@@ -36,6 +36,7 @@
 #include <fcntl.h>
 #include <getopt.h>
 #include <limits.h>
+#include <locale.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -645,6 +646,8 @@ main(int argc, char *argv[])
 	params.tmpbuf_size = 0;
 
 	params.logfd = -1;
+
+	setlocale(LC_ALL, "");
 
 	while ((opt = getopt_long(argc, argv, "u:s:", opts, NULL)) != -1) {
 		switch (opt) {
