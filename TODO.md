@@ -1,12 +1,10 @@
 # TODO (high level)
-- more tests
 - more data collection tools (id, uname, w/who, df, free, ifconfig/ip, ipcs, lsattr, lsusb, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, etc)
 - more processing tools (tr, other?)
 - more rpn operators/functions (split, rev, timestamp conversion, now, tr)
 - exporting tools (to-xml, to-json, to-sql)
 - importing tools (from-xml, from-json)
 - test regularly with Valgrind
-- documentation
 - i18n
 - export as much as possible as a library(ies)
 - Coverity
@@ -25,6 +23,10 @@
 - sql: add support for tables
 - write down data format spec
 - strict column name verification
+- sum,count,min,max,avg: --group-by=col1,col2
+- uniq: --count
+- show: fix column width calc when input is in utf
+- sql: implement "order by", "group by", "having"
 
 ## Random ideas
 - export data as bash/python/etc script?
@@ -33,9 +35,9 @@
 - loops and temporary variables in rpn?
 - built-in pipes? (csv "ls | grep -c size -F 0 | cut -c name")
 - shell?
-- what about unicode?
 - one multicommand binary? (csv ls, csv grep, ...)
-- csv-show: column separators? header separator? number formatter? (see what csvlook from csvkit does)
-- csv-show: browser (html) backend?
+- show: column separators? header separator? number formatter? (see what csvlook from csvkit does)
+- show: browser (html) backend?
 - other sink tools: diff/comm?, treeview (generic pstree)
 - csv -> csvnt?
+- graph generator?
