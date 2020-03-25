@@ -120,7 +120,10 @@ function(build_tool name)
 	add_executable(${name} ${ARGN})
 	target_link_libraries(${name} csvshared)
 	install(FILES ${CMAKE_BINARY_DIR}/${name}
-		DESTINATION ${CMAKE_INSTALL_BINDIR}/)
+		DESTINATION ${CMAKE_INSTALL_BINDIR}/
+		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+				GROUP_READ GROUP_EXECUTE
+				WORLD_READ WORLD_EXECUTE)
 endfunction()
 
 build_tool(csv-add-concat	src/add-concat.c)
