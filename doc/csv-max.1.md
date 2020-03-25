@@ -19,6 +19,9 @@ values of chosen columns.
 -c, --columns=*NAME1*[,*NAME2*...]
 :   use these columns
 
+-n *NEW-NAME1*[,*NEW-NAME2*]
+:   create columns with these names, instead of default max(NAME)
+
 -s, --show
 :   print output in table format
 

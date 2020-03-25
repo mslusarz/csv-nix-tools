@@ -65,6 +65,10 @@ usage(FILE *out)
 "  -c, --columns=NAME1[,NAME2...]\n"
 "                             use these columns\n");
 	fprintf(out, "  -e, --separator=STR        put STR between (string) values\n");
+	fprintf(out,
+"  -n NEW-NAME1[,NEW-NAME2...]\n"
+"                             create columns with these names, instead\n"
+"                             of default sum(NAME)\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_Table(out);
@@ -180,6 +184,7 @@ main(int argc, char *argv[])
 	int opt;
 	struct cb_params params;
 	char *cols = NULL;
+	char *new_name = NULL;
 	bool show = false;
 	bool show_full;
 	char *sep = NULL;
@@ -192,13 +197,16 @@ main(int argc, char *argv[])
 	params.table = NULL;
 	params.table_column = SIZE_MAX;
 
-	while ((opt = getopt_long(argc, argv, "c:e:sST:", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "c:e:n:sST:", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'c':
 				cols = xstrdup_nofail(optarg);
 				break;
 			case 'e':
 				sep = xstrdup_nofail(optarg);
+				break;
+			case 'n':
+				new_name = xstrdup_nofail(optarg);
 				break;
 			case 's':
 				show = true;
@@ -312,12 +320,23 @@ main(int argc, char *argv[])
 	else
 		params.sep_len = 0;
 
+	char *name;
+	if (new_name)
+		name = strtok(new_name, ",");
+	else
+		name = NULL;
 	for (size_t i = 0; i < params.ncols - 1; ++i) {
-		csv_print_table_func_header(&headers[params.cols[i]], "sum",
-				params.table, table_len, ',');
+		if (csv_print_table_func_header(&headers[params.cols[i]], "sum",
+				params.table, table_len, ',', name)) {
+			if (name)
+				name = strtok(NULL, ",");
+		}
 	}
 	csv_print_table_func_header(&headers[params.cols[params.ncols - 1]],
-			"sum", params.table, table_len, '\n');
+			"sum", params.table, table_len, '\n', name);
+
+	free(new_name);
+	new_name = NULL;
 
 	csv_read_all_nofail(s, &next_row, &params);
 

@@ -22,6 +22,9 @@ values of chosen columns.
 -e, --separator=*STR*
 :   put *STR* between (string) values
 
+-n *NEW-NAME1*[,*NEW-NAME2*]
+:   create columns with these names, instead of default sum(NAME)
+
 -s, --show
 :   print output in table format
 

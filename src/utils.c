@@ -508,20 +508,37 @@ csv_column_doesnt_exist(const struct col_header *headers, size_t nheaders,
 	}
 }
 
-void
+/* returns 1 when "name" was consumed, 0 otherwise */
+int
 csv_print_table_func_header(const struct col_header *h, const char *func,
-		const char *table, size_t table_len, char sep)
+		const char *table, size_t table_len, char sep,
+		const char *name)
 {
 	if (table) {
 		if (strncmp(h->name, table, table_len) == 0 &&
-				h->name[table_len] == TABLE_SEPARATOR)
-			printf("%s.%s(%s):%s%c", table, func,
-					h->name + table_len + 1,
-					h->type, sep);
-		else
+				h->name[table_len] == TABLE_SEPARATOR) {
+			if (name) {
+				printf("%s.%s:%s%c", table, name, h->type, sep);
+				return 1;
+			} else {
+				printf("%s.%s(%s):%s%c", table, func,
+						h->name + table_len + 1,
+						h->type, sep);
+				return 0;
+			}
+		} else {
+			/* other table or _table column*/
 			printf("%s:%s%c", h->name, h->type, sep);
+			return 0;
+		}
 	} else {
-		printf("%s(%s):%s%c", func, h->name, h->type, sep);
+		if (name) {
+			printf("%s:%s%c", name, h->type, sep);
+			return 1;
+		} else {
+			printf("%s(%s):%s%c", func, h->name, h->type, sep);
+			return 0;
+		}
 	}
 }
 

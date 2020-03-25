@@ -1,0 +1,4 @@
+_table:string,t1.new1:int,t1.new2:int,t2.id:int,t2.name:string
+t2,,,7,aaa
+t2,,,9,bbb
+t1,6,2,,
