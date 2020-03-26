@@ -29,7 +29,7 @@ strings or regular expression.
 -F *PATTERN*
 :   use *PATTERN* as a fixed string pattern
 
--i, --ignore-case
+-i, \--ignore-case
 :   perform matching ignoring case distinction
 
 -n *NEW-NAME*
@@ -41,19 +41,19 @@ it is not interpreted, but for regular expression %1 to %9 are replaced
 by corresponding matching sub-expression, and %0 is the whole matching
 expression
 
--s, --show
+-s, \--show
 :   print output in table format
 
--S, --show-full
+-S, \--show-full
 :   print output in table format with pager
 
--T, --table=*NAME*
+-T, \--table=*NAME*
 :   apply to rows only with _table column equal *NAME*
 
---help
+\--help
 :   display this help and exit
 
---version
+\--version
 :   output version information and exit
 
 # EXAMPLES #

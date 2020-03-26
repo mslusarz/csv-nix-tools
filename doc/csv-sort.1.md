@@ -16,25 +16,25 @@ csv-sort - sort CSV file by column(s)
 Read CSV stream from standard input, sort it by chosen column and print
 resulting file to standard output.
 
--c, --columns=*NAME1*[,*NAME2*...]
+-c, \--columns=*NAME1*[,*NAME2*...]
 :   sort first by column *NAME1*, then *NAME2*, etc.
 
--r, --reverse
+-r, \--reverse
 :   sort in descending order
 
--s, --show
+-s, \--show
 :   print output in table format
 
--S, --show-full
+-S, \--show-full
 :   print output in table format with pager
 
--T, --table=*NAME*
+-T, \--table=*NAME*
 :   apply to rows only with _table column equal *NAME*
 
---help
+\--help
 :   display this help and exit
 
---version
+\--version
 :   output version information and exit
 
 # EXAMPLES #

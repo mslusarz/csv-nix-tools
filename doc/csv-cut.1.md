@@ -16,25 +16,25 @@ csv-cut - remove and/or reorder columns in CSV stream
 Read CSV stream from standard input, remove and/or reorder columns and print
 resulting file to standard output.
 
--c, --columns=*NAME1*[,*NAME2*...]
+-c, \--columns=*NAME1*[,*NAME2*...]
 :   select only these columns
 
--r, --reverse
-:   apply --columns filter in reverse, removing only selected columns
+-r, \--reverse
+:   apply \--columns filter in reverse, removing only selected columns
 
--s, --show
+-s, \--show
 :   print output in table format
 
--S, --show-full
+-S, \--show-full
 :   print output in table format with pager
 
--T, --table=*NAME*
+-T, \--table=*NAME*
 :   apply the filter to columns only with "NAME." prefix
 
---help
+\--help
 :   display this help and exit
 
---version
+\--version
 :   output version information and exit
 
 # EXAMPLES #

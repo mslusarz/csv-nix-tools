@@ -16,16 +16,16 @@ csv-sql - process CSV input data using simplified SQL syntax
 Read CSV stream from standard input, process it using simplified SQL query
 and print back to standard output its result.
 
--s, --show
+-s, \--show
 :   print output in table format
 
--S, --show-full
+-S, \--show-full
 :   print output in table format with pager
 
---help
+\--help
 :   display this help and exit
 
---version
+\--version
 :   output version information and exit
 
 # SIMPLIFIED SQL SYNTAX #

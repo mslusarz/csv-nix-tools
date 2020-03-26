@@ -22,19 +22,19 @@ For full specification of RPN syntax accepted by this tool see **csv-add-rpn**(1
 :   use expression *RPN-EXPR* to filter; RPN expressions use space as
 a separator, so this needs to be quoted
 
--s, --show
+-s, \--show
 :   print output in table format
 
--S, --show-full
+-S, \--show-full
 :   print output in table format with pager
 
--T, --table=*NAME*
+-T, \--table=*NAME*
 :   apply the filter to rows only with _table column equal *NAME*
 
---help
+\--help
 :   display this help and exit
 
---version
+\--version
 :   output version information and exit
 
 # EXAMPLES #

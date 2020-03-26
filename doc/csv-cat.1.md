@@ -20,16 +20,16 @@ All files must have the same columns (number, names, and types), but their
 order can be different between files. csv-cat chooses the order of the first
 input file.
 
--s, --show
+-s, \--show
 :   print output in table format
 
--S, --show-full
+-S, \--show-full
 :   print output in table format with pager
 
---help
+\--help
 :   display this help and exit
 
---version
+\--version
 :   output version information and exit
 
 # EXAMPLES #

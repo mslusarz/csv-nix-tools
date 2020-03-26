@@ -38,23 +38,23 @@ There are 3 backends: **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3
 
 **none** backend simply prints everything to standard output.
 
--u, --ui *curses*/*less*/*none*
+-u, \--ui *curses*/*less*/*none*
 :   use UI based on **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3x.html)**(3),
 **[less](http://man7.org/linux/man-pages/man1/less.1.html)**(1) or nothing(tm)
 
--s, --spacing *NUM*
+-s, \--spacing *NUM*
 :   use *NUM* spaces between columns instead of 3
 
---with-types
+\--with-types
 :   print types in column headers
 
---no-header
+\--no-header
 :   remove column headers
 
---help
+\--help
 :   display this help and exit
 
---version
+\--version
 :   output version information and exit
 
 # EXAMPLES #
@@ -62,7 +62,7 @@ There are 3 backends: **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3
 csv-show < file1.csv
 :   print file1.csv in human-readable format
 
-csv-show --ui none < file1.csv
+csv-show \--ui none < file1.csv
 :   print file1.csv in human-readable format without any pager
 
 # SEE ALSO #

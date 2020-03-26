@@ -16,28 +16,28 @@ csv-group-members - list system groups and users that belong to them in CSV form
 Print to standard output the list of system groups and users that belong to them
 in the CSV format.
 
--c, --columns=*NAME1*[,*NAME2*...]
+-c, \--columns=*NAME1*[,*NAME2*...]
 :   choose the list of columns
 
--M, --merge
+-M, \--merge
 :   merge output with a CSV stream in table form from standard input
 
--N, --table-name *NAME*
+-N, \--table-name *NAME*
 :   produce output as table *NAME*
 
--s, --show
+-s, \--show
 :   print output in table format
 
--S, --show-full
+-S, \--show-full
 :   print output in table format with pager
 
--T, --as-table
+-T, \--as-table
 :   produce output as table *group_member*
 
---help
+\--help
 :   display this help and exit
 
---version
+\--version
 :   output version information and exit
 
 # COLUMNS #

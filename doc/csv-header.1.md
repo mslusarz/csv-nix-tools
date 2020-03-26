@@ -16,34 +16,34 @@ csv-header - process header of a CSV file
 Read CSV stream from standard input and print back to standard output with
 the column header transformed.
 
--A, --add-types *NAME1*:*TYPE1*[,*NAME2*:*TYPE2*...]
+-A, \--add-types *NAME1*:*TYPE1*[,*NAME2*:*TYPE2*...]
 :   (NOT IMPLEMENTED YET) add type *TYPE1* to column *NAME1*, *TYPE2* to column *NAME2*, etc.
 
--C, --change-type *NAME*:*TYPE*
+-C, \--change-type *NAME*:*TYPE*
 :   (NOT IMPLEMENTED YET) change type of column *NAME* to *TYPE*
 
--G, --guess-types
+-G, \--guess-types
 :   (NOT IMPLEMENTED YET) add types to columns by guessing based on their contents
 
--M, --remove-types
+-M, \--remove-types
 :   (NOT IMPLEMENTED YET) remove types from columns
 
--m, --remove
+-m, \--remove
 :   remove column header
 
--n, --rename *NAME*,*NEW-NAME*
+-n, \--rename *NAME*,*NEW-NAME*
 :   (NOT IMPLEMENTED YET) rename column *NAME* to *NEW-NAME*
 
--s, --show
+-s, \--show
 :   print output in table format
 
--S, --show-full
+-S, \--show-full
 :   print output in table format with pager
 
---help
+\--help
 :   display this help and exit
 
---version
+\--version
 :   output version information and exit
 
 # EXAMPLES #

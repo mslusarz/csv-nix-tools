@@ -28,29 +28,29 @@ to standard output only rows matching that pattern.
 -F *STRING*
 :   use *STRING* as a fixed string pattern
 
--i, --ignore-case
+-i, \--ignore-case
 :   ignore case distinction
 
--s, --show
+-s, \--show
 :   print output in table format
 
--S, --show-full
+-S, \--show-full
 :   print output in table format with pager
 
--T, --table=*NAME*
+-T, \--table=*NAME*
 :   apply the filter to rows only with _table column equal *NAME*
 
--v, --invert
+-v, \--invert
 :   invert the sense of matching, selecting non-matching rows
 
--x, --whole
+-x, \--whole
 :   the pattern used by -e, -E or -F options must match exactly (no preceding
 or succeeding characters before/after pattern)
 
---help
+\--help
 :   display this help and exit
 
---version
+\--version
 :   output version information and exit
 
 # EXAMPLES #

@@ -77,19 +77,19 @@ See **csv-tables-tut**(7) for introduction into tables support in csv-nix-tools.
 
 # COMMON OPTIONS FOR ALL SOURCE TOOLS #
 
--c, --columns=*NAME1*[,*NAME2*...]
+-c, \--columns=*NAME1*[,*NAME2*...]
 :   choose the list of columns
 
 -l
 :   use a longer listing format (can be used up multiple times)
 
--M, --merge
+-M, \--merge
 :   merge output with a CSV stream in table form from standard input
 
--N, --table-name=*NAME*
+-N, \--table-name=*NAME*
 :   produce output as table *NAME*
 
--T, --as-table
+-T, \--as-table
 :   produce output as table
 
 Options -M/-N/-T can be used to merge output of multiple source tools, to
@@ -98,23 +98,23 @@ one example.
 
 # COMMON OPTIONS FOR ALL SOURCE AND PROCESSING TOOLS #
 
--s, --show
+-s, \--show
 :   print output in table format
 
--S, --show-full
+-S, \--show-full
 :   print output in table format with pager
 
 # COMMON OPTIONS FOR PROCESSING TOOLS #
 
--t, --table=*NAME*
+-t, \--table=*NAME*
 :   apply to rows only with _table column equal *NAME*
 
 # COMMON OPTIONS FOR ALL TOOLS #
 
---help
+\--help
 :   display this help and exit
 
---version
+\--version
 :   output version information and exit
 
 # SEE ALSO #

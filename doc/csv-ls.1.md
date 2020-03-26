@@ -16,43 +16,43 @@ csv-ls - list files in CSV format
 List information about the FILEs (the current directory by default).
 Sort entries alphabetically if -U is not specified.
 
--a, --all
+-a, \--all
 :   do not ignore entries starting with .
 
--c, --columns=*NAME1*[,*NAME2*...]
+-c, \--columns=*NAME1*[,*NAME2*...]
 :   choose the list of columns
 
--d, --directory
+-d, \--directory
 :   list directories themselves, not their contents
 
 -l
 :   use a longer listing format (can be used up to 3 times)
 
--M, --merge
+-M, \--merge
 :   merge output with a CSV stream in table form from standard input
 
--N, --table-name *NAME*
+-N, \--table-name *NAME*
 :   produce output as table *NAME*
 
--R, --recursive
+-R, \--recursive
 :   list subdirectories recursively
 
--s, --show
+-s, \--show
 :   print output in table format
 
--S, --show-full
+-S, \--show-full
 :   print output in table format with pager
 
--T, --as-table
+-T, \--as-table
 :   produce output as table *file*
 
 -U
 :   do not sort; list entries in directory order
 
---help
+\--help
 :   display this help and exit
 
---version
+\--version
 :   output version information and exit
 
 # COLUMNS #

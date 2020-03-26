@@ -25,26 +25,26 @@ a new column produced by splitting another one using a separator.
 -n *NAME1*,*NAME2*
 :   create columns *NAME1* and *NAME2* as an output
 
--r, --reverse
+-r, \--reverse
 :   start looking for separator from the end of input string
 
--p  --print-separator=*yes*/*no*/*auto*
+-p  \--print-separator=*yes*/*no*/*auto*
 :   include separator in 2nd output column (*auto* means *yes* if there's more
 than 1 separator and *no* if there's only one), defaults to *auto*
 
--s, --show
+-s, \--show
 :   print output in table format
 
--S, --show-full
+-S, \--show-full
 :   print output in table format with pager
 
--T, --table=*NAME*
+-T, \--table=*NAME*
 :   apply to rows only with _table column equal *NAME*
 
---help
+\--help
 :   display this help and exit
 
---version
+\--version
 :   output version information and exit
 
 # EXAMPLES #

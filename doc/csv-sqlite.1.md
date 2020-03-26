@@ -19,20 +19,20 @@ execute an SQL query and print back to standard output its result.
 -i *FILE*
 :   ignore standard input and read from *FILE* instead; can be used multiple times; '-' means standard input
 
--s, --show
+-s, \--show
 :   print output in table format
 
--S, --show-full
+-S, \--show-full
 :   print output in table format with pager
 
--T, --use-tables
+-T, \--use-tables
 :   interpret input as "table" stream (as _table column and columns with
 "table." prefixes) and import each csv table into its own sql table
 
---help
+\--help
 :   display this help and exit
 
---version
+\--version
 :   output version information and exit
 
 # EXAMPLES #

@@ -16,25 +16,25 @@ csv-merge - merge multiple CSV streams
 Read multiple CSV streams (from standard input or files)
 and print back to standard output a merged CSV with tables.
 
--N, --table-name *NAME*
+-N, \--table-name *NAME*
 :   set *NAME* as a table name for future table-less file (-p)
 
--p, --path-without-table *FILE*
+-p, \--path-without-table *FILE*
 :   read CSV stream without table from *FILE* and use name set by -N as its name; '-' means standard input
 
--s, --show
+-s, \--show
 :   print output in table format
 
--S, --show-full
+-S, \--show-full
 :   print output in table format with pager
 
---path-with-table *FILE*
+\--path-with-table *FILE*
 :   read CSV stream with table from *FILE*; '-' means standard input
 
---help
+\--help
 :   display this help and exit
 
---version
+\--version
 :   output version information and exit
 
 # EXAMPLES #
@@ -42,7 +42,7 @@ and print back to standard output a merged CSV with tables.
 csv-ls -c size,name | csv-merge -N file -p -
 :   equivalent of "csv-ls -c size,name -T"
 
-csv-users -T | csv-merge --path-with-table - -N file -p files.csv
+csv-users -T | csv-merge \--path-with-table - -N file -p files.csv
 :   produces CSV stream with tables from 2 streams, one with a table
 (csv-users -T), and one without (files.csv)
 

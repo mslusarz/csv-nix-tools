@@ -16,25 +16,25 @@ csv-max - take a maximum value of numerical or string column(s)
 Read CSV stream from standard input and print back to standard output maximum
 values of chosen columns.
 
--c, --columns=*NAME1*[,*NAME2*...]
+-c, \--columns=*NAME1*[,*NAME2*...]
 :   use these columns
 
 -n *NEW-NAME1*[,*NEW-NAME2*]
 :   create columns with these names, instead of default max(NAME)
 
--s, --show
+-s, \--show
 :   print output in table format
 
--S, --show-full
+-S, \--show-full
 :   print output in table format with pager
 
--T, --table=*NAME*
+-T, \--table=*NAME*
 :   apply to rows only with _table column equal *NAME*
 
---help
+\--help
 :   display this help and exit
 
---version
+\--version
 :   output version information and exit
 
 # EXAMPLES #

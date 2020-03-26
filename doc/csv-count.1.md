@@ -16,22 +16,22 @@ csv-count - count the number of columns and/or rows
 Read CSV stream from standard input and print back to standard output
 the number of columns or rows.
 
--c, --columns
+-c, \--columns
 :   print number of columns
 
--r, --rows
+-r, \--rows
 :   print number of rows
 
--s, --show
+-s, \--show
 :   print output in table format
 
--S, --show-full
+-S, \--show-full
 :   print output in table format with pager
 
---help
+\--help
 :   display this help and exit
 
---version
+\--version
 :   output version information and exit
 
 # EXAMPLES #
