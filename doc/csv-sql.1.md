@@ -50,8 +50,8 @@ Constants:
 | [-]0x[0-9a-fA-F]+| hexadecimal integer           | 0x1, 0x1A34, -0x8A        |
 | [-]0[0-9]+       | octal integer                 | 01, 01234, -067           |
 | [-]0b[01]+       | binary integer                | 0b1, 0b1101, -0b10        |
-| '[^']*'          | string                        | 'text'                    |
-| "[^"]*"          | string                        | "text"                    |
+| \'[^']*\'        | string                        | \'text\'                  |
+| \"[^"]*\"        | string                        | \"text\"                  |
 
 Operators:
 
@@ -78,33 +78,33 @@ Operators:
 | or          | logical or                    | expr1 or expr2            |
 | xor         | logical exclusive or          | expr1 xor expr2           |
 | not         | logical negation              | not expr                  |
-| \|\|          | concatenation                 | expr1 \|\| expr2            |
-| like        | match pattern                 | expr like 'patt%'         |
+| \|\|        | concatenation                 | expr1 \|\| expr2          |
+| like        | match pattern                 | expr like \'patt%\'       |
 | ()          | expression grouping           | (expr1 + 5) == 7          |
 
 Functions:
 
-| name           | description                   | example                                 |
-|----------------|-------------------------------|-----------------------------------------|
-| if             | if then else                  | if(bool_expr, expr2, expr3)             |
-| substr         | substring                     | substr(str_expr, 1, 3)                  |
-| strlen, length | string length                 | strlen(str_expr), length(str_expr)      |
-| tostring       | convert to string             | tostring(int_expr, base_expr)           |
-|                |                               | tostring(int_expr)                      |
-| toint          | convert to integer            | toint(str_expr, base_expr)              |
-|                |                               | toint(str_expr)                         |
-| replace        | replace string                | replace(str_expr, 'pat', 'repl', 1)     |
-|                |                               | replace(str_expr, 'pat', 'repl')        |
-| replace_bre    | replace string using          | replace_bre(str_expr, 'pat', 'bre', 1)  |
-|                | basic regular expression      | replace_bre(str_expr, 'pat', 'bre')     |
-| replace_ere    | replace string using          | replace_ere(str_expr, 'pat', 'ere', 1)  |
-|                | extended regular expression   | replace_ere(str_expr, 'pat', 'ere')     |
-| matches_bre    | string matches basic          | matches_bre(str_expr, 'pat', 1)         |
-|                | regular expression            | matches_bre(str_expr, 'pat')            |
-| matches_ere    | string matches extended       | matches_ere(str_expr, 'pat', 1)         |
-|                | regular expression            | matches_ere(str_expr, 'pat')            |
-| next           | next integer from sequence    | next('sequence name')                   |
-|                |                               | next()                                  |
+| name           | description                   | example                                    |
+|----------------|-------------------------------|--------------------------------------------|
+| if             | if then else                  | if(bool_expr, expr2, expr3)                |
+| substr         | substring                     | substr(str_expr, 1, 3)                     |
+| strlen, length | string length                 | strlen(str_expr), length(str_expr)         |
+| tostring       | convert to string             | tostring(int_expr, base_expr)              |
+|                |                               | tostring(int_expr)                         |
+| toint          | convert to integer            | toint(str_expr, base_expr)                 |
+|                |                               | toint(str_expr)                            |
+| replace        | replace string                | replace(str_expr, \'pat\', \'repl\', 1)    |
+|                |                               | replace(str_expr, \'pat\', \'repl\')       |
+| replace_bre    | replace string using          | replace_bre(str_expr, \'pat\', \'bre\', 1) |
+|                | basic regular expression      | replace_bre(str_expr, \'pat\', \'bre\')    |
+| replace_ere    | replace string using          | replace_ere(str_expr, \'pat\', \'ere\', 1) |
+|                | extended regular expression   | replace_ere(str_expr, \'pat\', \'ere\')    |
+| matches_bre    | string matches basic          | matches_bre(str_expr, \'pat\', 1)          |
+|                | regular expression            | matches_bre(str_expr, \'pat\')             |
+| matches_ere    | string matches extended       | matches_ere(str_expr, \'pat\', 1)          |
+|                | regular expression            | matches_ere(str_expr, \'pat\')             |
+| next           | next integer from sequence    | next(\'sequence name\')                    |
+|                |                               | next()                                     |
 
 
 # EXAMPLES #

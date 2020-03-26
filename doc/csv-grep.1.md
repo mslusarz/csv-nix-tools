@@ -55,7 +55,7 @@ or succeeding characters before/after pattern)
 
 # EXAMPLES #
 
-csv-ls -l | csv-grep -c name -e '.*\.c$' -s
+csv-ls -l | csv-grep -c name -e \'.*\.c$\' -s
 :   list files with .c extension
 
 # SEE ALSO #

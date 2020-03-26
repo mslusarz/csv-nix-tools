@@ -52,7 +52,7 @@ in the CSV format.
 csv-group-members -s
 :   print groups and users
 
-csv-group-members -T | csv-grep -T group_member -c group_name -x -F audio | csv-users -M | csv-sqlite -T 'select user.uid from user, group_member where user.name = group_member.user_name' -s
+csv-group-members -T | csv-grep -T group_member -c group_name -x -F audio | csv-users -M | csv-sqlite -T \'select user.uid from user, group_member where user.name = group_member.user_name\' -s
 :   print user ids of users belonging to group 'audio'
 
 # SEE ALSO #

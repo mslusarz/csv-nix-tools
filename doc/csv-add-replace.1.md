@@ -58,7 +58,7 @@ expression
 
 # EXAMPLES #
 
-csv-ls -c full_path | csv-add-replace -c full_path -E '(.*)\.c$' -r '%1.o' -n new -s
+csv-ls -c full_path | csv-add-replace -c full_path -E \'(.*)\.c$\' -r \'%1.o\' -n new -s
 :   list files; if file has .c extension it will be replaced by .o extension
 
 # SEE ALSO #

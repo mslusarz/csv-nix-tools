@@ -23,7 +23,7 @@ Read CSV stream from standard input and execute an external command for each row
 
 # EXAMPLES #
 
-csv-ls -R -c full_path . | csv-grep -c full_path -e '~$' | csv-exec \-- rm -f %full_path
+csv-ls -R -c full_path . | csv-grep -c full_path -e \'~$\' | csv-exec \-- rm -f %full_path
 :   remove all backup files
 
 # SEE ALSO #
