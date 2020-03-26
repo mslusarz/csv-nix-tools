@@ -40,10 +40,10 @@
 </dl>
 <h1 id="examples">EXAMPLES</h1>
 <dl>
-<dt>csv-ls -c size,name | csv-grep-rpn -e <code>&quot;</code>%size 2000 &gt; %size 3000 &lt; and<code>&quot;</code> -s</dt>
+<dt><code>csv-ls -c size,name | csv-grep-rpn -e &quot;%size 2000 &gt; %size 3000 &lt; and&quot; -s</code></dt>
 <dd>print files whose size is between 2000 and 3000 bytes
 </dd>
-<dt>csv-ls | csv-grep-rpn -e <code>&quot;</code>%name 2 1 substr 'o' ==<code>&quot;</code></dt>
+<dt><code>csv-ls | csv-grep-rpn -e &quot;%name 2 1 substr 'o' ==&quot;</code></dt>
 <dd>print files whose second character is 'o'
 </dd>
 </dl>

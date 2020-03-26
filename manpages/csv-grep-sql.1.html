@@ -40,10 +40,10 @@
 </dl>
 <h1 id="examples">EXAMPLES</h1>
 <dl>
-<dt>csv-ls -c size,name | csv-grep-sql -e <code>&quot;</code>size &gt; 2000 and size &lt; 3000<code>&quot;</code> -s</dt>
+<dt><code>csv-ls -c size,name | csv-grep-sql -e &quot;size &gt; 2000 and size &lt; 3000&quot; -s</code></dt>
 <dd>print files whose size is between 2000 and 3000 bytes
 </dd>
-<dt>csv-ls | csv-grep-sql -e <code>&quot;</code>substr(name, 2, 1) == 'o'<code>&quot;</code></dt>
+<dt><code>csv-ls | csv-grep-sql -e &quot;substr(name, 2, 1) == 'o'&quot;</code></dt>
 <dd>print files whose second character is 'o'
 </dd>
 </dl>

@@ -320,10 +320,10 @@
 </table>
 <h1 id="examples">EXAMPLES</h1>
 <dl>
-<dt>csv-ls -c size,name | csv-sql <code>&quot;</code>select size, name from input where size &gt; 2000 and size &lt; 3000<code>&quot;</code> -s</dt>
+<dt><code>csv-ls -c size,name | csv-sql &quot;select size, name from input where size &gt; 2000 and size &lt; 3000&quot; -s</code></dt>
 <dd>print files whose size is between 2000 and 3000 bytes
 </dd>
-<dt>csv-ls -c name | csv-sql <code>&quot;</code>select size, name, matches_ere(name, '.txt$') as is_txt where name like 'a%'<code>&quot;</code></dt>
+<dt><code>csv-ls -c name | csv-sql &quot;select size, name, matches_ere(name, '\.txt$') as is_txt where name like 'a%'&quot;</code></dt>
 <dd>print file names and a boolean saying whether name ends with '.txt' for files whose name starts with 'a'
 </dd>
 </dl>

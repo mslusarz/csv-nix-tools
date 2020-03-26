@@ -64,10 +64,10 @@
 </table>
 <h1 id="examples">EXAMPLES</h1>
 <dl>
-<dt>csv-group-members -s</dt>
+<dt><code>csv-group-members -s</code></dt>
 <dd>print groups and users
 </dd>
-<dt>csv-group-members -T | csv-grep -T group_member -c group_name -x -F audio | csv-users -M | csv-sqlite -T 'select user.uid from user, group_member where user.name = group_member.user_name' -s</dt>
+<dt><code>csv-group-members -T | csv-grep -T group_member -c group_name -x -F audio | csv-users -M | csv-sqlite -T 'select user.uid from user, group_member where user.name = group_member.user_name' -s</code></dt>
 <dd>print user ids of users belonging to group 'audio'
 </dd>
 </dl>

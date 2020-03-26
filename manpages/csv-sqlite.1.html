@@ -39,10 +39,10 @@
 </dl>
 <h1 id="examples">EXAMPLES</h1>
 <dl>
-<dt>csv-ls -c size,name | csv-sqlite <code>&quot;</code>select size, name from input where size &gt; 2000 and size &lt; 3000<code>&quot;</code> -s</dt>
+<dt><code>csv-ls -c size,name | csv-sqlite &quot;select size, name from input where size &gt; 2000 and size &lt; 3000&quot; -s</code></dt>
 <dd>print files whose size is between 2000 and 3000 bytes
 </dd>
-<dt>csv-users -T | csv-groups -M -N grp | csv-sqlite -T <code>&quot;</code>select user.name as user_name, grp.name as group_name from user, grp where user.gid = grp.gid<code>&quot;</code></dt>
+<dt><code>csv-users -T | csv-groups -M -N grp | csv-sqlite -T &quot;select user.name as user_name, grp.name as group_name from user, grp where user.gid = grp.gid&quot;</code></dt>
 <dd>print all system users and the name of the default group they belong to
 </dd>
 </dl>

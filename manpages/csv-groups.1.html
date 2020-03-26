@@ -80,10 +80,10 @@
 <p>passwd column comes from /etc/group, so it is useless on modern systems, as a real password is stored somewhere else and is not visible to normal users.</p>
 <h1 id="examples">EXAMPLES</h1>
 <dl>
-<dt>csv-groups -s</dt>
+<dt><code>csv-groups -s</code></dt>
 <dd>print the list of groups
 </dd>
-<dt>csv-groups -T -N grp | csv-users -M | csv-sqlite -T 'select user.name as user_name, grp.name as group_name from user, grp where user.gid = grp.gid' -s</dt>
+<dt><code>csv-groups -T -N grp | csv-users -M | csv-sqlite -T 'select user.name as user_name, grp.name as group_name from user, grp where user.gid = grp.gid' -s</code></dt>
 <dd>print user names and the group name of their default group
 </dd>
 </dl>
