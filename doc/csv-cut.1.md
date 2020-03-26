@@ -39,7 +39,7 @@ resulting file to standard output.
 
 # EXAMPLES #
 
-csv-ls -l | csv-cut -c name,size -s
+`csv-ls -l | csv-cut -c name,size -s`
 :   list files and their sizes
 
 # SEE ALSO #

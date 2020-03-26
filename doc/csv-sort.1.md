@@ -39,7 +39,7 @@ resulting file to standard output.
 
 # EXAMPLES #
 
-csv-ls -c name,size | csv-sort -c size -r -s
+`csv-ls -c name,size | csv-sort -c size -r -s`
 :   print files, sorted by size, in descending order
 
 # SEE ALSO #

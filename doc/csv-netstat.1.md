@@ -142,10 +142,10 @@ Print to standard output the list of network sockets in the CSV format.
 
 # EXAMPLES #
 
-csv-netstat -ts
+`csv-netstat -ts`
 :   print information about all TCP sockets
 
-csv-netstat -46s
+`csv-netstat -46s`
 :   print information about all IPv4 and IPv6 sockets
 
 # SEE ALSO #

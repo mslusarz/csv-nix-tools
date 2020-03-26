@@ -59,10 +59,10 @@ There are 3 backends: **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3
 
 # EXAMPLES #
 
-csv-show < file1.csv
+`csv-show < file1.csv`
 :   print file1.csv in human-readable format
 
-csv-show \--ui none < file1.csv
+`csv-show --ui none < file1.csv`
 :   print file1.csv in human-readable format without any pager
 
 # SEE ALSO #

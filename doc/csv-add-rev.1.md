@@ -39,7 +39,7 @@ a new column produced by reversing another column characterwise.
 
 # EXAMPLES #
 
-csv-ls | csv-add-rev -c name -n reversed_name -s
+`csv-ls | csv-add-rev -c name -n reversed_name -s`
 :   list files with names reversed
 
 # SEE ALSO #

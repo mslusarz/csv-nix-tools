@@ -39,10 +39,10 @@ and print back to standard output a merged CSV with tables.
 
 # EXAMPLES #
 
-csv-ls -c size,name | csv-merge -N file -p -
+`csv-ls -c size,name | csv-merge -N file -p -`
 :   equivalent of "csv-ls -c size,name -T"
 
-csv-users -T | csv-merge \--path-with-table - -N file -p files.csv
+`csv-users -T | csv-merge --path-with-table - -N file -p files.csv`
 :   produces CSV stream with tables from 2 streams, one with a table
 (csv-users -T), and one without (files.csv)
 

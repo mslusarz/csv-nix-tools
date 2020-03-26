@@ -103,7 +103,7 @@ Functions:
 
 # EXAMPLES #
 
-csv-ls -c name,size,blocks | csv-add-rpn -n space_used -e `"`%blocks 512 *`"` -s
+`csv-ls -c name,size,blocks | csv-add-rpn -n space_used -e "%blocks 512 *" -s`
 :   list files and real space they use
 
 # SEE ALSO #

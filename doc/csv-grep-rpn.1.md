@@ -38,10 +38,11 @@ a separator, so this needs to be quoted
 :   output version information and exit
 
 # EXAMPLES #
-csv-ls -c size,name | csv-grep-rpn -e `"`%size 2000 > %size 3000 < and`"` -s
+
+`csv-ls -c size,name | csv-grep-rpn -e "%size 2000 > %size 3000 < and" -s`
 :   print files whose size is between 2000 and 3000 bytes
 
-csv-ls | csv-grep-rpn -e `"`%name 2 1 substr \'o\' ==`"`
+`csv-ls | csv-grep-rpn -e "%name 2 1 substr 'o' =="`
 :   print files whose second character is 'o'
 
 # SEE ALSO #

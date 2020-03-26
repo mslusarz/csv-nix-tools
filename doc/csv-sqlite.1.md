@@ -37,10 +37,10 @@ execute an SQL query and print back to standard output its result.
 
 # EXAMPLES #
 
-csv-ls -c size,name | csv-sqlite `"`select size, name from input where size > 2000 and size < 3000`"` -s
+`csv-ls -c size,name | csv-sqlite "select size, name from input where size > 2000 and size < 3000" -s`
 :    print files whose size is between 2000 and 3000 bytes
 
-csv-users -T | csv-groups -M -N grp | csv-sqlite -T `"`select user.name as user_name, grp.name as group_name from user, grp where user.gid = grp.gid`"`
+`csv-users -T | csv-groups -M -N grp | csv-sqlite -T "select user.name as user_name, grp.name as group_name from user, grp where user.gid = grp.gid"`
 :   print all system users and the name of the default group they belong to
 
 # SEE ALSO #

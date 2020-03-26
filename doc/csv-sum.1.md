@@ -42,7 +42,7 @@ values of chosen columns.
 
 # EXAMPLES #
 
-csv-ls -l | csv-sum -c size
+`csv-ls -l | csv-sum -c size`
 :   print the sum of sizes of all files in the current directory
 
 # SEE ALSO #

@@ -157,7 +157,7 @@ Print to standard output the list of system processes in the CSV format.
 
 # EXAMPLES #
 
-csv-ps -S
+`csv-ps -S`
 :   browse all processes with custom pager
 
 # SEE ALSO #

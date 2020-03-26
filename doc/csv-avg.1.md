@@ -39,7 +39,7 @@ of chosen columns.
 
 # EXAMPLES #
 
-csv-ls -l | csv-avg -c size
+`csv-ls -l | csv-avg -c size`
 :   print average size of file in the current directory
 
 # LIMITATIONS #

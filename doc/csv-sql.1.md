@@ -109,10 +109,10 @@ Functions:
 
 # EXAMPLES #
 
-csv-ls -c size,name | csv-sql `"`select size, name from input where size > 2000 and size < 3000`"` -s
+`csv-ls -c size,name | csv-sql "select size, name from input where size > 2000 and size < 3000" -s`
 :    print files whose size is between 2000 and 3000 bytes
 
-csv-ls -c name | csv-sql `"`select size, name, matches_ere(name, '\.txt$') as is_txt where name like 'a%'`"`
+`csv-ls -c name | csv-sql "select size, name, matches_ere(name, '\.txt$') as is_txt where name like 'a%'"`
 :    print file names and a boolean saying whether name ends with '.txt' for files whose name starts with 'a'
 
 # SEE ALSO #

@@ -111,10 +111,10 @@ Sort entries alphabetically if -U is not specified.
 
 # EXAMPLES #
 
-csv-ls
+`csv-ls`
 :   print files (just names) in the current directory
 
-csv-ls -l -s
+`csv-ls -l -s`
 :   print files in the current directory, in a format similar to ls -l
 
 # SEE ALSO #

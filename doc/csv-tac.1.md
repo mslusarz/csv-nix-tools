@@ -34,7 +34,7 @@ input file.
 
 # EXAMPLES #
 
-csv-tac file1.csv - file2.csv
+`csv-tac file1.csv - file2.csv`
 :   output file1.csv contents, the standard input, then file2.contents, each
     one in reverse
 

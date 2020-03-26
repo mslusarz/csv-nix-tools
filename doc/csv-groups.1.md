@@ -55,10 +55,10 @@ as a real password is stored somewhere else and is not visible to normal users.
 
 # EXAMPLES #
 
-csv-groups -s
+`csv-groups -s`
 :   print the list of groups
 
-csv-groups -T -N grp | csv-users -M | csv-sqlite -T \'select user.name as user_name, grp.name as group_name from user, grp where user.gid = grp.gid\' -s
+`csv-groups -T -N grp | csv-users -M | csv-sqlite -T 'select user.name as user_name, grp.name as group_name from user, grp where user.gid = grp.gid' -s`
 :   print user names and the group name of their default group
 
 # SEE ALSO #

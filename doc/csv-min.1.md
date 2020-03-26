@@ -39,7 +39,7 @@ values of chosen columns.
 
 # EXAMPLES #
 
-csv-ls -l | csv-min -c size
+`csv-ls -l | csv-min -c size`
 :   print the smallest file in the current directory
 
 # SEE ALSO #

@@ -48,7 +48,7 @@ the column header transformed.
 
 # EXAMPLES #
 
-csv-ls | csv-count -r | csv-header -m
+`csv-ls | csv-count -r | csv-header -m`
 :   print number of files in the current directory without csv header
 
 # SEE ALSO #

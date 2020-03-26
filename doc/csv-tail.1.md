@@ -32,10 +32,10 @@ Print the last 10 rows of CSV file from standard input to standard output.
 
 # EXAMPLES #
 
-csv-tail < file1.csv
+`csv-tail < file1.csv`
 :   output the last 10 rows of file1.csv
 
-csv-tail -n 5 < file1.csv
+`csv-tail -n 5 < file1.csv`
 :   output the last 5 rows of file1.csv
 
 # SEE ALSO #

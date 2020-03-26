@@ -36,7 +36,7 @@ the number of columns or rows.
 
 # EXAMPLES #
 
-csv-ls | csv-count -r
+`csv-ls | csv-count -r`
 :   print number of files in the current directory
 
 # SEE ALSO #

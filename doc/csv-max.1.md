@@ -39,7 +39,7 @@ values of chosen columns.
 
 # EXAMPLES #
 
-csv-ls -l | csv-max -c size
+`csv-ls -l | csv-max -c size`
 :   print the biggest file in the current directory
 
 # SEE ALSO #

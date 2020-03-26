@@ -32,10 +32,10 @@ Print the first 10 rows of CSV file from standard input to standard output.
 
 # EXAMPLES #
 
-csv-head < file1.csv
+`csv-head < file1.csv`
 :   output the first 10 rows of file1.csv
 
-csv-head -n 5 < file1.csv
+`csv-head -n 5 < file1.csv`
 :   output the first 5 rows of file1.csv
 
 # SEE ALSO #

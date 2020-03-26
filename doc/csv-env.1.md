@@ -48,7 +48,7 @@ Print to standard output the list of environment variables in the CSV format.
 
 # EXAMPLES #
 
-csv-env -s
+`csv-env -s`
 :   print environment variables
 
 # SEE ALSO #

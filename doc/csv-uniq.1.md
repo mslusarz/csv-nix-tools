@@ -36,7 +36,7 @@ print back to standard output the remaining rows.
 
 # EXAMPLES #
 
-csv-ls -c owner_name | csv-uniq -c owner_name | csv-sort -c owner_name | csv-uniq -c owner_name
+`csv-ls -c owner_name | csv-uniq -c owner_name | csv-sort -c owner_name | csv-uniq -c owner_name`
 :   list owners of all files in the current directory
 
 # SEE ALSO #

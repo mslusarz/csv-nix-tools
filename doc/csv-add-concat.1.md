@@ -33,7 +33,7 @@ a new column produced by concatenation of columns and fixed strings.
 
 # EXAMPLES #
 
-csv-ls -R -c parent,name . | csv-add-concat -s \-- full_path = %parent / %name
+`csv-ls -R -c parent,name . | csv-add-concat -s -- full_path = %parent / %name`
 :    list files with their full path
 
 # SEE ALSO #
