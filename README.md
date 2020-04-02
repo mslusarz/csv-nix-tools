@@ -8,11 +8,11 @@ csv-nix-tools is a collection of tools for gathering and processing system
 information using CSV as an intermediate format.
 
 Although CSV is in the name of the project and this format is used for
-information storage, it's not **that** important aspect of this project.
+information storage, it's not **that** critical aspect of this project.
 
 What is more important is that it allows **safely** processing structured data
-using *NIX-like philosophy, by employing pipes and tools with familiar names
-(grep, sort, etc, see [examples](EXAMPLES.md)). "Safe" processing means that
+using *NIX-like philosophy by employing pipes and tools with familiar names
+(such as grep and sort, see [examples](EXAMPLES.md)). "Safe" processing means that
 handling of special characters, like new lines, is effort-less - it just works,
 without bothering users with hacks like IFS.
 
@@ -22,12 +22,12 @@ user wants to, including powerful SQL syntax, without leaving the shell.
 
 # Status
 This project is in alpha stage. Everything listed below is functional,
-but in the future many things can change (IOW don't run this in production yet).
-Currently it builds and runs on Linux with glibc only, but portability patches
+but in the future, many things can change (IOW don't run this in production yet).
+Currently, it builds and runs on Linux with glibc only, but portability patches
 are welcomed. Although the project has NIX in the name and many source tools
 are Unix or even Linux-specific, porting to non-Unix systems is encouraged.
 
-If you discover any issue in the project or a missing feature, don't hestitate
+If you discover any issue in the project or a missing feature, don't hesitate
 to file an issue. Any feedback is welcomed.
 
 # Dependencies
