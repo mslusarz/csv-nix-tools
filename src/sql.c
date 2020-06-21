@@ -39,6 +39,7 @@
 
 #include "parse.h"
 #include "sql.h"
+#include "sql-shared.h"
 #include "utils.h"
 
 static const struct option opts[] = {
@@ -64,14 +65,8 @@ usage(FILE *out)
 	describe_version(out);
 }
 
-struct column {
-	struct rpn_expression expr;
-	char *name;
-};
-
 struct cb_params {
-	struct column *columns;
-	size_t columns_count;
+	struct columns columns;
 
 	struct rpn_expression *where;
 };
@@ -117,13 +112,14 @@ next_row(const char *buf, const size_t *col_offs,
 			return 0;
 	}
 
-	for (size_t i = 0; i < params->columns_count - 1; ++i) {
-		exp = &params->columns[i].expr;
+	struct columns *columns = &params->columns;
+	for (size_t i = 0; i < columns->count - 1; ++i) {
+		exp = &columns->col[i].expr;
 
 		process_exp(exp, buf, col_offs, headers, ',');
 	}
 
-	exp = &params->columns[params->columns_count - 1].expr;
+	exp = &columns->col[columns->count - 1].expr;
 
 	process_exp(exp, buf, col_offs, headers, '\n');
 
@@ -132,8 +128,6 @@ next_row(const char *buf, const size_t *col_offs,
 
 static struct cb_params Params;
 
-#include "sql-shared.h"
-
 void
 sql_column_done(void)
 {
@@ -141,10 +135,11 @@ sql_column_done(void)
 	exp.tokens = Tokens;
 	exp.count = Ntokens;
 
-	Params.columns = xrealloc_nofail(Params.columns,
-			Params.columns_count + 1,
-			sizeof(Params.columns[0]));
-	struct column *col = &Params.columns[Params.columns_count];
+	struct columns *columns = &Params.columns;
+	columns->col = xrealloc_nofail(columns->col,
+			columns->count + 1,
+			sizeof(columns->col[0]));
+	struct column *col = &columns->col[columns->count];
 
 	col->expr = exp;
 	col->name = NULL;
@@ -152,7 +147,7 @@ sql_column_done(void)
 	if (Ntokens == 1 && Tokens[0].type == RPN_COLUMN)
 		col->name = xstrdup_nofail(Headers[Tokens[0].colnum].name);
 
-	Params.columns_count++;
+	columns->count++;
 	Tokens = NULL;
 	Ntokens = 0;
 }
@@ -164,15 +159,16 @@ sql_named_column_done(char *name)
 	exp.tokens = Tokens;
 	exp.count = Ntokens;
 
-	Params.columns = xrealloc_nofail(Params.columns,
-			Params.columns_count + 1,
-			sizeof(Params.columns[0]));
+	struct columns *columns = &Params.columns;
+	columns->col = xrealloc_nofail(columns->col,
+			columns->count + 1,
+			sizeof(columns->col[0]));
 
-	struct column *col = &Params.columns[Params.columns_count];
+	struct column *col = &columns->col[columns->count];
 	col->expr = exp;
 	col->name = name;
 
-	Params.columns_count++;
+	columns->count++;
 	Tokens = NULL;
 	Ntokens = 0;
 }
@@ -180,11 +176,12 @@ sql_named_column_done(char *name)
 void
 sql_all_columns(void)
 {
-	Params.columns = xmalloc_nofail(Nheaders, sizeof(Params.columns[0]));
-	Params.columns_count = Nheaders;
+	struct columns *columns = &Params.columns;
+	columns->col = xmalloc_nofail(Nheaders, sizeof(columns->col[0]));
+	columns->count = Nheaders;
 
 	for (size_t i = 0; i < Nheaders; ++i) {
-		struct column *col = &Params.columns[i];
+		struct column *col = &columns->col[i];
 		col->name = xstrdup_nofail(Headers[i].name);
 		col->expr.count = 1;
 		col->expr.tokens = xmalloc_nofail(1, sizeof(col->expr.tokens[0]));
@@ -230,7 +227,7 @@ sql_end_of_conditions()
 static void
 print_column_header(size_t i, char sep)
 {
-	const struct column *col = &Params.columns[i];
+	const struct column *col = &Params.columns.col[i];
 	if (col->name)
 		printf("%s", col->name);
 	else
@@ -279,6 +276,7 @@ main(int argc, char *argv[])
 	csv_read_header_nofail(s);
 
 	Nheaders = csv_get_headers(s, &Headers);
+	Columns = &Params.columns;
 
 	FILE *in = fmemopen(argv[optind], strlen(argv[optind]), "r");
 	if (!in) {
@@ -293,24 +291,25 @@ main(int argc, char *argv[])
 
 	fclose(in);
 
-	for (size_t i = 0; i < Params.columns_count - 1; ++i)
+	struct columns *columns = &Params.columns;
+	for (size_t i = 0; i < columns->count - 1; ++i)
 		print_column_header(i, ',');
 
-	print_column_header(Params.columns_count - 1, '\n');
+	print_column_header(columns->count - 1, '\n');
 
-	if (Params.columns_count < 1)
+	if (columns->count < 1)
 		abort();
 
 	csv_read_all_nofail(s, &next_row, &Params);
 
 	csv_destroy_ctx(s);
 
-	for (size_t i = 0; i < Params.columns_count; ++i) {
-		rpn_free(&Params.columns[i].expr);
-		free(Params.columns[i].name);
+	for (size_t i = 0; i < columns->count; ++i) {
+		rpn_free(&columns->col[i].expr);
+		free(columns->col[i].name);
 	}
 
-	free(Params.columns);
+	free(columns->col);
 	if (Params.where) {
 		rpn_free(Params.where);
 		free(Params.where);

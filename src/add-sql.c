@@ -40,6 +40,7 @@
 
 #include "parse.h"
 #include "sql.h"
+#include "sql-shared.h"
 #include "utils.h"
 
 static const struct option opts[] = {
@@ -72,20 +73,12 @@ usage(FILE *out)
 	describe_version(out);
 }
 
-struct column {
-	struct rpn_expression expr;
-	char *name;
-};
-
 struct cb_params {
-	struct column *columns;
-	size_t columns_count;
+	struct columns columns;
 
 	size_t table_column;
 	char *table;
 };
-
-#include "sql-shared.h"
 
 static struct cb_params Params;
 static char *New_name;
@@ -105,10 +98,11 @@ sql_column_done(void)
 
 	csv_column_doesnt_exist(Headers, Nheaders, Table, New_name);
 
-	Params.columns = xrealloc_nofail(Params.columns,
-			Params.columns_count + 1,
-			sizeof(Params.columns[0]));
-	struct column *col = &Params.columns[Params.columns_count];
+	struct columns *columns = &Params.columns;
+	columns->col = xrealloc_nofail(columns->col,
+			columns->count + 1,
+			sizeof(columns->col[0]));
+	struct column *col = &columns->col[columns->count];
 
 	col->expr = exp;
 	if (Table) {
@@ -121,7 +115,7 @@ sql_column_done(void)
 		col->name = New_name;
 	}
 
-	Params.columns_count++;
+	columns->count++;
 	Tokens = NULL;
 	Ntokens = 0;
 	New_name = NULL;
@@ -143,11 +137,12 @@ sql_named_column_done(char *name)
 
 	csv_column_doesnt_exist(Headers, Nheaders, Table, name);
 
-	Params.columns = xrealloc_nofail(Params.columns,
-			Params.columns_count + 1,
-			sizeof(Params.columns[0]));
+	struct columns *columns = &Params.columns;
+	columns->col = xrealloc_nofail(columns->col,
+			columns->count + 1,
+			sizeof(columns->col[0]));
 
-	struct column *col = &Params.columns[Params.columns_count];
+	struct column *col = &columns->col[columns->count];
 	col->expr = exp;
 	if (Table) {
 		if (csv_asprintf(&col->name, "%s.%s", Table, name) < 0) {
@@ -159,7 +154,7 @@ sql_named_column_done(char *name)
 		col->name = name;
 	}
 
-	Params.columns_count++;
+	columns->count++;
 	Tokens = NULL;
 	Ntokens = 0;
 }
@@ -200,12 +195,13 @@ next_row(const char *buf, const size_t *col_offs,
 	struct cb_params *params = arg;
 	struct rpn_expression *exp;
 
+	struct columns *columns = &Params.columns;
 	if (params->table) {
 		const char *table = &buf[col_offs[params->table_column]];
 		if (strcmp(table, params->table) != 0) {
 			csv_print_line(stdout, buf, col_offs, nheaders, false);
 
-			for (size_t i = 0; i < params->columns_count; ++i)
+			for (size_t i = 0; i < columns->count; ++i)
 				putchar(',');
 
 			putchar('\n');
@@ -217,13 +213,13 @@ next_row(const char *buf, const size_t *col_offs,
 	csv_print_line(stdout, buf, col_offs, nheaders, false);
 	fputc(',', stdout);
 
-	for (size_t i = 0; i < params->columns_count - 1; ++i) {
-		exp = &params->columns[i].expr;
+	for (size_t i = 0; i < columns->count - 1; ++i) {
+		exp = &columns->col[i].expr;
 
 		process_exp(exp, buf, col_offs, headers, ',');
 	}
 
-	exp = &params->columns[params->columns_count - 1].expr;
+	exp = &columns->col[columns->count - 1].expr;
 
 	process_exp(exp, buf, col_offs, headers, '\n');
 
@@ -250,8 +246,8 @@ main(int argc, char *argv[])
 	bool show_full;
 	char *new_column = NULL;
 
-	Params.columns = NULL;
-	Params.columns_count = 0;
+	Params.columns.col = NULL;
+	Params.columns.count = 0;
 	Params.table = NULL;
 	Params.table_column = SIZE_MAX;
 
@@ -349,20 +345,21 @@ main(int argc, char *argv[])
 	for (size_t i = 0; i < Nheaders; ++i)
 		printf("%s:%s,", Headers[i].name, Headers[i].type);
 
-	for (size_t i = 0; i < Params.columns_count - 1; ++i)
-		describe_column(&Params.columns[i], ',');
-	describe_column(&Params.columns[Params.columns_count - 1], '\n');
+	struct columns *columns = &Params.columns;
+	for (size_t i = 0; i < columns->count - 1; ++i)
+		describe_column(&columns->col[i], ',');
+	describe_column(&columns->col[columns->count - 1], '\n');
 
 	csv_read_all_nofail(s, &next_row, &Params);
 
 	csv_destroy_ctx(s);
 
-	for (size_t i = 0; i < Params.columns_count; ++i) {
-		rpn_free(&Params.columns[i].expr);
-		free(Params.columns[i].name);
+	for (size_t i = 0; i < columns->count; ++i) {
+		rpn_free(&columns->col[i].expr);
+		free(columns->col[i].name);
 	}
 
-	free(Params.columns);
+	free(columns->col);
 	free(Params.table);
 	rpn_fini();
 

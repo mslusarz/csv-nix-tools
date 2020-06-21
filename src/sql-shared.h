@@ -30,11 +30,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <stddef.h>
+#include <stdlib.h>
+#include "parse.h"
+#include "utils.h"
+
+struct column {
+	struct rpn_expression expr;
+	char *name;
+};
+
+struct columns {
+	struct column *col;
+	size_t count;
+};
+
 static const struct col_header *Headers;
 static size_t Nheaders;
 static struct rpn_token *Tokens;
 static size_t Ntokens;
 static char *Table;
+static struct columns *Columns;
 
 void
 sql_stack_push(const struct rpn_token *token)
@@ -47,6 +63,24 @@ sql_stack_push(const struct rpn_token *token)
 void
 sql_stack_push_string(char *str)
 {
+	if (Columns) {
+		size_t found = SIZE_MAX;
+		for (size_t i = 0; i < Columns->count; ++i) {
+			if (strcmp(Columns->col[i].name, str) == 0) {
+				found = i;
+				break;
+			}
+		}
+
+		if (found != SIZE_MAX) {
+			struct rpn_expression *expr = &Columns->col[found].expr;
+			for (size_t i = 0; i < expr->count; ++i)
+				sql_stack_push(&expr->tokens[i]);
+			free(str);
+			return;
+		}
+	}
+
 	struct rpn_token tk;
 
 	tk.type = RPN_COLUMN;

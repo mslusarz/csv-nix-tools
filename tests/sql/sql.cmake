@@ -261,6 +261,10 @@ test("csv-sql 'select num, str, toint(str) as str_to_int,\
 	data/rpn-add-num-base.csv data/rpn-add-convert.csv data/empty.txt 0
 	sql_str_to_int_int_to_str2)
 
+test("csv-sql 'select num, num2, num3, num2 + num3 as num2_plus_num3 from input where num2_plus_num3 == 50'"
+	data/rpn-add-num-dec.csv sql/where-col-expr.csv data/empty.txt 0
+	sql_where_col_expr)
+
 test("csv-sql \"select *, replace(str, 'pattern', 'replacement', 1) as x\"" add-rpn/replace-input.csv add-rpn/replace-output1.csv data/empty.txt 0
 	sql_replace1)
 
