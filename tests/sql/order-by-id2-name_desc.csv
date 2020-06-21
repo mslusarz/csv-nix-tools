@@ -1,0 +1,9 @@
+id:int,id2:int,name:string
+3,1,aaa
+1,0,bbb
+9,4,ddd
+5,2,eee
+2,1,fff
+2,1,ccc
+1,0,xxx
+11,5,bbb

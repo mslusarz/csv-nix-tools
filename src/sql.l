@@ -42,6 +42,10 @@ literal2 \"[^"]*\"
 "as"		{ dbg_printf("LEX: matching AS\n"); return AS; }
 "from"		{ dbg_printf("LEX: matching FROM\n"); return FROM; }
 "where"		{ dbg_printf("LEX: matching WHERE\n"); return WHERE; }
+"order"		{ dbg_printf("LEX: matching ORDER\n"); return ORDER; }
+"by"		{ dbg_printf("LEX: matching BY\n"); return BY; }
+"asc"		{ dbg_printf("LEX: matching ASC\n"); return ASC; }
+"desc"		{ dbg_printf("LEX: matching DESC\n"); return DESC; }
 "or"		{ dbg_printf("LEX: matching OR\n"); return OR; }
 "and"		{ dbg_printf("LEX: matching AND\n"); return AND; }
 "xor"		{ dbg_printf("LEX: matching XOR\n"); return XOR; }

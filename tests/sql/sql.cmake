@@ -300,6 +300,26 @@ test("csv-sql \"select *, next() as num\""
 	data/3-columns-3-rows.csv data/rpn-add-next.csv data/empty.txt 0
 	sql_next2)
 
+test("csv-sql 'select id, name from input order by id'"
+	sql/order-by-in.csv sql/order-by-id.csv data/empty.txt 0
+	sql_order_by_id)
+
+test("csv-sql 'select id, name from input order by name asc, id desc'"
+	sql/order-by-in.csv sql/order-by-name_asc-id_desc.csv data/empty.txt 0
+	sql_order_by_name_asc_id_desc)
+
+test("csv-sql 'select id, name from input order by name asc, id asc'"
+	sql/order-by-in.csv sql/order-by-name_asc-id_asc.csv data/empty.txt 0
+	sql_order_by_name_asc_id_asc)
+
+test("csv-sql 'select id, name from input order by id/2, name desc'"
+	sql/order-by-in.csv sql/order-by-id_div_2-name_desc.csv data/empty.txt 0
+	sql_order_by_id_div_2_name_desc)
+
+test("csv-sql 'select id, id/2 as id2, name from input order by id2, name desc'"
+	sql/order-by-in.csv sql/order-by-id2-name_desc.csv data/empty.txt 0
+	sql_order_by_id2_name_desc)
+
 test("csv-sql --help" data/empty.csv sql/help.txt data/empty.txt 2
 	sql_help)
 

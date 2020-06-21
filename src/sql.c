@@ -65,10 +65,20 @@ usage(FILE *out)
 	describe_version(out);
 }
 
+struct order_condition {
+	struct rpn_expression expr;
+	bool asc;
+};
+
+struct order_conditions {
+	struct order_condition *cond;
+	size_t count;
+};
+
 struct cb_params {
 	struct columns columns;
-
 	struct rpn_expression where;
+	struct order_conditions order_by;
 };
 
 static void
@@ -216,6 +226,36 @@ sql_end_of_conditions()
 	Params.where.tokens = Tokens;
 	Params.where.count = Ntokens;
 
+	Tokens = NULL;
+	Ntokens = 0;
+}
+
+void
+sql_order_by()
+{
+	if (Ntokens > 0) {
+		fprintf(stderr, "invalid state\n");
+		exit(2);
+	}
+}
+
+void
+sql_order_by_expr_done(bool asc)
+{
+	struct rpn_expression exp;
+	exp.tokens = Tokens;
+	exp.count = Ntokens;
+
+	struct order_conditions *conds = &Params.order_by;
+	conds->cond = xrealloc_nofail(conds->cond,
+			conds->count + 1,
+			sizeof(conds->cond[0]));
+	struct order_condition *cond = &conds->cond[conds->count];
+
+	cond->expr = exp;
+	cond->asc = asc;
+
+	conds->count++;
 	Tokens = NULL;
 	Ntokens = 0;
 }

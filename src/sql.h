@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,7 @@
 #ifndef CSV_SQL_H
 #define CSV_SQL_H
 
+#include <stdbool.h>
 #include <stdio.h>
 #include "utils.h"
 
@@ -55,5 +56,8 @@ void sql_all_columns(void);
 void sql_from(char *name);
 void sql_where();
 void sql_end_of_conditions();
+
+void sql_order_by();
+void sql_order_by_expr_done(bool asc);
 
 #endif
