@@ -73,6 +73,7 @@ struct cb_params {
 static int
 next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 {
+	UNUSED(ncols);
 	struct cb_params *params = arg;
 
 	pid_t pid = fork();

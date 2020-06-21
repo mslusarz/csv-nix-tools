@@ -105,6 +105,7 @@ process_exp(struct rpn_expression *exp, const char *buf, const size_t *col_offs,
 static int
 next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 {
+	UNUSED(ncols);
 	struct cb_params *params = arg;
 	struct rpn_expression *exp;
 	struct rpn_variant ret;

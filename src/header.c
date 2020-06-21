@@ -93,6 +93,7 @@ struct cb_params {
 static int
 next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 {
+	UNUSED(arg);
 //	struct cb_params *params = arg;
 
 	csv_print_line(stdout, buf, col_offs, ncols, true);
