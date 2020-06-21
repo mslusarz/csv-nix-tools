@@ -38,8 +38,8 @@
 </dl>
 <h1 id="simplified-sql-syntax">SIMPLIFIED SQL SYNTAX</h1>
 <p>Only queries in this form are supported:</p>
-<p><code>SELECT columns [FROM input] [WHERE condition]</code></p>
-<p>Only <strong>columns</strong> are required. FROM supports only “input” table and is thus optional. “WHERE condition” is optional. “ORDER BY” is not supported.</p>
+<p><code>SELECT columns [FROM input] [WHERE condition] [ORDER BY expr1 ASC|DESC[, expr2 ASC|DESC]]</code></p>
+<p>Only <strong>columns</strong> are required. FROM supports only “input” table and is thus optional. “WHERE condition” is optional. “ORDER BY” is optional.</p>
 <p>No aggregate or window functions are supported.</p>
 <p>Columns is comma separated list of column names or expressions, with each one optionally followed by “AS new-column-name” giving it a new name.</p>
 <p>Constants:</p>
@@ -328,8 +328,11 @@
 <dt><code>csv-ls -c size,name | csv-sql "select size, name from input where size &gt; 2000 and size &lt; 3000" -s</code></dt>
 <dd>print files whose size is between 2000 and 3000 bytes
 </dd>
-<dt><code>csv-ls -c name | csv-sql "select size, name, matches_ere(name, '\.txt$') as is_txt where name like 'a%'"</code></dt>
+<dt><code>csv-ls -c size,name | csv-sql "select size, name, matches_ere(name, '\.txt$') as is_txt where name like 'a%'" -s</code></dt>
 <dd>print file names and a boolean saying whether name ends with ‘.txt’ for files whose name starts with ‘a’
+</dd>
+<dt><code>csv-ls -c name,mtime,mtime_sec,mtime_nsec | csv-sql "select name, mtime order by mtime_sec desc, mtime_nsec desc" -s</code></dt>
+<dd>print file names and their modification time ordered by modification time (newest first)
 </dd>
 </dl>
 <h1 id="see-also">SEE ALSO</h1>
