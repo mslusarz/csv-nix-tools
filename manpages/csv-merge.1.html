@@ -1,20 +1,25 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>csv-merge</title>
-  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
 </head>
 <body>
-<div id="header">
+<header id="title-block-header">
 <h1 class="title">csv-merge</h1>
-</div>
+</header>
 <h1 id="name">NAME</h1>
 <p>csv-merge - merge multiple CSV streams</p>
 <h1 id="synopsis">SYNOPSIS</h1>
-<p><strong>csv-merge</strong> [OPTION]...</p>
+<p><strong>csv-merge</strong> [OPTION]…</p>
 <h1 id="description">DESCRIPTION</h1>
 <p>Read multiple CSV streams (from standard input or files) and print back to standard output a merged CSV with tables.</p>
 <dl>
@@ -22,7 +27,7 @@
 <dd>set <em>NAME</em> as a table name for future table-less file (-p)
 </dd>
 <dt>-p, --path-without-table <em>FILE</em></dt>
-<dd>read CSV stream without table from <em>FILE</em> and use name set by -N as its name; '-' means standard input
+<dd>read CSV stream without table from <em>FILE</em> and use name set by -N as its name; ‘-’ means standard input
 </dd>
 <dt>-s, --show</dt>
 <dd>print output in table format
@@ -31,7 +36,7 @@
 <dd>print output in table format with pager
 </dd>
 <dt>--path-with-table <em>FILE</em></dt>
-<dd>read CSV stream with table from <em>FILE</em>; '-' means standard input
+<dd>read CSV stream with table from <em>FILE</em>; ‘-’ means standard input
 </dd>
 <dt>--help</dt>
 <dd>display this help and exit
@@ -43,7 +48,7 @@
 <h1 id="examples">EXAMPLES</h1>
 <dl>
 <dt><code>csv-ls -c size,name | csv-merge -N file -p -</code></dt>
-<dd>equivalent of &quot;csv-ls -c size,name -T&quot;
+<dd>equivalent of “csv-ls -c size,name -T”
 </dd>
 <dt><code>csv-users -T | csv-merge --path-with-table - -N file -p files.csv</code></dt>
 <dd>produces CSV stream with tables from 2 streams, one with a table (csv-users -T), and one without (files.csv)

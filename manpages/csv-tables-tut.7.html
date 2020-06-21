@@ -1,20 +1,25 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>csv-tables-tut</title>
-  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
 </head>
 <body>
-<div id="header">
+<header id="title-block-header">
 <h1 class="title">csv-tables-tut</h1>
-</div>
+</header>
 <h1 id="name">NAME</h1>
-<p>csv-tables-tut - tutorial for csv-nix-tools' tables</p>
+<p>csv-tables-tut - tutorial for csv-nix-tools’ tables</p>
 <h1 id="tutorial">TUTORIAL</h1>
-<p>Let's say we want to see the default group of some system users.</p>
+<p>Let’s say we want to see the default group of some system users.</p>
 <p>Start with the list of users:</p>
 <pre><code>$ csv-users -c name,uid,gid |
     csv-grep-sql -e &quot;uid &gt;= 110 and uid &lt; 115&quot; -s
@@ -33,7 +38,7 @@ user     colord                   111        121
 user     speech-dispatcher        112         29
 user     hplip                    113          7
 user     kernoops                 114      65534</code></pre>
-<p>Notice that the csv-grep-sql command doesn't use &quot;user.&quot; prefix in SQL expression thanks to &quot;-T user&quot;.</p>
+<p>Notice that the csv-grep-sql command doesn’t use “user.” prefix in SQL expression thanks to “-T user”.</p>
 <p>Now add groups using -M option of csv-groups:</p>
 <pre><code>$ csv-users -T -c name,uid,gid |
     csv-grep-sql -T user -e &quot;uid &gt;= 110 and uid &lt; 115&quot; |
@@ -51,7 +56,7 @@ group                                              sys                  3
 group                                              adm                  4
 group                                              tty                  5
 ... output cut here ...</code></pre>
-<p>We can filter each table independently. For example the command below will output exactly the same information as the one above, as csv-grep-sql will look only at rows with _table = 'user'.</p>
+<p>We can filter each table independently. For example the command below will output exactly the same information as the one above, as csv-grep-sql will look only at rows with _table = ‘user’.</p>
 <pre><code>$ csv-users -T -c name,uid,gid |
     csv-groups -M |
     csv-grep-sql -T user -e &quot;uid &gt;= 110 and uid &lt; 115&quot; -s</code></pre>
@@ -62,7 +67,7 @@ group                                              tty                  5
     csv-sqlite -T &quot;select user.name as user_name, group.name as group_name from user, group where user.gid = group.gid&quot; -s
 sqlite3_prepare_v2(select=&#39;select user.name as user_name, group.name as group_name from user, group where user.gid = group.gid&#39;): near &quot;group&quot;: syntax error
 ...</code></pre>
-<p>Oops, &quot;group&quot; is an SQL keyword, let's rename the table with groups to &quot;grp&quot;:</p>
+<p>Oops, “group” is an SQL keyword, let’s rename the table with groups to “grp”:</p>
 <pre><code>$ csv-users -T -c name,uid,gid |
     csv-grep-sql -T user -e &quot;uid &gt;= 110 and uid &lt; 115&quot; |
     csv-groups -M -N grp |
@@ -73,7 +78,7 @@ colord              colord
 speech-dispatcher   audio
 hplip               lp
 kernoops            nogroup</code></pre>
-<p>That's it.</p>
+<p>That’s it.</p>
 <p>All source tools in <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7) support -M (<strong>m</strong>erge with input), -T (output as <strong>t</strong>able) and -N (re<strong>n</strong>ame output table) options. Most processing tools support -T (filtering by <strong>t</strong>able) option.</p>
 <h1 id="see-also">SEE ALSO</h1>
 <p><strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7), <strong><a href="csv-merge.1.html">csv-merge</a></strong>(1)</p>

@@ -1,20 +1,25 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>csv-show</title>
-  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
 </head>
 <body>
-<div id="header">
+<header id="title-block-header">
 <h1 class="title">csv-show</h1>
-</div>
+</header>
 <h1 id="name">NAME</h1>
 <p>csv-show - print on the standard output a CSV file from standard input in human-readable format</p>
 <h1 id="synopsis">SYNOPSIS</h1>
-<p><strong>csv-show</strong> [OPTION]...</p>
+<p><strong>csv-show</strong> [OPTION]…</p>
 <h1 id="description">DESCRIPTION</h1>
 <p>Print CSV file from standard input in human-readable format, using tables, without types.</p>
 <p>There are 3 backends: <strong><a href="http://man7.org/linux/man-pages/man3/ncurses.3x.html">ncurses</a></strong>(3)-based, <strong><a href="http://man7.org/linux/man-pages/man1/less.1.html">less</a></strong>(1)-based and no-backend.</p>
@@ -32,7 +37,7 @@
 <li>to the end of the file (end key)</li>
 <li>to the end of the line (shift + end key)</li>
 </ul></li>
-<li><p>doesn't support searching (yet)</p></li>
+<li><p>doesn’t support searching (yet)</p></li>
 </ul>
 <p><strong>less</strong> backend supports everything the command <strong>less</strong>(1) supports.</p>
 <p><strong>none</strong> backend simply prints everything to standard output.</p>

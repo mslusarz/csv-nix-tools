@@ -1,20 +1,25 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>csv-sql</title>
-  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
 </head>
 <body>
-<div id="header">
+<header id="title-block-header">
 <h1 class="title">csv-sql</h1>
-</div>
+</header>
 <h1 id="name">NAME</h1>
 <p>csv-sql - process CSV input data using simplified SQL syntax</p>
 <h1 id="synopsis">SYNOPSIS</h1>
-<p><strong>csv-sql</strong> [OPTION]... sql-query</p>
+<p><strong>csv-sql</strong> [OPTION]… sql-query</p>
 <h1 id="description">DESCRIPTION</h1>
 <p>Read CSV stream from standard input, process it using simplified SQL query and print back to standard output its result.</p>
 <dl>
@@ -34,9 +39,9 @@
 <h1 id="simplified-sql-syntax">SIMPLIFIED SQL SYNTAX</h1>
 <p>Only queries in this form are supported:</p>
 <p><code>SELECT columns [FROM input] [WHERE condition]</code></p>
-<p>Only <strong>columns</strong> are required. FROM supports only &quot;input&quot; table and is thus optional. &quot;WHERE condition&quot; is optional. &quot;ORDER BY&quot; is not supported.</p>
+<p>Only <strong>columns</strong> are required. FROM supports only “input” table and is thus optional. “WHERE condition” is optional. “ORDER BY” is not supported.</p>
 <p>No aggregate or window functions are supported.</p>
-<p>Columns is comma separated list of column names or expressions, with each one optionally followed by &quot;AS new-column-name&quot; giving it a new name.</p>
+<p>Columns is comma separated list of column names or expressions, with each one optionally followed by “AS new-column-name” giving it a new name.</p>
 <p>Constants:</p>
 <table>
 <thead>
@@ -73,9 +78,9 @@
 <td>'text'</td>
 </tr>
 <tr class="even">
-<td>&quot;[^&quot;]*&quot;</td>
+<td>"[^"]*"</td>
 <td>string</td>
-<td>&quot;text&quot;</td>
+<td>"text"</td>
 </tr>
 </tbody>
 </table>
@@ -320,11 +325,11 @@
 </table>
 <h1 id="examples">EXAMPLES</h1>
 <dl>
-<dt><code>csv-ls -c size,name | csv-sql &quot;select size, name from input where size &gt; 2000 and size &lt; 3000&quot; -s</code></dt>
+<dt><code>csv-ls -c size,name | csv-sql "select size, name from input where size &gt; 2000 and size &lt; 3000" -s</code></dt>
 <dd>print files whose size is between 2000 and 3000 bytes
 </dd>
-<dt><code>csv-ls -c name | csv-sql &quot;select size, name, matches_ere(name, '\.txt$') as is_txt where name like 'a%'&quot;</code></dt>
-<dd>print file names and a boolean saying whether name ends with '.txt' for files whose name starts with 'a'
+<dt><code>csv-ls -c name | csv-sql "select size, name, matches_ere(name, '\.txt$') as is_txt where name like 'a%'"</code></dt>
+<dd>print file names and a boolean saying whether name ends with ‘.txt’ for files whose name starts with ‘a’
 </dd>
 </dl>
 <h1 id="see-also">SEE ALSO</h1>
