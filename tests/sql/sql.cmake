@@ -300,7 +300,7 @@ test("csv-sql \"select *, next() as num\""
 	data/3-columns-3-rows.csv data/rpn-add-next.csv data/empty.txt 0
 	sql_next2)
 
-test("csv-sql 'select id, name from input order by id'"
+test("csv-sql 'select id from input order by id'"
 	sql/order-by-in.csv sql/order-by-id.csv data/empty.txt 0
 	sql_order_by_id)
 

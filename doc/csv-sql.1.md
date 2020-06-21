@@ -32,10 +32,10 @@ and print back to standard output its result.
 
 Only queries in this form are supported:
 
-`SELECT columns [FROM input] [WHERE condition]`
+`SELECT columns [FROM input] [WHERE condition] [ORDER BY expr1 ASC|DESC[, expr2 ASC|DESC]]`
 
 Only **columns** are required. FROM supports only "input" table and is thus
-optional. "WHERE condition" is optional. "ORDER BY" is not supported.
+optional. "WHERE condition" is optional. "ORDER BY" is optional.
 
 No aggregate or window functions are supported.
 
@@ -112,8 +112,11 @@ Functions:
 `csv-ls -c size,name | csv-sql "select size, name from input where size > 2000 and size < 3000" -s`
 :    print files whose size is between 2000 and 3000 bytes
 
-`csv-ls -c name | csv-sql "select size, name, matches_ere(name, '\.txt$') as is_txt where name like 'a%'"`
+`csv-ls -c size,name | csv-sql "select size, name, matches_ere(name, '\.txt$') as is_txt where name like 'a%'" -s`
 :    print file names and a boolean saying whether name ends with '.txt' for files whose name starts with 'a'
+
+`csv-ls -c name,mtime,mtime_sec,mtime_nsec | csv-sql "select name, mtime order by mtime_sec desc, mtime_nsec desc" -s`
+:    print file names and their modification time ordered by modification time (newest first)
 
 # SEE ALSO #
 

@@ -26,7 +26,7 @@
 - sum,count,min,max,avg: --group-by=col1,col2
 - uniq: --count
 - show: fix column width calc when input is in utf
-- sql: implement "order by", "group by", "having"
+- sql: implement "group by", "having"
 
 ## Random ideas
 - export data as bash/python/etc script?

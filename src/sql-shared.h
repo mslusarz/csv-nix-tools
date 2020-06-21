@@ -73,7 +73,7 @@ sql_stack_push_string(char *str)
 		}
 
 		if (found != SIZE_MAX) {
-			struct rpn_expression *expr = &Columns->col[found].expr;
+			const struct rpn_expression *expr = &Columns->col[found].expr;
 			for (size_t i = 0; i < expr->count; ++i)
 				sql_stack_push(&expr->tokens[i]);
 			free(str);
