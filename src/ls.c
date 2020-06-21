@@ -759,6 +759,7 @@ main(int argc, char *argv[])
 					table = xstrdup_nofail("file");
 				break;
 			case 'N':
+				free(table);
 				table = xstrdup_nofail(optarg);
 				break;
 			case 'R':
@@ -778,6 +779,7 @@ main(int argc, char *argv[])
 				show_full = true;
 				break;
 			case 'T':
+				free(table);
 				table = xstrdup_nofail("file");
 				break;
 			case 'U':

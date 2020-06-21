@@ -339,6 +339,7 @@ main(int argc, char *argv[])
 
 	putchar('\n');
 
+	free(params.active_cols);
 	free(params.cols);
 	free(params.types);
 	free(params.max_int);

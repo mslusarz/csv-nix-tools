@@ -748,6 +748,7 @@ main(int argc, char *argv[])
 				print_types, spacing, alignments);
 	}
 
+	free(alignments);
 	free(params.lines);
 	free(params.max_lengths);
 	free(params.tmpbuf);

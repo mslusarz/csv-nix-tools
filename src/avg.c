@@ -299,6 +299,7 @@ main(int argc, char *argv[])
 
 	putchar('\n');
 
+	free(params.active_cols);
 	free(params.cols);
 	free(params.sums);
 	free(params.table);
