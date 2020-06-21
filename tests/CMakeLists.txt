@@ -42,6 +42,10 @@
 # - use .txt extension for other files
 
 function(test_with_cwd cmd input stdout stderr expected_res name cwd)
+	if (${TEST_UNDER_MEMCHECK} AND NOT ${expected_res} EQUAL 0)
+		return()
+	endif()
+
 	add_test(NAME ${name}
 			COMMAND ${CMAKE_COMMAND}
 			--trace-expand
