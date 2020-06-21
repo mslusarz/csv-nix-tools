@@ -180,7 +180,7 @@ struct rpn_expression {
 int rpn_parse(struct rpn_expression *exp, char *str,
 		const struct col_header *headers, size_t nheaders,
 		const char *table);
-int rpn_eval(struct rpn_expression *exp,
+int rpn_eval(const struct rpn_expression *exp,
 		const char *buf,
 		const size_t *col_offs,
 		const struct col_header *headers,

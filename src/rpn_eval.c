@@ -792,7 +792,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 }
 
 int
-rpn_eval(struct rpn_expression *exp,
+rpn_eval(const struct rpn_expression *exp,
 		const char *buf,
 		const size_t *col_offs,
 		const struct col_header *headers,
@@ -802,7 +802,7 @@ rpn_eval(struct rpn_expression *exp,
 	size_t height = 0;
 
 	for (size_t j = 0; j < exp->count; ++j) {
-		struct rpn_token *t = &exp->tokens[j];
+		const struct rpn_token *t = &exp->tokens[j];
 		if (t->type == RPN_CONSTANT) {
 			stack = xrealloc(stack, height + 1, sizeof(stack[0]));
 			if (!stack)
