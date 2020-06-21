@@ -68,7 +68,7 @@ usage(FILE *out)
 struct cb_params {
 	struct columns columns;
 
-	struct rpn_expression *where;
+	struct rpn_expression where;
 };
 
 static void
@@ -101,8 +101,8 @@ next_row(const char *buf, const size_t *col_offs,
 	struct rpn_expression *exp;
 	struct rpn_variant ret;
 
-	if (params->where) {
-		if (rpn_eval(params->where, buf, col_offs, headers, &ret))
+	if (params->where.count) {
+		if (rpn_eval(&params->where, buf, col_offs, headers, &ret))
 			exit(2);
 
 		if (ret.type != RPN_LLONG) /* shouldn't be possible - XXX? */
@@ -213,12 +213,8 @@ sql_where()
 void
 sql_end_of_conditions()
 {
-	struct rpn_expression *exp = xmalloc_nofail(1, sizeof(*exp));
-
-	exp->tokens = Tokens;
-	exp->count = Ntokens;
-
-	Params.where = exp;
+	Params.where.tokens = Tokens;
+	Params.where.count = Ntokens;
 
 	Tokens = NULL;
 	Ntokens = 0;
@@ -310,10 +306,7 @@ main(int argc, char *argv[])
 	}
 
 	free(columns->col);
-	if (Params.where) {
-		rpn_free(Params.where);
-		free(Params.where);
-	}
+	rpn_free(&Params.where);
 	rpn_fini();
 
 	return 0;
