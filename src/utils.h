@@ -43,6 +43,7 @@
 
 #define TABLE_COLUMN ("_table")
 #define TABLE_SEPARATOR ('.')
+#define UNUSED(expr) do { (void)(expr); } while (0)
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 

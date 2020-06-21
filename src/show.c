@@ -242,7 +242,7 @@ nprint(int y, int x, const char *str, bool *truncated)
 }
 
 static void
-show(char **data, size_t ndata,
+show(char **data,
 	const struct col_header *headers, size_t nheaders,
 	size_t *max_lengths,
 
@@ -381,7 +381,7 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 				first_line = params->nlines - LINES;
 		}
 
-		show(params->lines, params->nlines,
+		show(params->lines,
 			headers, nheaders,
 			params->max_lengths,
 			first_line, nlines,

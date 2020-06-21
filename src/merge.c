@@ -229,7 +229,7 @@ add_input(FILE *f)
 static FILE *
 get_file(const char *path, bool *stdin_used)
 {
-	if (strcmp(optarg, "-") == 0) {
+	if (strcmp(path, "-") == 0) {
 		if (*stdin_used) {
 			fprintf(stderr,
 				"stdin is used more than once\n");
@@ -240,11 +240,11 @@ get_file(const char *path, bool *stdin_used)
 		return stdin;
 	}
 
-	FILE *f = fopen(optarg, "r");
+	FILE *f = fopen(path, "r");
 	if (!f) {
 		fprintf(stderr,
 			"opening '%s' failed: %s\n",
-			optarg, strerror(errno));
+			path, strerror(errno));
 		exit(2);
 	}
 	return f;

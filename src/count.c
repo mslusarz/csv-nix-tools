@@ -75,6 +75,8 @@ next_row(const char *buf, const size_t *col_offs,
 		const struct col_header *headers, size_t nheaders,
 		void *arg)
 {
+	UNUSED(buf);
+	UNUSED(col_offs);
 	struct cb_params *params = arg;
 
 	params->rows++;

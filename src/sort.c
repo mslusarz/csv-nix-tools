@@ -195,9 +195,9 @@ cmp(const void *p1, const void *p2, void *arg)
 }
 
 static void
-print_line(struct line *line, const struct col_header *headers, size_t nheaders)
+print_line(struct line *line, size_t ncols)
 {
-	csv_print_line(stdout, line->buf, line->col_offs, nheaders, true);
+	csv_print_line(stdout, line->buf, line->col_offs, ncols, true);
 
 	free(line->buf);
 	free(line->col_offs);
@@ -311,10 +311,10 @@ main(int argc, char *argv[])
 
 	if (reverse) {
 		for (size_t i = params.used; i > 0; --i)
-			print_line(&params.lines[row_idx[i - 1]], headers, nheaders);
+			print_line(&params.lines[row_idx[i - 1]], nheaders);
 	} else {
 		for (size_t i = 0; i < params.used; ++i)
-			print_line(&params.lines[row_idx[i]], headers, nheaders);
+			print_line(&params.lines[row_idx[i]], nheaders);
 	}
 
 	free(row_idx);

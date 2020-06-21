@@ -155,8 +155,10 @@ replace_re(const char *str, const char *replacement, const regmatch_t *matches)
 static struct csv_ht *Seq;
 
 static void *
-first_value(void *notused)
+first_value(void *arg)
 {
+	UNUSED(arg);
+
 	long long *l = xmalloc_nofail(1, sizeof(*l));
 	*l = 0;
 	return l;
