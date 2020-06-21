@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <assert.h>
 #include <ctype.h>
 #include <errno.h>
 #include <limits.h>
@@ -39,6 +40,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdarg.h>
 
 #include "utils.h"
 
@@ -606,6 +608,7 @@ void
 csv_substring_sanitize(const char *str, ssize_t *start, size_t *len)
 {
 	size_t max_len = strlen(str);
+	size_t ustart;
 
 	/* count characters from 1, like sql does */
 	if (*start == 0)
@@ -622,10 +625,12 @@ csv_substring_sanitize(const char *str, ssize_t *start, size_t *len)
 		if (*start >= (ssize_t)max_len)
 			*start = (ssize_t)max_len;
 	}
+	assert(*start >= 0);
+	/* now *start is not negative */
+	ustart = (size_t)*start;
 
-	if ((size_t)*start + *len < (size_t)*start ||
-			(size_t)*start + *len >= max_len)
-		*len = max_len - *start;
+	if (ustart + *len < ustart || ustart + *len >= max_len)
+		*len = max_len - ustart;
 }
 
 char *
@@ -726,6 +731,17 @@ xrealloc_nofail(void *ptr, size_t count, size_t size)
 		exit(2);
 
 	return ret;
+}
+
+unsigned
+util_sprintf(char *str, const char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	int ret = vsprintf(str, format, args);
+	va_end(args);
+	assert(ret >= 0);
+	return (unsigned)ret;
 }
 
 static int

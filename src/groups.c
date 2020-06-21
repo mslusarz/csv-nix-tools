@@ -107,7 +107,7 @@ main(int argc, char *argv[])
 	};
 
 	size_t ncolumns = ARRAY_SIZE(columns);
-	int level = 0;
+	size_t level = 0;
 
 	while ((opt = getopt_long(argc, argv, "c:lMN:sST", opts, NULL)) != -1) {
 		switch (opt) {

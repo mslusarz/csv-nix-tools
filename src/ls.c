@@ -37,6 +37,7 @@
  */
 #define _GNU_SOURCE
 
+#include <assert.h>
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -495,12 +496,13 @@ list(const char *dirpath, int dirfd, int recursive, int all, int sort,
 	else
 		compar = NULL;
 
-	int entries = scandirat(dirfd, ".", &namelist, NULL, compar);
-	if (entries < 0) {
+	int scandirret = scandirat(dirfd, ".", &namelist, NULL, compar);
+	if (scandirret < 0) {
 		fprintf(stderr, "listing directory '%s' failed: %s\n", dirpath,
 				strerror(errno));
 		return 1;
 	}
+	size_t entries = (size_t)scandirret;
 
 	dirs = xmalloc(entries, sizeof(dirs[0]));
 	if (!dirs) {
@@ -518,7 +520,7 @@ list(const char *dirpath, int dirfd, int recursive, int all, int sort,
 	if (path[pos - 1] != '/')
 		path[pos++] = '/';
 
-	for (int i = 0; i < entries; ++i) {
+	for (size_t i = 0; i < entries; ++i) {
 		struct stat statbuf;
 		/* skip hidden files */
 		if (!all && namelist[i]->d_name[0] == '.')
@@ -536,8 +538,9 @@ list(const char *dirpath, int dirfd, int recursive, int all, int sort,
 		char *symlink = NULL;
 		if (S_ISLNK(statbuf.st_mode)) do {
 			size_t bufsiz;
+			assert(statbuf.st_size >= 0);
 			if (statbuf.st_size)
-				bufsiz = statbuf.st_size + 1;
+				bufsiz = (size_t)statbuf.st_size + 1;
 			else
 				bufsiz = PATH_MAX;
 restart_readlink:
@@ -557,7 +560,7 @@ restart_readlink:
 				free(symlink);
 				symlink = NULL;
 				ret |= 1;
-			} else if (symlink_len == bufsiz) {
+			} else if ((size_t)symlink_len == bufsiz) {
 				free(symlink);
 				bufsiz *= 2;
 				goto restart_readlink;
@@ -615,7 +618,7 @@ restart_readlink:
 path_alloc_fail:
 	free(dirs);
 dirs_alloc_fail:
-	for (int i = 0; i < entries; ++i)
+	for (size_t i = 0; i < entries; ++i)
 		free(namelist[i]);
 	free(namelist);
 
@@ -731,7 +734,7 @@ main(int argc, char *argv[])
 	};
 
 	size_t ncolumns = ARRAY_SIZE(columns);
-	int level = 0;
+	size_t level = 0;
 
 	while ((opt = getopt_long(argc, argv, "adc:lMN:RsSTU", opts, NULL)) != -1) {
 		switch (opt) {
@@ -845,8 +848,9 @@ main(int argc, char *argv[])
 			char *symlink = NULL;
 			if (S_ISLNK(buf.st_mode)) do {
 				size_t bufsiz;
+				assert(buf.st_size >= 0);
 				if (buf.st_size)
-					bufsiz = buf.st_size + 1;
+					bufsiz = (size_t)buf.st_size + 1;
 				else
 					bufsiz = PATH_MAX;
 
@@ -866,7 +870,7 @@ restart_readlink:
 					free(symlink);
 					symlink = NULL;
 					ret |= 2;
-				} else if (symlink_len == bufsiz) {
+				} else if ((size_t)symlink_len == bufsiz) {
 					free(symlink);
 					bufsiz *= 2;
 					goto restart_readlink;

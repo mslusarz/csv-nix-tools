@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <assert.h>
 #include <getopt.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -122,13 +123,15 @@ next_row(const char *buf, const size_t *col_offs,
 		ptrdiff_t pos = PTRDIFF_MIN;
 		while (*sep) {
 			char *sep_pos = rindex(unquoted, *sep);
-			if (sep_pos && sep_pos - unquoted > pos)
+			if (sep_pos && sep_pos - unquoted > pos) {
+				assert(sep_pos >= unquoted);
 				pos = sep_pos - unquoted;
+			}
 			sep++;
 		}
 
 		if (pos != PTRDIFF_MIN) {
-			csv_print_quoted(unquoted, pos);
+			csv_print_quoted(unquoted, (size_t)pos);
 			fputc(',', stdout);
 			const char *p = unquoted + pos + 1 - params->print_separators;
 			csv_print_quoted(p, strlen(p));
@@ -140,13 +143,15 @@ next_row(const char *buf, const size_t *col_offs,
 		ptrdiff_t pos = PTRDIFF_MAX;
 		while (*sep) {
 			char *sep_pos = index(unquoted, *sep);
-			if (sep_pos && sep_pos - unquoted < pos)
+			if (sep_pos && sep_pos - unquoted < pos) {
+				assert(sep_pos >= unquoted);
 				pos = sep_pos - unquoted;
+			}
 			sep++;
 		}
 
 		if (pos != PTRDIFF_MAX) {
-			csv_print_quoted(unquoted, pos);
+			csv_print_quoted(unquoted, (size_t)pos);
 			fputc(',', stdout);
 			const char *p = unquoted + pos + 1 - params->print_separators;
 			csv_print_quoted(p, strlen(p));
@@ -195,7 +200,8 @@ main(int argc, char *argv[])
 					usage(stderr);
 					exit(2);
 				}
-				name1 = strndup(optarg, comma - optarg);
+				assert(comma >= optarg);
+				name1 = strndup(optarg, (size_t)(comma - optarg));
 				if (index(comma + 1, ',')) {
 					fprintf(stderr, "Invalid format for -n option\n");
 					usage(stderr);

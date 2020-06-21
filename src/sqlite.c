@@ -215,38 +215,39 @@ build_queries(const struct col_header *headers, size_t nheaders,
 		return -1;
 	}
 
-	int cr_written = sprintf(create, "create table '%s'(", table_name);
-	int ins_written = sprintf(insert, "insert into '%s'(", table_name);
+	size_t cr_written = util_sprintf(create, "create table '%s'(", table_name);
+	size_t ins_written = util_sprintf(insert, "insert into '%s'(", table_name);
+
 	for (size_t i = 0; i < nheaders - 1; ++i) {
-		cr_written += sprintf(&create[cr_written], "'%s' %s, ",
+		cr_written += util_sprintf(&create[cr_written], "'%s' %s, ",
 				headers[i].name, type(headers[i].type));
 
-		ins_written += sprintf(&insert[ins_written], "'%s', ",
+		ins_written += util_sprintf(&insert[ins_written], "'%s', ",
 				headers[i].name);
 	}
 
-	cr_written += sprintf(&create[cr_written], "'%s' %s);",
+	cr_written += util_sprintf(&create[cr_written], "'%s' %s);",
 			headers[nheaders - 1].name,
 			type(headers[nheaders - 1].type));
 
-	ins_written += sprintf(&insert[ins_written], "'%s') values(",
+	ins_written += util_sprintf(&insert[ins_written], "'%s') values(",
 			headers[nheaders - 1].name);
 
 	for (size_t i = 0; i < nheaders - 1; ++i) {
-		ins_written += sprintf(&insert[ins_written], "?, ");
+		ins_written += util_sprintf(&insert[ins_written], "?, ");
 	}
-	ins_written += sprintf(&insert[ins_written], "?);");
+	ins_written += util_sprintf(&insert[ins_written], "?);");
 
 	if (cr_written != create_len) {
 		fprintf(stderr,
-			"miscalculated needed buffer size 1 %d != %lu\n",
+			"miscalculated needed buffer size 1 %zu != %zu\n",
 			cr_written, create_len);
 		goto err;
 	}
 
 	if (ins_written != insert_len) {
 		fprintf(stderr,
-			"miscalculated needed buffer size 2 %d != %lu\n",
+			"miscalculated needed buffer size 2 %zu != %zu\n",
 			ins_written, insert_len);
 		goto err;
 	}
@@ -618,21 +619,24 @@ main(int argc, char *argv[])
 		break;
 	} while (1);
 
-	for (size_t i = 0; i < cnt - 1; ++i) {
+	size_t cols = (size_t)cnt;
+	assert(cols >= 1);
+
+	for (size_t i = 0; i < cols - 1; ++i) {
 		print_col(select, i);
 		fputc(',', stdout);
 	}
 
-	print_col(select, cnt - 1);
+	print_col(select, cols - 1);
 	fputc('\n', stdout);
 
 	while (ret == SQLITE_ROW) {
-		for (size_t i = 0; i < cnt - 1; ++i) {
+		for (size_t i = 0; i < cols - 1; ++i) {
 			print_val(select, i);
 			fputc(',', stdout);
 		}
 
-		print_val(select, cnt - 1);
+		print_val(select, cols - 1);
 		fputc('\n', stdout);
 
 		ret = sqlite3_step(select);

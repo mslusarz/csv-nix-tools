@@ -153,8 +153,8 @@ get_start_time(proc_t *proc, struct timespec *ts)
 	unsigned long long ms = time_in_ms(proc->start_time);
 
 	memcpy(ts, &boottime, sizeof(boottime));
-	ts->tv_sec += ms / 1000;
-	ts->tv_nsec += 1000000 * (ms % 1000);
+	ts->tv_sec += (long)(ms / 1000);
+	ts->tv_nsec += (long)(1000000 * (ms % 1000));
 	if (ts->tv_nsec >= NSECS_IN_SEC) {
 		ts->tv_sec++;
 		ts->tv_nsec -= NSECS_IN_SEC;
@@ -172,9 +172,10 @@ subtract_timespecs(const struct timespec *ts_later,
 			ts_later->tv_nsec < ts_earlier->tv_nsec)
 		return false;
 
-	unsigned long long diff =
+	long long diff =
 			(ts_later->tv_sec - ts_earlier->tv_sec) * NSECS_IN_SEC +
 			ts_later->tv_nsec - ts_earlier->tv_nsec;
+	assert(diff >= 0);
 	ts->tv_sec = diff / NSECS_IN_SEC;
 	ts->tv_nsec = diff % NSECS_IN_SEC;
 
@@ -251,7 +252,7 @@ static void
 print_wchan(const void *p)
 {
 	const struct proc_data *pd = p;
-	if (pd->proc->wchan == -1)
+	if (pd->proc->wchan == (unsigned KLONG)-1)
 		printf("-1");
 	else
 		printf("0x%lx", pd->proc->wchan);
@@ -363,10 +364,18 @@ print_nice(const void *p)
 }
 
 static void
+print_long_in_pages(long l)
+{
+	assert(l >= 0);
+	assert((size_t)l <= SIZE_MAX/PageSize);
+	printf("%zu", (size_t)l * PageSize);
+}
+
+static void
 print_rss_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
-	printf("%ld", pd->proc->rss * PageSize);
+	print_long_in_pages(pd->proc->rss);
 }
 
 static void
@@ -646,35 +655,35 @@ static void
 print_size_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
-	printf("%ld", pd->proc->size * PageSize);
+	print_long_in_pages(pd->proc->size);
 }
 
 static void
 print_resident_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
-	printf("%ld", pd->proc->resident * PageSize);
+	print_long_in_pages(pd->proc->resident);
 }
 
 static void
 print_share_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
-	printf("%ld", pd->proc->share * PageSize);
+	print_long_in_pages(pd->proc->share);
 }
 
 static void
 print_trs_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
-	printf("%ld", pd->proc->trs * PageSize);
+	print_long_in_pages(pd->proc->trs);
 }
 
 static void
 print_drs_bytes(const void *p)
 {
 	const struct proc_data *pd = p;
-	printf("%ld", pd->proc->drs * PageSize);
+	print_long_in_pages(pd->proc->drs);
 }
 
 static void
@@ -865,56 +874,56 @@ static void
 print_euid_name(const void *p)
 {
 	const struct proc_data *pd = p;
-	printf("%s", get_user(pd->proc->euid));
+	printf("%s", get_user((uid_t)pd->proc->euid));
 }
 
 static void
 print_egid_name(const void *p)
 {
 	const struct proc_data *pd = p;
-	printf("%s", get_group(pd->proc->egid));
+	printf("%s", get_group((gid_t)pd->proc->egid));
 }
 
 static void
 print_ruid_name(const void *p)
 {
 	const struct proc_data *pd = p;
-	printf("%s", get_user(pd->proc->ruid));
+	printf("%s", get_user((uid_t)pd->proc->ruid));
 }
 
 static void
 print_rgid_name(const void *p)
 {
 	const struct proc_data *pd = p;
-	printf("%s", get_group(pd->proc->rgid));
+	printf("%s", get_group((gid_t)pd->proc->rgid));
 }
 
 static void
 print_suid_name(const void *p)
 {
 	const struct proc_data *pd = p;
-	printf("%s", get_user(pd->proc->suid));
+	printf("%s", get_user((uid_t)pd->proc->suid));
 }
 
 static void
 print_sgid_name(const void *p)
 {
 	const struct proc_data *pd = p;
-	printf("%s", get_group(pd->proc->sgid));
+	printf("%s", get_group((gid_t)pd->proc->sgid));
 }
 
 static void
 print_fuid_name(const void *p)
 {
 	const struct proc_data *pd = p;
-	printf("%s", get_user(pd->proc->fuid));
+	printf("%s", get_user((uid_t)pd->proc->fuid));
 }
 
 static void
 print_fgid_name(const void *p)
 {
 	const struct proc_data *pd = p;
-	printf("%s", get_group(pd->proc->fgid));
+	printf("%s", get_group((gid_t)pd->proc->fgid));
 }
 
 static void
@@ -1004,7 +1013,8 @@ static void
 print_age(const void *p)
 {
 	const struct proc_data *pd = p;
-	unsigned long long age = pd->age_ts.tv_sec;
+	assert(pd->age_ts.tv_sec >= 0);
+	unsigned long long age = (unsigned long long)pd->age_ts.tv_sec;
 	unsigned ms = pd->age_ts.tv_nsec / 1000000;
 
 	unsigned s = age % 60;
@@ -1031,8 +1041,10 @@ print_cpu_percent(const void *p)
 	const struct proc_data *pd = p;
 	unsigned long long cpu_time_ms =
 			time_in_ms(pd->proc->utime + pd->proc->stime);
-	unsigned long long age_ms = pd->age_ts.tv_sec * 1000 +
-			pd->age_ts.tv_nsec / 1000000;
+	assert(pd->age_ts.tv_sec >= 0);
+	assert(pd->age_ts.tv_nsec >= 0);
+	unsigned long long age_ms = (unsigned long long)pd->age_ts.tv_sec * 1000 +
+			(unsigned long long)pd->age_ts.tv_nsec / 1000000;
 
 	if (cpu_time_ms > age_ms)
 		cpu_time_ms = age_ms;
@@ -1052,8 +1064,8 @@ estimate_boottime_once(void)
 	 * and current time.
 	 */
 
-	struct timeval start;
-	if (gettimeofday(&start, NULL)) {
+	struct timeval now;
+	if (gettimeofday(&now, NULL)) {
 		perror("gettimeofday");
 		abort();
 	}
@@ -1068,11 +1080,13 @@ estimate_boottime_once(void)
 	proc_t *proc = readproc(pt, NULL);
 
 	unsigned long long ms = time_in_ms(proc->start_time);
-	boottime.tv_sec = start.tv_sec - ms / 1000;
-	if (start.tv_usec * 1000 >= (ms % 1000) * 1000000)
-		boottime.tv_nsec = start.tv_usec * 1000 - (ms % 1000) * 1000000;
+	boottime.tv_sec = now.tv_sec - (long)(ms / 1000);
+	long start_nsec = (long)(ms % 1000) * 1000000;
+	long now_nsec = now.tv_usec * 1000;
+	if (now_nsec >= start_nsec)
+		boottime.tv_nsec = now_nsec - start_nsec;
 	else {
-		boottime.tv_nsec = NSECS_IN_SEC + start.tv_usec * 1000 - (ms % 1000) * 1000000;
+		boottime.tv_nsec = NSECS_IN_SEC + now_nsec - start_nsec;
 		boottime.tv_sec--;
 	}
 
@@ -1082,8 +1096,8 @@ estimate_boottime_once(void)
 	get_start_time(proc, &start_time);
 
 	struct timespec start_ts;
-	start_ts.tv_sec = start.tv_sec;
-	start_ts.tv_nsec = start.tv_usec * 1000;
+	start_ts.tv_sec = now.tv_sec;
+	start_ts.tv_nsec = now.tv_usec * 1000;
 
 	struct timespec diff;
 	assert(subtract_timespecs(&start_ts, &start_time, &diff) == true);
@@ -1095,12 +1109,12 @@ estimate_boottime_once(void)
 
 	closeproc(pt);
 
-	ref_time.tv_sec = start.tv_sec;
-	ref_time.tv_nsec = start.tv_usec * 1000;
+	ref_time.tv_sec = now.tv_sec;
+	ref_time.tv_nsec = now.tv_usec * 1000;
 }
 
 /* missing sub-second precision */
-static unsigned long long
+static long long
 get_coarse_boottime()
 {
 	unsigned long long boottime = ULLONG_MAX;
@@ -1116,8 +1130,8 @@ get_coarse_boottime()
 	size_t bufsize = 0;
 
 	ssize_t nread;
-	while ((nread = getline(&buf, &bufsize, fp)) != -1) {
-		if (nread < strlen("btime ") + 1)
+	while ((nread = getline(&buf, &bufsize, fp)) >= 0) {
+		if ((size_t)nread < strlen("btime ") + 1)
 			continue;
 		if (strncmp(buf, "btime ", strlen("btime ")) != 0)
 			continue;
@@ -1143,7 +1157,12 @@ get_coarse_boottime()
 		boottime = 0;
 	}
 
-	return boottime;
+	if (boottime > LLONG_MAX) {
+		fprintf(stderr, "kernel returned impossible boot time, ignoring\n");
+		boottime = 0;
+	}
+
+	return (long long)boottime;
 }
 
 static void
@@ -1184,7 +1203,7 @@ estimate_boottime()
 		}
 	}
 
-	unsigned long long coarse_bootime_sec = get_coarse_boottime();
+	long long coarse_bootime_sec = get_coarse_boottime();
 
 	struct stat st;
 	if (stat(path, &st) == 0) {
@@ -1333,7 +1352,13 @@ main(int argc, char *argv[])
 
 	estimate_boottime_once();
 
-	PageSize = sysconf(_SC_PAGESIZE);
+	long sysconf_ret = sysconf(_SC_PAGESIZE);
+	if (sysconf_ret < 0) {
+		perror("sysconf");
+		exit(2);
+	}
+
+	PageSize = (size_t)sysconf_ret;
 
 	enum {
 		DEF            = 0,
@@ -1485,7 +1510,7 @@ main(int argc, char *argv[])
 	};
 
 	size_t ncolumns = ARRAY_SIZE(columns);
-	int level = 0;
+	size_t level = 0;
 
 	while ((opt = getopt_long(argc, argv, "c:lMN:p:sST", opts, NULL)) != -1) {
 		switch (opt) {

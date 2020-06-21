@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <assert.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -148,7 +149,10 @@ main(int argc, char *argv[])
 		}
 	}
 
-	size_t args = argc - optind;
+	assert(optind >= 0);
+	assert(argc >= 0);
+	assert(optind <= argc);
+	size_t args = (size_t)(argc - optind);
 	if (args == 0) {
 		usage(stderr);
 		exit(2);
@@ -164,8 +168,8 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
-	for (size_t i = optind; i < argc; ++i) {
-		size_t idx = i - optind;
+	for (int i = optind; i < argc; ++i) {
+		size_t idx = (size_t)(i - optind);
 
 		if (argv[i][0] == '%') {
 			size_t col = csv_find(headers, nheaders, argv[i] + 1);

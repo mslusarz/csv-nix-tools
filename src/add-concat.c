@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <assert.h>
 #include <getopt.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -196,7 +197,8 @@ main(int argc, char *argv[])
 		exit(2);
 	}
 
-	params.count = argc - optind;
+	assert(optind <= argc);
+	params.count = (size_t)(argc - optind);
 	params.elements = xmalloc_nofail(params.count, sizeof(params.elements[0]));
 
 	size_t i = 0;

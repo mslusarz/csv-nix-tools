@@ -146,7 +146,7 @@ sprint(const char *str, char *out)
 			case '\t': out[idx++] = '\\'; out[idx++] = 't'; break;
 			case '\v': out[idx++] = '\\'; out[idx++] = 'v'; break;
 			default:
-				idx += sprintf(&out[idx], "\\x%02X", str[i]);
+				idx += util_sprintf(&out[idx], "\\x%02X", str[i]);
 				break;
 		}
 	}

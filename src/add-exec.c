@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <assert.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -90,18 +91,16 @@ struct cb_params {
 static void
 write_all(int fd, const char *buf, size_t len)
 {
-	int written = 0;
-
 	while (len) {
 		int w = write(fd, buf, len);
 		if (w < 0) {
 			perror("write");
 			exit(2);
 		}
+		assert((unsigned)w <= len);
 
-		written += w;
 		buf += w;
-		len -= w;
+		len -= (unsigned)w;
 	}
 }
 
@@ -330,7 +329,10 @@ main(int argc, char *argv[])
 		exit(2);
 	}
 
-	size_t args = argc - optind;
+	assert(optind >= 0);
+	assert(argc >= 0);
+	assert(optind <= argc);
+	size_t args = (size_t)(argc - optind);
 	if (args == 0) {
 		usage(stderr);
 		exit(2);
@@ -354,8 +356,8 @@ main(int argc, char *argv[])
 		}
 	}
 
-	for (size_t i = optind; i < argc; ++i) {
-		size_t idx = i - optind;
+	for (int i = optind; i < argc; ++i) {
+		size_t idx = (size_t)(i - optind);
 
 		if (argv[i][0] == '%') {
 			size_t col = csv_find_loud(headers, nheaders,

@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <assert.h>
 #include <ctype.h>
 #include <regex.h>
 #include <stdlib.h>
@@ -55,11 +56,12 @@ tostring(long long val, long long base)
 			str[idx++] = '-';
 			val = -val;
 		}
+		unsigned long long uval = (unsigned long long)val;
 		str[idx++] = '0';
 		str[idx++] = 'b';
-		long long msb = 1LL << (63 - __builtin_clzll(val));
+		unsigned long long msb = 1ULL << (63 - __builtin_clzll(uval));
 		while (msb) {
-			str[idx++] = (val & msb) ? '1' : '0';
+			str[idx++] = (uval & msb) ? '1' : '0';
 			msb >>= 1;
 		}
 		str[idx] = 0;
@@ -113,7 +115,7 @@ replace_re(const char *str, const char *replacement, const regmatch_t *matches)
 			buf[buf_used++] = '%';
 		} else if (isdigit(replacement[i + 1])) {
 			i++;
-			unsigned match_num = replacement[i] - '0';
+			unsigned match_num = (unsigned)(replacement[i] - '0');
 
 			const regmatch_t *m = &matches[match_num];
 			if (m->rm_so == -1) {
@@ -129,7 +131,8 @@ replace_re(const char *str, const char *replacement, const regmatch_t *matches)
 
 			regoff_t start = m->rm_so;
 			regoff_t end = m->rm_eo;
-			size_t len = end - start;
+			assert(end - start >= 0);
+			size_t len = (size_t)(end - start);
 
 			csv_check_space(&buf, &buflen, buf_used, len);
 

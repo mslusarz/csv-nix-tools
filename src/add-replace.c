@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <assert.h>
 #include <ctype.h>
 #include <getopt.h>
 #include <regex.h>
@@ -196,7 +197,8 @@ next_row(const char *buf, const size_t *col_offs,
 						&params->r.matches[e->subexpr];
 					regoff_t start = m->rm_so;
 					regoff_t end = m->rm_eo;
-					size_t len = end - start;
+					assert(end - start >= 0);
+					size_t len = (size_t)(end - start);
 
 					csv_check_space(&params->buf,
 							&params->buf_len,
@@ -280,7 +282,7 @@ parse_replacement(const char *str, struct cb_params *p)
 
 			r->type = SUBEXPR;
 			i++;
-			r->subexpr = str[i] - '0';
+			r->subexpr = (unsigned)(str[i] - '0');
 
 			if (r->subexpr >= max_match)
 				max_match = r->subexpr;

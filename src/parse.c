@@ -182,7 +182,7 @@ csv_read_all(struct csv_ctx *ctx, csv_row_cb cb, void *arg)
 	char *buf = NULL;
 	size_t ready = 0;
 
-	int column = 0;
+	size_t column = 0;
 	bool in_quoted_string = false;
 	bool last_char_was_quot = false;
 	col_offs[0] = 0;

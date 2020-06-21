@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <assert.h>
 #include <errno.h>
 #include <getopt.h>
 #include <stdbool.h>
@@ -216,7 +217,8 @@ main(int argc, char *argv[])
 		csv_show(show_full);
 
 	bool use_stdin_only = false;
-	size_t ninputs = argc - optind;
+	assert(argc - optind >= 0);
+	size_t ninputs = (size_t)(argc - optind);
 	if (ninputs == 0) {
 		ninputs++;
 		use_stdin_only = true;

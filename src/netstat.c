@@ -1526,7 +1526,7 @@ dump(struct mnl_socket *nl, uint8_t family, uint8_t protocol,
 
 	ssize_t ret = mnl_socket_recvfrom(nl, buf, sizeof(buf));
 	while (ret > 0) {
-		ret = mnl_cb_run(buf, ret, 0, portid, cb, &sd);
+		ret = mnl_cb_run(buf, (size_t)ret, 0, portid, cb, &sd);
 		if (ret <= 0)
 			break;
 
@@ -1627,7 +1627,7 @@ main(int argc, char *argv[])
 	};
 
 	size_t ncolumns = ARRAY_SIZE(columns);
-	int level = 0;
+	size_t level = 0;
 
 	while ((opt = getopt_long(argc, argv, "c:lMN:prSsTtUuwx46", opts,
 			NULL)) != -1) {
