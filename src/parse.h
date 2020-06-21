@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -52,8 +52,7 @@ void csv_read_header_nofail(struct csv_ctx *s);
 size_t csv_get_headers(struct csv_ctx *s, const struct col_header **headers);
 
 typedef int (*csv_row_cb)(const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t nheaders,
-		void *arg);
+		size_t ncols, void *arg);
 
 int csv_read_all(struct csv_ctx *s, csv_row_cb cb, void *arg);
 void csv_read_all_nofail(struct csv_ctx *s, csv_row_cb cb, void *arg);

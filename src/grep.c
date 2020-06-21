@@ -125,9 +125,7 @@ matches(const char *str, const struct condition *c)
 }
 
 static int
-next_row(const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t ncols,
-		void *arg)
+next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 {
 	struct cb_params *params = arg;
 	struct condition *conditions = params->conditions;

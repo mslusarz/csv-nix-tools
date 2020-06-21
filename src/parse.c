@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -219,8 +219,7 @@ csv_read_all(struct csv_ctx *ctx, csv_row_cb cb, void *arg)
 				buf[i] = 0;
 				column++;
 				if (column == ctx->nheaders) {
-					if (cb(buf, col_offs, ctx->headers,
-						ctx->nheaders, arg)) {
+					if (cb(buf, col_offs, ctx->nheaders, arg)) {
 						ret = 1;
 						goto end;
 					}

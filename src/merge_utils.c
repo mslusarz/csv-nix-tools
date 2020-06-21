@@ -1,5 +1,5 @@
 /*
- * Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -43,9 +43,7 @@ struct stdin_cfg {
 };
 
 static int
-next_row(const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t ncols,
-		void *arg)
+next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 {
 	struct stdin_cfg *cfg = arg;
 

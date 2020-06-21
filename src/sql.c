@@ -76,6 +76,7 @@ struct order_conditions {
 };
 
 struct cb_params {
+	const struct col_header *headers;
 	struct columns columns;
 	struct rpn_expression where;
 	struct order_conditions order_by;
@@ -103,11 +104,10 @@ process_exp(struct rpn_expression *exp, const char *buf, const size_t *col_offs,
 }
 
 static int
-next_row(const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t ncols,
-		void *arg)
+next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 {
 	struct cb_params *params = arg;
+	const struct col_header *headers = params->headers;
 	struct rpn_expression *exp;
 	struct rpn_variant ret;
 
@@ -312,6 +312,7 @@ main(int argc, char *argv[])
 	csv_read_header_nofail(s);
 
 	Nheaders = csv_get_headers(s, &Headers);
+	Params.headers = Headers;
 	Columns = &Params.columns;
 
 	FILE *in = fmemopen(argv[optind], strlen(argv[optind]), "r");

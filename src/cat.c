@@ -65,9 +65,7 @@ usage(FILE *out)
 }
 
 static int
-next_row(const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t ncols,
-		void *arg)
+next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 {
 	size_t *idx = arg;
 

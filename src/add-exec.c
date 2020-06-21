@@ -139,9 +139,7 @@ static char *input_buf;
 static size_t input_buf_len;
 
 static int
-next_row(const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t ncols,
-		void *arg)
+next_row(const char *buf, const size_t *col_offs,size_t ncols, void *arg)
 {
 	struct cb_params *params = arg;
 	int child_in[2]; /* 0=read, 1=write*/

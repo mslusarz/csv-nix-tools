@@ -75,6 +75,7 @@ usage(FILE *out)
 }
 
 struct cb_params {
+	const struct col_header *headers;
 	sqlite3 *db;
 	bool tables;
 	size_t table_column;
@@ -88,11 +89,10 @@ struct cb_params {
 };
 
 static int
-next_row(const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t ncols,
-		void *arg)
+next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 {
 	struct cb_params *params = arg;
+	const struct col_header *headers = params->headers;
 
 	struct table_insert *ins = NULL;
 
@@ -398,6 +398,7 @@ add_file(FILE *f, size_t num, sqlite3 *db, bool load_tables)
 	}
 
 	struct cb_params params;
+	params.headers = headers;
 	params.db = db;
 	params.tables = load_tables;
 	params.ntables = ntables;
