@@ -89,7 +89,7 @@ struct cb_params {
 
 static int
 next_row(const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t nheaders,
+		const struct col_header *headers, size_t ncols,
 		void *arg)
 {
 	struct cb_params *params = arg;
@@ -126,7 +126,7 @@ next_row(const char *buf, const size_t *col_offs,
 
 	size_t table_len = strlen(table);
 	size_t idx = 0;
-	for (size_t i = 0; i < nheaders; ++i) {
+	for (size_t i = 0; i < ncols; ++i) {
 		if (params->tables) {
 			if (strncmp(headers[i].name, table, table_len) != 0 ||
 				headers[i].name[table_len] != TABLE_SEPARATOR)

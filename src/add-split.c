@@ -91,7 +91,7 @@ struct cb_params {
 
 static int
 next_row(const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t nheaders,
+		const struct col_header *headers, size_t ncols,
 		void *arg)
 {
 	struct cb_params *params = arg;
@@ -99,7 +99,7 @@ next_row(const char *buf, const size_t *col_offs,
 	if (params->table) {
 		const char *table = &buf[col_offs[params->table_column]];
 		if (strcmp(table, params->table) != 0) {
-			csv_print_line(stdout, buf, col_offs, nheaders, false);
+			csv_print_line(stdout, buf, col_offs, ncols, false);
 
 			putchar(',');
 			putchar(',');
@@ -109,7 +109,7 @@ next_row(const char *buf, const size_t *col_offs,
 		}
 	}
 
-	csv_print_line(stdout, buf, col_offs, nheaders, false);
+	csv_print_line(stdout, buf, col_offs, ncols, false);
 	fputc(',', stdout);
 
 	const char *str = &buf[col_offs[params->col]];

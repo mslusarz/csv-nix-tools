@@ -75,13 +75,13 @@ struct cb_params {
 
 static int
 next_row(const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t nheaders,
+		const struct col_header *headers, size_t ncols,
 		void *arg)
 {
 	struct cb_params *params = arg;
 
-	size_t len = col_offs[nheaders - 1] +
-			strlen(buf + col_offs[nheaders - 1]) + 1;
+	size_t len = col_offs[ncols - 1] +
+			strlen(buf + col_offs[ncols - 1]) + 1;
 	if (len > params->sizes[params->first_empty]) {
 		free(params->lines[params->first_empty]);
 

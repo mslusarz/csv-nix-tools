@@ -95,31 +95,31 @@ usage(FILE *out)
 
 static int
 next_row(const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t nheaders,
+		const struct col_header *headers, size_t ncols,
 		void *arg)
 {
 	struct input *in = arg;
 
 	if (in->table) {
 		fputs(in->table, stdout);
-		assert(nheaders == in->columns);
+		assert(ncols == in->columns);
 	} else {
 		fputs(&buf[col_offs[in->table_column]], stdout);
-		assert(nheaders == in->columns + 1);
+		assert(ncols == in->columns + 1);
 	}
 	putchar(',');
 
 	for (size_t i = 0; i < in->start; ++i)
 		putchar(',');
 
-	for (size_t i = 0; i < nheaders - 1; ++i) {
+	for (size_t i = 0; i < ncols - 1; ++i) {
 		if (i == in->table_column)
 			continue;
 		fputs(&buf[col_offs[i]], stdout);
 		putchar(',');
 	}
-	if (nheaders - 1 != in->table_column)
-		fputs(&buf[col_offs[nheaders - 1]], stdout);
+	if (ncols - 1 != in->table_column)
+		fputs(&buf[col_offs[ncols - 1]], stdout);
 
 	for (size_t i = in->start + in->columns; i < Nheaders; ++i)
 		putchar(',');

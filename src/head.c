@@ -71,7 +71,7 @@ struct cb_params {
 
 static int
 next_row(const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t nheaders,
+		const struct col_header *headers, size_t ncols,
 		void *arg)
 {
 	struct cb_params *params = arg;
@@ -80,7 +80,7 @@ next_row(const char *buf, const size_t *col_offs,
 		return 1;
 	params->printed++;
 
-	csv_print_line(stdout, buf, col_offs, nheaders, true);
+	csv_print_line(stdout, buf, col_offs, ncols, true);
 
 	return 0;
 }

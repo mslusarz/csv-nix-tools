@@ -88,7 +88,7 @@ struct cb_params {
 
 static int
 next_row(const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t nheaders,
+		const struct col_header *headers, size_t ncols,
 		void *arg)
 {
 	struct cb_params *params = arg;
@@ -96,7 +96,7 @@ next_row(const char *buf, const size_t *col_offs,
 	if (params->table) {
 		const char *table = &buf[col_offs[params->table_column]];
 		if (strcmp(table, params->table) != 0) {
-			csv_print_line(stdout, buf, col_offs, nheaders, true);
+			csv_print_line(stdout, buf, col_offs, ncols, true);
 
 			return 0;
 		}
@@ -118,14 +118,14 @@ next_row(const char *buf, const size_t *col_offs,
 
 	struct line *line = &params->lines[params->used];
 
-	size_t len = col_offs[nheaders - 1] +
-			strlen(buf + col_offs[nheaders - 1]) + 1;
+	size_t len = col_offs[ncols - 1] +
+			strlen(buf + col_offs[ncols - 1]) + 1;
 
 	line->buf = xmalloc(len, 1);
 	if (!line->buf)
 		return -1;
 
-	size_t col_offs_size = nheaders * sizeof(col_offs[0]);
+	size_t col_offs_size = ncols * sizeof(col_offs[0]);
 	line->col_offs = xmalloc(col_offs_size, 1);
 	if (!line->col_offs) {
 		free(line->buf);

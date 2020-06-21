@@ -44,7 +44,7 @@ struct stdin_cfg {
 
 static int
 next_row(const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t nheaders,
+		const struct col_header *headers, size_t ncols,
 		void *arg)
 {
 	struct stdin_cfg *cfg = arg;
@@ -52,13 +52,13 @@ next_row(const char *buf, const size_t *col_offs,
 	fputs(&buf[col_offs[cfg->table_column]], stdout);
 	fputc(',', stdout);
 
-	for (size_t i = 0; i < nheaders - 1; ++i) {
+	for (size_t i = 0; i < ncols - 1; ++i) {
 		if (i == cfg->table_column)
 			continue;
 		fputs(&buf[col_offs[i]], stdout);
 		fputc(',', stdout);
 	}
-	fputs(&buf[col_offs[nheaders - 1]], stdout);
+	fputs(&buf[col_offs[ncols - 1]], stdout);
 
 	for (size_t i = 0; i < cfg->ncolumns; ++i)
 		putchar(',');

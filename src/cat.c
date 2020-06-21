@@ -66,12 +66,12 @@ usage(FILE *out)
 
 static int
 next_row(const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t nheaders,
+		const struct col_header *headers, size_t ncols,
 		void *arg)
 {
 	size_t *idx = arg;
 
-	csv_print_line_reordered(stdout, buf, col_offs, nheaders, true, idx);
+	csv_print_line_reordered(stdout, buf, col_offs, ncols, true, idx);
 
 	return 0;
 }

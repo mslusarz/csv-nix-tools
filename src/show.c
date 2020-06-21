@@ -160,7 +160,7 @@ sprint(const char *str, char *out)
 
 static int
 next_row(const char *buf, const size_t *col_offs,
-		const struct col_header *headers, size_t nheaders,
+		const struct col_header *headers, size_t ncols,
 		void *arg)
 {
 	struct cb_params *params = arg;
@@ -179,8 +179,8 @@ next_row(const char *buf, const size_t *col_offs,
 		params->lines = newlines;
 	}
 
-	size_t last_col_len = strlen(buf + col_offs[nheaders - 1]);
-	size_t len = col_offs[nheaders - 1] + last_col_len + 1;
+	size_t last_col_len = strlen(buf + col_offs[ncols - 1]);
+	size_t len = col_offs[ncols - 1] + last_col_len + 1;
 
 	if (params->tmpbuf_size < 4 * len + 1) {
 		char *buf = xrealloc(params->tmpbuf, 4 * len + 1, 1);
@@ -192,7 +192,7 @@ next_row(const char *buf, const size_t *col_offs,
 	}
 
 	char *cur = params->tmpbuf;
-	for (size_t i = 0; i < nheaders; ++i) {
+	for (size_t i = 0; i < ncols; ++i) {
 		size_t printed = sprint(&buf[col_offs[i]], cur);
 
 		if (printed > params->max_lengths[i])
