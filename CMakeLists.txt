@@ -101,7 +101,7 @@ if (NOT PANDOC)
 endif()
 
 set(CMAKE_C_STANDARD 99)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wsign-conversion")
 
 configure_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
@@ -179,6 +179,9 @@ if(NCURSESW_FOUND)
 else()
 	build_tool(csv-show src/show.c)
 endif()
+
+# disable sign-compare/conversion warnings for csv-show because ncurses API is awful WRT signedness
+set_target_properties(csv-show PROPERTIES COMPILE_FLAGS "-Wno-sign-conversion -Wno-sign-compare")
 
 if(SQLITE3_FOUND)
 	if(${CMAKE_VERSION} VERSION_LESS "3.13.0")
