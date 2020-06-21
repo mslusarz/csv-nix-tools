@@ -800,7 +800,6 @@ int
 rpn_eval(const struct rpn_expression *exp,
 		const char *buf,
 		const size_t *col_offs,
-		const struct col_header *headers,
 		struct rpn_variant *value)
 {
 	struct rpn_variant *stack = NULL;
@@ -824,9 +823,9 @@ rpn_eval(const struct rpn_expression *exp,
 			if (!stack)
 				goto fail;
 
-			const char *str = &buf[col_offs[t->colnum]];
+			const char *str = &buf[col_offs[t->col.num]];
 
-			if (strcmp(headers[t->colnum].type, "int") == 0) {
+			if (strcmp(t->col.type, "int") == 0) {
 				stack[height].type = RPN_LLONG;
 				if (strtoll_safe(str, &stack[height].llong, 0))
 					goto fail;

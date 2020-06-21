@@ -127,10 +127,11 @@ rpn_parse(struct rpn_expression *exp, char *str,
 
 		if (token[0] == '%' && token[1] != 0) {
 			tkn.type = RPN_COLUMN;
-			tkn.colnum = csv_find_loud(headers, nheaders, table,
+			tkn.col.num = csv_find_loud(headers, nheaders, table,
 					token + 1);
-			if (tkn.colnum == CSV_NOT_FOUND)
+			if (tkn.col.num == CSV_NOT_FOUND)
 				goto fail;
+			tkn.col.type = headers[tkn.col.num].type;
 		} else if (isdigit(token[0])) {
 			tkn.type = RPN_CONSTANT;
 			tkn.constant.type = RPN_LLONG;
@@ -355,7 +356,7 @@ expression_type(const struct rpn_expression *exp,
 			}
 			break;
 		case RPN_COLUMN:
-			return headers[last_token->colnum].type;
+			return headers[last_token->col.num].type;
 	}
 
 	abort();

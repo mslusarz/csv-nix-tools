@@ -120,8 +120,6 @@ usage(FILE *out)
 }
 
 struct cb_params {
-	const struct col_header *headers;
-
 	struct rpn_expression *expressions;
 	size_t count;
 
@@ -131,11 +129,11 @@ struct cb_params {
 
 static void
 process_exp(struct rpn_expression *exp, const char *buf, const size_t *col_offs,
-		const struct col_header *headers, char sep)
+		char sep)
 {
 	struct rpn_variant ret;
 
-	if (rpn_eval(exp, buf, col_offs, headers, &ret))
+	if (rpn_eval(exp, buf, col_offs, &ret))
 		exit(2);
 
 	if (ret.type == RPN_LLONG)
@@ -155,7 +153,6 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 {
 	struct cb_params *params = arg;
 	struct rpn_expression *exp;
-	const struct col_header *headers = params->headers;
 
 	if (params->table) {
 		const char *table = &buf[col_offs[params->table_column]];
@@ -175,12 +172,12 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 	for (size_t i = 0; i < params->count - 1; ++i) {
 		exp = &params->expressions[i];
 
-		process_exp(exp, buf, col_offs, headers, ',');
+		process_exp(exp, buf, col_offs, ',');
 	}
 
 	exp = &params->expressions[params->count - 1];
 
-	process_exp(exp, buf, col_offs, headers, '\n');
+	process_exp(exp, buf, col_offs, '\n');
 
 	return 0;
 }
@@ -262,7 +259,6 @@ main(int argc, char *argv[])
 
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
-	params.headers = headers;
 
 	params.count = nexpressions;
 	params.expressions = xcalloc_nofail(nexpressions, sizeof(params.expressions[0]));

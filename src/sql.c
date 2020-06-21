@@ -76,7 +76,6 @@ struct order_conditions {
 };
 
 struct cb_params {
-	const struct col_header *headers;
 	struct columns columns;
 	struct rpn_expression where;
 	struct order_conditions order_by;
@@ -84,11 +83,11 @@ struct cb_params {
 
 static void
 process_exp(struct rpn_expression *exp, const char *buf, const size_t *col_offs,
-		const struct col_header *headers, char sep)
+		char sep)
 {
 	struct rpn_variant ret;
 
-	if (rpn_eval(exp, buf, col_offs, headers, &ret))
+	if (rpn_eval(exp, buf, col_offs, &ret))
 		exit(2);
 
 	if (ret.type == RPN_LLONG)
@@ -107,12 +106,11 @@ static int
 next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 {
 	struct cb_params *params = arg;
-	const struct col_header *headers = params->headers;
 	struct rpn_expression *exp;
 	struct rpn_variant ret;
 
 	if (params->where.count) {
-		if (rpn_eval(&params->where, buf, col_offs, headers, &ret))
+		if (rpn_eval(&params->where, buf, col_offs, &ret))
 			exit(2);
 
 		if (ret.type != RPN_LLONG) /* shouldn't be possible - XXX? */
@@ -126,12 +124,12 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 	for (size_t i = 0; i < columns->count - 1; ++i) {
 		exp = &columns->col[i].expr;
 
-		process_exp(exp, buf, col_offs, headers, ',');
+		process_exp(exp, buf, col_offs, ',');
 	}
 
 	exp = &columns->col[columns->count - 1].expr;
 
-	process_exp(exp, buf, col_offs, headers, '\n');
+	process_exp(exp, buf, col_offs, '\n');
 
 	return 0;
 }
@@ -155,7 +153,7 @@ sql_column_done(void)
 	col->name = NULL;
 
 	if (Ntokens == 1 && Tokens[0].type == RPN_COLUMN)
-		col->name = xstrdup_nofail(Headers[Tokens[0].colnum].name);
+		col->name = xstrdup_nofail(Headers[Tokens[0].col.num].name);
 
 	columns->count++;
 	Tokens = NULL;
@@ -196,7 +194,8 @@ sql_all_columns(void)
 		col->expr.count = 1;
 		col->expr.tokens = xmalloc_nofail(1, sizeof(col->expr.tokens[0]));
 		col->expr.tokens[0].type = RPN_COLUMN;
-		col->expr.tokens[0].colnum = i;
+		col->expr.tokens[0].col.num = i;
+		col->expr.tokens[0].col.type = Headers[i].type;
 	}
 }
 
@@ -312,7 +311,6 @@ main(int argc, char *argv[])
 	csv_read_header_nofail(s);
 
 	Nheaders = csv_get_headers(s, &Headers);
-	Params.headers = Headers;
 	Columns = &Params.columns;
 
 	FILE *in = fmemopen(argv[optind], strlen(argv[optind]), "r");

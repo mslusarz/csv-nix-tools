@@ -71,7 +71,6 @@ usage(FILE *out)
 }
 
 struct cb_params {
-	const struct col_header *headers;
 	struct rpn_expression *expressions;
 	size_t count;
 
@@ -85,7 +84,6 @@ static int
 next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 {
 	struct cb_params *params = arg;
-	const struct col_header *headers = params->headers;
 
 	if (params->table) {
 		const char *table = &buf[col_offs[params->table_column]];
@@ -100,7 +98,7 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 		struct rpn_expression *exp = &params->expressions[i];
 		struct rpn_variant ret;
 
-		if (rpn_eval(exp, buf, col_offs, headers, &ret))
+		if (rpn_eval(exp, buf, col_offs, &ret))
 			exit(2);
 
 		if (ret.type != RPN_LLONG) /* shouldn't be possible */
@@ -175,7 +173,6 @@ main(int argc, char *argv[])
 	csv_read_header_nofail(s);
 
 	Nheaders = csv_get_headers(s, &Headers);
-	params.headers = Headers;
 
 	if (params.table) {
 		params.table_column = csv_find(Headers, Nheaders, TABLE_COLUMN);

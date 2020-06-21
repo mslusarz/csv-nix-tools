@@ -167,7 +167,10 @@ struct rpn_variant {
 struct rpn_token {
 	enum rpn_token_type type;
 	union {
-		size_t colnum;
+		struct {
+			size_t num;
+			const char *type;
+		} col;
 		struct rpn_variant constant;
 		enum rpn_operator operator;
 	};
@@ -184,7 +187,6 @@ int rpn_parse(struct rpn_expression *exp, char *str,
 int rpn_eval(const struct rpn_expression *exp,
 		const char *buf,
 		const size_t *col_offs,
-		const struct col_header *headers,
 		struct rpn_variant *value);
 
 const char *rpn_expression_type(const struct rpn_expression *exp,

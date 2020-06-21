@@ -84,10 +84,11 @@ sql_stack_push_string(char *str)
 	struct rpn_token tk;
 
 	tk.type = RPN_COLUMN;
-	tk.colnum = csv_find_loud(Headers, Nheaders, Table, str);
+	tk.col.num = csv_find_loud(Headers, Nheaders, Table, str);
 
-	if (tk.colnum == CSV_NOT_FOUND)
+	if (tk.col.num == CSV_NOT_FOUND)
 		exit(2);
+	tk.col.type = Headers[tk.col.num].type;
 
 	sql_stack_push(&tk);
 

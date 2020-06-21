@@ -74,7 +74,6 @@ usage(FILE *out)
 }
 
 struct cb_params {
-	const struct col_header *headers;
 	struct columns columns;
 
 	size_t table_column;
@@ -169,11 +168,11 @@ sql_all_columns(void)
 
 static void
 process_exp(struct rpn_expression *exp, const char *buf, const size_t *col_offs,
-		const struct col_header *headers, char sep)
+		char sep)
 {
 	struct rpn_variant ret;
 
-	if (rpn_eval(exp, buf, col_offs, headers, &ret))
+	if (rpn_eval(exp, buf, col_offs, &ret))
 		exit(2);
 
 	if (ret.type == RPN_LLONG)
@@ -193,7 +192,6 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 {
 	struct cb_params *params = arg;
 	struct rpn_expression *exp;
-	const struct col_header *headers = params->headers;
 
 	struct columns *columns = &Params.columns;
 	if (params->table) {
@@ -216,12 +214,12 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 	for (size_t i = 0; i < columns->count - 1; ++i) {
 		exp = &columns->col[i].expr;
 
-		process_exp(exp, buf, col_offs, headers, ',');
+		process_exp(exp, buf, col_offs, ',');
 	}
 
 	exp = &columns->col[columns->count - 1].expr;
 
-	process_exp(exp, buf, col_offs, headers, '\n');
+	process_exp(exp, buf, col_offs, '\n');
 
 	return 0;
 }
@@ -307,7 +305,6 @@ main(int argc, char *argv[])
 	csv_read_header_nofail(s);
 
 	Nheaders = csv_get_headers(s, &Headers);
-	Params.headers = Headers;
 
 	if (Params.table) {
 		Params.table_column = csv_find(Headers, Nheaders, TABLE_COLUMN);
