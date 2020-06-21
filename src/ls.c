@@ -676,61 +676,61 @@ main(int argc, char *argv[])
 	char *table = NULL;
 
 	struct column_info columns[] = {
-		{ false, 0, 1, "type_mode",     TYPE_STRING, print_type_mode },
-		{ false, 0, 1, "nlink",         TYPE_INT,    print_nlink },
-		{ false, 0, 1, "owner_name",    TYPE_STRING, print_owner_name },
-		{ false, 0, 1, "group_name",    TYPE_STRING, print_group_name },
-		{ false, 0, 1, "size",          TYPE_INT,    print_size },
-		{ false, 0, 1, "mtime",         TYPE_STRING, print_mtime },
-		{ true,  0, 0, "name",          TYPE_STRING, print_name },
-		{ false, 0, 1, "symlink",       TYPE_STRING, print_symlink },
-		{ false, 0, 2, "parent",        TYPE_STRING, print_parent },
+		{ false, 0, 1, "type_mode",     TYPE_STRING, print_type_mode, 0 },
+		{ false, 0, 1, "nlink",         TYPE_INT,    print_nlink, 0 },
+		{ false, 0, 1, "owner_name",    TYPE_STRING, print_owner_name, 0 },
+		{ false, 0, 1, "group_name",    TYPE_STRING, print_group_name, 0 },
+		{ false, 0, 1, "size",          TYPE_INT,    print_size, 0 },
+		{ false, 0, 1, "mtime",         TYPE_STRING, print_mtime, 0 },
+		{ true,  0, 0, "name",          TYPE_STRING, print_name, 0 },
+		{ false, 0, 1, "symlink",       TYPE_STRING, print_symlink, 0 },
+		{ false, 0, 2, "parent",        TYPE_STRING, print_parent, 0 },
 
-		{ false, 0, 2, "type",          TYPE_INT,    print_type },
-		{ false, 0, 2, "type_name",     TYPE_STRING, print_type_name },
+		{ false, 0, 2, "type",          TYPE_INT,    print_type, 0 },
+		{ false, 0, 2, "type_name",     TYPE_STRING, print_type_name, 0 },
 
-		{ false, 0, 2, "mode",          TYPE_INT,    print_mode },
+		{ false, 0, 2, "mode",          TYPE_INT,    print_mode, 0 },
 
-		{ false, 0, 2, "owner_read",    TYPE_INT,    print_owner_read },
-		{ false, 0, 2, "owner_write",   TYPE_INT,    print_owner_write },
-		{ false, 0, 2, "owner_execute", TYPE_INT,    print_owner_execute },
+		{ false, 0, 2, "owner_read",    TYPE_INT,    print_owner_read, 0 },
+		{ false, 0, 2, "owner_write",   TYPE_INT,    print_owner_write, 0 },
+		{ false, 0, 2, "owner_execute", TYPE_INT,    print_owner_execute, 0 },
 
-		{ false, 0, 2, "group_read",    TYPE_INT,    print_group_read },
-		{ false, 0, 2, "group_write",   TYPE_INT,    print_group_write },
-		{ false, 0, 2, "group_execute", TYPE_INT,    print_group_execute },
+		{ false, 0, 2, "group_read",    TYPE_INT,    print_group_read, 0 },
+		{ false, 0, 2, "group_write",   TYPE_INT,    print_group_write, 0 },
+		{ false, 0, 2, "group_execute", TYPE_INT,    print_group_execute, 0 },
 
-		{ false, 0, 2, "other_read",    TYPE_INT,    print_other_read },
-		{ false, 0, 2, "other_write",   TYPE_INT,    print_other_write },
-		{ false, 0, 2, "other_execute", TYPE_INT,    print_other_execute },
+		{ false, 0, 2, "other_read",    TYPE_INT,    print_other_read, 0 },
+		{ false, 0, 2, "other_write",   TYPE_INT,    print_other_write, 0 },
+		{ false, 0, 2, "other_execute", TYPE_INT,    print_other_execute, 0 },
 
-		{ false, 0, 2, "setuid",        TYPE_INT,    print_setuid },
-		{ false, 0, 2, "setgid",        TYPE_INT,    print_setgid },
-		{ false, 0, 2, "sticky",        TYPE_INT,    print_sticky },
+		{ false, 0, 2, "setuid",        TYPE_INT,    print_setuid, 0 },
+		{ false, 0, 2, "setgid",        TYPE_INT,    print_setgid, 0 },
+		{ false, 0, 2, "sticky",        TYPE_INT,    print_sticky, 0 },
 
-		{ false, 0, 2, "owner_id",      TYPE_INT,    print_owner_id },
-		{ false, 0, 2, "group_id",      TYPE_INT,    print_group_id },
+		{ false, 0, 2, "owner_id",      TYPE_INT,    print_owner_id, 0 },
+		{ false, 0, 2, "group_id",      TYPE_INT,    print_group_id, 0 },
 
-		{ false, 0, 2, "ctime",         TYPE_STRING, print_ctime },
-		{ false, 0, 2, "atime",         TYPE_STRING, print_atime },
+		{ false, 0, 2, "ctime",         TYPE_STRING, print_ctime, 0 },
+		{ false, 0, 2, "atime",         TYPE_STRING, print_atime, 0 },
 
-		{ false, 0, 2, "full_path",     TYPE_STRING, print_full_path },
+		{ false, 0, 2, "full_path",     TYPE_STRING, print_full_path, 0 },
 
-		{ false, 0, 3, "mtime_sec",     TYPE_INT,    print_mtime_sec },
-		{ false, 0, 3, "mtime_nsec",    TYPE_INT,    print_mtime_nsec },
+		{ false, 0, 3, "mtime_sec",     TYPE_INT,    print_mtime_sec, 0 },
+		{ false, 0, 3, "mtime_nsec",    TYPE_INT,    print_mtime_nsec, 0 },
 
-		{ false, 0, 3, "ctime_sec",     TYPE_INT,    print_ctime_sec },
-		{ false, 0, 3, "ctime_nsec",    TYPE_INT,    print_ctime_nsec },
+		{ false, 0, 3, "ctime_sec",     TYPE_INT,    print_ctime_sec, 0 },
+		{ false, 0, 3, "ctime_nsec",    TYPE_INT,    print_ctime_nsec, 0 },
 
-		{ false, 0, 3, "atime_sec",     TYPE_INT,    print_atime_sec },
-		{ false, 0, 3, "atime_nsec",    TYPE_INT,    print_atime_nsec },
+		{ false, 0, 3, "atime_sec",     TYPE_INT,    print_atime_sec, 0 },
+		{ false, 0, 3, "atime_nsec",    TYPE_INT,    print_atime_nsec, 0 },
 
-		{ false, 0, 3, "dev",           TYPE_INT,    print_dev },
-		{ false, 0, 3, "ino",           TYPE_INT,    print_ino },
+		{ false, 0, 3, "dev",           TYPE_INT,    print_dev, 0 },
+		{ false, 0, 3, "ino",           TYPE_INT,    print_ino, 0 },
 
-		{ false, 0, 3, "rdev",          TYPE_INT,    print_rdev },
+		{ false, 0, 3, "rdev",          TYPE_INT,    print_rdev, 0 },
 
-		{ false, 0, 3, "blksize",       TYPE_INT,    print_blksize },
-		{ false, 0, 3, "blocks",        TYPE_INT,    print_blocks },
+		{ false, 0, 3, "blksize",       TYPE_INT,    print_blksize, 0 },
+		{ false, 0, 3, "blocks",        TYPE_INT,    print_blocks, 0 },
 	};
 
 	size_t ncolumns = ARRAY_SIZE(columns);

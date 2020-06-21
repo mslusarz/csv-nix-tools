@@ -95,8 +95,8 @@ main(int argc, char *argv[], char *envp[])
 	char *table = NULL;
 
 	struct column_info columns[] = {
-			{ true, 0, 0, "name",  TYPE_STRING, print_name },
-			{ true, 0, 0, "value", TYPE_STRING, print_value },
+			{ true, 0, 0, "name",  TYPE_STRING, print_name, 0 },
+			{ true, 0, 0, "value", TYPE_STRING, print_value, 0 },
 	};
 	size_t ncolumns = ARRAY_SIZE(columns);
 

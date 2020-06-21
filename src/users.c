@@ -129,13 +129,13 @@ main(int argc, char *argv[])
 	char *table = NULL;
 
 	struct column_info columns[] = {
-			{ true,  0, 0, "name",   TYPE_STRING, print_name },
-			{ true,  0, 0, "uid",    TYPE_INT,    print_uid },
-			{ true,  0, 0, "gid",    TYPE_INT,    print_gid },
-			{ true,  0, 0, "dir",    TYPE_STRING, print_dir },
-			{ true,  0, 0, "shell",  TYPE_STRING, print_shell },
-			{ false, 0, 1, "gecos",  TYPE_STRING, print_gecos },
-			{ false, 0, 2, "passwd", TYPE_STRING, print_passwd },
+			{ true,  0, 0, "name",   TYPE_STRING, print_name, 0 },
+			{ true,  0, 0, "uid",    TYPE_INT,    print_uid, 0 },
+			{ true,  0, 0, "gid",    TYPE_INT,    print_gid, 0 },
+			{ true,  0, 0, "dir",    TYPE_STRING, print_dir, 0 },
+			{ true,  0, 0, "shell",  TYPE_STRING, print_shell, 0 },
+			{ false, 0, 1, "gecos",  TYPE_STRING, print_gecos, 0 },
+			{ false, 0, 2, "passwd", TYPE_STRING, print_passwd, 0 },
 	};
 	size_t ncolumns = ARRAY_SIZE(columns);
 	size_t level = 0;

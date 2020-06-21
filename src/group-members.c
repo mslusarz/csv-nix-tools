@@ -155,8 +155,8 @@ main(int argc, char *argv[])
 	char *table = NULL;
 
 	struct column_info columns[] = {
-			{ true, 0, 0, "group_name", TYPE_STRING, print_group_name },
-			{ true, 0, 0, "user_name", TYPE_STRING, print_user_name },
+			{ true, 0, 0, "group_name", TYPE_STRING, print_group_name, 0 },
+			{ true, 0, 0, "user_name", TYPE_STRING, print_user_name, 0 },
 	};
 
 	size_t ncolumns = ARRAY_SIZE(columns);
