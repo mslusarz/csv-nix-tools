@@ -29,7 +29,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-if (BISON_FOUND AND FLEX_FOUND)
+if (BUILD_SQL)
 
 test("csv-add-sql -n 'num_mul_2' -e 'num * 2'"
 	data/rpn-add-num-dec.csv data/rpn-add-num-mul.csv data/empty.txt 0
@@ -218,4 +218,4 @@ test("csv-add-sql --help" data/empty.csv add-sql/help.txt data/empty.txt 2
 test("csv-add-sql --version" data/empty.csv data/git-version.txt data/empty.txt 0
 	add-sql_version)
 
-endif(BISON_FOUND AND FLEX_FOUND)
+endif(BUILD_SQL)
