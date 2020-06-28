@@ -370,14 +370,29 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 	}
 
 	do {
-		nlines = LINES;
+		/*
+		 * determine how many lines of data we can show,
+		 * max is the height of the window minus 1 if header must be shown
+		 */
+		nlines = LINES - print_header;
+
+		/* is there enough data to fill one screen? */
 		if (nlines > params->nlines)
 			nlines = params->nlines;
+
+		/*
+		 * is there enough data to fill one screen starting from
+		 * the desired line?
+		 */
 		if (first_line + nlines > params->nlines) {
-			if (params->nlines < LINES)
+			/*
+			 * no, so calculate where should we start to fill
+			 * one screen
+			 */
+			if (params->nlines < nlines)
 				first_line = 0;
 			else
-				first_line = params->nlines - LINES;
+				first_line = params->nlines - nlines;
 		}
 
 		show(params->lines,
@@ -418,10 +433,10 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 			if (first_line + nlines >= params->nlines)
 				beep();
 			else
-				first_line += LINES - 1;
+				first_line += LINES - 1 - print_header;
 		} else if (ch == KEY_PPAGE || ch == KEY_BACKSPACE) {
-			if (first_line >= LINES - 1)
-				first_line -= LINES - 1;
+			if (first_line >= LINES - 1 - print_header)
+				first_line -= LINES - 1 - print_header;
 			else if (first_line == 0)
 				beep();
 			else
