@@ -88,10 +88,10 @@ usage(FILE *out)
 }
 
 struct cb_params {
-	char **lines;
-	size_t max_nlines;
-	size_t nlines;
-	size_t *max_lengths;
+	char **lines; /* array of lines */
+	size_t allocated_lines; /* number of allocated line slots */
+	size_t nlines; /* number of lines of data */
+	size_t *max_lengths; /* maximum number of characters in each column */
 
 	char *tmpbuf;
 	size_t tmpbuf_size;
@@ -163,14 +163,14 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 {
 	struct cb_params *params = arg;
 
-	if (params->nlines == params->max_nlines) {
-		if (params->max_nlines == 0)
-			params->max_nlines = 16;
+	if (params->nlines == params->allocated_lines) {
+		if (params->allocated_lines == 0)
+			params->allocated_lines = 16;
 		else
-			params->max_nlines *= 2;
+			params->allocated_lines *= 2;
 
 		char **newlines = xrealloc(params->lines,
-				params->max_nlines, sizeof(params->lines[0]));
+				params->allocated_lines, sizeof(params->lines[0]));
 		if (!newlines)
 			return -1;
 
@@ -244,7 +244,8 @@ show(char **data,
 	const struct col_header *headers, size_t nheaders,
 	size_t *max_lengths,
 
-	size_t first_line, size_t nlines,
+	size_t first_line, /* index of the first line to show */
+	size_t nlines, /* number of lines to show */
 	int xoff,
 	size_t spacing,
 	bool print_header, bool print_types,
@@ -356,7 +357,7 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 
 	int ch = 0;
 	size_t first_line = 0;
-	size_t nlines;
+	size_t nlines; /* number of lines to show */
 	int xoff = 0;
 #define STEP (COLS / 2)
 
@@ -637,7 +638,7 @@ main(int argc, char *argv[])
 	size_t spacing = DEFAULT_SPACING;
 
 	params.lines = NULL;
-	params.max_nlines = 0;
+	params.allocated_lines = 0;
 	params.nlines = 0;
 
 	params.tmpbuf = NULL;
