@@ -33,9 +33,11 @@ to file an issue. Any feedback is welcomed.
 # Dependencies
 - **cmake** >= 3.3
 - **glibc-devel**
+- **pkg-config**
 - **pandoc** (optional, required to generate man pages)
 - **bison** (optional, required by csv-sql, csv-grep-sql and csv-add-sql)
 - **flex** (optional, required by csv-sql, csv-grep-sql and csv-add-sql)
+- **libfl-devel** (optional, required by csv-sql, csv-grep-sql and csv-add-sql)
 - **libmnl-devel** (optional, required by csv-netstat)
 - **libncursesw-devel** (optional, used by csv-show)
 - **libprocps-devel** (optional, required by csv-ps)
