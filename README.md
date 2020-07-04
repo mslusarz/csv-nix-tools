@@ -41,6 +41,17 @@ to file an issue. Any feedback is welcomed.
 - **libncursesw-devel** (optional, used by csv-show)
 - **libprocps-devel** (optional, required by csv-ps)
 - **libsqlite3-devel** (optional, required by csv-sqlite)
+- **tmux** (optional, needed by some csv-show tests)
+
+On Debian-based distros you can install all dependencies by:
+```sh
+apt install build-essential cmake pkg-config flex bison libsqlite3-dev libprocps-dev libncursesw5-dev libmnl-dev pandoc tmux
+```
+
+On Fedora-based distros you can install all dependencies by:
+```sh
+yum install gcc make glibc-devel cmake pkg-config flex bison sqlite-devel procps-ng-devel ncurses-devel libmnl-devel pandoc tmux
+```
 
 # Installation
 ```sh
