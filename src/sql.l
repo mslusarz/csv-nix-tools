@@ -33,7 +33,7 @@ bin_number 0b[01]+
 hex_number 0x[0-9a-fA-F]+
 oct_number 0[0-7]*
 dec_number [1-9][0-9]*
-alpha [a-zA-Z]+[a-zA-Z0-9_]*
+alpha [a-zA-Z]+[a-zA-Z0-9_.]*
 literal1 '[^']*'
 literal2 \"[^"]*\"
 
