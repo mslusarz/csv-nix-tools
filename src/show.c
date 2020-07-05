@@ -402,6 +402,7 @@ show(char **data,
 	if (print_header) {
 		int xpos = 0;
 
+		attron(A_BOLD);
 		for (size_t i = 0; i < nheaders; ++i) {
 			int prev_xpos = xpos;
 			bool truncated;
@@ -426,6 +427,7 @@ show(char **data,
 			xpos += strlen(headers[i].name);
 
 			if (print_types) {
+				attroff(A_BOLD);
 				nprint(0, xpos - xoff, ":", &truncated);
 				if (truncated)
 					break;
@@ -436,6 +438,7 @@ show(char **data,
 				if (truncated)
 					break;
 				xpos += strlen(headers[i].type);
+				attron(A_BOLD);
 			}
 
 			if (alignments[i] == LEFT)
@@ -448,6 +451,7 @@ show(char **data,
 			if (col_color_pairs[i] != -1)
 				attroff(COLOR_PAIR(col_color_pairs[i]));
 		}
+		attroff(A_BOLD);
 
 		ypos++;
 	}
