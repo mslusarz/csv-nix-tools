@@ -42,17 +42,23 @@
 <p><strong>less</strong> backend supports everything the command <strong>less</strong>(1) supports.</p>
 <p><strong>none</strong> backend simply prints everything to standard output.</p>
 <dl>
-<dt>-u, --ui <em>curses</em>/<em>less</em>/<em>none</em></dt>
-<dd>use UI based on <strong><a href="http://man7.org/linux/man-pages/man3/ncurses.3x.html">ncurses</a></strong>(3), <strong><a href="http://man7.org/linux/man-pages/man1/less.1.html">less</a></strong>(1) or nothing(tm)
-</dd>
 <dt>-s, --spacing <em>NUM</em></dt>
 <dd>use <em>NUM</em> spaces between columns instead of 3
 </dd>
-<dt>--with-types</dt>
-<dd>print types in column headers
+<dt>-u, --ui <em>curses</em>/<em>less</em>/<em>none</em></dt>
+<dd>use UI based on <strong><a href="http://man7.org/linux/man-pages/man3/ncurses.3x.html">ncurses</a></strong>(3), <strong><a href="http://man7.org/linux/man-pages/man1/less.1.html">less</a></strong>(1) or nothing(tm)
 </dd>
 <dt>--no-header</dt>
 <dd>remove column headers
+</dd>
+<dt>--set-color <em>COLNAME</em>:[fg=]<em>COLOR1</em>[,bg=<em>COLOR2</em>]</dt>
+<dd>set <em>COLOR1</em> as foreground and <em>COLOR2</em> as background of column <em>COLNAME</em>
+</dd>
+<dt>--use-color-columns</dt>
+<dd>use columns with _color suffix
+</dd>
+<dt>--with-types</dt>
+<dd>print types in column headers
 </dd>
 <dt>--help</dt>
 <dd>display this help and exit
