@@ -771,5 +771,10 @@ main(int argc, char *argv[])
 
 	csv_destroy_ctx(s);
 
+#ifdef NCURSESW_ENABLED
+	if (ui == NCURSES)
+		exit_curses(0);
+#endif
+
 	return 0;
 }
