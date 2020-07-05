@@ -116,6 +116,9 @@ test("csv-cut --columns name,id,something" data/3-different-order-columns-3-rows
 test("csv-cut --columns=name,id,something" data/3-different-order-columns-3-rows.csv data/3-columns-3-rows.csv data/empty.txt 0
 	cut_3_fields_in_different_order_using_--columns_with_=)
 
+test("csv-cut -c id,id,id,id,id" data/3-columns-3-rows.csv cut/id-5-times.csv data/empty.txt 0
+	cut_multiple_times)
+
 
 test("csv-cut -T t1 -c id,something" data/2-tables.csv cut/2-tables-cut1.csv data/empty.txt 0
 	cut-2tables-cut1)

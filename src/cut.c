@@ -164,8 +164,6 @@ main(int argc, char *argv[])
 		goto end;
 	}
 
-	params.cols = xmalloc_nofail(nheaders, sizeof(params.cols[0]));
-
 	if (params.table) {
 		params.table_column = csv_find(headers, nheaders, TABLE_COLUMN);
 		if (params.table_column == CSV_NOT_FOUND) {
@@ -175,6 +173,8 @@ main(int argc, char *argv[])
 	}
 
 	if (reverse) {
+		params.cols = xmalloc_nofail(nheaders, sizeof(params.cols[0]));
+
 		for (size_t i = 0; i < nheaders; ++i)
 			params.cols[i] = i;
 		params.ncols = nheaders;
@@ -218,6 +218,16 @@ main(int argc, char *argv[])
 			name = strtok(NULL, ",");
 		}
 	} else {
+		size_t commas = 0;
+		size_t len = strlen(cols);
+
+		for (size_t i = 0; i < len; ++i)
+			if (cols[i] == ',')
+				commas++;
+
+		params.cols = xmalloc_nofail(nheaders + commas + 1,
+				sizeof(params.cols[0]));
+
 		if (params.table)
 			params.cols[params.ncols++] = params.table_column;
 
