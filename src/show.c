@@ -49,6 +49,7 @@
 #include <curses.h>
 #endif
 
+#include "ht.h"
 #include "parse.h"
 #include "utils.h"
 
@@ -60,14 +61,15 @@ enum alignment {
 };
 
 static const struct option opts[] = {
-	{"no-header",	no_argument,		NULL, 'H'},
-	{"with-types",	no_argument, 		NULL, 't'},
-	{"ui",		required_argument,	NULL, 'u'},
-	{"spacing",	required_argument,	NULL, 's'},
-	{"version",	no_argument,		NULL, 'V'},
-	{"help",	no_argument,		NULL, 'h'},
-	{"debug",	required_argument,	NULL, 'D'},
-	{NULL,		0,			NULL, 0},
+	{"no-header",		no_argument,		NULL, 'H'},
+	{"with-types",		no_argument, 		NULL, 't'},
+	{"ui",			required_argument,	NULL, 'u'},
+	{"spacing",		required_argument,	NULL, 's'},
+	{"set-color",		required_argument,	NULL, 'C' },
+	{"version",		no_argument,		NULL, 'V'},
+	{"help",		no_argument,		NULL, 'h'},
+	{"debug",		required_argument,	NULL, 'D'},
+	{NULL,			0,			NULL, 0},
 };
 
 static void
@@ -79,10 +81,13 @@ usage(FILE *out)
 "without types.\n");
 	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
-	fprintf(out, "  -u, --ui curses/less/none  use UI based on ncurses, less or nothing(tm)\n");
 	fprintf(out, "  -s, --spacing NUM          use NUM spaces between columns instead of 3\n");
-	fprintf(out, "      --with-types           print types in column headers\n");
+	fprintf(out, "  -u, --ui curses/less/none  use UI based on ncurses, less or nothing(tm)\n");
 	fprintf(out, "      --no-header            remove column headers\n");
+	fprintf(out, "      --set-color col:[fg=]color1[,bg=color2]\n");
+	fprintf(out, "                             set color1 as foreground and color2 as\n");
+	fprintf(out, "                             background of column col\n");
+	fprintf(out, "      --with-types           print types in column headers\n");
 	describe_help(out);
 	describe_version(out);
 }
@@ -97,6 +102,12 @@ struct cb_params {
 	size_t tmpbuf_size;
 
 	int logfd;
+
+	struct csv_ht *color_pairs;
+	struct csv_ht *colors;
+	int used_pairs;
+	int used_colors;
+	int *col_color_pairs;
 };
 
 /* returns number of printed characters (NOT length of string) */
@@ -215,6 +226,139 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 
 #ifdef NCURSESW_ENABLED
 
+struct slow_params {
+	struct cb_params *params;
+	const char *txt;
+};
+
+static int
+h2i(char c)
+{
+	if (c >= '0' && c <= '9')
+		return c - '0';
+	return c - 'A' + 10;
+}
+
+static void *
+get_color_slow(void *p_)
+{
+	struct slow_params *p = p_;
+	int color;
+	const char *col = p->txt;
+
+	if (strcmp(col, "black") == 0)
+		color = COLOR_BLACK;
+	else if (strcmp(col, "red") == 0)
+		color = COLOR_RED;
+	else if (strcmp(col, "green") == 0)
+		color = COLOR_GREEN;
+	else if (strcmp(col, "yellow") == 0)
+		color = COLOR_YELLOW;
+	else if (strcmp(col, "blue") == 0)
+		color = COLOR_BLUE;
+	else if (strcmp(col, "magenta") == 0)
+		color = COLOR_MAGENTA;
+	else if (strcmp(col, "cyan") == 0)
+		color = COLOR_CYAN;
+	else if (strcmp(col, "white") == 0)
+		color = COLOR_WHITE;
+	else if (strcmp(col, "default") == 0)
+		color = -1;
+	else {
+		if (!can_change_color()) {
+			endwin();
+			fprintf(stderr, "Your terminal doesn't support changing colors\n");
+			exit(2);
+		}
+
+		if (p->params->used_colors >= COLORS) {
+			endwin();
+			fprintf(stderr, "reached maximum number of colors %d\n",
+					p->params->used_colors);
+			exit(2);
+		}
+
+		color = p->params->used_colors++;
+
+		if (strlen(col) != 6)
+			goto err;
+
+		for (unsigned i = 0; i < 6; ++i)
+			if (!((col[i] >= '0' && col[i] <= '9') ||
+			      (col[i] >= 'A' && col[i] <= 'F')))
+				goto err;
+		int r = h2i(col[0]) * 16 + h2i(col[1]);
+		int g = h2i(col[2]) * 16 + h2i(col[3]);
+		int b = h2i(col[4]) * 16 + h2i(col[5]);
+
+		r = (int)(1000.0 * r / 255.0);
+		g = (int)(1000.0 * g / 255.0);
+		b = (int)(1000.0 * b / 255.0);
+
+		init_color(color, r, g, b);
+	}
+
+	return (void *)(intptr_t)color;
+err:
+	endwin();
+	fprintf(stderr, "color must be either a predefined name or in RRGGBB format\n");
+	exit(2);
+}
+
+static int
+get_color(struct cb_params *params, char *txt)
+{
+	struct slow_params p;
+	p.params = params;
+	p.txt = txt;
+	return (int)(intptr_t)csv_ht_get_value(params->colors, txt,
+			get_color_slow, &p);
+}
+
+static void *
+get_color_pair_slow(void *p_)
+{
+	struct slow_params *p = p_;
+	int fg = -1, bg = -1;
+	int color_pair;
+	char *txt = xstrdup_nofail(p->txt);
+
+	char *desc = strtok(txt, ",");
+	while (desc) {
+		if (strncmp(desc, "fg=", 3) == 0)
+			fg = get_color(p->params, desc + 3);
+		else if (strncmp(desc, "bg=", 3) == 0)
+			bg = get_color(p->params, desc + 3);
+		else
+			fg = get_color(p->params, desc);
+
+		desc = strtok(NULL, ",");
+	}
+	free(txt);
+
+	if (p->params->used_pairs >= COLOR_PAIRS - 1) {
+		endwin();
+		fprintf(stderr, "reached maximum number of color pairs %d\n",
+				p->params->used_pairs);
+		exit(2);
+	}
+
+	color_pair = p->params->used_pairs++;
+	init_pair(color_pair, fg, bg);
+
+	return (void *)(intptr_t)color_pair;
+}
+
+static int
+get_color_pair(struct cb_params *params, char *txt)
+{
+	struct slow_params p;
+	p.params = params;
+	p.txt = txt;
+	return (int)(intptr_t)csv_ht_get_value(params->color_pairs, txt,
+			get_color_pair_slow, &p);
+}
+
 static void
 nprint(int y, int x, const char *str, bool *truncated)
 {
@@ -249,7 +393,8 @@ show(char **data,
 	int xoff,
 	size_t spacing,
 	bool print_header, bool print_types,
-	enum alignment *alignments)
+	enum alignment *alignments,
+	int *col_color_pairs)
 {
 	size_t ypos = 0;
 	clear();
@@ -260,9 +405,17 @@ show(char **data,
 		for (size_t i = 0; i < nheaders; ++i) {
 			int prev_xpos = xpos;
 			bool truncated;
+
+			if (col_color_pairs[i] != -1)
+				attron(COLOR_PAIR(col_color_pairs[i]));
+
 			size_t len = strlen(headers[i].name);
 			if (print_types)
 				len += 1 + strlen(headers[i].type);
+
+			if (alignments[i] == RIGHT)
+				for (size_t j = 0; j < max_lengths[i] - len; ++j)
+					mvaddch(ypos, xpos - xoff + j, ' ');
 
 			if (alignments[i] == RIGHT)
 				xpos += max_lengths[i] - len;
@@ -285,8 +438,15 @@ show(char **data,
 				xpos += strlen(headers[i].type);
 			}
 
+			if (alignments[i] == LEFT)
+				for (size_t j = 0; j < max_lengths[i] - len; ++j)
+					mvaddch(ypos, xpos - xoff + j, ' ');
+
 			if (i < nheaders - 1)
 				xpos = prev_xpos + max_lengths[i] + spacing;
+
+			if (col_color_pairs[i] != -1)
+				attroff(COLOR_PAIR(col_color_pairs[i]));
 		}
 
 		ypos++;
@@ -300,7 +460,14 @@ show(char **data,
 		for (size_t i = 0; i < nheaders; ++i) {
 			bool truncated;
 
+			if (col_color_pairs[i] != -1)
+				attron(COLOR_PAIR(col_color_pairs[i]));
+
 			size_t len = strlen(buf);
+
+			if (alignments[i] == RIGHT)
+				for (size_t j = 0; j < max_lengths[i] - len; ++j)
+					mvaddch(ypos, xpos - xoff + j, ' ');
 
 			if (alignments[i] == RIGHT)
 				xpos += max_lengths[i] - len;
@@ -309,6 +476,10 @@ show(char **data,
 
 			if (truncated)
 				break;
+
+			if (alignments[i] == LEFT)
+				for (size_t j = len; j < max_lengths[i]; ++j)
+					mvaddch(ypos, xpos - xoff + j, ' ');
 
 			buf += len + 1;
 			xpos += len;
@@ -319,6 +490,9 @@ show(char **data,
 
 			if (i < nheaders - 1)
 				xpos += spacing;
+
+			if (col_color_pairs[i] != -1)
+				attroff(COLOR_PAIR(col_color_pairs[i]));
 		}
 	}
 }
@@ -326,7 +500,8 @@ show(char **data,
 static void
 curses_ui(struct cb_params *params, const struct col_header *headers,
 		size_t nheaders, bool print_header, bool print_types,
-		size_t spacing, enum alignment *alignments)
+		size_t spacing, enum alignment *alignments,
+		char **set_colorpair, size_t set_colorpairs_num)
 {
 	if (close(0)) {
 		perror("close");
@@ -348,7 +523,58 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 	if (fd != 0) /* impossible */
 		abort();
 
+	params->used_pairs = 1;
+	params->used_colors = COLOR_WHITE + 1;
+
 	initscr();
+
+	params->col_color_pairs = xmalloc_nofail(nheaders,
+			sizeof(params->col_color_pairs[0]));
+	for (size_t i = 0; i < nheaders; ++i)
+		params->col_color_pairs[i] = -1;
+
+	if (set_colorpairs_num) {
+		if (!has_colors()) {
+			endwin();
+			fprintf(stderr, "Your terminal doesn't support colors\n");
+			exit(2);
+		}
+
+		start_color();
+		use_default_colors();
+
+		if (csv_ht_init(&params->color_pairs, NULL)) {
+			endwin();
+			exit(2);
+		}
+		if (csv_ht_init(&params->colors, NULL)) {
+			endwin();
+			exit(2);
+		}
+
+		for (size_t i = 0; i < set_colorpairs_num; ++i) {
+			char *x = strtok(set_colorpair[i], ":");
+			if (!x) {
+				endwin();
+				fprintf(stderr, "\n");
+				exit(2);
+			}
+			size_t idx = csv_find_loud(headers, nheaders, NULL, x);
+			if (idx == CSV_NOT_FOUND) {
+				endwin();
+				exit(2);
+			}
+			x = strtok(NULL, ":");
+			if (!x) {
+				endwin();
+				fprintf(stderr, "\n");
+				exit(2);
+			}
+
+			params->col_color_pairs[idx] = get_color_pair(params, x);
+		}
+	}
+
 	cbreak();
 	noecho();
 	clear();
@@ -400,7 +626,7 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 			params->max_lengths,
 			first_line, nlines,
 			xoff, spacing, print_header, print_types,
-			alignments);
+			alignments, params->col_color_pairs);
 		refresh();
 
 		if (params->logfd >= 0)
@@ -519,6 +745,12 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 		free(params->lines[i]);
 
 	endwin();
+
+	if (set_colorpairs_num) {
+		csv_ht_destroy(&params->color_pairs);
+		csv_ht_destroy(&params->colors);
+	}
+	free(params->col_color_pairs);
 }
 #endif
 
@@ -663,6 +895,9 @@ main(int argc, char *argv[])
 
 	setlocale(LC_ALL, "");
 
+	char **set_colorpair = NULL;
+	size_t set_colorpair_num = 0;
+
 	while ((opt = getopt_long(argc, argv, "u:s:", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'D':
@@ -695,6 +930,13 @@ main(int argc, char *argv[])
 				break;
 			case 't':
 				print_types = true;
+				break;
+			case 'C':
+				set_colorpair = xrealloc_nofail(set_colorpair,
+						++set_colorpair_num,
+						sizeof(set_colorpair[0]));
+				set_colorpair[set_colorpair_num - 1] =
+						xstrdup_nofail(optarg);
 				break;
 			case 'H':
 				print_header = false;
@@ -757,13 +999,17 @@ main(int argc, char *argv[])
 	if (ui == NCURSES) {
 #ifdef NCURSESW_ENABLED
 		curses_ui(&params, headers, nheaders, print_header,
-				print_types, spacing, alignments);
+				print_types, spacing, alignments, set_colorpair,
+				set_colorpair_num);
 #endif
 	} else {
 		static_ui(ui == LESS, &params, headers, nheaders, print_header,
 				print_types, spacing, alignments);
 	}
 
+	for (size_t i = 0; i < set_colorpair_num; ++i)
+		free(set_colorpair[i]);
+	free(set_colorpair);
 	free(alignments);
 	free(params.lines);
 	free(params.max_lengths);
