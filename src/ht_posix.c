@@ -91,7 +91,8 @@ csv_ht_destroy(struct csv_ht **htp)
 	csv_hdestroy_r(&ht->ht);
 	for (size_t u = 0; u < ht->inserted; ++u) {
 		free(ht->table[u].key);
-		ht->destroy_value(ht->table[u].data);
+		if (ht->destroy_value)
+			ht->destroy_value(ht->table[u].data);
 	}
 	free(ht->table);
 	free(ht);
