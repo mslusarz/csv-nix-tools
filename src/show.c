@@ -1087,7 +1087,7 @@ main(int argc, char *argv[])
 
 	csv_destroy_ctx(s);
 
-#ifdef NCURSESW_ENABLED
+#if defined(NCURSESW_ENABLED) && defined(NCURSESW62_OR_LATER)
 	if (ui == NCURSES)
 		exit_curses(0);
 #endif

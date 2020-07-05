@@ -175,6 +175,10 @@ if(NCURSESW_FOUND)
 		target_link_directories(csv-show PRIVATE ${NCURSESW_LIBRARY_DIRS})
 	endif()
 
+	if (NOT(NCURSESW_VERSION VERSION_LESS 6.2))
+		target_compile_definitions(csv-show PRIVATE NCURSESW62_OR_LATER)
+	endif()
+
 	target_link_libraries(csv-show ${NCURSESW_LIBRARIES})
 else()
 	build_tool(csv-show src/show.c)
