@@ -1,0 +1,44 @@
+{
+   leaks in ncurses
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:initscr
+   ...
+}
+
+{
+   leaks in ncurses
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:assume_default_colors_sp
+   ...
+}
+
+{
+   leaks in ncurses
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:start_color_sp
+   ...
+}
+
+{
+   leaks in ncurses
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:_nc_keypad
+   ...
+}
+
+{
+   leaks in ncurses
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:wrefresh
+   ...
+}
