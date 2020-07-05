@@ -6,9 +6,9 @@ Options:
   -s, --spacing NUM          use NUM spaces between columns instead of 3
   -u, --ui curses/less/none  use UI based on ncurses, less or nothing(tm)
       --no-header            remove column headers
-      --set-color col:[fg=]color1[,bg=color2]
-                             set color1 as foreground and color2 as
-                             background of column col
+      --set-color COLNAME:[fg=]COLOR1[,bg=COLOR2]
+                             set COLOR1 as foreground and COLOR2 as
+                             background of column COLNAME
       --use-color-columns    use columns with _color suffix
       --with-types           print types in column headers
       --help                 display this help and exit
