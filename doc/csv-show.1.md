@@ -38,18 +38,24 @@ There are 3 backends: **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3
 
 **none** backend simply prints everything to standard output.
 
+-s, \--spacing *NUM*
+:   use *NUM* spaces between columns instead of 3
+
 -u, \--ui *curses*/*less*/*none*
 :   use UI based on **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3x.html)**(3),
 **[less](http://man7.org/linux/man-pages/man1/less.1.html)**(1) or nothing(tm)
 
--s, \--spacing *NUM*
-:   use *NUM* spaces between columns instead of 3
+\--no-header
+:   remove column headers
+
+\--set-color *COLNAME*:[fg=]*COLOR1*[,bg=*COLOR2*]
+:   set *COLOR1* as foreground and *COLOR2* as background of column *COLNAME*
+
+\--use-color-columns
+:   use columns with _color suffix
 
 \--with-types
 :   print types in column headers
-
-\--no-header
-:   remove column headers
 
 \--help
 :   display this help and exit

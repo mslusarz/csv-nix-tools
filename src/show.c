@@ -85,9 +85,9 @@ usage(FILE *out)
 	fprintf(out, "  -s, --spacing NUM          use NUM spaces between columns instead of 3\n");
 	fprintf(out, "  -u, --ui curses/less/none  use UI based on ncurses, less or nothing(tm)\n");
 	fprintf(out, "      --no-header            remove column headers\n");
-	fprintf(out, "      --set-color col:[fg=]color1[,bg=color2]\n");
-	fprintf(out, "                             set color1 as foreground and color2 as\n");
-	fprintf(out, "                             background of column col\n");
+	fprintf(out, "      --set-color COLNAME:[fg=]COLOR1[,bg=COLOR2]\n");
+	fprintf(out, "                             set COLOR1 as foreground and COLOR2 as\n");
+	fprintf(out, "                             background of column COLNAME\n");
 	fprintf(out, "      --use-color-columns    use columns with _color suffix\n");
 	fprintf(out, "      --with-types           print types in column headers\n");
 	describe_help(out);
