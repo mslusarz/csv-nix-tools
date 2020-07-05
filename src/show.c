@@ -65,6 +65,7 @@ static const struct option opts[] = {
 	{"with-types",		no_argument, 		NULL, 't'},
 	{"ui",			required_argument,	NULL, 'u'},
 	{"spacing",		required_argument,	NULL, 's'},
+	{"use-color-columns",	no_argument,		NULL, 'U' },
 	{"set-color",		required_argument,	NULL, 'C' },
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
@@ -87,6 +88,7 @@ usage(FILE *out)
 	fprintf(out, "      --set-color col:[fg=]color1[,bg=color2]\n");
 	fprintf(out, "                             set color1 as foreground and color2 as\n");
 	fprintf(out, "                             background of column col\n");
+	fprintf(out, "      --use-color-columns    use columns with _color suffix\n");
 	fprintf(out, "      --with-types           print types in column headers\n");
 	describe_help(out);
 	describe_version(out);
@@ -301,7 +303,9 @@ get_color_slow(void *p_)
 	return (void *)(intptr_t)color;
 err:
 	endwin();
-	fprintf(stderr, "color must be either a predefined name or in RRGGBB format\n");
+	fprintf(stderr,
+		"Can't parse '%s' as color - it must be either a predefined name or in RRGGBB format\n",
+		col);
 	exit(2);
 }
 
@@ -384,9 +388,8 @@ nprint(int y, int x, const char *str, bool *truncated)
 }
 
 static void
-show(char **data,
+show(struct cb_params *params,
 	const struct col_header *headers, size_t nheaders,
-	size_t *max_lengths,
 
 	size_t first_line, /* index of the first line to show */
 	size_t nlines, /* number of lines to show */
@@ -394,9 +397,16 @@ show(char **data,
 	size_t spacing,
 	bool print_header, bool print_types,
 	enum alignment *alignments,
-	int *col_color_pairs)
+	bool use_color_columns,
+	bool *is_color_column,
+	size_t *color_column_index,
+	size_t *col_offsets)
 {
+	char **data = params->lines;
+	size_t *max_lengths = params->max_lengths;
+	int *col_color_pairs = params->col_color_pairs;
 	size_t ypos = 0;
+
 	clear();
 
 	if (print_header) {
@@ -406,6 +416,9 @@ show(char **data,
 		for (size_t i = 0; i < nheaders; ++i) {
 			int prev_xpos = xpos;
 			bool truncated;
+
+			if (use_color_columns && is_color_column[i])
+				continue;
 
 			if (col_color_pairs[i] != -1)
 				attron(COLOR_PAIR(col_color_pairs[i]));
@@ -456,18 +469,34 @@ show(char **data,
 		ypos++;
 	}
 
-
 	for (size_t ln = first_line; ln < first_line + nlines; ++ln, ++ypos) {
-		const char *buf = data[ln];
+		char *buf = data[ln];
 		int xpos = 0;
+
+		col_offsets[0] = 0;
+		for (size_t i = 1; i < nheaders + 1; ++i) {
+			size_t len = strlen(buf + col_offsets[i - 1]);
+			col_offsets[i] = col_offsets[i - 1] + len + 1;
+		}
 
 		for (size_t i = 0; i < nheaders; ++i) {
 			bool truncated;
 
-			if (col_color_pairs[i] != -1)
-				attron(COLOR_PAIR(col_color_pairs[i]));
+			size_t len = col_offsets[i + 1] - col_offsets[i] - 1;
 
-			size_t len = strlen(buf);
+			if (use_color_columns && is_color_column[i])
+				continue;
+
+			int colpair = col_color_pairs[i];
+
+			if (use_color_columns && color_column_index[i] != SIZE_MAX) {
+				char *col = buf + col_offsets[color_column_index[i]];
+				if (col[0])
+					colpair = get_color_pair(params, col);
+			}
+
+			if (colpair != -1)
+				attron(COLOR_PAIR(colpair));
 
 			if (alignments[i] == RIGHT)
 				for (size_t j = 0; j < max_lengths[i] - len; ++j)
@@ -476,16 +505,18 @@ show(char **data,
 			if (alignments[i] == RIGHT)
 				xpos += max_lengths[i] - len;
 
-			nprint(ypos, xpos - xoff, buf, &truncated);
+			nprint(ypos, xpos - xoff, buf + col_offsets[i], &truncated);
 
-			if (truncated)
+			if (truncated) {
+				if (colpair != -1)
+					attroff(COLOR_PAIR(colpair));
 				break;
+			}
 
 			if (alignments[i] == LEFT)
 				for (size_t j = len; j < max_lengths[i]; ++j)
 					mvaddch(ypos, xpos - xoff + j, ' ');
 
-			buf += len + 1;
 			xpos += len;
 
 			if (alignments[i] == LEFT)
@@ -495,8 +526,8 @@ show(char **data,
 			if (i < nheaders - 1)
 				xpos += spacing;
 
-			if (col_color_pairs[i] != -1)
-				attroff(COLOR_PAIR(col_color_pairs[i]));
+			if (colpair != -1)
+				attroff(COLOR_PAIR(colpair));
 		}
 	}
 }
@@ -505,7 +536,8 @@ static void
 curses_ui(struct cb_params *params, const struct col_header *headers,
 		size_t nheaders, bool print_header, bool print_types,
 		size_t spacing, enum alignment *alignments,
-		char **set_colorpair, size_t set_colorpairs_num)
+		char **set_colorpair, size_t set_colorpairs_num,
+		bool use_color_columns)
 {
 	if (close(0)) {
 		perror("close");
@@ -537,7 +569,7 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 	for (size_t i = 0; i < nheaders; ++i)
 		params->col_color_pairs[i] = -1;
 
-	if (set_colorpairs_num) {
+	if (set_colorpairs_num || use_color_columns) {
 		if (!has_colors()) {
 			endwin();
 			fprintf(stderr, "Your terminal doesn't support colors\n");
@@ -576,6 +608,31 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 			}
 
 			params->col_color_pairs[idx] = get_color_pair(params, x);
+		}
+	}
+
+	bool *is_color_column = NULL;
+	size_t *color_column_index = NULL;
+	size_t *col_offsets_buf = xmalloc_nofail(nheaders + 1, sizeof(col_offsets_buf[0]));
+
+	if (use_color_columns) {
+		is_color_column = xcalloc_nofail(nheaders, sizeof(is_color_column[0]));
+		color_column_index = xmalloc_nofail(nheaders, sizeof(color_column_index[0]));
+
+		for (size_t i = 0; i < nheaders; ++i) {
+			size_t len = strlen(headers[i].name);
+			is_color_column[i] = strcmp(headers[i].name + len - strlen("_color"), "_color") == 0;
+
+			color_column_index[i] = SIZE_MAX;
+			for (size_t j = 0; j < nheaders; ++j) {
+				if (strncmp(headers[i].name, headers[j].name, len) != 0)
+					continue;
+				if (strcmp(headers[j].name + len, "_color") != 0)
+					continue;
+
+				color_column_index[i] = j;
+				break;
+			}
 		}
 	}
 
@@ -625,12 +682,10 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 				first_line = params->nlines - nlines;
 		}
 
-		show(params->lines,
-			headers, nheaders,
-			params->max_lengths,
-			first_line, nlines,
-			xoff, spacing, print_header, print_types,
-			alignments, params->col_color_pairs);
+		show(params, headers, nheaders, first_line, nlines,  xoff,
+			spacing, print_header, print_types, alignments,
+			use_color_columns, is_color_column, color_column_index,
+			col_offsets_buf);
 		refresh();
 
 		if (params->logfd >= 0)
@@ -750,10 +805,13 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 
 	endwin();
 
-	if (set_colorpairs_num) {
+	if (set_colorpairs_num || use_color_columns) {
 		csv_ht_destroy(&params->color_pairs);
 		csv_ht_destroy(&params->colors);
 	}
+	free(col_offsets_buf);
+	free(is_color_column);
+	free(color_column_index);
 	free(params->col_color_pairs);
 }
 #endif
@@ -901,6 +959,7 @@ main(int argc, char *argv[])
 
 	char **set_colorpair = NULL;
 	size_t set_colorpair_num = 0;
+	bool use_color_columns = false;
 
 	while ((opt = getopt_long(argc, argv, "u:s:", opts, NULL)) != -1) {
 		switch (opt) {
@@ -941,6 +1000,9 @@ main(int argc, char *argv[])
 						sizeof(set_colorpair[0]));
 				set_colorpair[set_colorpair_num - 1] =
 						xstrdup_nofail(optarg);
+				break;
+			case 'U':
+				use_color_columns = true;
 				break;
 			case 'H':
 				print_header = false;
@@ -1004,7 +1066,7 @@ main(int argc, char *argv[])
 #ifdef NCURSESW_ENABLED
 		curses_ui(&params, headers, nheaders, print_header,
 				print_types, spacing, alignments, set_colorpair,
-				set_colorpair_num);
+				set_colorpair_num, use_color_columns);
 #endif
 	} else {
 		static_ui(ui == LESS, &params, headers, nheaders, print_header,

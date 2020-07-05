@@ -9,6 +9,7 @@ Options:
       --set-color col:[fg=]color1[,bg=color2]
                              set color1 as foreground and color2 as
                              background of column col
+      --use-color-columns    use columns with _color suffix
       --with-types           print types in column headers
       --help                 display this help and exit
       --version              output version information and exit
