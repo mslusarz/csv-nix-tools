@@ -300,7 +300,12 @@ get_color_slow(void *p_)
 		init_color(color, r, g, b);
 	}
 
-	return (void *)(intptr_t)color;
+	/* we have to allocate, because COLOR_BLACK == 0 (and 0 casted to
+	 * void * is NULL, which is considered an error by csv_ht_get_value) */
+	int *color_ptr = xmalloc_nofail(1, sizeof(*color_ptr));
+	*color_ptr = color;
+
+	return color_ptr;
 err:
 	endwin();
 	fprintf(stderr,
@@ -315,8 +320,7 @@ get_color(struct cb_params *params, char *txt)
 	struct slow_params p;
 	p.params = params;
 	p.txt = txt;
-	return (int)(intptr_t)csv_ht_get_value(params->colors, txt,
-			get_color_slow, &p);
+	return *(int *)csv_ht_get_value(params->colors, txt, get_color_slow, &p);
 }
 
 static void *
@@ -583,7 +587,7 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 			endwin();
 			exit(2);
 		}
-		if (csv_ht_init(&params->colors, NULL)) {
+		if (csv_ht_init(&params->colors, free)) {
 			endwin();
 			exit(2);
 		}
