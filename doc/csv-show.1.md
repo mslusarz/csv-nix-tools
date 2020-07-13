@@ -32,6 +32,8 @@ There are 3 backends: **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3
     - to the end of the file (end key)
     - to the end of the line (shift + end key)
 
+- supports changing foreground and background color of each cell
+
 - doesn't support searching (yet)
 
 **less** backend supports everything the command **less**(1) supports.
@@ -51,8 +53,19 @@ There are 3 backends: **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3
 \--set-color *COLNAME*:[fg=]*COLOR1*[,bg=*COLOR2*]
 :   set *COLOR1* as foreground and *COLOR2* as background of column *COLNAME*
 
+    colors can be specified in 3 ways:
+
+    - as a predefined name (black, red, green, yellow, blue, magenta, cyan, white, default)
+
+    - as a decimal number for terminal-specific color
+
+    - in RRGGBB format (FF0000 is red, 00FF00 is green, 0000FF is blue, etc.),
+      note: this requires changing definition of a color slot, but
+      some terminals lie about supporting this capability, and there's
+      no way of detecting this
+
 \--use-color-columns
-:   use columns with _color suffix
+:   use columns with _color suffix to render each cell
 
 \--with-types
 :   print types in column headers

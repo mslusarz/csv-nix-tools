@@ -266,7 +266,7 @@ get_color_slow(void *p_)
 		color = COLOR_WHITE;
 	else if (strcmp(col, "default") == 0)
 		color = -1;
-	else {
+	else if (strlen(col) == 6) {
 		if (!can_change_color()) {
 			endwin();
 			fprintf(stderr, "Your terminal doesn't support changing colors\n");
@@ -282,9 +282,6 @@ get_color_slow(void *p_)
 
 		color = p->params->used_colors++;
 
-		if (strlen(col) != 6)
-			goto err;
-
 		for (unsigned i = 0; i < 6; ++i)
 			if (!((col[i] >= '0' && col[i] <= '9') ||
 			      (col[i] >= 'A' && col[i] <= 'F')))
@@ -298,6 +295,10 @@ get_color_slow(void *p_)
 		b = (int)(1000.0 * b / 255.0);
 
 		init_color(color, r, g, b);
+	} else if (strtoi_safe(col, &color, 10) == 0) {
+		;
+	} else {
+		goto err;
 	}
 
 	/* we have to allocate, because COLOR_BLACK == 0 (and 0 casted to
@@ -309,7 +310,7 @@ get_color_slow(void *p_)
 err:
 	endwin();
 	fprintf(stderr,
-		"Can't parse '%s' as color - it must be either a predefined name or in RRGGBB format\n",
+		"Can't parse '%s' as color - it must be either a predefined name, in RRGGBB format or be a decimal number\n",
 		col);
 	exit(2);
 }
