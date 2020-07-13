@@ -37,6 +37,7 @@
 <li>to the end of the file (end key)</li>
 <li>to the end of the line (shift + end key)</li>
 </ul></li>
+<li><p>supports changing foreground and background color of each cell</p></li>
 <li><p>doesn’t support searching (yet)</p></li>
 </ul>
 <p><strong>less</strong> backend supports everything the command <strong>less</strong>(1) supports.</p>
@@ -52,10 +53,16 @@
 <dd>remove column headers
 </dd>
 <dt>--set-color <em>COLNAME</em>:[fg=]<em>COLOR1</em>[,bg=<em>COLOR2</em>]</dt>
-<dd>set <em>COLOR1</em> as foreground and <em>COLOR2</em> as background of column <em>COLNAME</em>
+<dd><p>set <em>COLOR1</em> as foreground and <em>COLOR2</em> as background of column <em>COLNAME</em></p>
+<p>colors can be specified in 3 ways:</p>
+<ul>
+<li><p>as a predefined name (black, red, green, yellow, blue, magenta, cyan, white, default)</p></li>
+<li><p>as a decimal number for terminal-specific color</p></li>
+<li><p>in RRGGBB format (FF0000 is red, 00FF00 is green, 0000FF is blue, etc.), note: this requires changing definition of a color slot, but some terminals lie about supporting this capability, and there’s no way of detecting this</p></li>
+</ul>
 </dd>
 <dt>--use-color-columns</dt>
-<dd>use columns with _color suffix
+<dd>use columns with _color suffix to render each cell
 </dd>
 <dt>--with-types</dt>
 <dd>print types in column headers
