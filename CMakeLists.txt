@@ -299,17 +299,17 @@ function(gen_doc name section)
 				sed 's/\\\*\\\*\\\(csv-[a-z-]*\\\)\\\*\\\*\(\\\([0-9]*\\\)\)/**\[\\1\]\(\\1.\\2.html\)**\(\\2\)/g' |
 				${PANDOC} -s -t html -o ${CMAKE_BINARY_DIR}/csv-${name}.${section}.html)
 
-	add_custom_target(doc-csv-${name}
+	add_custom_target(man-csv-${name}.${section}
 			DEPENDS ${CMAKE_BINARY_DIR}/csv-${name}.${section}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-	add_custom_target(doc-csv-${name}-html
+	add_custom_target(html-csv-${name}.${section}
 			DEPENDS ${CMAKE_BINARY_DIR}/csv-${name}.${section}.html
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-	add_dependencies(doc doc-csv-${name})
+	add_dependencies(manpages man-csv-${name}.${section})
 
-	add_dependencies(doc-html doc-csv-${name}-html)
+	add_dependencies(manpages-html html-csv-${name}.${section})
 
 	install(FILES ${CMAKE_BINARY_DIR}/csv-${name}.${section}
 			DESTINATION ${CMAKE_INSTALL_MANDIR}/man${section})
@@ -320,8 +320,8 @@ function(gen1_doc name)
 endfunction()
 
 if(PANDOC)
-	add_custom_target(doc ALL)
-	add_custom_target(doc-html)
+	add_custom_target(manpages ALL)
+	add_custom_target(manpages-html)
 
 	gen_doc(nix-tools 7)
 	gen_doc(tables-tut 7)
