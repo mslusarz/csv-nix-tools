@@ -15,7 +15,6 @@ Options:
                              (NOT IMPLEMENTED YET)
   -m, --remove               remove column header
   -M, --remove-types         remove types from columns
-                             (NOT IMPLEMENTED YET)
   -n, --rename NAME,NEW-NAME rename column NAME to NEW-NAME
                              (NOT IMPLEMENTED YET)
   -s, --show                 print output in table format

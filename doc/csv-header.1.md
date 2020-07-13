@@ -26,7 +26,7 @@ the column header transformed.
 :   (NOT IMPLEMENTED YET) add types to columns by guessing based on their contents
 
 -M, \--remove-types
-:   (NOT IMPLEMENTED YET) remove types from columns
+:   remove types from columns
 
 -m, \--remove
 :   remove column header

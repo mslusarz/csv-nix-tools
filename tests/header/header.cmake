@@ -35,6 +35,9 @@ test("csv-header" data/2-columns-3-rows.csv data/2-columns-3-rows.csv data/empty
 test("csv-header -m" data/2-columns-3-rows.csv header/2-columns-3-rows-noheader.csv data/empty.txt 0
 	header_remove)
 
+test("csv-header -M" data/2-columns-3-rows.csv header/2-columns-3-rows-notypes.csv data/empty.txt 0
+	header_remove_types)
+
 test("csv-header -s" data/2-columns-3-rows.csv header/2-columns-3-rows.txt data/empty.txt 0
 	header_-s)
 

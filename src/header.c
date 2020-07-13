@@ -76,8 +76,7 @@ usage(FILE *out)
 "                             (NOT IMPLEMENTED YET)\n");
 	fprintf(out, "  -m, --remove               remove column header\n");
 	fprintf(out,
-"  -M, --remove-types         remove types from columns\n"
-"                             (NOT IMPLEMENTED YET)\n");
+"  -M, --remove-types         remove types from columns\n");
 	fprintf(out,
 "  -n, --rename NAME,NEW-NAME rename column NAME to NEW-NAME\n"
 "                             (NOT IMPLEMENTED YET)\n");
@@ -107,6 +106,7 @@ main(int argc, char *argv[])
 	int opt;
 	struct cb_params params;
 	bool print_header = true;
+	bool print_types = true;
 	bool show = false;
 	bool show_full;
 
@@ -129,8 +129,9 @@ main(int argc, char *argv[])
 			case 'm': /* remove */
 				print_header = false;
 				break;
-//			case 'M': /* remove-types */
-//				break;
+			case 'M': /* remove-types */
+				print_types = false;
+				break;
 //			case 'n': /* rename original,new */
 //				break;
 			case 's':
@@ -168,8 +169,19 @@ main(int argc, char *argv[])
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
 
-	if (print_header)
-		csv_print_header(stdout, headers, nheaders);
+	if (print_header) {
+		for (size_t i = 0; i < nheaders; ++i) {
+			printf("%s", headers[i].name);
+
+			if (print_types)
+				printf(":%s", headers[i].type);
+
+			if (i == nheaders - 1)
+				printf("\n");
+			else
+				printf(",");
+		}
+	}
 
 	if (csv_read_all(s, &next_row, &params) < 0)
 		exit(2);
