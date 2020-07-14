@@ -1,0 +1,12 @@
+_table:string,num.col1:int,num.col2:int,num.col3:int,text.col4:string,text.col5:string
+text,,,,aaa,bbb
+num,-3,-1,-6,,
+num,-2,0,-4,,
+num,-1,1,-2,,
+text,,,,ccc,ddd
+num,0,0,0,,
+num,1,-1,2,,
+num,2,0,4,,
+text,,,,eee,fff
+num,3,1,6,,
+text,,,,ggg,hhh
