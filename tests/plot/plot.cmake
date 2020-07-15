@@ -33,7 +33,7 @@ test("csv-plot -x col1 -y col2" plot/input.csv plot/oneline.gnuplot data/empty.t
 	plot_oneline)
 
 if (GNUPLOT)
-test("csv-plot -x col1 -y col2 -t dumb -g" plot/input.csv plot/oneline.txt data/empty.txt 0
+test("csv-plot -x col1 -y col2 -t 'dumb size 79,24' -g" plot/input.csv plot/oneline.txt data/empty.txt 0
 	plot_oneline_dumb_terminal)
 endif()
 
