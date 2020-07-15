@@ -3,6 +3,7 @@ Read CSV stream from standard input and output gnuplot script to standard output
 
 Options:
   -g                         pipe to gnuplot
+  -t, --terminal TERMINAL    use TERMINAL as gnuplot's output (e.g. png, gif, dumb)
   -x COLNAME                 use COLNAME as x axis
   -y COLNAME                 use COLNAME as y axis
   -T, --table=NAME           apply to rows only with _table column equal NAME

@@ -100,6 +100,11 @@ if (NOT PANDOC)
 	message(WARNING "pandoc not found. Man pages won't be generated.")
 endif()
 
+find_program(GNUPLOT gnuplot)
+if (NOT GNUPLOT)
+	message(WARNING "gnuplot not found. csv-plot's gnuplot-based test won't be executed.")
+endif()
+
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wsign-conversion")
 

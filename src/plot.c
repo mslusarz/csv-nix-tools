@@ -43,6 +43,7 @@
 
 static const struct option opts[] = {
 	{"table",	required_argument,	NULL, 'T'},
+	{"terminal",	required_argument,	NULL, 't'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
 	{NULL,		0,			NULL, 0},
@@ -58,6 +59,8 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	fprintf(out,
 "  -g                         pipe to gnuplot\n");
+	fprintf(out,
+"  -t, --terminal TERMINAL    use TERMINAL as gnuplot's output (e.g. png, gif, dumb)\n");
 	fprintf(out,
 "  -x COLNAME                 use COLNAME as x axis\n");
 	fprintf(out,
@@ -162,16 +165,20 @@ main(int argc, char *argv[])
 	char **ycolnames = NULL;
 	size_t ycols = 0;
 	bool run_gnuplot = false;
+	char *terminal = NULL;
 
 	params.cols = NULL;
 	params.ncols = 0;
 	params.table = NULL;
 	params.table_column = SIZE_MAX;
 
-	while ((opt = getopt_long(argc, argv, "gT:x:y:", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "gt:T:x:y:", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'g':
 				run_gnuplot = true;
+				break;
+			case 't':
+				terminal = xstrdup_nofail(optarg);
 				break;
 			case 'T':
 				params.table = xstrdup_nofail(optarg);
@@ -237,6 +244,8 @@ main(int argc, char *argv[])
 
 	comment();
 
+	if (terminal)
+		printf("set terminal %s\n", terminal);
 	printf("set xlabel '%s'\n", xcolname);
 	if (ycols == 1)
 		printf("set ylabel '%s'\n", ycolnames[0]);
@@ -266,6 +275,7 @@ main(int argc, char *argv[])
 	comment();
 
 end:
+	free(terminal);
 	free(xcolname);
 
 	for (size_t c = 0; c < ycols; ++c)
