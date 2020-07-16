@@ -1,6 +1,6 @@
 # pipe this to gnuplot or use -g option
-set xlabel 'col1'
-set ylabel 'col2'
+set xlabel 'col1' noenhanced
+set ylabel 'col2' noenhanced
 set datafile separator ','
 $data << EOD
 -3,-1

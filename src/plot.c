@@ -305,11 +305,11 @@ main(int argc, char *argv[])
 	if (terminal)
 		printf("set terminal %s\n", terminal);
 
-	printf("set xlabel '%s'\n", xcolnames[0]);
+	printf("set xlabel '%s' noenhanced\n", xcolnames[0]);
 	if (ycols == 1) {
-		printf("set ylabel '%s'\n", ycolnames[0]);
+		printf("set ylabel '%s' noenhanced\n", ycolnames[0]);
 		if (zcols == 1)
-			printf("set zlabel '%s'\n", zcolnames[0]);
+			printf("set zlabel '%s' noenhanced\n", zcolnames[0]);
 	}
 
 	printf("set datafile separator ','\n");
@@ -328,19 +328,19 @@ main(int argc, char *argv[])
 		if (zcols == 1)
 			printf("''");
 		else
-			printf("'%s'", zcolnames[0]);
+			printf("'%s' noenhanced", zcolnames[0]);
 
 		for (size_t c = 1; c < zcols; ++c)
-			printf(", '' using 1:2:%zu with points title '%s'", c + 3, zcolnames[c]);
+			printf(", '' using 1:2:%zu with points title '%s' noenhanced", c + 3, zcolnames[c]);
 	} else {
 		printf("plot '$data' using 1:2 with linespoints title ");
 		if (ycols == 1)
 			printf("''");
 		else
-			printf("'%s'", ycolnames[0]);
+			printf("'%s' noenhanced", ycolnames[0]);
 
 		for (size_t c = 1; c < ycols; ++c)
-			printf(", '' using 1:%zu with linespoints title '%s'", c + 2, ycolnames[c]);
+			printf(", '' using 1:%zu with linespoints title '%s' noenhanced", c + 2, ycolnames[c]);
 	}
 
 
