@@ -3,7 +3,8 @@ Read CSV stream from standard input and output 2D or 3D gnuplot script to
 standard output.
 
 Options:
-  -g                         pipe to gnuplot
+  -g, --gnuplot              pipe to gnuplot
+  -G, --grid                 draw a grid
   -t, --terminal TERMINAL    use TERMINAL as gnuplot's output (e.g. png, gif, dumb)
   -x COLNAME                 use COLNAME as x axis
   -y COLNAME                 use COLNAME as y axis

@@ -42,6 +42,8 @@
 #include "utils.h"
 
 static const struct option opts[] = {
+	{"gnuplot",	no_argument,		NULL, 'g'},
+	{"grid",	no_argument,		NULL, 'G'},
 	{"table",	required_argument,	NULL, 'T'},
 	{"terminal",	required_argument,	NULL, 't'},
 	{"version",	no_argument,		NULL, 'V'},
@@ -59,7 +61,9 @@ usage(FILE *out)
 	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
 	fprintf(out,
-"  -g                         pipe to gnuplot\n");
+"  -g, --gnuplot              pipe to gnuplot\n");
+	fprintf(out,
+"  -G, --grid                 draw a grid\n");
 	fprintf(out,
 "  -t, --terminal TERMINAL    use TERMINAL as gnuplot's output (e.g. png, gif, dumb)\n");
 	fprintf(out,
@@ -176,16 +180,20 @@ main(int argc, char *argv[])
 
 	bool run_gnuplot = false;
 	char *terminal = NULL;
+	bool grid = false;
 
 	params.cols = NULL;
 	params.ncols = 0;
 	params.table = NULL;
 	params.table_column = SIZE_MAX;
 
-	while ((opt = getopt_long(argc, argv, "gt:T:x:y:z:", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "gGt:T:x:y:z:", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'g':
 				run_gnuplot = true;
+				break;
+			case 'G':
+				grid = true;
 				break;
 			case 't':
 				terminal = xstrdup_nofail(optarg);
@@ -305,6 +313,9 @@ main(int argc, char *argv[])
 	}
 
 	printf("set datafile separator ','\n");
+
+	if (grid)
+		printf("set grid\n");
 
 	printf("$data << EOD\n");
 
