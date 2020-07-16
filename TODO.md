@@ -12,7 +12,7 @@
 
 # TODO (low level)
 - source-tools: add option to add and remove columns
-- header: implement add, add-types, change-type, guess-type, remove-types, rename
+- header: implement add, add-types, change-type, guess-type, rename
 - ps: lots of work, detailed in ps.c
 - show: ability to lock columns (make them always visible)
 - show: implement "search" and "help" in the ncurses backend
@@ -40,4 +40,3 @@
 - show: browser (html) backend?
 - other sink tools: diff/comm?, treeview (generic pstree)
 - csv -> csvnt?
-- graph generator?
