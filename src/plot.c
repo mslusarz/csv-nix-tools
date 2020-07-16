@@ -54,7 +54,8 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-plot [OPTION]...\n");
 	fprintf(out,
-"Read CSV stream from standard input and output gnuplot script to standard output.\n");
+"Read CSV stream from standard input and output 2D or 3D gnuplot script to\n"
+"standard output.\n");
 	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
 	fprintf(out,
@@ -65,6 +66,8 @@ usage(FILE *out)
 "  -x COLNAME                 use COLNAME as x axis\n");
 	fprintf(out,
 "  -y COLNAME                 use COLNAME as y axis\n");
+	fprintf(out,
+"  -z COLNAME                 use COLNAME as z axis\n");
 	describe_Table(out);
 	describe_help(out);
 	describe_version(out);
@@ -161,9 +164,16 @@ main(int argc, char *argv[])
 {
 	int opt;
 	struct cb_params params;
-	char *xcolname = NULL;
+
+	char **xcolnames = NULL;
+	size_t xcols = 0;
+
 	char **ycolnames = NULL;
 	size_t ycols = 0;
+
+	char **zcolnames = NULL;
+	size_t zcols = 0;
+
 	bool run_gnuplot = false;
 	char *terminal = NULL;
 
@@ -172,7 +182,7 @@ main(int argc, char *argv[])
 	params.table = NULL;
 	params.table_column = SIZE_MAX;
 
-	while ((opt = getopt_long(argc, argv, "gt:T:x:y:", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "gt:T:x:y:z:", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'g':
 				run_gnuplot = true;
@@ -184,12 +194,16 @@ main(int argc, char *argv[])
 				params.table = xstrdup_nofail(optarg);
 				break;
 			case 'x':
-				free(xcolname);
-				xcolname = xstrdup_nofail(optarg);
+				xcolnames = xrealloc_nofail(ycolnames, ++xcols, sizeof(xcolnames[0]));
+				xcolnames[xcols - 1] = xstrdup_nofail(optarg);
 				break;
 			case 'y':
 				ycolnames = xrealloc_nofail(ycolnames, ++ycols, sizeof(ycolnames[0]));
 				ycolnames[ycols - 1] = xstrdup_nofail(optarg);
+				break;
+			case 'z':
+				zcolnames = xrealloc_nofail(zcolnames, ++zcols, sizeof(zcolnames[0]));
+				zcolnames[zcols - 1] = xstrdup_nofail(optarg);
 				break;
 			case 'V':
 				printf("git\n");
@@ -209,8 +223,32 @@ main(int argc, char *argv[])
 	size_t nheaders = csv_get_headers(s, &headers);
 
 	int ret = 0;
-	if (xcolname == NULL || ycols == 0) {
+
+	if (xcols == 0 && ycols == 0 && zcols == 0) {
 		usage(stderr);
+		ret = 2;
+		goto end;
+	}
+
+	if (xcols == 0) {
+		fprintf(stderr, "Missing X column!\n");
+		ret = 2;
+		goto end;
+	}
+	if (xcols > 1) {
+		fprintf(stderr, "X column can be used only once!\n");
+		ret = 2;
+		goto end;
+	}
+
+	if (ycols == 0) {
+		fprintf(stderr, "Missing Y column!\n");
+		ret = 2;
+		goto end;
+	}
+
+	if (ycols > 1 && zcols > 0) {
+		fprintf(stderr, "Only last dimension can be used more than once!\n");
 		ret = 2;
 		goto end;
 	}
@@ -223,21 +261,33 @@ main(int argc, char *argv[])
 		}
 	}
 
-	params.cols = xmalloc_nofail(ycols + 1, sizeof(params.cols[0]));
+	params.cols = xmalloc_nofail(xcols + ycols + zcols, sizeof(params.cols[0]));
 
-	params.cols[0] = csv_find_loud(headers, nheaders, params.table, xcolname);
+	params.ncols = 0;
 
-	if (params.cols[0] == CSV_NOT_FOUND)
-		exit(2);
+	for (size_t c = 0; c < xcols; ++c, ++params.ncols) {
+		params.cols[params.ncols] =
+			csv_find_loud(headers, nheaders, params.table, xcolnames[c]);
 
-	for (size_t c = 0; c < ycols; ++c) {
-		params.cols[c + 1] =
-			csv_find_loud(headers, nheaders, params.table, ycolnames[c]);
-
-		if (params.cols[c + 1] == CSV_NOT_FOUND)
+		if (params.cols[params.ncols] == CSV_NOT_FOUND)
 			exit(2);
 	}
-	params.ncols = ycols + 1;
+
+	for (size_t c = 0; c < ycols; ++c, ++params.ncols) {
+		params.cols[params.ncols] =
+			csv_find_loud(headers, nheaders, params.table, ycolnames[c]);
+
+		if (params.cols[params.ncols] == CSV_NOT_FOUND)
+			exit(2);
+	}
+
+	for (size_t c = 0; c < zcols; ++c, ++params.ncols) {
+		params.cols[params.ncols] =
+			csv_find_loud(headers, nheaders, params.table, zcolnames[c]);
+
+		if (params.cols[params.ncols] == CSV_NOT_FOUND)
+			exit(2);
+	}
 
 	if (run_gnuplot)
 		gnuplot();
@@ -246,9 +296,13 @@ main(int argc, char *argv[])
 
 	if (terminal)
 		printf("set terminal %s\n", terminal);
-	printf("set xlabel '%s'\n", xcolname);
-	if (ycols == 1)
+
+	printf("set xlabel '%s'\n", xcolnames[0]);
+	if (ycols == 1) {
 		printf("set ylabel '%s'\n", ycolnames[0]);
+		if (zcols == 1)
+			printf("set zlabel '%s'\n", zcolnames[0]);
+	}
 
 	printf("set datafile separator ','\n");
 
@@ -258,15 +312,26 @@ main(int argc, char *argv[])
 
 	printf("EOD\n");
 
-	printf("plot '$data' using 1:2 with linespoints title ");
+	if (zcols > 0) {
+		printf("splot '$data' using 1:2:3 with points title ");
+		if (zcols == 1)
+			printf("''");
+		else
+			printf("'%s'", zcolnames[0]);
 
-	if (ycols == 1)
-		printf("''");
-	else
-		printf("'%s'", ycolnames[0]);
+		for (size_t c = 1; c < zcols; ++c)
+			printf(", '' using 1:2:%zu with points title '%s'", c + 3, zcolnames[c]);
+	} else {
+		printf("plot '$data' using 1:2 with linespoints title ");
+		if (ycols == 1)
+			printf("''");
+		else
+			printf("'%s'", ycolnames[0]);
 
-	for (size_t c = 1; c < ycols; ++c)
-		printf(", '' using 1:%zu with linespoints title '%s'", c + 2, ycolnames[c]);
+		for (size_t c = 1; c < ycols; ++c)
+			printf(", '' using 1:%zu with linespoints title '%s'", c + 2, ycolnames[c]);
+	}
+
 
 	printf("\n");
 
@@ -276,11 +341,18 @@ main(int argc, char *argv[])
 
 end:
 	free(terminal);
-	free(xcolname);
+
+	for (size_t c = 0; c < xcols; ++c)
+		free(xcolnames[c]);
+	free(xcolnames);
 
 	for (size_t c = 0; c < ycols; ++c)
 		free(ycolnames[c]);
 	free(ycolnames);
+
+	for (size_t c = 0; c < zcols; ++c)
+		free(zcolnames[c]);
+	free(zcolnames);
 
 	free(params.cols);
 	free(params.table);
