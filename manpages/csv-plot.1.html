@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>csv-plot</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">csv-plot</h1>
+</header>
+<h1 id="name">NAME</h1>
+<p>csv-plot - output 2D or 3D graph from CSV data read from standard input</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-plot</strong> [OPTION]…</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>Read CSV stream from standard input and output 2D or 3D gnuplot script to standard output.</p>
+<dl>
+<dt>-g, --gnuplot</dt>
+<dd>pipe to gnuplot
+</dd>
+<dt>-G, --grid</dt>
+<dd>draw a grid
+</dd>
+<dt>-t, --terminal <em>TERMINAL</em></dt>
+<dd>use <em>TERMINAL</em> as gnuplot’s output (e.g. png, gif, dumb)
+</dd>
+<dt>-x <em>COLNAME</em></dt>
+<dd>use <em>COLNAME</em> as x axis
+</dd>
+<dt>-y <em>COLNAME</em></dt>
+<dd>use <em>COLNAME</em> as y axis
+</dd>
+<dt>-z <em>COLNAME</em></dt>
+<dd>use <em>COLNAME</em> as z axis
+</dd>
+<dt>-T, --table=<em>NAME</em></dt>
+<dd>apply to rows only with _table column equal <em>NAME</em>
+</dd>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt><code>csv-plot -x xcol -y ycol &lt; file1.csv</code></dt>
+<dd>generate 2D graph gnuplot script from data in file1.csv
+</dd>
+<dt><code>csv-plot -x xcol -y ycol -z zcol -g &lt; file1.csv</code></dt>
+<dd>generate 3D graph gnuplot script from data in file1.csv and pipe it to gnuplot
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="https://linux.die.net/man/1/gnuplot">gnuplot</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>
