@@ -73,6 +73,7 @@ See **csv-tables-tut**(7) for introduction into tables support in csv-nix-tools.
 # SINK TOOLS #
 
 - **csv-exec**(1) - execute an external command for each row
+- **csv-plot**(1) - generate 2D or 3D graph using gnuplot
 - **csv-show**(1) - print in human-readable format
 
 # COMMON OPTIONS FOR ALL SOURCE TOOLS #
