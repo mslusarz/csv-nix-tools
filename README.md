@@ -104,6 +104,7 @@ Filtering/processing:
 
 Sink:
 - **[csv-exec]** - executes an external command for each row
+- **[csv-plot]** - generates 2D or 3D graph using gnuplot
 - **[csv-show]** - formats data in human-readable form (also available as a "-s/-S" option in all source and processing tools)
 
 # Documentation
@@ -158,4 +159,5 @@ See [TODO](TODO.md)
 [csv-uniq]:          https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-uniq.1.html
 
 [csv-exec]:          https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-exec.1.html
+[csv-plot]:          https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-plot.1.html
 [csv-show]:          https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-show.1.html
