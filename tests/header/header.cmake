@@ -38,6 +38,12 @@ test("csv-header -m" data/2-columns-3-rows.csv header/2-columns-3-rows-noheader.
 test("csv-header -M" data/2-columns-3-rows.csv header/2-columns-3-rows-notypes.csv data/empty.txt 0
 	header_remove_types)
 
+test("csv-header -e name:string,something:int" header/2-columns-3-rows-notypes.csv data/2-columns-3-rows.csv data/empty.txt 0
+	header_set_types)
+
+test("csv-header -n name,newname -n something,somethingelse" data/2-columns-3-rows.csv header/rename.csv data/empty.txt 0
+	header_rename)
+
 test("csv-header -s" data/2-columns-3-rows.csv header/2-columns-3-rows.txt data/empty.txt 0
 	header_-s)
 

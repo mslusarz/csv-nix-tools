@@ -40,8 +40,7 @@
 #include "utils.h"
 
 static const struct option opts[] = {
-	{"add-types",	required_argument,	NULL, 'A'},
-	{"change-type",	required_argument,	NULL, 'C'},
+	{"set-types",	required_argument,	NULL, 'e'},
 	{"guess-types",	no_argument,		NULL, 'G'},
 	{"remove",	no_argument,		NULL, 'm'},
 	{"remove-types",no_argument,		NULL, 'M'},
@@ -62,14 +61,8 @@ usage(FILE *out)
 	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
 	fprintf(out,
-"  -A, --add-types NAME1:TYPE1[,NAME1:TYPE2...]\n"
-"                             add type TYPE1 to column NAME1, TYPE2 to\n"
-"                             column NAME2, etc.\n"
-"                             (NOT IMPLEMENTED YET)\n");
-	fprintf(out,
-"  -C, --change-type NAME:TYPE\n"
-"                             change type of column NAME to TYPE\n"
-"                             (NOT IMPLEMENTED YET)\n");
+"  -e, --set-types NAME1:TYPE1[,NAME1:TYPE2...]\n"
+"                             set type of column NAME1 to TYPE1, etc.\n");
 	fprintf(out,
 "  -G, --guess-types          add types to columns by guessing based on their\n"
 "                             contents\n"
@@ -78,8 +71,7 @@ usage(FILE *out)
 	fprintf(out,
 "  -M, --remove-types         remove types from columns\n");
 	fprintf(out,
-"  -n, --rename NAME,NEW-NAME rename column NAME to NEW-NAME\n"
-"                             (NOT IMPLEMENTED YET)\n");
+"  -n, --rename NAME,NEW-NAME rename column NAME to NEW-NAME\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_help(out);
@@ -110,20 +102,58 @@ main(int argc, char *argv[])
 	bool show = false;
 	bool show_full;
 
-//	char *rename_from = NULL;
-//	char *rename_to = NULL;
+	struct column_change {
+		char *name;
+		char *new_name;
+		char *new_type;
+	};
 
-//	char *change_name = NULL;
-//	char *change_type = NULL;
+	struct column_change *changes = NULL;
+	size_t nchanges = 0;
 
-//	char **columns = NULL;
-
-	while ((opt = getopt_long(argc, argv, "A:C:GmMn:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "e:GmMn:sS", opts, NULL)) != -1) {
 		switch (opt) {
-//			case 'A': /* add-types col1:type1[,col2:type2] */
-//				break;
-//			case 'C': /* change-type col:type */
-//				break;
+			case 'e': { /* set-types col1:type1[,col2:type2] */
+				char *saveptr1;
+				char *tmp = strtok_r(optarg, ",", &saveptr1);
+				if (!tmp) {
+					usage(stderr);
+					exit(2);
+				}
+
+				do {
+					changes = xrealloc_nofail(changes, nchanges + 1, sizeof(changes[0]));
+					struct column_change *ch = &changes[nchanges++];
+
+					char *saveptr2;
+
+					tmp = strtok_r(tmp, ":", &saveptr2);
+					if (!tmp) {
+						usage(stderr);
+						exit(2);
+					}
+					ch->name = xstrdup_nofail(tmp);
+
+					tmp = strtok_r(NULL, ":", &saveptr2);
+					if (!tmp) {
+						usage(stderr);
+						exit(2);
+					}
+					ch->new_type = xstrdup_nofail(tmp);
+
+					tmp = strtok_r(NULL, ":", &saveptr2);
+					if (tmp) {
+						usage(stderr);
+						exit(2);
+					}
+
+					ch->new_name = NULL;
+
+					tmp = strtok_r(NULL, ",", &saveptr1);
+				} while (tmp);
+
+				break;
+			}
 //			case 'G': /* guess-types */
 //				break;
 			case 'm': /* remove */
@@ -132,8 +162,27 @@ main(int argc, char *argv[])
 			case 'M': /* remove-types */
 				print_types = false;
 				break;
-//			case 'n': /* rename original,new */
-//				break;
+			case 'n': { /* rename original,new */
+				char *tmp = strtok(optarg, ",");
+				if (!tmp) {
+					usage(stderr);
+					exit(2);
+				}
+
+				changes = xrealloc_nofail(changes, nchanges + 1, sizeof(changes[0]));
+				struct column_change *ch = &changes[nchanges++];
+
+				ch->name = xstrdup_nofail(tmp);
+
+				tmp = strtok(NULL, ",");
+				if (!tmp) {
+					usage(stderr);
+					exit(2);
+				}
+				ch->new_name = xstrdup_nofail(tmp);
+				ch->new_type = NULL;
+				break;
+			}
 			case 's':
 				show = true;
 				show_full = false;
@@ -171,10 +220,35 @@ main(int argc, char *argv[])
 
 	if (print_header) {
 		for (size_t i = 0; i < nheaders; ++i) {
-			printf("%s", headers[i].name);
+			bool found = false;
+			for (size_t j = 0; j < nchanges; ++j) {
+				struct column_change *ch = &changes[j];
 
-			if (print_types)
-				printf(":%s", headers[i].type);
+				if (strcmp(ch->name, headers[i].name) != 0)
+					continue;
+
+				if (ch->new_name)
+					printf("%s", ch->new_name);
+				else
+					printf("%s", ch->name);
+
+				if (print_types) {
+					if (ch->new_type)
+						printf(":%s", ch->new_type);
+					else
+						printf(":%s", headers[i].type);
+				}
+
+				found = true;
+				break;
+			}
+
+			if (!found) {
+				printf("%s", headers[i].name);
+
+				if (print_types)
+					printf(":%s", headers[i].type);
+			}
 
 			if (i == nheaders - 1)
 				printf("\n");

@@ -12,7 +12,7 @@
 
 # TODO (low level)
 - source-tools: add option to add and remove columns
-- header: implement add, add-types, change-type, guess-type, rename
+- header: implement add, guess-types
 - ps: lots of work, detailed in ps.c
 - show: ability to lock columns (make them always visible)
 - show: implement "search" and "help" in the ncurses backend
