@@ -387,7 +387,7 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 			char *x = strtok(set_colorpair[i], ":");
 			if (!x) {
 				endwin();
-				fprintf(stderr, "\n");
+				fprintf(stderr, "Color not in name:spec format\n");
 				exit(2);
 			}
 			size_t idx = csv_find_loud(headers, nheaders, NULL, x);
@@ -398,7 +398,7 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 			x = strtok(NULL, ":");
 			if (!x) {
 				endwin();
-				fprintf(stderr, "\n");
+				fprintf(stderr, "Color not in name:spec format\n");
 				exit(2);
 			}
 
