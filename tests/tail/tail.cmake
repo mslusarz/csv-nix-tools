@@ -1,4 +1,6 @@
 #
+# SPDX-License-Identifier: BSD-3-Clause
+#
 # Copyright 2019, Sebastian Pidek <sebastian.pidek@gmail.com>
 # Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
