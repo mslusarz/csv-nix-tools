@@ -1,4 +1,9 @@
 %{
+/*
+ * SPDX-License-Identifier: BSD-3-Clause
+ *
+ * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ */
 
 #include <stdarg.h>
 #include <stdio.h>
