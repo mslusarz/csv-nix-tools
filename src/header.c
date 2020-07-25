@@ -236,5 +236,13 @@ main(int argc, char *argv[])
 
 	csv_destroy_ctx(s);
 
+	for (size_t j = 0; j < nchanges; ++j) {
+		struct column_change *ch = &changes[j];
+		free(ch->name);
+		free(ch->new_name);
+		free(ch->new_type);
+	}
+	free(changes);
+
 	return 0;
 }
