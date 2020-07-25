@@ -271,12 +271,20 @@ function(gen_doc name section)
 	add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/csv-${name}.${section}
 			MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/doc/csv-${name}.${section}.md
 			COMMAND cat ${CMAKE_SOURCE_DIR}/doc/csv-${name}.${section}.md |
+				grep -v "^SPDX-License-Identifier" |
+				grep -v "^Copyright" |
+				grep -v "^\\\<!--$" |
+				grep -v "^--\\\>$" |
 				sed 's/\\[\\\(\[a-z0-9-\]\*\\\)\\]\(http\[s\]*:\[^\)\]*\)/\\1/g' |
 				${PANDOC} -s -t man -o ${CMAKE_BINARY_DIR}/csv-${name}.${section})
 
 	add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/csv-${name}.${section}.html
 			MAIN_DEPENDENCY ${CMAKE_SOURCE_DIR}/doc/csv-${name}.${section}.md
 			COMMAND cat ${CMAKE_SOURCE_DIR}/doc/csv-${name}.${section}.md |
+				grep -v "^SPDX-License-Identifier" |
+				grep -v "^Copyright" |
+				grep -v "^\\\<!--$" |
+				grep -v "^--\\\>$" |
 				sed 's/\\\*\\\*\\\(csv-[a-z-]*\\\)\\\*\\\*\(\\\([0-9]*\\\)\)/**\[\\1\]\(\\1.\\2.html\)**\(\\2\)/g' |
 				${PANDOC} -s -t html -o ${CMAKE_BINARY_DIR}/csv-${name}.${section}.html)
 

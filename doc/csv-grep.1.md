@@ -1,3 +1,8 @@
+<!--
+SPDX-License-Identifier: BSD-3-Clause
+Copyright 2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+-->
+
 ---
 title: csv-grep
 section: 1
