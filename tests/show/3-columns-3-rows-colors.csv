@@ -1,0 +1,4 @@
+name:string,id_color:string,id:int,something:int
+lorem ipsum,fg=blue,1,1
+not all that is gold,"fg=white,bg=black",2,0
+something else,bg=yellow,3,1

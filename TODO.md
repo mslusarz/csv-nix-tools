@@ -4,7 +4,6 @@
 - more rpn operators/functions (split, rev, timestamp conversion, now, tr)
 - exporting tools (to-xml, to-json, to-sql)
 - importing tools (from-xml, from-json)
-- test regularly with Valgrind
 - i18n
 - export as much as possible as a library(ies)
 - Coverity
@@ -21,8 +20,6 @@
 - netstat: translate interface number to interface name
 - netstat: figure out how to print inet\_diag\_info
 - sql: add support for tables
-- write down data format spec
-- strict column name verification
 - sum,count,min,max,avg: --group-by=col1,col2
 - uniq: --count
 - show: fix column width calc when input is in utf
@@ -36,7 +33,4 @@
 - built-in pipes? (csv "ls | grep -c size -F 0 | cut -c name")
 - shell?
 - one multicommand binary? (csv ls, csv grep, ...)
-- show: column separators? header separator? number formatter? (see what csvlook from csvkit does)
-- show: browser (html) backend?
 - other sink tools: diff/comm?, treeview (generic pstree)
-- csv -> csvnt?

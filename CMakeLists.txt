@@ -145,7 +145,7 @@ if(NCURSESW_FOUND)
 		link_directories(${NCURSESW_LIBRARY_DIRS})
 	endif()
 
-	build_tool(csv-show src/show.c src/show_ncurses.c src/show_static.c)
+	build_tool(csv-show src/show.c src/show_ncurses.c src/show_static.c src/show_html.c)
 	target_compile_definitions(csv-show PRIVATE NCURSESW_ENABLED)
 
 	if (NCURSESW_INCLUDE_DIRS)
@@ -162,7 +162,7 @@ if(NCURSESW_FOUND)
 
 	target_link_libraries(csv-show ${NCURSESW_LIBRARIES})
 else()
-	build_tool(csv-show src/show.c src/show_static.c)
+	build_tool(csv-show src/show.c src/show_static.c src/show_html.c)
 endif()
 
 # disable sign-compare/conversion warnings for csv-show because ncurses API is awful WRT signedness

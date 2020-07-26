@@ -49,4 +49,17 @@ void static_ui(bool less, struct cb_params *params,
 		bool print_header, bool print_types,
 		size_t spacing, enum alignment *alignments);
 
+enum html_mode {
+	BASIC,
+	DATATABLES,
+	TABULATOR,
+};
+
+void html_ui(struct cb_params *params, const struct col_header *headers,
+		size_t nheaders, bool print_header, bool print_types,
+		enum alignment *alignments,
+		char **set_colorpair, size_t set_colorpairs_num,
+		bool use_color_columns,
+		enum html_mode mode);
+
 #endif

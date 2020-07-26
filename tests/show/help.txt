@@ -4,7 +4,10 @@ without types.
 
 Options:
   -s, --spacing NUM          use NUM spaces between columns instead of 3
-  -u, --ui curses/less/none  use UI based on ncurses, less or nothing(tm)
+  -u, --ui TYPE              choose UI TYPE: ncurses, less,
+                             html (alias for html=basic),
+                             html=datatables, html=tabulator,
+                             none
       --no-header            remove column headers
       --set-color COLNAME:[fg=]COLOR1[,bg=COLOR2]
                              set COLOR1 as foreground and COLOR2 as

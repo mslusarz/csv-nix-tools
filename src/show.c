@@ -48,7 +48,10 @@ usage(FILE *out)
 	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -s, --spacing NUM          use NUM spaces between columns instead of 3\n");
-	fprintf(out, "  -u, --ui curses/less/none  use UI based on ncurses, less or nothing(tm)\n");
+	fprintf(out, "  -u, --ui TYPE              choose UI TYPE: ncurses, less,\n"
+		     "                             html (alias for html=basic),\n"
+		     "                             html=datatables, html=tabulator,\n"
+		     "                             none\n");
 	fprintf(out, "      --no-header            remove column headers\n");
 	fprintf(out, "      --set-color COLNAME:[fg=]COLOR1[,bg=COLOR2]\n");
 	fprintf(out, "                             set COLOR1 as foreground and COLOR2 as\n");
@@ -180,7 +183,16 @@ main(int argc, char *argv[])
 	struct cb_params params;
 	bool print_header = true;
 	bool print_types = false;
-	enum { GUESS, NCURSES, LESS, NONE } ui = GUESS;
+	enum {
+		GUESS,
+		NCURSES,
+		LESS,
+		HTML_BASIC,
+		HTML_DATATABLES,
+		HTML_TABULATOR,
+		NONE
+	} ui = GUESS;
+
 	size_t spacing = DEFAULT_SPACING;
 
 	params.lines = NULL;
@@ -216,6 +228,14 @@ main(int argc, char *argv[])
 					ui = NCURSES;
 				else if (strcmp(optarg, "less") == 0)
 					ui = LESS;
+				else if (strcmp(optarg, "html=basic") == 0)
+					ui = HTML_BASIC;
+				else if (strcmp(optarg, "html") == 0)
+					ui = HTML_BASIC;
+				else if (strcmp(optarg, "html=datatables") == 0)
+					ui = HTML_DATATABLES;
+				else if (strcmp(optarg, "html=tabulator") == 0)
+					ui = HTML_TABULATOR;
 				else if (strcmp(optarg, "none") == 0)
 					ui = NONE;
 				else {
@@ -299,7 +319,13 @@ main(int argc, char *argv[])
 
 	csv_read_all_nofail(s, &next_row, &params);
 
-	if (ui == NCURSES) {
+	if (ui == HTML_BASIC || ui == HTML_DATATABLES || ui == HTML_TABULATOR) {
+		html_ui(&params, headers, nheaders, print_header,
+				print_types, alignments, set_colorpair,
+				set_colorpair_num, use_color_columns,
+				ui == HTML_TABULATOR ? TABULATOR :
+				(ui == HTML_DATATABLES ? DATATABLES : BASIC));
+	} else if (ui == NCURSES) {
 #ifdef NCURSESW_ENABLED
 		curses_ui(&params, headers, nheaders, print_header,
 				print_types, spacing, alignments, set_colorpair,
