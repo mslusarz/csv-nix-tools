@@ -416,7 +416,8 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 
 		for (size_t i = 0; i < nheaders; ++i) {
 			size_t len = strlen(headers[i].name);
-			is_color_column[i] = strcmp(headers[i].name + len - strlen("_color"), "_color") == 0;
+			is_color_column[i] = len >= strlen("_color") &&
+					strcmp(headers[i].name + len - strlen("_color"), "_color") == 0;
 
 			color_column_index[i] = SIZE_MAX;
 			for (size_t j = 0; j < nheaders; ++j) {
