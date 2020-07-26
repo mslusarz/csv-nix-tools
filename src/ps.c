@@ -1370,7 +1370,7 @@ main(int argc, char *argv[])
 		{ false, 0, 1, "tid",           TYPE_INT,    print_tid, DEF },
 		{ false, 0, 1, "cpu_time_ms",   TYPE_INT,    print_cpu_time_ms, STAT },
 
-		{ false, 0, 1, "age",           TYPE_STRING, print_age, STAT | START_TIME | AGE },
+		{ false, 0, 1, "age",           TYPE_STRING, print_age, STAT | AGE },
 
 		{ false, 0, 1, "egid_name",     TYPE_STRING, print_egid_name, DEF | USR_GRP },
 		{ false, 0, 1, "ruid_name",     TYPE_STRING, print_ruid_name, STATUS | USR_GRP },
@@ -1390,8 +1390,8 @@ main(int argc, char *argv[])
 		{ false, 0, 2, "fgid",          TYPE_INT, print_fgid, STATUS },
 		{ false, 0, 2, "supgid",        TYPE_STRING, print_supgid, STATUS },
 
-		{ false, 0, 2, "age_sec",       TYPE_INT,    print_age_sec, STAT | START_TIME | AGE },
-		{ false, 0, 2, "age_msec",      TYPE_INT,    print_age_msec, STAT | START_TIME | AGE },
+		{ false, 0, 2, "age_sec",       TYPE_INT,    print_age_sec, STAT | AGE },
+		{ false, 0, 2, "age_msec",      TYPE_INT,    print_age_msec, STAT | AGE },
 
 		{ false, 0, 2, "vm_size_B",     TYPE_INT, print_vm_size_bytes, STATUS },
 		{ false, 0, 2, "vm_lock_B",     TYPE_INT, print_vm_lock_bytes, STATUS },
@@ -1553,6 +1553,9 @@ main(int argc, char *argv[])
 	uint64_t sources = 0;
 	for (size_t i = 0; i < ncolumns; ++i)
 		sources |= columns[i].data;
+
+	if (sources & AGE)
+		sources |= START_TIME;
 
 	/* estimate_boottime may fork, which means we have to call it before
 	 * anything goes to stdout, as stdout can be flushed in each process */
