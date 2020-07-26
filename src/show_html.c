@@ -56,11 +56,16 @@ print_color(const char *col)
 }
 
 static void
-print_style(const char *col)
+print_style(struct cb_params *params, const char *col)
 {
 	char *copy = xstrdup_nofail(col);
-	char *desc = strtok(copy, ",");
-	while (desc) {
+	size_t nresults;
+	util_split_term(copy, ",", &params->split_results, &nresults,
+			&params->split_results_max_size);
+
+	for (size_t i = 0; i < nresults; ++i) {
+		char *desc = copy + params->split_results[i].start;
+
 		if (strncmp(desc, "fg=", 3) == 0) {
 			printf("color: ");
 			print_color(desc + 3);
@@ -71,8 +76,6 @@ print_style(const char *col)
 			printf("color: ");
 			print_color(desc);
 		}
-
-		desc = strtok(NULL, ",");
 	}
 	free(copy);
 }
@@ -178,7 +181,7 @@ html_ui(struct cb_params *params, const struct col_header *headers,
 			if (found) {
 				printf("td:nth-child(%zu), th:nth-child(%zu) { ",
 						idx + 1, idx + 1);
-				print_style(spec + len + 1);
+				print_style(params, spec + len + 1);
 				printf("}\n");
 			}
 
@@ -247,7 +250,7 @@ html_ui(struct cb_params *params, const struct col_header *headers,
 					const char *col = params->lines[l] +
 							col_offsets[color_column_index[i]];
 					if (col[0])
-						print_style(col);
+						print_style(params, col);
 				}
 				printf("\">");
 			} else {

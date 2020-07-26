@@ -249,8 +249,13 @@ main(int argc, char *argv[])
 		}
 	}
 
-	char *name = strtok(cols, ",");
-	while (name) {
+	struct split_result *results = NULL;
+	size_t nresults;
+	util_split_term(cols, ",", &results, &nresults, NULL);
+
+	for (size_t i = 0; i < nresults; ++i) {
+		char *name = cols + results[i].start;
+
 		size_t idx =
 			csv_find_loud(headers, nheaders, params.table, name);
 		if (idx == CSV_NOT_FOUND)
@@ -262,10 +267,9 @@ main(int argc, char *argv[])
 		}
 
 		sort_params.columns[sort_params.ncolumns++] = idx;
-
-		name = strtok(NULL, ",");
 	}
 	free(cols);
+	free(results);
 
 	csv_print_header(stdout, headers, nheaders);
 

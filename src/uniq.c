@@ -183,18 +183,22 @@ main(int argc, char *argv[])
 		params.cols[params.ncols++] = params.table_column;
 	}
 
-	char *name = strtok(cols, ",");
-	while (name) {
+	struct split_result *results = NULL;
+	size_t nresults;
+	util_split_term(cols, ",", &results, &nresults, NULL);
+
+	for (size_t i = 0; i < nresults; ++i) {
+		char *name = cols + results[i].start;
+
 		size_t idx = csv_find_loud(headers, nheaders, params.table,
 				name);
 		if (idx == CSV_NOT_FOUND)
 			exit(2);
 
 		params.cols[params.ncols++] = idx;
-
-		name = strtok(NULL, ",");
 	}
 	free(cols);
+	free(results);
 
 	if (params.table) {
 		size_t table_len = strlen(params.table);

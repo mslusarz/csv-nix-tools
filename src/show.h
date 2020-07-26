@@ -33,6 +33,9 @@ struct cb_params {
 	int used_pairs;
 	int used_colors;
 	int *col_color_pairs;
+
+	struct split_result *split_results;
+	size_t split_results_max_size;
 };
 
 #ifdef NCURSESW_ENABLED

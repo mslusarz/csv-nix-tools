@@ -121,17 +121,19 @@ get_color_pair_slow(void *p_)
 	int fg = -1, bg = -1;
 	int color_pair;
 	char *txt = xstrdup_nofail(p->txt);
+	size_t nresults;
+	util_split_term(txt, ",", &p->params->split_results, &nresults,
+			&p->params->split_results_max_size);
 
-	char *desc = strtok(txt, ",");
-	while (desc) {
+	for (size_t i = 0; i < nresults; ++i) {
+		char *desc = txt + p->params->split_results[i].start;
+
 		if (strncmp(desc, "fg=", 3) == 0)
 			fg = get_color(p->params, desc + 3);
 		else if (strncmp(desc, "bg=", 3) == 0)
 			bg = get_color(p->params, desc + 3);
 		else
 			fg = get_color(p->params, desc);
-
-		desc = strtok(NULL, ",");
 	}
 	free(txt);
 
@@ -384,23 +386,27 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 		}
 
 		for (size_t i = 0; i < set_colorpairs_num; ++i) {
-			char *x = strtok(set_colorpair[i], ":");
-			if (!x) {
+			struct split_result *results = NULL;
+			size_t nresults;
+			util_split_term(set_colorpair[i], ":", &results, &nresults, NULL);
+
+			if (nresults != 2) {
 				endwin();
 				fprintf(stderr, "Color not in name:spec format\n");
 				exit(2);
 			}
+
+			char *x = set_colorpair[i] + results[0].start;
+
 			size_t idx = csv_find_loud(headers, nheaders, NULL, x);
 			if (idx == CSV_NOT_FOUND) {
 				endwin();
 				exit(2);
 			}
-			x = strtok(NULL, ":");
-			if (!x) {
-				endwin();
-				fprintf(stderr, "Color not in name:spec format\n");
-				exit(2);
-			}
+
+			x = set_colorpair[i] + results[1].start;
+
+			free(results);
 
 			params->col_color_pairs[idx] = get_color_pair(params, x);
 		}

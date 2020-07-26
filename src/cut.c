@@ -153,8 +153,13 @@ main(int argc, char *argv[])
 			params.cols[i] = i;
 		params.ncols = nheaders;
 
-		char *name = strtok(cols, ",");
-		while (name) {
+		struct split_result *results = NULL;
+		size_t nresults;
+		util_split_term(cols, ",", &results, &nresults, NULL);
+
+		for (size_t i = 0; i < nresults; ++i) {
+			char *name = cols + results[i].start;
+
 			size_t idx = csv_find_loud(headers, nheaders,
 					params.table, name);
 
@@ -188,25 +193,22 @@ main(int argc, char *argv[])
 				}
 				exit(2);
 			}
-
-			name = strtok(NULL, ",");
 		}
+		free(results);
 	} else {
-		size_t commas = 0;
-		size_t len = strlen(cols);
+		struct split_result *results = NULL;
+		size_t nresults;
+		util_split_term(cols, ",", &results, &nresults, NULL);
 
-		for (size_t i = 0; i < len; ++i)
-			if (cols[i] == ',')
-				commas++;
-
-		params.cols = xmalloc_nofail(nheaders + commas + 1,
+		params.cols = xmalloc_nofail(nheaders + nresults + 1,
 				sizeof(params.cols[0]));
 
 		if (params.table)
 			params.cols[params.ncols++] = params.table_column;
 
-		char *name = strtok(cols, ",");
-		while (name) {
+		for (size_t i = 0; i < nresults; ++i) {
+			char *name = cols + results[i].start;
+
 			params.cols[params.ncols] =
 				csv_find_loud(headers, nheaders, params.table,
 						name);
@@ -215,8 +217,8 @@ main(int argc, char *argv[])
 				exit(2);
 
 			params.ncols++;
-			name = strtok(NULL, ",");
 		}
+		free(results);
 
 		if (params.table) {
 			size_t table_len = strlen(params.table);

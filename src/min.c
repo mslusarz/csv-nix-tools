@@ -4,6 +4,7 @@
  * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
+#include <assert.h>
 #include <errno.h>
 #include <getopt.h>
 #include <limits.h>
@@ -203,8 +204,14 @@ main(int argc, char *argv[])
 		params.cols[params.ncols++] = params.table_column;
 	}
 
-	char *col = strtok(cols, ",");
-	while (col) {
+	struct split_result *results = NULL;
+	size_t results_max_size = 0;
+	size_t nresults;
+	util_split_term(cols, ",", &results, &nresults, &results_max_size);
+
+	for (size_t i = 0; i < nresults; ++i) {
+		char *col = cols + results[i].start;
+
 		size_t idx =
 			csv_find_loud(headers, nheaders, params.table, col);
 		if (idx == CSV_NOT_FOUND)
@@ -225,8 +232,6 @@ main(int argc, char *argv[])
 
 		params.active_cols[params.ncols] = true;
 		params.cols[params.ncols++] = idx;
-
-		col = strtok(NULL, ",");
 	}
 
 	free(cols);
@@ -263,15 +268,28 @@ main(int argc, char *argv[])
 	}
 
 	char *name;
-	if (new_name)
-		name = strtok(new_name, ",");
-	else
+	size_t consumed = 0;
+
+	if (new_name) {
+		util_split_term(new_name, ",", &results, &nresults, &results_max_size);
+		assert(nresults > 0);
+		name = new_name + results[consumed].start;
+		consumed++;
+	} else {
 		name = NULL;
+		nresults = 0;
+	}
+
 	for (size_t i = 0; i < params.ncols - 1; ++i) {
 		if (csv_print_table_func_header(&headers[params.cols[i]], "min",
 				params.table, table_len, ',', name)) {
-			if (name)
-				name = strtok(NULL, ",");
+			if (consumed < nresults) {
+				name = new_name + results[consumed].start;
+				name[results[consumed].len] = 0;
+				consumed++;
+			} else {
+				name = NULL;
+			}
 		}
 	}
 	csv_print_table_func_header(&headers[params.cols[params.ncols - 1]],
@@ -279,6 +297,9 @@ main(int argc, char *argv[])
 
 	free(new_name);
 	new_name = NULL;
+
+	free(results);
+	results = NULL;
 
 	csv_read_all_nofail(s, &next_row, &params);
 

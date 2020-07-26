@@ -808,7 +808,6 @@ int
 csvci_parse_cols(char *cols, struct column_info *columns, size_t *ncolumns)
 {
 	int ret = 0;
-	char *name = strtok(cols, ",");
 	size_t order = 0;
 
 	for (size_t i = 0; i < *ncolumns; ++i) {
@@ -816,7 +815,13 @@ csvci_parse_cols(char *cols, struct column_info *columns, size_t *ncolumns)
 		columns[i].order = SIZE_MAX;
 	}
 
-	while (name) {
+	struct split_result *results = NULL;
+	size_t nresults;
+	util_split_term(cols, ",", &results, &nresults, NULL);
+
+	for (size_t j = 0; j < nresults; ++j) {
+		char *name = cols + results[j].start;
+
 		int found = 0;
 		for (size_t i = 0; i < *ncolumns; ++i) {
 			if (strcmp(name, columns[i].name) == 0) {
@@ -831,9 +836,8 @@ csvci_parse_cols(char *cols, struct column_info *columns, size_t *ncolumns)
 			fprintf(stderr, "column %s not found\n", name);
 			ret++;
 		}
-
-		name = strtok(NULL, ",");
 	}
+	free(results);
 
 	if (ret == 0)
 		csvci_sort_columns(columns, ncolumns, order);

@@ -204,6 +204,9 @@ main(int argc, char *argv[])
 
 	params.logfd = -1;
 
+	params.split_results = NULL;
+	params.split_results_max_size = 0;
+
 	setlocale(LC_ALL, "");
 
 	char **set_colorpair = NULL;
@@ -343,6 +346,7 @@ main(int argc, char *argv[])
 	free(params.lines);
 	free(params.max_lengths);
 	free(params.tmpbuf);
+	free(params.split_results);
 
 	csv_destroy_ctx(s);
 

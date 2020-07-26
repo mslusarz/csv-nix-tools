@@ -137,8 +137,11 @@ main(int argc, char *argv[])
 				print_types = false;
 				break;
 			case 'n': { /* rename original,new */
-				char *tmp = strtok(optarg, ",");
-				if (!tmp) {
+				struct split_result *results = NULL;
+				size_t nresults;
+				util_split(optarg, ",", &results, &nresults, NULL);
+
+				if (nresults != 2) {
 					usage(stderr);
 					exit(2);
 				}
@@ -146,15 +149,11 @@ main(int argc, char *argv[])
 				changes = xrealloc_nofail(changes, nchanges + 1, sizeof(changes[0]));
 				struct column_change *ch = &changes[nchanges++];
 
-				ch->name = xstrdup_nofail(tmp);
-
-				tmp = strtok(NULL, ",");
-				if (!tmp) {
-					usage(stderr);
-					exit(2);
-				}
-				ch->new_name = xstrdup_nofail(tmp);
+				ch->name = xstrndup_nofail(optarg + results[0].start, results[0].len);
+				ch->new_name = xstrndup_nofail(optarg + results[1].start, results[1].len);
 				ch->new_type = NULL;
+
+				free(results);
 				break;
 			}
 			case 's':
