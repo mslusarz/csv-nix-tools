@@ -215,6 +215,17 @@ void csv_qsort_r(void *base, size_t nmemb, size_t size,
                   int (*compar)(const void *, const void *, void *),
                   void *arg);
 
+struct split_result {
+	size_t start;
+	size_t len;
+};
+void util_split(const char *str, const char *sep,
+		struct split_result **results_buf, size_t *nresults_buf,
+		size_t *results_maxsize_buf);
+void util_split_term(char *str, const char *sep,
+		struct split_result **results_buf, size_t *nresults_buf,
+		size_t *results_maxsize_buf);
+
 unsigned
 util_sprintf(char *str, const char *format, ...) __attribute__ ((format(printf, 2, 3)));
 

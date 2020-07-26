@@ -607,6 +607,70 @@ csv_substring_sanitize(const char *str, ssize_t *start, size_t *len)
 		*len = max_len - ustart;
 }
 
+void
+util_split(const char *str, const char *sep,
+		struct split_result **results_buf, size_t *nresults_buf,
+		size_t *results_maxsize_buf)
+{
+	size_t len = strlen(str);
+	size_t seplen = strlen(sep);
+
+	struct split_result *results = *results_buf;
+	size_t nresults = 0;
+	size_t results_maxsize = results_maxsize_buf ? *results_maxsize_buf : 0;
+
+	if (str[0]) {
+		if (nresults + 1 > results_maxsize) {
+			results_maxsize++;
+			results = xrealloc_nofail(results,
+					results_maxsize, sizeof(results[0]));
+		}
+
+		results[0].start = 0;
+		nresults = 1;
+	}
+
+	for (size_t i = 0; i < len; ++i) {
+		for (size_t j = 0; j < seplen; ++j) {
+			if (str[i] != sep[j])
+				continue;
+
+			if (nresults + 1 > results_maxsize) {
+				assert(results_maxsize > 0);
+				results_maxsize *= 2;
+				results = xrealloc_nofail(results,
+						results_maxsize, sizeof(results[0]));
+			}
+
+			results[nresults].start = i + 1;
+			results[nresults - 1].len = i - results[nresults - 1].start;
+			nresults++;
+			break;
+		}
+	}
+
+	if (nresults > 0)
+		results[nresults - 1].len = len - results[nresults - 1].start;
+
+	*results_buf = results;
+	*nresults_buf = nresults;
+	if (results_maxsize_buf)
+		*results_maxsize_buf = results_maxsize;
+}
+
+/* version of util_split that terminates all strings */
+void
+util_split_term(char *str, const char *sep,
+		struct split_result **results_buf, size_t *nresults_buf,
+		size_t *results_maxsize_buf)
+{
+	util_split(str, sep, results_buf, nresults_buf, results_maxsize_buf);
+	struct split_result *res = *results_buf;
+
+	for (size_t i = 0; i < *nresults_buf; ++i)
+		str[res[i].start + res[i].len] = 0;
+}
+
 char *
 xstrdup(const char *str)
 {
