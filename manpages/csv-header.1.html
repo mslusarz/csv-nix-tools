@@ -23,11 +23,8 @@
 <h1 id="description">DESCRIPTION</h1>
 <p>Read CSV stream from standard input and print back to standard output with the column header transformed.</p>
 <dl>
-<dt>-A, --add-types <em>NAME1</em>:<em>TYPE1</em>[,<em>NAME2</em>:<em>TYPE2</em>…]</dt>
-<dd>(NOT IMPLEMENTED YET) add type <em>TYPE1</em> to column <em>NAME1</em>, <em>TYPE2</em> to column <em>NAME2</em>, etc.
-</dd>
-<dt>-C, --change-type <em>NAME</em>:<em>TYPE</em></dt>
-<dd>(NOT IMPLEMENTED YET) change type of column <em>NAME</em> to <em>TYPE</em>
+<dt>-e, --set-types <em>NAME1</em>:<em>TYPE1</em>[,<em>NAME2</em>:<em>TYPE2</em>…]</dt>
+<dd>set type of column <em>NAME1</em> to <em>TYPE1</em>, type of column <em>NAME2</em> to <em>TYPE2</em>, etc.
 </dd>
 <dt>-G, --guess-types</dt>
 <dd>(NOT IMPLEMENTED YET) add types to columns by guessing based on their contents
@@ -39,7 +36,7 @@
 <dd>remove column header
 </dd>
 <dt>-n, --rename <em>NAME</em>,<em>NEW-NAME</em></dt>
-<dd>(NOT IMPLEMENTED YET) rename column <em>NAME</em> to <em>NEW-NAME</em>
+<dd>rename column <em>NAME</em> to <em>NEW-NAME</em>
 </dd>
 <dt>-s, --show</dt>
 <dd>print output in table format
