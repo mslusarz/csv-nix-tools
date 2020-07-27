@@ -10,11 +10,11 @@ information using CSV as an intermediate format.
 Although CSV is in the name of the project and this format is used for
 information storage, it's not **that** critical aspect of this project.
 
-What is more important is that it allows **safely** processing structured data
-using *NIX-like philosophy by employing pipes and tools with familiar names
-(such as grep and sort, see [examples](EXAMPLES.md)). "Safe" processing means that
-handling of special characters, like new lines, is effort-less - it just works,
-without bothering users with hacks like IFS.
+What is more important is that it allows **safe** processing of **structured**
+data using *NIX-like philosophy by employing pipes and tools with familiar names
+(such as grep, sort, etc, see [examples](EXAMPLES.md)). "Safe" processing means
+that the handling of special characters, like new lines, is effort-less - it
+just works, without bothering users with hacks like IFS.
 
 This project also solves the problem of combining data from multiple sources
 into a single stream (see the [tables tutorial]) and processing it in any way
@@ -25,7 +25,8 @@ This project is in alpha stage. Everything listed below is functional,
 but in the future, many things can change (IOW don't run this in production yet).
 Currently, it builds and runs on Linux with glibc only, but portability patches
 are welcomed. Although the project has NIX in the name and many source tools
-are Unix or even Linux-specific, porting to non-Unix systems is encouraged.
+are Unix or even Linux-specific, sane portability patches, even for non-Unix
+systems, will be accepted.
 
 If you discover any issue in the project or a missing feature, don't hesitate
 to file an issue. Any feedback is welcomed.
