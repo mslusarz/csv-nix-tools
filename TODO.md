@@ -1,9 +1,11 @@
 # TODO (high level)
-- more data collection tools (id, uname, w/who, df, free, ifconfig/ip, ipcs, lsattr, lsusb, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, etc)
+- more data collection tools (id, uname, w/who, df/mountinfo, free, ifconfig/ip, ipcs, lsattr, lsusb, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, etc)
 - more processing tools (tr, other?)
 - more rpn operators/functions (split, rev, timestamp conversion, now, tr)
 - exporting tools (to-xml, to-json, to-sql)
 - importing tools (from-xml, from-json)
+- add utf-8 tests
+- handle NUL bytes
 - i18n
 - export as much as possible as a library(ies)
 - Coverity
@@ -24,6 +26,10 @@
 - uniq: --count
 - show: fix column width calc when input is in utf
 - sql: implement "group by", "having"
+- cut: multiple input files
+- ls: color output with -S
+- sql/rpn: data(colname, relativerownum)
+- csv-from-txt --format "year,-,month,-,day,hour,:,min,:,sec,\,,ms, ,level, ,file, ,message"
 
 ## Random ideas
 - export data as bash/python/etc script?
@@ -34,3 +40,4 @@
 - shell?
 - one multicommand binary? (csv ls, csv grep, ...)
 - other sink tools: diff/comm?, treeview (generic pstree)
+- binary data?
