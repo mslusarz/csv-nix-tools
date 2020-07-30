@@ -50,6 +50,30 @@ test("csv-grep -c name -e or -v" data/3-columns-3-rows.csv grep/name-or-not.csv 
 test("csv-grep -T t1 -c name -e or" grep/2-tables.csv grep/2-tables-t1-or.csv data/empty.txt 0
 	grep_-T_t1_-c_name_-e_or)
 
+if (TEST_UTF8)
+set(REQ_LOCALE "en_US.UTF-8")
+
+test("csv-grep -c col1 -e St.phane" data/utf8.csv grep/utf8.csv data/empty.txt 0
+	grep_utf8_bregex)
+
+test("csv-grep -c col1 -E St.phane" data/utf8.csv grep/utf8.csv data/empty.txt 0
+	grep_utf8_eregex)
+
+test("csv-grep -c col1 -F Stéphane" data/utf8.csv grep/utf8.csv data/empty.txt 0
+	grep_utf8_string)
+
+test("csv-grep -c col1 -x -F Stéphane" data/utf8.csv grep/utf8.csv data/empty.txt 0
+	grep_utf8_string_whole)
+
+test("csv-grep -c col1 -i -F stéphane" data/utf8.csv grep/utf8.csv data/empty.txt 0
+	grep_utf8_string_ignorecase)
+
+test("csv-grep -c col1 -x -i -F stéphane" data/utf8.csv grep/utf8.csv data/empty.txt 0
+	grep_utf8_string_while_ignorecase)
+
+set(REQ_LOCALE "C")
+endif()
+
 test("csv-grep --help" data/empty.csv grep/help.txt data/empty.txt 2
 	grep_help)
 

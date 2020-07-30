@@ -5,6 +5,7 @@
  */
 
 #include <getopt.h>
+#include <locale.h>
 #include <regex.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -192,6 +193,8 @@ main(int argc, char *argv[])
 	char *current_column = NULL;
 	bool whole = false;
 	struct cb_params params;
+
+	setlocale(LC_ALL, "");
 
 	params.table = NULL;
 
