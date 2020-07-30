@@ -4,7 +4,9 @@
  * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
+#include <assert.h>
 #include <getopt.h>
+#include <locale.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -46,6 +48,9 @@ struct cb_params {
 
 	size_t table_column;
 	char *table;
+
+	wchar_t *wcs;
+	size_t wcs_size;
 };
 
 static int
@@ -75,9 +80,26 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 		fputc('"', stdout);
 	}
 
-	size_t len = strlen(unquoted);
-	for (size_t i = 0; i < len; ++i)
-		fputc(unquoted[len - i - 1], stdout);
+	size_t len = mbstowcs(NULL, unquoted, 0);
+
+	if (len == (size_t)-1) {
+		len = strlen(unquoted);
+		for (size_t i = 0; i < len; ++i)
+			fputc(unquoted[len - i - 1], stdout);
+	} else {
+		if (len + 1 > params->wcs_size) {
+			free(params->wcs);
+			params->wcs_size = 2 * len + 1;
+			params->wcs = xmalloc_nofail(params->wcs_size,
+					sizeof(params->wcs[0]));
+		}
+
+		size_t converted = mbstowcs(params->wcs, unquoted, len);
+		assert (converted == len);
+
+		for (size_t i = 0; i < len; ++i)
+			fprintf(stdout, "%C", params->wcs[len - i - 1]);
+	}
 
 	if (str[0] == '"') {
 		fputc('"', stdout);
@@ -99,8 +121,12 @@ main(int argc, char *argv[])
 	bool show = false;
 	bool show_full;
 
+	setlocale(LC_ALL, "");
+
 	params.table = NULL;
 	params.table_column = SIZE_MAX;
+	params.wcs = NULL;
+	params.wcs_size = 0;
 
 	while ((opt = getopt_long(argc, argv, "c:n:sST:", opts, NULL)) != -1) {
 		switch (opt) {
@@ -183,6 +209,7 @@ main(int argc, char *argv[])
 	csv_destroy_ctx(s);
 
 	free(params.table);
+	free(params.wcs);
 
 	return 0;
 }

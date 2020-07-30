@@ -16,6 +16,8 @@
 # - use .csv extension for csv files
 # - use .txt extension for other files
 
+set(REQ_LOCALE "C")
+
 function(test_with_cwd cmd input stdout stderr expected_res name cwd)
 	if (${TEST_UNDER_MEMCHECK} AND NOT ${expected_res} EQUAL 0)
 		return()
@@ -37,7 +39,7 @@ function(test_with_cwd cmd input stdout stderr expected_res name cwd)
 			-P ${CMAKE_CURRENT_SOURCE_DIR}/test.cmake)
 
 	set_tests_properties(${name} PROPERTIES
-			ENVIRONMENT "LC_ALL=C;PATH=${CMAKE_CURRENT_BINARY_DIR}/..:$ENV{PATH};")
+			ENVIRONMENT "LC_ALL=${REQ_LOCALE};PATH=${CMAKE_CURRENT_BINARY_DIR}/..:$ENV{PATH};")
 endfunction()
 
 function(test cmd input stdout stderr expected_res name)

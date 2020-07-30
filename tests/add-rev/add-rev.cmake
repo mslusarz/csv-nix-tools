@@ -8,6 +8,14 @@ test("csv-add-rev -c name -n name-reversed"
 	data/3-columns-3-rows.csv add-rev/string-reversed.csv data/empty.txt 0
 	add-rev_string)
 
+if (TEST_UTF8)
+set(REQ_LOCALE "en_US.UTF-8")
+test("csv-add-rev -c col1 -n col1rev"
+	data/utf8.csv add-rev/utf8-col1rev.csv data/empty.txt 0
+	add-rev_utf8)
+set(REQ_LOCALE "C")
+endif()
+
 test("csv-add-rev -c name -n name-reversed -s"
 	data/3-columns-3-rows.csv add-rev/string-reversed.txt data/empty.txt 0
 	add-rev_string_-s)

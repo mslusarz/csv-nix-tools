@@ -367,6 +367,7 @@ endif()
 endif()
 
 option(TEST_UNDER_MEMCHECK "Run tests under Valgrind memcheck" OFF)
+option(TEST_UTF8 "Test UTF-8 support (requires en_US.UTF-8 locale)" ON)
 
 enable_testing()
 add_subdirectory(tests)
