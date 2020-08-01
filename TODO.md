@@ -1,10 +1,10 @@
 # TODO (high level)
-- more data collection tools (id, uname, w/who, df/mountinfo, free, ifconfig/ip, ipcs, lsattr, lsusb, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, etc)
+- more data collection tools (id, uname, w/who, df/mountinfo, fuser/lsof, free, top?, ifconfig/ip, ipcs, lsattr, lsusb, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, etc)
 - more processing tools (tr, other?)
 - more rpn operators/functions (split, rev, timestamp conversion, now, tr)
 - exporting tools (to-xml, to-json, to-sql)
 - importing tools (from-xml, from-json)
-- add utf-8 tests
+- fix utf-8 support
 - handle NUL bytes
 - i18n
 - export as much as possible as a library(ies)
@@ -41,3 +41,6 @@
 - one multicommand binary? (csv ls, csv grep, ...)
 - other sink tools: diff/comm?, treeview (generic pstree)
 - binary data?
+- journalctl?
+- netstat: add pid
+- (auto?) input decompression/output compression
