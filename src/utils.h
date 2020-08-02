@@ -43,7 +43,12 @@ void print_timespec(const struct timespec *ts, bool nsec);
 
 bool csv_requires_quoting(const char *str, size_t len);
 void csv_print_quoted(const char *str, size_t len);
-void csv_show(bool full);
+
+#define SHOW_DISABLED (0)
+#define SHOW_SIMPLE (1u << 0)
+#define SHOW_FULL (1u << 1)
+void csv_show(unsigned flags);
+
 void csv_substring_sanitize(const char *str, ssize_t *start, size_t *len);
 
 char *csv_unquot(const char *str);

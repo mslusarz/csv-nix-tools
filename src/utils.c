@@ -519,10 +519,17 @@ csv_print_table_func_header(const struct col_header *h, const char *func,
 }
 
 void
-csv_show(bool full)
+csv_show(unsigned flags)
 {
 	int fds[2];
 	pid_t pid;
+	if (flags == SHOW_DISABLED)
+		return;
+	if ((flags & SHOW_SIMPLE) && (flags & SHOW_FULL)) {
+		fprintf(stderr,
+			"simple and full show can't be enabled at the same time\n");
+		exit(2);
+	}
 
 	if (pipe(fds) < 0) {
 		perror("pipe");
@@ -540,7 +547,7 @@ csv_show(bool full)
 		show[0] = "csv-show";
 		show[2] = NULL;
 
-		if (full) {
+		if (flags & SHOW_FULL) {
 			show[1] = NULL;
 		} else {
 			show[1] = "--ui=none";

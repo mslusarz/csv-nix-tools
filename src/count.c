@@ -62,8 +62,7 @@ main(int argc, char *argv[])
 {
 	int opt;
 	struct cb_params params;
-	bool show = false;
-	bool show_full;
+	unsigned show_flags = SHOW_DISABLED;
 	bool columns = false;
 	bool read_rows = false;
 	bool rows = false;
@@ -82,12 +81,10 @@ main(int argc, char *argv[])
 				read_rows = true;
 				break;
 			case 's':
-				show = true;
-				show_full = false;
+				show_flags |= SHOW_SIMPLE;
 				break;
 			case 'S':
-				show = true;
-				show_full = true;
+				show_flags |= SHOW_FULL;
 				break;
 			case 'V':
 				printf("git\n");
@@ -99,8 +96,7 @@ main(int argc, char *argv[])
 		}
 	}
 
-	if (show)
-		csv_show(show_full);
+	csv_show(show_flags);
 
 	if (!columns && !rows) {
 		usage(stderr);

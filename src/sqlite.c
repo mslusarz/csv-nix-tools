@@ -463,8 +463,7 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	bool show = false;
-	bool show_full;
+	unsigned show_flags = SHOW_DISABLED;
 	bool tables = false;
 	char **inputs = NULL;
 	size_t ninputs = 0;
@@ -481,12 +480,10 @@ main(int argc, char *argv[])
 				tables = true;
 				break;
 			case 's':
-				show = true;
-				show_full = false;
+				show_flags |= SHOW_SIMPLE;
 				break;
 			case 'S':
-				show = true;
-				show_full = true;
+				show_flags |= SHOW_FULL;
 				break;
 			case 'V':
 				printf("git\n");
@@ -503,8 +500,7 @@ main(int argc, char *argv[])
 		exit(2);
 	}
 
-	if (show)
-		csv_show(show_full);
+	csv_show(show_flags);
 
 	sqlite3 *db;
 	if (sqlite3_open(":memory:", &db) != SQLITE_OK) {

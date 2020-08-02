@@ -97,8 +97,7 @@ main(int argc, char *argv[])
 {
 	int opt;
 	char *cols = NULL;
-	bool show = false;
-	bool show_full;
+	unsigned show_flags = SHOW_DISABLED;
 	bool merge = false;
 	char *table = NULL;
 
@@ -135,12 +134,10 @@ main(int argc, char *argv[])
 				table = xstrdup_nofail(optarg);
 				break;
 			case 's':
-				show = true;
-				show_full = false;
+				show_flags |= SHOW_SIMPLE;
 				break;
 			case 'S':
-				show = true;
-				show_full = true;
+				show_flags |= SHOW_FULL;
 				break;
 			case 'T':
 				free(table);
@@ -164,8 +161,7 @@ main(int argc, char *argv[])
 		csvci_set_columns_order(columns, &ncolumns);
 	}
 
-	if (show)
-		csv_show(show_full);
+	csv_show(show_flags);
 
 	struct csvmu_ctx ctx;
 	ctx.table = table;

@@ -226,8 +226,7 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-	bool show = false;
-	bool show_full;
+	unsigned show_flags = SHOW_DISABLED;
 	bool stdin_used = false;
 	char *table = NULL;
 
@@ -248,12 +247,10 @@ main(int argc, char *argv[])
 				break;
 			}
 			case 's':
-				show = true;
-				show_full = false;
+				show_flags |= SHOW_SIMPLE;
 				break;
 			case 'S':
-				show = true;
-				show_full = true;
+				show_flags |= SHOW_FULL;
 				break;
 			case 'V':
 				printf("git\n");
@@ -272,8 +269,7 @@ main(int argc, char *argv[])
 		exit(2);
 	}
 
-	if (show)
-		csv_show(show_full);
+	csv_show(show_flags);
 
 	printf("%s:string,", TABLE_COLUMN);
 

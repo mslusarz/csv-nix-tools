@@ -186,8 +186,7 @@ main(int argc, char *argv[])
 	params.used = 0;
 	char *cols = NULL;
 	struct sort_params sort_params;
-	bool show = false;
-	bool show_full;
+	unsigned show_flags = SHOW_DISABLED;
 
 	sort_params.columns = NULL;
 	sort_params.ncolumns = 0;
@@ -203,12 +202,10 @@ main(int argc, char *argv[])
 				reverse = true;
 				break;
 			case 's':
-				show = true;
-				show_full = false;
+				show_flags |= SHOW_SIMPLE;
 				break;
 			case 'S':
-				show = true;
-				show_full = true;
+				show_flags |= SHOW_FULL;
 				break;
 			case 'T':
 				params.table = xstrdup_nofail(optarg);
@@ -229,8 +226,7 @@ main(int argc, char *argv[])
 		exit(2);
 	}
 
-	if (show)
-		csv_show(show_full);
+	csv_show(show_flags);
 
 	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
 

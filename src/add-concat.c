@@ -126,8 +126,7 @@ main(int argc, char *argv[])
 	int opt;
 	char *new_name = NULL;
 	struct cb_params params;
-	bool show = false;
-	bool show_full;
+	unsigned show_flags = SHOW_DISABLED;
 
 	memset(&params, 0, sizeof(params));
 	params.table = NULL;
@@ -136,12 +135,10 @@ main(int argc, char *argv[])
 	while ((opt = getopt_long(argc, argv, "sST:", opts, NULL)) != -1) {
 		switch (opt) {
 			case 's':
-				show = true;
-				show_full = false;
+				show_flags |= SHOW_SIMPLE;
 				break;
 			case 'S':
-				show = true;
-				show_full = true;
+				show_flags |= SHOW_FULL;
 				break;
 			case 'T':
 				params.table = xstrdup_nofail(optarg);
@@ -213,8 +210,7 @@ main(int argc, char *argv[])
 		}
 	}
 
-	if (show)
-		csv_show(show_full);
+	csv_show(show_flags);
 
 	for (size_t i = 0; i < nheaders; ++i)
 		printf("%s:%s,", headers[i].name, headers[i].type);

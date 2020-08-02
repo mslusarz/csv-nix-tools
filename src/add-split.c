@@ -149,8 +149,7 @@ main(int argc, char *argv[])
 	char *name1 = NULL;
 	char *name2 = NULL;
 	int print_separators = -1;
-	bool show = false;
-	bool show_full;
+	unsigned show_flags = SHOW_DISABLED;
 
 	memset(&params, 0, sizeof(params));
 	params.table = NULL;
@@ -199,12 +198,10 @@ main(int argc, char *argv[])
 				params.reverse = true;
 				break;
 			case 's':
-				show = true;
-				show_full = false;
+				show_flags |= SHOW_SIMPLE;
 				break;
 			case 'S':
-				show = true;
-				show_full = true;
+				show_flags |= SHOW_FULL;
 				break;
 			case 'T':
 				params.table = xstrdup_nofail(optarg);
@@ -224,8 +221,7 @@ main(int argc, char *argv[])
 		exit(2);
 	}
 
-	if (show)
-		csv_show(show_full);
+	csv_show(show_flags);
 
 	if (print_separators >= 0)
 		params.print_separators = print_separators;

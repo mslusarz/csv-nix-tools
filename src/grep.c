@@ -187,8 +187,7 @@ main(int argc, char *argv[])
 	bool invert = false;
 	struct condition *conditions = NULL;
 	size_t nconditions = 0;
-	bool show = false;
-	bool show_full;
+	unsigned show_flags = SHOW_DISABLED;
 	bool ignore_case = false;
 	char *current_column = NULL;
 	bool whole = false;
@@ -266,12 +265,10 @@ main(int argc, char *argv[])
 				ignore_case = true;
 				break;
 			case 's':
-				show = true;
-				show_full = false;
+				show_flags |= SHOW_SIMPLE;
 				break;
 			case 'S':
-				show = true;
-				show_full = true;
+				show_flags |= SHOW_FULL;
 				break;
 			case 'T':
 				params.table = xstrdup_nofail(optarg);
@@ -299,8 +296,7 @@ main(int argc, char *argv[])
 
 	free(current_column);
 
-	if (show)
-		csv_show(show_full);
+	csv_show(show_flags);
 
 	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
 

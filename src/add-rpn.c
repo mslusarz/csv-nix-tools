@@ -164,8 +164,7 @@ main(int argc, char *argv[])
 	char **expressions = NULL;
 	char **names = NULL;
 	struct cb_params params;
-	bool show = false;
-	bool show_full;
+	unsigned show_flags = SHOW_DISABLED;
 	char *new_column = NULL;
 
 	memset(&params, 0, sizeof(params));
@@ -197,12 +196,10 @@ main(int argc, char *argv[])
 				new_column = xstrdup_nofail(optarg);
 				break;
 			case 's':
-				show = true;
-				show_full = false;
+				show_flags |= SHOW_SIMPLE;
 				break;
 			case 'S':
-				show = true;
-				show_full = true;
+				show_flags |= SHOW_FULL;
 				break;
 			case 'T':
 				params.table = xstrdup_nofail(optarg);
@@ -224,8 +221,7 @@ main(int argc, char *argv[])
 		exit(2);
 	}
 
-	if (show)
-		csv_show(show_full);
+	csv_show(show_flags);
 
 	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
 

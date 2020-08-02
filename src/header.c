@@ -73,8 +73,7 @@ main(int argc, char *argv[])
 	struct cb_params params;
 	bool print_header = true;
 	bool print_types = true;
-	bool show = false;
-	bool show_full;
+	unsigned show_flags = SHOW_DISABLED;
 
 	struct column_change {
 		char *name;
@@ -157,12 +156,10 @@ main(int argc, char *argv[])
 				break;
 			}
 			case 's':
-				show = true;
-				show_full = false;
+				show_flags |= SHOW_SIMPLE;
 				break;
 			case 'S':
-				show = true;
-				show_full = true;
+				show_flags |= SHOW_FULL;
 				break;
 			case 'V':
 				printf("git\n");
@@ -174,15 +171,13 @@ main(int argc, char *argv[])
 		}
 	}
 
-	if (show) {
-		if (!print_header) {
-			fprintf(stderr,
-				"--remove and --show can't be used at the same time\n");
-			exit(2);
-		}
-
-		csv_show(show_full);
+	if (show_flags && !print_header) {
+		fprintf(stderr,
+			"--remove and --show can't be used at the same time\n");
+		exit(2);
 	}
+
+	csv_show(show_flags);
 
 	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
 

@@ -259,8 +259,7 @@ main(int argc, char *argv[])
 	struct cb_params params;
 	char *stdin_colname = NULL;
 	char *new_colname = NULL;
-	bool show = false;
-	bool show_full;
+	unsigned show_flags = SHOW_DISABLED;
 
 	memset(&params, 0, sizeof(params));
 	params.table = NULL;
@@ -275,12 +274,10 @@ main(int argc, char *argv[])
 				new_colname = xstrdup_nofail(optarg);
 				break;
 			case 's':
-				show = true;
-				show_full = false;
+				show_flags |= SHOW_SIMPLE;
 				break;
 			case 'S':
-				show = true;
-				show_full = true;
+				show_flags |= SHOW_FULL;
 				break;
 			case 'T':
 				params.table = xstrdup_nofail(optarg);
@@ -356,8 +353,7 @@ main(int argc, char *argv[])
 		params.stdin_col = SIZE_MAX;
 	}
 
-	if (show)
-		csv_show(show_full);
+	csv_show(show_flags);
 
 	for (size_t i = 0; i < nheaders; ++i)
 		printf("%s:%s,", headers[i].name, headers[i].type);
