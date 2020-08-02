@@ -543,15 +543,17 @@ csv_show(unsigned flags)
 	}
 
 	if (pid > 0) {
-		char *show[3];
+		char *show[4];
+		unsigned idx = 1;
 		show[0] = "csv-show";
-		show[2] = NULL;
 
-		if (flags & SHOW_FULL) {
-			show[1] = NULL;
-		} else {
-			show[1] = "--ui=none";
-		}
+		if (flags & SHOW_COLORS)
+			show[idx++] = "--use-color-columns";
+
+		if (flags & SHOW_SIMPLE)
+			show[idx++] = "--ui=none";
+
+		show[idx++] = NULL;
 
 		if (close(fds[1])) {
 			perror("close");

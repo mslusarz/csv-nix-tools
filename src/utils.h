@@ -47,6 +47,7 @@ void csv_print_quoted(const char *str, size_t len);
 #define SHOW_DISABLED (0)
 #define SHOW_SIMPLE (1u << 0)
 #define SHOW_FULL (1u << 1)
+#define SHOW_COLORS (1u << 2)
 void csv_show(unsigned flags);
 
 void csv_substring_sanitize(const char *str, ssize_t *start, size_t *len);
