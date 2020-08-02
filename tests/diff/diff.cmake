@@ -4,6 +4,8 @@
 # Copyright 2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
+if (C11THREADS_FOUND)
+
 test("csv-diff ${DATA_DIR}/../diff/data1.csv ${DATA_DIR}/../diff/data2.csv" data/empty.csv diff/diff.csv data/empty.txt 0
 	diff_all_columns)
 
@@ -27,3 +29,5 @@ test("csv-diff --help" data/empty.csv diff/help.txt data/empty.txt 2
 
 test("csv-diff --version" data/empty.csv data/git-version.txt data/empty.txt 0
 	diff_version)
+
+endif()
