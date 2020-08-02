@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>csv-diff</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">csv-diff</h1>
+</header>
+<h1 id="name">NAME</h1>
+<p>csv-diff - compare CSV files row by row</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-diff</strong> [OPTION]… FILE1 FILE2 [FILE3] [FILE4]…</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>Read CSV streams from 2 or more files, merge them with an indication of differences in values and print resulting CSV file to standard output.</p>
+<p>All files must have the same number of rows and the list of columns must be a superset of the first file or the list specified by --columns option.</p>
+<dl>
+<dt>-c, --columns=<em>NAME1</em>[,<em>NAME2</em>…]</dt>
+<dd>select only these columns
+</dd>
+<dt>-C, --colors=[0|1]</dt>
+<dd>add color columns (auto enabled with --show-full)
+</dd>
+<dt>-d, --diffs=[0|1]</dt>
+<dd>add diff columns (auto enabled with --show)
+</dd>
+<dt>-s, --show</dt>
+<dd>print output in table format
+</dd>
+<dt>-S, --show-full</dt>
+<dd>print output in table format with pager
+</dd>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt><code>csv-diff file1.csv file2.csv -S</code></dt>
+<dd>compare files, add _color columns and pipe everything to csv-show with colors enabled
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>
