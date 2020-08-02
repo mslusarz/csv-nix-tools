@@ -18,6 +18,7 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 	set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "RelWithDebInfo" "MinSizeRel")
 endif (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 
+include(FindThreads)
 include(GNUInstallDirs)
 
 find_package(PkgConfig QUIET)
@@ -80,7 +81,7 @@ endif()
 #	message(WARNING "gnuplot not found. csv-plot's gnuplot-based test won't be executed.")
 #endif()
 
-set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wsign-conversion")
 
 configure_file(
@@ -117,6 +118,7 @@ build_tool(csv-avg		src/avg.c)
 build_tool(csv-cat		src/cat.c)
 build_tool(csv-count		src/count.c)
 build_tool(csv-cut		src/cut.c)
+build_tool(csv-diff		src/diff.c)
 build_tool(csv-env		src/env.c src/merge_utils.c)
 build_tool(csv-exec		src/exec.c)
 build_tool(csv-grep		src/grep.c)
@@ -139,6 +141,8 @@ build_tool(csv-users		src/users.c src/usr-grp.c src/merge_utils.c)
 
 target_link_libraries(csv-add-rpn	csvrpn)
 target_link_libraries(csv-grep-rpn	csvrpn)
+
+target_link_libraries(csv-diff ${CMAKE_THREAD_LIBS_INIT})
 
 if(NCURSESW_FOUND)
 	if(${CMAKE_VERSION} VERSION_LESS "3.13.0")
@@ -329,6 +333,7 @@ endif()
 	gen1_doc(cat)
 	gen1_doc(count)
 	gen1_doc(cut)
+	gen1_doc(diff)
 	gen1_doc(env)
 	gen1_doc(exec)
 	gen1_doc(grep)

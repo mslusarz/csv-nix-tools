@@ -1,0 +1,13 @@
+Usage: csv-diff [OPTION]... FILE1 FILE2 [FILE3] [FILE4]...
+Read CSV streams from 2 or more files, merge them with an indication of
+differences in values and print resulting CSV file to standard output.
+
+Options:
+  -c, --columns=NAME1[,NAME2...]
+                             select only these columns
+  -C, --colors=[0|1]         add color columns (auto enabled with --show-full)
+  -d, --diffs=[0|1]          add diff columns (auto enabled with --show)
+  -s, --show                 print output in table format
+  -S, --show-full            print output in table format with pager
+      --help                 display this help and exit
+      --version              output version information and exit

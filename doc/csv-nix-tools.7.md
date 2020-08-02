@@ -59,6 +59,7 @@ See **csv-tables-tut**(7) for introduction into tables support in csv-nix-tools.
 - **csv-cat**(1) - concatenate CSV files and print on the standard output
 - **csv-count**(1) - count the number of columns and/or rows
 - **csv-cut**(1) - remove and/or reorder columns
+- **csv-diff**(1) - compare 2 or more files
 - **csv-grep**(1) - filter rows matching a pattern
 - **csv-grep-rpn**(1) - filter rows for which RPN expression returns true
 - **csv-grep-sql**(1) - filter rows for which SQL expression returns true

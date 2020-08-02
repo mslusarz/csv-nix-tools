@@ -39,7 +39,7 @@
 - built-in pipes? (csv "ls | grep -c size -F 0 | cut -c name")
 - shell?
 - one multicommand binary? (csv ls, csv grep, ...)
-- other sink tools: diff/comm?, treeview (generic pstree)
+- other sink tools: comm?, treeview (generic pstree)
 - binary data?
 - journalctl?
 - netstat: add pid

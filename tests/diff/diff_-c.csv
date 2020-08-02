@@ -1,0 +1,5 @@
+input:int,x:string,y1:string
+1,0,5
+2,0,15
+1,5,20
+2,5,23

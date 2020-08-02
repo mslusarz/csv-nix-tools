@@ -1,0 +1,5 @@
+input:int,x:string,y1:string,x_color:string,y1_color:string
+1,0,5,,bg=red
+2,0,15,,bg=green
+1,5,20,,bg=red
+2,5,23,,bg=green

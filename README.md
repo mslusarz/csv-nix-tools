@@ -87,6 +87,7 @@ Filtering/processing:
 - **[csv-cat]** - concatenates multiple csv files
 - **[csv-count]** - counts the number of columns and/or rows
 - **[csv-cut]** - removes columns and reorders them
+- **[csv-diff]** - compares 2 or more files
 - **[csv-grep]** - filters rows matching a pattern
 - **[csv-grep-rpn]** - filters rows using RPN expression
 - **[csv-grep-sql]** - filters rows using SQL expression
@@ -143,6 +144,7 @@ See [TODO](TODO.md)
 [csv-cat]:           https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-cat.1.html
 [csv-count]:         https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-count.1.html
 [csv-cut]:           https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-cut.1.html
+[csv-diff]:          https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-diff.1.html
 [csv-grep]:          https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-grep.1.html
 [csv-grep-rpn]:      https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-grep-rpn.1.html
 [csv-grep-sql]:      https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-grep-sql.1.html
