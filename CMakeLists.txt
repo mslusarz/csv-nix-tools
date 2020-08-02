@@ -85,6 +85,11 @@ endif()
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wsign-conversion")
 
+check_c_source_compiles("#ifdef __STDC_NO_THREADS__\n#error no threads\n#endif\nint main(){return 0;}" C11THREADS_FOUND)
+if (NOT C11THREADS_FOUND)
+	message(WARNING "C11 threads.h not available. csv-diff won't be built.")
+endif()
+
 configure_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
 	"${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
@@ -142,7 +147,6 @@ build_tool(csv-users		src/users.c src/usr-grp.c src/merge_utils.c)
 target_link_libraries(csv-add-rpn	csvrpn)
 target_link_libraries(csv-grep-rpn	csvrpn)
 
-check_c_source_compiles("#ifdef __STDC_NO_THREADS__\n#error no threads\n#endif\nint main(){return 0;}" C11THREADS_FOUND)
 if (C11THREADS_FOUND)
 	build_tool(csv-diff		src/diff.c)
 	target_link_libraries(csv-diff ${CMAKE_THREAD_LIBS_INIT})
