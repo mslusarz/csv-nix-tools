@@ -45,6 +45,12 @@ a superset of the first file or the list specified by \--columns option.
 \--version
 :   output version information and exit
 
+## Exit status: ##
+
+ - 0 if inputs are the same
+ - 1 if inputs are different
+ - 2 if there was any trouble
+
 # EXAMPLES #
 
 `csv-diff file1.csv file2.csv -S`

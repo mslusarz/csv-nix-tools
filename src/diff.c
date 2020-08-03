@@ -209,10 +209,11 @@ Colors[] = {
 	"black",
 };
 
-static void
+static int
 gather_and_compare(struct input *inputs, bool print_diff, bool print_colors)
 {
 	bool *diff = xmalloc_nofail(Nheaders, sizeof(diff[0]));
+	int ret = 0;
 
 	while (true) {
 		mtx_lock_nofail(&GlobalDataMtx);
@@ -223,7 +224,7 @@ gather_and_compare(struct input *inputs, bool print_diff, bool print_colors)
 		if (Eofs == Ninputs) {
 			mtx_unlock_nofail(&GlobalDataMtx);
 			free(diff);
-			return;
+			return ret;
 		}
 
 		if (Eofs > 0) {
@@ -259,6 +260,9 @@ gather_and_compare(struct input *inputs, bool print_diff, bool print_colors)
 				}
 			}
 		}
+
+		if (any_diff)
+			ret = 1;
 
 		for (size_t i = 0; i < Ninputs; ++i) {
 			struct input *in = &inputs[i];
@@ -425,7 +429,7 @@ main(int argc, char *argv[])
 		thrd_create_nofail(&in->thrd, thr_work, in);
 	}
 
-	gather_and_compare(inputs, diffs, colors);
+	int ret = gather_and_compare(inputs, diffs, colors);
 
 	for (size_t i = 0; i < Ninputs; ++i) {
 		struct input *in = &inputs[i];
@@ -442,5 +446,5 @@ main(int argc, char *argv[])
 	free(cols);
 	free(inputs);
 
-	return 0;
+	return ret;
 }
