@@ -42,6 +42,9 @@ a superset of the first file or the list specified by \--columns option.
 -S, \--show-full
 :   print output in table format with pager
 
+\--all-rows
+:   show all rows
+
 \--help
 :   display this help and exit
 

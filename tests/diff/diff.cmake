@@ -24,6 +24,9 @@ test("csv-diff -C1 ${DATA_DIR}/../diff/data1.csv ${DATA_DIR}/../diff/data2.csv" 
 test("csv-diff -C1 -c x,y1 ${DATA_DIR}/../diff/data1.csv ${DATA_DIR}/../diff/data2.csv" data/empty.csv diff/diff_-c_-C1.csv data/empty.txt 1
 	diff_columns_colors)
 
+test("csv-diff --all-rows -C1 ${DATA_DIR}/../diff/data1.csv ${DATA_DIR}/../diff/data2.csv" data/empty.csv diff/diff_-C1_--all-rows.csv data/empty.txt 1
+	diff_all_columns_all_rows_colors)
+
 test("csv-diff -q ${DATA_DIR}/../diff/data1.csv ${DATA_DIR}/../diff/data2.csv" data/empty.csv data/empty.txt diff/differ.txt 1
 	diff_brief_diff)
 

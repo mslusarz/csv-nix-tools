@@ -21,6 +21,7 @@ static const struct option Opts[] = {
 	{"columns",		required_argument,	NULL, 'c'},
 	{"diffs",		required_argument,	NULL, 'd'},
 	{"colors",		required_argument,	NULL, 'C'},
+	{"all-rows",		no_argument,		NULL, 'R'},
 	{"show",		no_argument,		NULL, 's'},
 	{"show-full",		no_argument,		NULL, 'S'},
 	{"help",		no_argument,		NULL, 'h'},
@@ -48,6 +49,8 @@ usage(FILE *out)
 "  -q, --brief                report only when files differ\n");
 	describe_Show(out);
 	describe_Show_full(out);
+	fprintf(out,
+"      --all-rows             show all rows\n");
 	describe_help(out);
 	describe_version(out);
 }
@@ -214,7 +217,7 @@ Colors[] = {
 
 static int
 gather_and_compare(struct input *inputs, bool print_diff, bool print_colors,
-		bool brief)
+		bool brief, bool all_rows)
 {
 	bool *diff = xmalloc_nofail(Nheaders, sizeof(diff[0]));
 	int ret = 0;
@@ -270,7 +273,7 @@ gather_and_compare(struct input *inputs, bool print_diff, bool print_colors,
 
 		for (size_t i = 0; i < Ninputs; ++i) {
 			struct input *in = &inputs[i];
-			if (any_diff && !brief) {
+			if ((any_diff || all_rows) && !brief) {
 				printf("%zu,", i + 1);
 				csv_print_line_reordered(stdout, in->buf,
 						in->col_offs, Nheaders, false,
@@ -315,6 +318,7 @@ main(int argc, char *argv[])
 	int colors = -1;
 	int diffs = -1;
 	bool brief = false;
+	bool all_rows = false;
 
 	while ((opt = getopt_long(argc, argv, "c:C:d:qsS", Opts, NULL)) != -1) {
 		switch (opt) {
@@ -329,6 +333,9 @@ main(int argc, char *argv[])
 				break;
 			case 'q':
 				brief = true;
+				break;
+			case 'R':
+				all_rows = true;
 				break;
 			case 's':
 				show_flags |= SHOW_SIMPLE;
@@ -356,6 +363,10 @@ main(int argc, char *argv[])
 		show_flags |= SHOW_COLORS;
 
 	if (brief) {
+		if (all_rows) {
+			fprintf(stderr, " --brief and --all-rows are incompatible\n");
+			exit(2);
+		}
 		if (show_flags & SHOW_COLORS) {
 			fprintf(stderr, " --brief and --colors 1 are incompatible\n");
 			exit(2);
@@ -454,7 +465,7 @@ main(int argc, char *argv[])
 		thrd_create_nofail(&in->thrd, thr_work, in);
 	}
 
-	int ret = gather_and_compare(inputs, diffs, colors, brief);
+	int ret = gather_and_compare(inputs, diffs, colors, brief, all_rows);
 
 	for (size_t i = 0; i < Ninputs; ++i) {
 		struct input *in = &inputs[i];
