@@ -33,11 +33,17 @@
 <dt>-d, --diffs=[0|1]</dt>
 <dd>add diff columns (auto enabled with --show)
 </dd>
+<dt>-q, --brief</dt>
+<dd>report only when files differ
+</dd>
 <dt>-s, --show</dt>
 <dd>print output in table format
 </dd>
 <dt>-S, --show-full</dt>
 <dd>print output in table format with pager
+</dd>
+<dt>--all-rows</dt>
+<dd>show all rows
 </dd>
 <dt>--help</dt>
 <dd>display this help and exit
@@ -46,6 +52,12 @@
 <dd>output version information and exit
 </dd>
 </dl>
+<h2 id="exit-status">Exit status:</h2>
+<ul>
+<li>0 if inputs are the same</li>
+<li>1 if inputs are different</li>
+<li>2 if there was any trouble</li>
+</ul>
 <h1 id="examples">EXAMPLES</h1>
 <dl>
 <dt><code>csv-diff file1.csv file2.csv -S</code></dt>
