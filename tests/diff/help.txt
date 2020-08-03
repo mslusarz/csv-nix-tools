@@ -7,6 +7,7 @@ Options:
                              select only these columns
   -C, --colors=[0|1]         add color columns (auto enabled with --show-full)
   -d, --diffs=[0|1]          add diff columns (auto enabled with --show)
+  -q, --brief                report only when files differ
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
       --help                 display this help and exit

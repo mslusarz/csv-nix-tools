@@ -33,6 +33,9 @@ a superset of the first file or the list specified by \--columns option.
 -d, \--diffs=[0|1]
 :   add diff columns (auto enabled with \--show)
 
+-q, \--brief
+:   report only when files differ
+
 -s, \--show
 :   print output in table format
 

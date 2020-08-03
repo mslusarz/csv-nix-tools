@@ -17,6 +17,7 @@
 #include "utils.h"
 
 static const struct option Opts[] = {
+	{"brief",		no_argument,		NULL, 'q'},
 	{"columns",		required_argument,	NULL, 'c'},
 	{"diffs",		required_argument,	NULL, 'd'},
 	{"colors",		required_argument,	NULL, 'C'},
@@ -43,6 +44,8 @@ usage(FILE *out)
 "  -C, --colors=[0|1]         add color columns (auto enabled with --show-full)\n");
 	fprintf(out,
 "  -d, --diffs=[0|1]          add diff columns (auto enabled with --show)\n");
+	fprintf(out,
+"  -q, --brief                report only when files differ\n");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_help(out);
@@ -210,7 +213,8 @@ Colors[] = {
 };
 
 static int
-gather_and_compare(struct input *inputs, bool print_diff, bool print_colors)
+gather_and_compare(struct input *inputs, bool print_diff, bool print_colors,
+		bool brief)
 {
 	bool *diff = xmalloc_nofail(Nheaders, sizeof(diff[0]));
 	int ret = 0;
@@ -266,7 +270,7 @@ gather_and_compare(struct input *inputs, bool print_diff, bool print_colors)
 
 		for (size_t i = 0; i < Ninputs; ++i) {
 			struct input *in = &inputs[i];
-			if (any_diff) {
+			if (any_diff && !brief) {
 				printf("%zu,", i + 1);
 				csv_print_line_reordered(stdout, in->buf,
 						in->col_offs, Nheaders, false,
@@ -310,8 +314,9 @@ main(int argc, char *argv[])
 	unsigned show_flags = SHOW_DISABLED;
 	int colors = -1;
 	int diffs = -1;
+	bool brief = false;
 
-	while ((opt = getopt_long(argc, argv, "c:C:d:sS", Opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "c:C:d:qsS", Opts, NULL)) != -1) {
 		switch (opt) {
 			case 'c':
 				cols = xstrdup_nofail(optarg);
@@ -321,6 +326,9 @@ main(int argc, char *argv[])
 				break;
 			case 'd':
 				diffs = atoi(optarg) != 0;
+				break;
+			case 'q':
+				brief = true;
 				break;
 			case 's':
 				show_flags |= SHOW_SIMPLE;
@@ -346,6 +354,21 @@ main(int argc, char *argv[])
 
 	if (colors && (show_flags & SHOW_FULL))
 		show_flags |= SHOW_COLORS;
+
+	if (brief) {
+		if (show_flags & SHOW_COLORS) {
+			fprintf(stderr, " --brief and --colors 1 are incompatible\n");
+			exit(2);
+		}
+		if (show_flags & SHOW_FULL) {
+			fprintf(stderr, " --brief and --show-full are incompatible\n");
+			exit(2);
+		}
+		if (show_flags & SHOW_SIMPLE) {
+			fprintf(stderr, " --brief and --show are incompatible\n");
+			exit(2);
+		}
+	}
 
 	assert(optind <= argc);
 	Ninputs = (size_t)(argc - optind);
@@ -400,22 +423,24 @@ main(int argc, char *argv[])
 
 	csv_show(show_flags);
 
-	printf("input:int");
+	if (!brief) {
+		printf("input:int");
 
-	for (size_t i = 0; i < Nheaders; ++i)
-		printf(",%s:%s", Headers[i].name, Headers[i].type);
-
-	if (diffs) {
 		for (size_t i = 0; i < Nheaders; ++i)
-			printf(",%s_diff:int", Headers[i].name);
-	}
+			printf(",%s:%s", Headers[i].name, Headers[i].type);
 
-	if (colors) {
-		for (size_t i = 0; i < Nheaders; ++i)
-			printf(",%s_color:string", Headers[i].name);
-	}
+		if (diffs) {
+			for (size_t i = 0; i < Nheaders; ++i)
+				printf(",%s_diff:int", Headers[i].name);
+		}
 
-	printf("\n");
+		if (colors) {
+			for (size_t i = 0; i < Nheaders; ++i)
+				printf(",%s_color:string", Headers[i].name);
+		}
+
+		printf("\n");
+	}
 
 	mtx_init_nofail(&GlobalDataMtx, mtx_plain);
 	cnd_init_nofail(&AllThreadsReady);
@@ -429,7 +454,7 @@ main(int argc, char *argv[])
 		thrd_create_nofail(&in->thrd, thr_work, in);
 	}
 
-	int ret = gather_and_compare(inputs, diffs, colors);
+	int ret = gather_and_compare(inputs, diffs, colors, brief);
 
 	for (size_t i = 0; i < Ninputs; ++i) {
 		struct input *in = &inputs[i];
@@ -445,6 +470,9 @@ main(int argc, char *argv[])
 	free(user_headers);
 	free(cols);
 	free(inputs);
+
+	if (brief && ret)
+		fprintf(stderr, "input files differ\n");
 
 	return ret;
 }
