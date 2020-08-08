@@ -28,7 +28,6 @@ struct cb_params {
 	bool use_color_columns;
 	bool *is_color_column;
 	size_t *color_column_index;
-	size_t *col_offsets;
 	enum alignment *alignments;
 };
 
@@ -282,7 +281,6 @@ main(int argc, char *argv[])
 
 	params.is_color_column = NULL;
 	params.color_column_index = NULL;
-	params.col_offsets = xmalloc_nofail(nheaders + 1, sizeof(params.col_offsets[0]));
 
 	if (params.use_color_columns) {
 		params.is_color_column = xcalloc_nofail(nheaders, sizeof(params.is_color_column[0]));
@@ -384,7 +382,6 @@ main(int argc, char *argv[])
 
 	free(params.is_color_column);
 	free(params.color_column_index);
-	free(params.col_offsets);
 	free(params.alignments);
 	free(params.split_results);
 
