@@ -9,7 +9,7 @@ test_with_cwd("csv-ls -c name"
 	ls-files
 	${CMAKE_SOURCE_DIR}/tests/ls/files)
 
-test_with_cwd("csv-ls -c name,mode,symlink,type_name -ls"
+test_with_cwd("csv-ls -c name,owner_execute,symlink,type_name -ls"
 	data/empty.txt ls/files_and_dirs.txt data/empty.txt 0
 	ls-files-s
 	${CMAKE_SOURCE_DIR}/tests/ls/files)

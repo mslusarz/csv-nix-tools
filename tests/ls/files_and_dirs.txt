@@ -1,17 +1,17 @@
-name                            mode   symlink             type_name
-dir with spaces                 0755                       dir
-dir,with,commas                 0755                       dir
-dir.with.dots                   0755                       dir
-dir_with_\n_newline             0755                       dir
-dir_with_backslash_\\n_here     0755                       dir
-dir_with_double_"_quote         0755                       dir
-dir_with_single_'_quote         0755                       dir
-file with spaces                0644                       reg
-file,with,commas                0644                       reg
-file.with.dots                  0644                       reg
-file_with_\n_newline            0644                       reg
-file_with_backslash_\\n_here    0644                       reg
-file_with_double_"_quote        0644                       reg
-file_with_execute_permissions   0755                       reg
-file_with_single_'_quote        0644                       reg
-symlink_file                    0777   not-existing-file   slnk
+name                            owner_execute   symlink             type_name
+dir with spaces                             1                       dir
+dir,with,commas                             1                       dir
+dir.with.dots                               1                       dir
+dir_with_\n_newline                         1                       dir
+dir_with_backslash_\\n_here                 1                       dir
+dir_with_double_"_quote                     1                       dir
+dir_with_single_'_quote                     1                       dir
+file with spaces                            0                       reg
+file,with,commas                            0                       reg
+file.with.dots                              0                       reg
+file_with_\n_newline                        0                       reg
+file_with_backslash_\\n_here                0                       reg
+file_with_double_"_quote                    0                       reg
+file_with_execute_permissions               1                       reg
+file_with_single_'_quote                    0                       reg
+symlink_file                                1   not-existing-file   slnk
