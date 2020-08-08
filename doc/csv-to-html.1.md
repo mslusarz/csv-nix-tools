@@ -51,4 +51,4 @@ Convert CSV file from standard input to HTML.
 
 # SEE ALSO #
 
-**csv-show**(1), **csv-nix-tools**(7)
+**csv-show**(1), **csv-to-xml**(1), **csv-nix-tools**(7)

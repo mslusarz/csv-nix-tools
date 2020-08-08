@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<root>
+ <header>
+  <column n="0" type="string">name</column>
+  <column n="1" type="int">id</column>
+  <column n="2" type="int">something</column>
+ </header>
+ <data>
+  <row>
+   <column n="0">lorem ipsum</column>
+   <column n="1">1</column>
+   <column n="2">1</column>
+  </row>
+  <row>
+   <column n="0">not all that is gold</column>
+   <column n="1">2</column>
+   <column n="2">0</column>
+  </row>
+  <row>
+   <column n="0">something else</column>
+   <column n="1">3</column>
+   <column n="2">1</column>
+  </row>
+ </data>
+</root>
