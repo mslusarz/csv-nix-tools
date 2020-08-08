@@ -2,7 +2,6 @@
 - more data collection tools (id, uname, w/who, df/mountinfo, fuser/lsof, free, top?, ifconfig/ip, ipcs, lsattr, lsusb, tcpdump?, route, lscpu, lshw, lsblk, lsns, last, etc)
 - more processing tools (tr, other?)
 - more rpn operators/functions (split, rev, timestamp conversion, now, tr)
-- exporting tools (to-json)
 - importing tools (from-xml, from-json)
 - fix utf-8 support
 - handle NUL bytes
