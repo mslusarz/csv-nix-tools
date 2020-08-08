@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>csv-to-html</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">csv-to-html</h1>
+</header>
+<h1 id="name">NAME</h1>
+<p>csv-to-html - convert CSV file from standard input to HTML</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-to-html</strong> [OPTION]…</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>Convert CSV file from standard input to HTML.</p>
+<dl>
+<dt>-C, --use-color-columns</dt>
+<dd>use columns with _color suffix to render each cell
+</dd>
+<dt>--datatables</dt>
+<dd>use datatables.net JavaScript library
+</dd>
+<dt>--no-header</dt>
+<dd>remove column headers
+</dd>
+<dt>--set-color <em>COLNAME</em>:[fg=]<em>COLOR1</em>[,bg=<em>COLOR2</em>]</dt>
+<dd>set <em>COLOR1</em> as foreground and <em>COLOR2</em> as background of column <em>COLNAME</em>
+</dd>
+<dt>--tabulator</dt>
+<dd>use tabulator.info JavaScript library
+</dd>
+<dt>--with-types</dt>
+<dd>print types in column headers
+</dd>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt><code>csv-to-html &lt; file1.csv &gt; file1.html &amp;&amp; xdg-open file1.html</code></dt>
+<dd>generate file1.html from file1.csv and open it in the default browser
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-to-xml.1.html">csv-to-xml</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>

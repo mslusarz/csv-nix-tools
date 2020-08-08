@@ -22,7 +22,7 @@
 <p><strong>csv-show</strong> [OPTION]…</p>
 <h1 id="description">DESCRIPTION</h1>
 <p>Print CSV file from standard input in human-readable format, using tables, without types.</p>
-<p>There are 6 backends: <strong><a href="http://man7.org/linux/man-pages/man3/ncurses.3x.html">ncurses</a></strong>(3)-based, <strong><a href="http://man7.org/linux/man-pages/man1/less.1.html">less</a></strong>(1)-based, 3 html-based and no-backend.</p>
+<p>There are 3 backends: <strong><a href="http://man7.org/linux/man-pages/man3/ncurses.3x.html">ncurses</a></strong>(3)-based, <strong><a href="http://man7.org/linux/man-pages/man1/less.1.html">less</a></strong>(1)-based, and no-backend.</p>
 <p><strong>ncurses</strong> backend:</p>
 <ul>
 <li><p>keeps column names at the top of the screen at all times</p></li>
@@ -41,16 +41,13 @@
 <li><p>doesn’t support searching (yet)</p></li>
 </ul>
 <p><strong>less</strong> backend supports everything the command <strong>less</strong>(1) supports.</p>
-<p><strong>html</strong> (alias for <strong>html=basic</strong>) backend prints everything in HTML format to standard output.</p>
-<p><strong>html=datatables</strong> backend prints everything in HTML format, using datatables.net JavaScript library, to standard output.</p>
-<p><strong>html=tabulator</strong> backend prints everything in HTML format, using tabulator.info JavaScript library, to standard output.</p>
 <p><strong>none</strong> backend simply prints everything to standard output.</p>
 <dl>
 <dt>-s, --spacing <em>NUM</em></dt>
 <dd>use <em>NUM</em> spaces between columns instead of 3
 </dd>
-<dt>-u, --ui <em>curses</em>/<em>less</em>/<em>html</em>/<em>html=basic</em>/<em>html=datatables</em>/<em>html=tabulator</em>/<em>none</em></dt>
-<dd>use UI based on <strong><a href="http://man7.org/linux/man-pages/man3/ncurses.3x.html">ncurses</a></strong>(3), <strong><a href="http://man7.org/linux/man-pages/man1/less.1.html">less</a></strong>(1), HTML or nothing(tm)
+<dt>-u, --ui <em>curses</em>/<em>less</em>/<em>none</em></dt>
+<dd>use UI based on <strong><a href="http://man7.org/linux/man-pages/man3/ncurses.3x.html">ncurses</a></strong>(3), <strong><a href="http://man7.org/linux/man-pages/man1/less.1.html">less</a></strong>(1), or nothing(tm)
 </dd>
 <dt>--no-header</dt>
 <dd>remove column headers
@@ -64,7 +61,7 @@
 <li><p>in RRGGBB format (FF0000 is red, 00FF00 is green, 0000FF is blue, etc.), note: this requires changing definition of a color slot, but some terminals lie about supporting this capability, and there’s no way of detecting this</p></li>
 </ul>
 </dd>
-<dt>--use-color-columns</dt>
+<dt>-C, --use-color-columns</dt>
 <dd>use columns with _color suffix to render each cell
 </dd>
 <dt>--with-types</dt>
@@ -84,9 +81,6 @@
 </dd>
 <dt><code>csv-show --ui none &lt; file1.csv</code></dt>
 <dd>print file1.csv in human-readable format without any pager
-</dd>
-<dt><code>csv-show --ui html &lt; file1.csv &gt; file1.html &amp;&amp; xdg-open file1.html</code></dt>
-<dd>generate file1.html from file1.csv and open it in the default browser
 </dd>
 </dl>
 <h1 id="see-also">SEE ALSO</h1>
