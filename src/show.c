@@ -30,8 +30,8 @@ static const struct option opts[] = {
 	{"with-types",		no_argument, 		NULL, 't'},
 	{"ui",			required_argument,	NULL, 'u'},
 	{"spacing",		required_argument,	NULL, 's'},
-	{"use-color-columns",	no_argument,		NULL, 'U' },
-	{"set-color",		required_argument,	NULL, 'C' },
+	{"use-color-columns",	no_argument,		NULL, 'C' },
+	{"set-color",		required_argument,	NULL, 'c' },
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{"debug",		required_argument,	NULL, 'D'},
@@ -47,6 +47,7 @@ usage(FILE *out)
 "without types.\n");
 	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
+	fprintf(out, "  -C, --use-color-columns    use columns with _color suffix\n");
 	fprintf(out, "  -s, --spacing NUM          use NUM spaces between columns instead of 3\n");
 	fprintf(out, "  -u, --ui TYPE              choose UI TYPE: ncurses, less,\n"
 		     "                             html (alias for html=basic),\n"
@@ -56,7 +57,6 @@ usage(FILE *out)
 	fprintf(out, "      --set-color COLNAME:[fg=]COLOR1[,bg=COLOR2]\n");
 	fprintf(out, "                             set COLOR1 as foreground and COLOR2 as\n");
 	fprintf(out, "                             background of column COLNAME\n");
-	fprintf(out, "      --use-color-columns    use columns with _color suffix\n");
 	fprintf(out, "      --with-types           print types in column headers\n");
 	describe_help(out);
 	describe_version(out);
@@ -213,7 +213,7 @@ main(int argc, char *argv[])
 	size_t set_colorpair_num = 0;
 	bool use_color_columns = false;
 
-	while ((opt = getopt_long(argc, argv, "u:s:", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "Cu:s:", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'D':
 				params.logfd = open(optarg,
@@ -254,14 +254,14 @@ main(int argc, char *argv[])
 			case 't':
 				print_types = true;
 				break;
-			case 'C':
+			case 'c':
 				set_colorpair = xrealloc_nofail(set_colorpair,
 						++set_colorpair_num,
 						sizeof(set_colorpair[0]));
 				set_colorpair[set_colorpair_num - 1] =
 						xstrdup_nofail(optarg);
 				break;
-			case 'U':
+			case 'C':
 				use_color_columns = true;
 				break;
 			case 'H':

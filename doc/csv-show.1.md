@@ -76,7 +76,7 @@ There are 6 backends: **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3
       some terminals lie about supporting this capability, and there's
       no way of detecting this
 
-\--use-color-columns
+-C, \--use-color-columns
 :   use columns with _color suffix to render each cell
 
 \--with-types

@@ -3,6 +3,7 @@ Print CSV file from standard input in human-readable format, using tables,
 without types.
 
 Options:
+  -C, --use-color-columns    use columns with _color suffix
   -s, --spacing NUM          use NUM spaces between columns instead of 3
   -u, --ui TYPE              choose UI TYPE: ncurses, less,
                              html (alias for html=basic),
@@ -12,7 +13,6 @@ Options:
       --set-color COLNAME:[fg=]COLOR1[,bg=COLOR2]
                              set COLOR1 as foreground and COLOR2 as
                              background of column COLNAME
-      --use-color-columns    use columns with _color suffix
       --with-types           print types in column headers
       --help                 display this help and exit
       --version              output version information and exit
