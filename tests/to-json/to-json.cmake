@@ -13,6 +13,9 @@ test("csv-to-json" data/control-characters.csv to-json/control-characters.json d
 test("csv-to-json" data/newlines.csv to-json/newlines.json data/empty.txt 0
 	to-json_newlines)
 
+test("csv-to-json" data/quotes.csv to-json/quotes.json data/empty.txt 0
+	to-json_quotes)
+
 test("csv-to-json --help" data/empty.csv to-json/help.txt data/empty.txt 2
 	to-json_help)
 
