@@ -20,6 +20,12 @@ csv-to-xml - convert CSV file from standard input to XML
 
 Convert CSV file from standard input to XML.
 
+\--generic-names
+:   don't use column names for nodes
+
+\--no-header
+:   remove column headers
+
 \--help
 :   display this help and exit
 
