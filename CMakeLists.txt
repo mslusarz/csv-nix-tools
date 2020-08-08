@@ -141,6 +141,7 @@ build_tool(csv-sort		src/sort.c)
 build_tool(csv-sum		src/sum.c)
 build_tool(csv-tac		src/tac.c)
 build_tool(csv-tail		src/tail.c)
+build_tool(csv-to-html		src/to-html.c)
 build_tool(csv-uniq		src/uniq.c)
 build_tool(csv-users		src/users.c src/usr-grp.c src/merge_utils.c)
 
@@ -157,7 +158,7 @@ if(NCURSESW_FOUND)
 		link_directories(${NCURSESW_LIBRARY_DIRS})
 	endif()
 
-	build_tool(csv-show src/show.c src/show_ncurses.c src/show_static.c src/show_html.c)
+	build_tool(csv-show src/show.c src/show_ncurses.c src/show_static.c)
 	target_compile_definitions(csv-show PRIVATE NCURSESW_ENABLED)
 
 	if (NCURSESW_INCLUDE_DIRS)
@@ -174,7 +175,7 @@ if(NCURSESW_FOUND)
 
 	target_link_libraries(csv-show ${NCURSESW_LIBRARIES})
 else()
-	build_tool(csv-show src/show.c src/show_static.c src/show_html.c)
+	build_tool(csv-show src/show.c src/show_static.c)
 endif()
 
 # disable sign-compare/conversion warnings for csv-show because ncurses API is awful WRT signedness
@@ -377,6 +378,7 @@ endif()
 	gen1_doc(sum)
 	gen1_doc(tac)
 	gen1_doc(tail)
+	gen1_doc(to-html)
 	gen1_doc(uniq)
 	gen1_doc(users)
 endif()

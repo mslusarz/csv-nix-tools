@@ -108,6 +108,7 @@ Sink:
 - **[csv-exec]** - executes an external command for each row
 - **[csv-plot]** - generates 2D or 3D graph using gnuplot
 - **[csv-show]** - formats data in human-readable form (also available as a "-s/-S" option in all source and processing tools)
+- **[csv-to-html]** - converts data to HTML
 
 # Documentation
 
@@ -164,3 +165,4 @@ See [TODO](TODO.md)
 [csv-exec]:          https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-exec.1.html
 [csv-plot]:          https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-plot.1.html
 [csv-show]:          https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-show.1.html
+[csv-to-html]:       https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-to-html.1.html

@@ -20,9 +20,8 @@ csv-show - print on the standard output a CSV file from standard input in human-
 
 Print CSV file from standard input in human-readable format, using tables, without types.
 
-There are 6 backends: **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3x.html)**(3)-based,
-**[less](http://man7.org/linux/man-pages/man1/less.1.html)**(1)-based,
-3 html-based and no-backend.
+There are 3 backends: **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3x.html)**(3)-based,
+**[less](http://man7.org/linux/man-pages/man1/less.1.html)**(1)-based, and no-backend.
 
 **ncurses** backend:
 
@@ -44,20 +43,14 @@ There are 6 backends: **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3
 
 **less** backend supports everything the command **less**(1) supports.
 
-**html** (alias for **html=basic**) backend prints everything in HTML format to standard output.
-
-**html=datatables** backend prints everything in HTML format, using datatables.net JavaScript library, to standard output.
-
-**html=tabulator** backend prints everything in HTML format, using tabulator.info JavaScript library, to standard output.
-
 **none** backend simply prints everything to standard output.
 
 -s, \--spacing *NUM*
 :   use *NUM* spaces between columns instead of 3
 
--u, \--ui *curses*/*less*/*html*/*html=basic*/*html=datatables*/*html=tabulator*/*none*
+-u, \--ui *curses*/*less*/*none*
 :   use UI based on **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3x.html)**(3),
-**[less](http://man7.org/linux/man-pages/man1/less.1.html)**(1), HTML or nothing(tm)
+**[less](http://man7.org/linux/man-pages/man1/less.1.html)**(1), or nothing(tm)
 
 \--no-header
 :   remove column headers
@@ -95,9 +88,6 @@ There are 6 backends: **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3
 
 `csv-show --ui none < file1.csv`
 :   print file1.csv in human-readable format without any pager
-
-`csv-show --ui html < file1.csv > file1.html && xdg-open file1.html`
-:   generate file1.html from file1.csv and open it in the default browser
 
 # SEE ALSO #
 
