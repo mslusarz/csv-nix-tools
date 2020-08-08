@@ -1,0 +1,6 @@
+Usage: csv-to-json [OPTION]...
+Convert CSV file from standard input to JSON.
+
+Options:
+      --help                 display this help and exit
+      --version              output version information and exit

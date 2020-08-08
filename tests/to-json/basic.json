@@ -1,0 +1,19 @@
+{
+ "rows": [
+  {
+   "name": "lorem ipsum",
+   "id": 1,
+   "something": 1
+  },
+  {
+   "name": "not all that is gold",
+   "id": 2,
+   "something": 0
+  },
+  {
+   "name": "something else",
+   "id": 3,
+   "something": 1
+  }
+ ]
+}

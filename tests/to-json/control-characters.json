@@ -1,0 +1,24 @@
+{
+ "rows": [
+  {
+   "name": "lorem\tipsum",
+   "id": 1,
+   "something": 1
+  },
+  {
+   "name": "not\u0007all\bthat\u001bis\fgold",
+   "id": 2,
+   "something": 0
+  },
+  {
+   "name": "some\rthing\u000belse",
+   "id": 3,
+   "something": 1
+  },
+  {
+   "name": "fourth\\row\u0001contains\u001fgarbage",
+   "id": 4,
+   "something": 2
+  }
+ ]
+}

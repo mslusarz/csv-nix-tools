@@ -39,4 +39,4 @@ Convert CSV file from standard input to XML.
 
 # SEE ALSO #
 
-**csv-show**(1), **csv-to-html**(1), **csv-nix-tools**(7)
+**csv-show**(1), **csv-to-html**(1), **csv-to-json**(1), **csv-nix-tools**(7)

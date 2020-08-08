@@ -82,6 +82,7 @@ See **csv-tables-tut**(7) for introduction into tables support in csv-nix-tools.
 - **csv-plot**(1) - generate 2D or 3D graph using gnuplot
 - **csv-show**(1) - print in human-readable format
 - **csv-to-html**(1) - print in HTML format
+- **csv-to-json**(1) - print in JSON format
 - **csv-to-xml**(1) - print in XML format
 
 # COMMON OPTIONS FOR ALL SOURCE TOOLS #
