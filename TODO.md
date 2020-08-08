@@ -26,7 +26,6 @@
 - show: fix column width calc when input is in utf
 - sql: implement "group by", "having"
 - cut: multiple input files
-- ls: color output with -S
 - sql/rpn: data(colname, relativerownum)
 - csv-from-txt --format "year,-,month,-,day,hour,:,min,:,sec,\,,ms, ,level, ,file, ,message"
 

@@ -16,5 +16,7 @@ Options:
   -S, --show-full            print output in table format with pager
   -T, --as-table             produce output as table 'file'
   -U                         do not sort; list entries in directory order
+      --colors               add color columns
+      --no-colors            don't add color columns
       --help                 display this help and exit
       --version              output version information and exit

@@ -54,6 +54,12 @@ Sort entries alphabetically if -U is not specified.
 -U
 :   do not sort; list entries in directory order
 
+\--colors
+:   add color columns
+
+\--no-colors
+:   don't add color columns
+
 \--help
 :   display this help and exit
 

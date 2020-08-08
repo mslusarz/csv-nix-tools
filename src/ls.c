@@ -79,6 +79,7 @@ struct file_info {
 	const char *path;
 	const char *dirpath;
 	const char *symlink;
+	int symlink_info;
 };
 
 static void
@@ -162,6 +163,32 @@ print_mode(const void *p)
 		printf("0%o", v);
 	else
 		printf("0");
+}
+
+static void
+print_name_color(const void *p)
+{
+	const struct file_info *f = p;
+	mode_t mode = f->st->st_mode;
+	if (S_ISREG(mode) && (mode & (S_IXUSR | S_IXGRP | S_IXOTH)))
+		printf("fg=green");
+	else if (S_ISDIR(mode))
+		printf("fg=blue");
+	else if (S_ISLNK(mode))
+		printf("fg=cyan");
+	else if (S_ISFIFO(mode) || S_ISCHR(mode) || S_ISBLK(mode))
+		printf("fg=yellow");
+	else if (S_ISSOCK(mode))
+		printf("fg=magenta");
+}
+
+static void
+print_symlink_color(const void *p)
+{
+	const struct file_info *f = p;
+	if (S_ISLNK(f->st->st_mode))
+		if (f->symlink_info)
+			printf("fg=red");
 }
 
 static void
@@ -402,6 +429,14 @@ print_symlink(const void *p)
 }
 
 static void
+print_symlink_info(const void *p)
+{
+	const struct file_info *f = p;
+	if (S_ISLNK(f->st->st_mode))
+		printf("%d", f->symlink_info);
+}
+
+static void
 print_parent(const void *p)
 {
 	const struct file_info *f = p;
@@ -510,7 +545,13 @@ list(const char *dirpath, int dirfd, int recursive, int all, int sort,
 		}
 
 		char *symlink = NULL;
+		int symlink_info = 0;
 		if (S_ISLNK(statbuf.st_mode)) do {
+			struct stat symlink_statbuf;
+			if (fstatat(dirfd, namelist[i]->d_name,
+					&symlink_statbuf, 0))
+				symlink_info = errno;
+
 			size_t bufsiz;
 			assert(statbuf.st_size >= 0);
 			if (statbuf.st_size)
@@ -547,7 +588,8 @@ restart_readlink:
 				&statbuf,
 				namelist[i]->d_name,
 				dirpath,
-				symlink
+				symlink,
+				symlink_info,
 		};
 		csvmu_print_row(ctx, &info, columns, ncolumns);
 
@@ -602,6 +644,8 @@ dirs_alloc_fail:
 static const struct option opts[] = {
 	{"all",			no_argument, 		NULL, 'a'},
 	{"directory",		no_argument,		NULL, 'd'},
+	{"no-colors",		no_argument,		NULL, 'D'},
+	{"colors",		no_argument,		NULL, 'C'},
 	{"columns",		required_argument,	NULL, 'c'},
 	{"merge",		no_argument,		NULL, 'M'},
 	{"table-name",		required_argument,	NULL, 'N'},
@@ -634,6 +678,8 @@ usage(FILE *out)
 	describe_Show_full(out);
 	describe_as_Table(out, "file");
 	fprintf(out, "  -U                         do not sort; list entries in directory order\n");
+	fprintf(out, "      --colors               add color columns\n");
+	fprintf(out, "      --no-colors            don't add color columns\n");
 	describe_help(out);
 	describe_version(out);
 }
@@ -704,18 +750,29 @@ main(int argc, char *argv[])
 
 		{ false, 0, 3, "blksize",       TYPE_INT,    print_blksize, 0 },
 		{ false, 0, 3, "blocks",        TYPE_INT,    print_blocks, 0 },
+
+		{ false, 0, 3, "symlink_info",  TYPE_INT,    print_symlink_info, 0 },
+		{ false, 0, 9, "name_color",    TYPE_STRING, print_name_color, 0 },
+		{ false, 0, 9, "symlink_color", TYPE_STRING, print_symlink_color, 0 },
 	};
 
 	size_t ncolumns = ARRAY_SIZE(columns);
 	size_t level = 0;
+	int colors = -1;
 
-	while ((opt = getopt_long(argc, argv, "adc:lMN:RsSTU", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "adc:CDlMN:RsSTU", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'a':
 				all = 1;
 				break;
 			case 'c':
 				cols = xstrdup_nofail(optarg);
+				break;
+			case 'C':
+				colors = 1;
+				break;
+			case 'D':
+				colors = 0;
 				break;
 			case 'd':
 				dir = 1;
@@ -763,6 +820,29 @@ main(int argc, char *argv[])
 			default:
 				usage(stdout);
 				return 2;
+		}
+	}
+
+	if (show_flags & SHOW_FULL) {
+		if (colors == -1)
+			colors = 1;
+		if (colors)
+			show_flags |= SHOW_COLORS;
+	} else if (colors == -1) {
+		colors = 0;
+	}
+
+	if (colors) {
+		int found = 0;
+		for (size_t i = 0; i < ncolumns && found < 2; ++i) {
+			if (strcmp(columns[i].name, "name_color") == 0) {
+				columns[i].vis = true;
+				found++;
+			}
+			if (strcmp(columns[i].name, "symlink_color") == 0) {
+				columns[i].vis = true;
+				found++;
+			}
 		}
 	}
 
@@ -818,7 +898,13 @@ main(int argc, char *argv[])
 					ncolumns, &ctx);
 		} else {
 			char *symlink = NULL;
+			int symlink_info = 0;
 			if (S_ISLNK(buf.st_mode)) do {
+				struct stat symlink_statbuf;
+				if (fstatat(AT_FDCWD, argv[i],
+						&symlink_statbuf, 0))
+					symlink_info = errno;
+
 				size_t bufsiz;
 				assert(buf.st_size >= 0);
 				if (buf.st_size)
@@ -855,7 +941,8 @@ restart_readlink:
 					&buf,
 					argv[i],
 					NULL,
-					symlink
+					symlink,
+					symlink_info,
 			};
 
 			csvmu_print_row(&ctx, &info, columns, ncolumns);
