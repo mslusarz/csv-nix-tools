@@ -46,12 +46,14 @@ to file an issue. Any feedback is welcomed.
 
 On Debian-based distros you can install all dependencies by:
 ```sh
-apt install build-essential cmake pkg-config flex bison libsqlite3-dev libprocps-dev libncursesw5-dev libmnl-dev pandoc tmux
+apt install build-essential cmake pkg-config flex bison libsqlite3-dev \
+            libprocps-dev libncursesw5-dev libmnl-dev pandoc tmux
 ```
 
 On Fedora-based distros you can install all dependencies by:
 ```sh
-yum install gcc make glibc-devel cmake pkg-config flex bison sqlite-devel procps-ng-devel ncurses-devel libmnl-devel pandoc tmux
+yum install gcc make glibc-devel cmake pkg-config flex bison sqlite-devel \
+            procps-ng-devel ncurses-devel libmnl-devel pandoc tmux
 ```
 
 # Installation
