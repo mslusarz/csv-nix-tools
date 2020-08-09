@@ -258,9 +258,9 @@ $ csv-ls -c size,name | csv-grep-rpn -e "%size 2000 > %size 3000 < and"
 Files and their permissions printed in human-readable format (simpler version of column type_mode):
 
 ```
-$ csv-ls -c mode,name | csv-add-rpn -n strmode -e "\
-%mode 0400 & 'r' '-' if        %mode 0200 & 'w' '-' if concat %mode 0100 & 'x' '-' if concat \
-%mode  040 & 'r' '-' if concat %mode  020 & 'w' '-' if concat %mode  010 & 'x' '-' if concat \
+$ csv-ls -c mode,name | csv-add-rpn -n strmode -e "
+%mode 0400 & 'r' '-' if        %mode 0200 & 'w' '-' if concat %mode 0100 & 'x' '-' if concat
+%mode  040 & 'r' '-' if concat %mode  020 & 'w' '-' if concat %mode  010 & 'x' '-' if concat
 %mode   04 & 'r' '-' if concat %mode   02 & 'w' '-' if concat %mode   01 & 'x' '-' if concat" |
 csv-cut -c mode,strmode,name -s
 

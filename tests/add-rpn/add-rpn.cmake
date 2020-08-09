@@ -170,6 +170,15 @@ test("csv-add-rpn -n 'num' -e \"'a' next\""
 	data/3-columns-3-rows.csv data/rpn-add-next.csv data/empty.txt 0
 	add-rpn_next)
 
+test("csv-add-rpn -n 'num_mul_2' -e '%num 2	*'"
+	data/rpn-add-num-dec.csv data/rpn-add-num-mul.csv data/empty.txt 0
+	add-rpn_tab)
+
+test("csv-add-rpn -n 'num_mul_2' -e '%num
+2 *'"
+	data/rpn-add-num-dec.csv data/rpn-add-num-mul.csv data/empty.txt 0
+	add-rpn_newline)
+
 test("csv-add-rpn --help" data/empty.csv add-rpn/help.txt data/empty.txt 2
 	add-rpn_help)
 

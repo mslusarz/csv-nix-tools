@@ -25,7 +25,7 @@ token_init(struct str_tokens *ctx, char *str)
 static char *
 token_next(struct str_tokens *ctx)
 {
-	while (ctx->in_it[0] == ' ')
+	while (isspace(ctx->in_it[0]))
 		ctx->in_it++;
 
 	if (ctx->in_it[0] == 0)
@@ -65,7 +65,7 @@ token_next(struct str_tokens *ctx)
 		if (in_it[0] == 0) {
 			*out_it++ = 0;
 			ctx->in_it = in_it;
-		} else if (in_it[0] == ' ') {
+		} else if (isspace(in_it[0])) {
 			*out_it++ = 0;
 			ctx->in_it = ++in_it;
 		} else {
@@ -75,10 +75,13 @@ token_next(struct str_tokens *ctx)
 			exit(2);
 		}
 	} else {
-		char *space = index(ctx->in_it, ' ');
-		if (space) {
-			*space = 0;
-			ctx->in_it = space + 1;
+		char *cur = ctx->in_it;
+		while (*cur && !isspace(*cur))
+			cur++;
+
+		if (isspace(*cur)) {
+			*cur = 0;
+			ctx->in_it = cur + 1;
 		} else {
 			ctx->in_it += strlen(ctx->in_it);
 		}
