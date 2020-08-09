@@ -136,8 +136,11 @@ size:int,name:string,base:string,ext:string
 Sum of sizes of all files with the "png" extension:
 
 ```
-$ csv-ls -l . | csv-add-split -c name -e . -n base,ext -r |
-csv-grep -c ext -x -F png | csv-sum -c size | csv-header --remove
+$ csv-ls -l . |
+  csv-add-split -c name -e . -n base,ext -r |
+  csv-grep -c ext -x -F png |
+  csv-sum -c size |
+  csv-header --remove
 94877
 ```
 
@@ -170,8 +173,10 @@ sort.c
 or
 
 ```
-$ csv-ls | csv-add-substring -c name -n 2nd-char -p 2 -l 1 |
-csv-grep -c 2nd-char -F o | csv-cut -c name
+$ csv-ls |
+  csv-add-substring -c name -n 2nd-char -p 2 -l 1 |
+  csv-grep -c 2nd-char -F o |
+  csv-cut -c name
 ```
 
 or
@@ -297,20 +302,23 @@ $ csv-ls -R -c full_path . | csv-add-replace -c full_path -E '(.*)\.c$' -r '%1.o
 or 400x faster (3.1x faster than csv-add-replace):
 
 ```
-$ csv-ls -R -c full_path . | csv-add-rpn -n new -e "%full_path -1 1 substr 'c' == %full_path 1 %full_path strlen 1 - substr 'o' concat %full_path if"
+$ csv-ls -R -c full_path . |
+  csv-add-rpn -n new -e "%full_path -1 1 substr 'c' == %full_path 1 %full_path strlen 1 - substr 'o' concat %full_path if"
 ```
 
 or as fast as the above:
 
 ```
-$ csv-ls -R -c full_path . | csv-add-sql -n new -e "if (substr(full_path, -1, 1) == 'c', substr(full_path, 1, strlen(full_path) - 1) || 'o', full_path)"
+$ csv-ls -R -c full_path . |
+  csv-add-sql -n new -e "if (substr(full_path, -1, 1) == 'c', substr(full_path, 1, strlen(full_path) - 1) || 'o', full_path)"
 ```
 
 
 List all system users and the name of the default group they belong to:
 
 ```
-$ csv-users -T | csv-groups -M -N grp | csv-sqlite -T "select user.name as user_name, grp.name as group_name from user, grp where user.gid = grp.gid"
+$ csv-users -T | csv-groups -M -N grp |
+  csv-sqlite -T "select user.name as user_name, grp.name as group_name from user, grp where user.gid = grp.gid"
 ```
 
 List all network connections and processes they belong to:
@@ -323,7 +331,11 @@ csv-add-replace -c file.symlink -E 'socket:\[([0-9]*)\]' -r %1 -n file.inode |
 csv-netstat -M |
 csv-grep -T socket -v -c family -x -F 'UNIX' |
 csv-ps -M -c pid,cmd |
-csv-sqlite -T 'select socket.protocol, socket.src_ip, socket.src_port, socket.dst_ip, socket.dst_port, socket.state, socket.uid, file.pid, proc.cmd from socket left outer join file on socket.inode = file.inode left outer join proc on file.pid = proc.pid' -s
+csv-sqlite -T '
+ select socket.protocol, socket.src_ip, socket.src_port, socket.dst_ip, socket.dst_port, socket.state, socket.uid, file.pid, proc.cmd
+   from socket
+   left outer join file on socket.inode = file.inode
+   left outer join proc on file.pid = proc.pid' -s
 
 protocol   src_ip                src_port   dst_ip       dst_port   state          uid     pid   cmd
 tcp        127.0.0.53                  53   0.0.0.0             0   LISTEN         102           
