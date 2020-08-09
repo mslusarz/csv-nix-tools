@@ -207,7 +207,7 @@ Sum of file sizes and real allocated blocks in the current directory:
 
 ```
 $ csv-ls -c size,blocks | csv-add-rpn -n space_used -e "%blocks 512 *" |
-csv-sum -c size,blocks,space_used
+  csv-sum -c size,blocks,space_used
 sum(size):int,sum(blocks):int,sum(space_used):int
 109679,288,147456
 ```
@@ -216,7 +216,7 @@ or
 
 ```
 $ csv-ls -c size,blocks | csv-add-sql -e "blocks * 512 AS space_used" |
-csv-sum -c size,blocks,space_used
+  csv-sum -c size,blocks,space_used
 ```
 
 List of files whose size is between 2000 and 3000 bytes (from the slowest to the fastest method):
@@ -231,9 +231,9 @@ or
 
 ```
 $ csv-ls -c size,name |
-csv-add-rpn -n range2k-3k -e "%size 2000 > %size 3000 < and" |
-csv-grep -c range2k-3k -F 1 |
-csv-cut -c size,name
+  csv-add-rpn -n range2k-3k -e "%size 2000 > %size 3000 < and" |
+  csv-grep -c range2k-3k -F 1 |
+  csv-cut -c size,name
 ```
 
 or
@@ -325,17 +325,18 @@ List all network connections and processes they belong to:
 
 ```
 $ csv-ls -T -c name,symlink /proc/*/fd/* 2>/dev/null |
-csv-grep -T file -c symlink -E "socket:\[[0-9]*\]" |
-csv-add-replace -c file.name -E '/proc/([0-9]*)/.*' -r '%1' -n file.pid |
-csv-add-replace -c file.symlink -E 'socket:\[([0-9]*)\]' -r %1 -n file.inode |
-csv-netstat -M |
-csv-grep -T socket -v -c family -x -F 'UNIX' |
-csv-ps -M -c pid,cmd |
-csv-sqlite -T '
- select socket.protocol, socket.src_ip, socket.src_port, socket.dst_ip, socket.dst_port, socket.state, socket.uid, file.pid, proc.cmd
-   from socket
-   left outer join file on socket.inode = file.inode
-   left outer join proc on file.pid = proc.pid' -s
+  csv-grep -T file -c symlink -E "socket:\[[0-9]*\]" |
+  csv-add-replace -c file.name -E '/proc/([0-9]*)/.*' -r '%1' -n file.pid |
+  csv-add-replace -c file.symlink -E 'socket:\[([0-9]*)\]' -r %1 -n file.inode |
+  csv-netstat -M |
+  csv-grep -T socket -v -c family -x -F 'UNIX' |
+  csv-ps -M -c pid,cmd |
+  csv-sqlite -T '
+    select socket.protocol, socket.src_ip, socket.src_port, socket.dst_ip, socket.dst_port,
+           socket.state, socket.uid, file.pid, proc.cmd
+      from socket
+      left outer join file on socket.inode = file.inode
+      left outer join proc on file.pid = proc.pid' -s
 
 protocol   src_ip                src_port   dst_ip       dst_port   state          uid     pid   cmd
 tcp        127.0.0.53                  53   0.0.0.0             0   LISTEN         102           
