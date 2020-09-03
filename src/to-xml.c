@@ -155,6 +155,8 @@ main(int argc, char *argv[])
 
 			size_t converted = mbstowcs(wcs, name, len);
 			assert (converted == len);
+			(void) converted;
+
 			wchar_t allowed[3] = { L'_', L'-', L'.' };
 
 			if (!(iswalpha((wint_t)wcs[0]) || wcs[0] == allowed[0])) {
