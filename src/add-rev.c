@@ -96,6 +96,7 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 
 		size_t converted = mbstowcs(params->wcs, unquoted, len);
 		assert (converted == len);
+		(void) converted;
 
 		for (size_t i = 0; i < len; ++i)
 			fprintf(stdout, "%C", params->wcs[len - i - 1]);

@@ -351,6 +351,7 @@ cmp(const void *p1, const void *p2, void *arg)
 			less = c < 0;
 		} else {
 			assert(!"unhandled type");
+			abort();
 		}
 
 		if (less == asc)
