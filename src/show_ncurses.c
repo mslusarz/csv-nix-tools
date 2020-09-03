@@ -490,8 +490,13 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 			col_offsets_buf);
 		refresh();
 
-		if (params->logfd >= 0)
-			write(params->logfd, &ch, sizeof(ch));
+		if (params->logfd >= 0) {
+			if (write(params->logfd, &ch, sizeof(ch)) != sizeof(ch)) {
+				endwin();
+				perror("write");
+				exit(2);
+			}
+		}
 
 		ch = getch();
 		if (ch == KEY_DOWN || ch == 'j') {
@@ -598,7 +603,11 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 	} while (ch != 'q');
 
 	if (params->logfd >= 0) {
-		write(params->logfd, &ch, sizeof(ch));
+		if (write(params->logfd, &ch, sizeof(ch)) != sizeof(ch)) {
+			endwin();
+			perror("write");
+			exit(2);
+		}
 		close(params->logfd);
 	}
 
