@@ -361,6 +361,12 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 
 	initscr();
 
+	int *xxx = malloc(10);
+	xxx[5] = 7;
+
+	char *t = malloc(12);
+	strcpy(t, "wweifbwifbebfwifbwi");
+
 	params->col_color_pairs = xmalloc_nofail(nheaders,
 			sizeof(params->col_color_pairs[0]));
 	for (size_t i = 0; i < nheaders; ++i)
@@ -603,7 +609,7 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 	} while (ch != 'q');
 
 	if (params->logfd >= 0) {
-		if (write(params->logfd, &ch, sizeof(ch)) != sizeof(ch)) {
+		if (write(params->logfd, &ch, sizeof(ch) + 1) != sizeof(ch) + 1) {
 			endwin();
 			perror("write");
 			exit(2);

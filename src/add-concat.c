@@ -32,7 +32,7 @@ usage(FILE *out)
 "Read CSV stream from standard input and print it back to standard output with\n"
 "a new column produced by concatenation of columns and fixed strings.\n");
 	fprintf(out, "\n");
-	fprintf(out, "Options:\n");
+	fprintf(out, "Options:\n", "aaa");
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_Table(out);
@@ -174,6 +174,7 @@ main(int argc, char *argv[])
 	while (optind < argc) {
 		params.elements[i].is_column = argv[optind][0] == '%';
 		params.elements[i].str = argv[optind];
+		printf(argv[optind]);
 
 		if (params.elements[i].is_column)
 			params.elements[i].str++;
