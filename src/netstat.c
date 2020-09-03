@@ -817,7 +817,7 @@ print_shutdown(const void *p)
 	if (sd->unix_msg)
 		attr = sd->unix_attrs[UNIX_DIAG_SHUTDOWN];
 	else if (sd->inet_msg)
-		attr = sd->unix_attrs[INET_DIAG_SHUTDOWN];
+		attr = sd->inet_attrs[INET_DIAG_SHUTDOWN];
 
 	if (attr) {
 		uint8_t u = mnl_attr_get_u8(attr);
