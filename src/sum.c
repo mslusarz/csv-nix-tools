@@ -161,7 +161,7 @@ main(int argc, char *argv[])
 	char *new_name = NULL;
 	unsigned show_flags = SHOW_DISABLED;
 	char *sep = NULL;
-	size_t table_len;
+	size_t table_len = 0;
 
 	params.cols = NULL;
 	params.types = NULL;
