@@ -233,8 +233,6 @@ main(int argc, char *argv[])
 	free(cols);
 
 	if (params.table) {
-		size_t table_len = strlen(params.table);
-
 		for (size_t i = 0; i < nheaders; ++i) {
 			const char *hname = headers[i].name;
 
