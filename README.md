@@ -3,6 +3,7 @@
 
 [![Build Status](https://github.com/mslusarz/csv-nix-tools/workflows/Full/badge.svg)](https://github.com/mslusarz/csv-nix-tools/actions?query=workflow%3AFull+branch%3Amaster)
 [![Coverage Status](https://codecov.io/github/mslusarz/csv-nix-tools/coverage.svg?branch=master)](https://codecov.io/gh/mslusarz/csv-nix-tools/branch/master)
+[![Coverity Scan Build Status](https://img.shields.io/coverity/scan/21704.svg)](https://scan.coverity.com/projects/mslusarz-csv-nix-tools)
 
 csv-nix-tools is a collection of tools for gathering and processing system
 information using CSV as an intermediate format.
