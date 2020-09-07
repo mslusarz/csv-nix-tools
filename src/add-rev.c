@@ -99,7 +99,7 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 		(void) converted;
 
 		for (size_t i = 0; i < len; ++i)
-			fprintf(stdout, "%C", params->wcs[len - i - 1]);
+			fprintf(stdout, "%lc", params->wcs[len - i - 1]);
 	}
 
 	if (str[0] == '"') {
