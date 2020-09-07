@@ -40,6 +40,9 @@ test("csv-avg -T t2 -c id" data/2-tables.csv avg/2-tables-avg2.csv data/empty.tx
 test("csv-avg -T t2 -c id -n new1" data/2-tables.csv avg/2-tables-avg2-n1.csv data/empty.txt 0
 	avg-2tables-avg2-n1)
 
+test("csv-avg -c val" avg/0rows.csv avg/0rows-avg.csv data/empty.txt 0
+	avg-0-rows)
+
 test("csv-avg --help" data/empty.csv avg/help.txt data/empty.txt 2
 	avg_help)
 

@@ -275,14 +275,15 @@ main(int argc, char *argv[])
 
 	for (size_t i = start_idx; i < params.ncols - 1; ++i) {
 		if (params.active_cols[i])
-			printf("%lld,", params.sums[i] / (long long)params.rows);
+			printf("%lld,", params.rows ? params.sums[i] /
+					(long long)params.rows : 0);
 		else
 			putchar(',');
 	}
 
 	if (params.active_cols[params.ncols - 1]) {
-		printf("%lld", params.sums[params.ncols - 1] /
-				(long long)params.rows);
+		printf("%lld", params.rows ? params.sums[params.ncols - 1] /
+				(long long)params.rows : 0);
 	}
 
 	putchar('\n');
