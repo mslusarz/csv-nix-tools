@@ -237,6 +237,11 @@ main(int argc, char *argv[])
 				table = strdup(optarg);
 				break;
 			case 'p': {
+				if (!table) {
+					fprintf(stderr,
+						"table name was not specified before -p option\n");
+					exit(2);
+				}
 				FILE *f = get_file(optarg, &stdin_used);
 				add_nameless_input(table, f);
 				break;

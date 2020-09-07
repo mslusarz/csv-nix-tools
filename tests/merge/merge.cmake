@@ -39,3 +39,6 @@ test("csv-merge --table table1 --path-without-table - --table table2 --path-with
 
 test("csv-merge --table table1 --path-without-table not-existing" data/empty.csv data/empty.txt merge/not-existing.txt 2
 	merge_not_existing)
+
+test("csv-merge --path-without-table doesntmatter" data/empty.csv data/empty.txt merge/no-table.txt 2
+	merge_no_table)
