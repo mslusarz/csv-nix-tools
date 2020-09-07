@@ -533,8 +533,10 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		regex_t *preg;
 
 		int ret = csv_regex_get(&preg, n, REG_EXTENDED | REG_NOSUB);
-		if (ret)
+		if (ret) {
+			free(n);
 			return -1;
+		}
 
 		if (regexec(preg, str, 0, NULL, 0) == 0)
 			stack[height - 1].llong = 1;
