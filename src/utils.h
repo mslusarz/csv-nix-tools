@@ -37,6 +37,7 @@ int strtol_safe(const char *str, long *val, int base);
 int strtoul_safe(const char *str, unsigned long *val, int base);
 int strtoi_safe(const char *str, int *val, int base);
 int strtou_safe(const char *str, unsigned *val, int base);
+int strtod_safe(const char *str, double *val);
 
 char *strnchr(const char *str, int c, size_t len);
 void print_timespec(const struct timespec *ts, bool nsec);

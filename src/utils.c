@@ -8,6 +8,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <limits.h>
+#include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -280,6 +281,39 @@ strtou_safe(const char *str, unsigned *val, int base)
 	}
 
 	*val = (unsigned)l;
+	return 0;
+}
+
+int
+strtod_safe(const char *str, double *val)
+{
+	char *end;
+
+	errno = 0;
+	double dbl = strtod(str, &end);
+
+	if (dbl == 0 && errno) {
+		/* should we just assume 0? */
+		fprintf(stderr,
+			"value '%s' caused a double underflow (%s)\n",
+			str, strerror(errno));
+		return -1;
+	}
+
+	if ((dbl == HUGE_VAL || dbl == -HUGE_VAL) && errno) {
+		fprintf(stderr,
+			"value '%s' caused a double overflow (%s)\n",
+			str, strerror(errno));
+		return -1;
+	}
+
+	if (*end) {
+		fprintf(stderr,
+			"value '%s' is not a double value\n", str);
+		return -1;
+	}
+
+	*val = dbl;
 	return 0;
 }
 
