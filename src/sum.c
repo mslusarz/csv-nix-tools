@@ -53,7 +53,7 @@ usage(FILE *out)
 
 struct cb_params {
 	size_t *cols;
-	enum output_types *types;
+	enum data_type *types;
 	size_t ncols;
 
 	bool *active_cols;
