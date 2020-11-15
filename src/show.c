@@ -29,7 +29,7 @@ static const struct option opts[] = {
 	{"no-header",		no_argument,		NULL, 'H'},
 	{"with-types",		no_argument, 		NULL, 't'},
 	{"ui",			required_argument,	NULL, 'u'},
-	{"spacing",		required_argument,	NULL, 's'},
+	{"spacing",		required_argument,	NULL, 'p'},
 	{"use-color-columns",	no_argument,		NULL, 'C' },
 	{"set-color",		required_argument,	NULL, 'c' },
 	{"version",		no_argument,		NULL, 'V'},
@@ -48,7 +48,7 @@ usage(FILE *out)
 	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -C, --use-color-columns    use columns with _color suffix\n");
-	fprintf(out, "  -s, --spacing NUM          use NUM spaces between columns instead of 3\n");
+	fprintf(out, "  -p, --spacing NUM          use NUM spaces between columns instead of 3\n");
 	fprintf(out, "  -u, --ui TYPE              choose UI TYPE: ncurses, less, none\n");
 	fprintf(out, "      --no-header            remove column headers\n");
 	fprintf(out, "      --set-color COLNAME:[fg=]COLOR1[,bg=COLOR2]\n");
@@ -208,7 +208,7 @@ main(int argc, char *argv[])
 	size_t set_colorpair_num = 0;
 	bool use_color_columns = false;
 
-	while ((opt = getopt_long(argc, argv, "Cu:s:", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "Cu:p:", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'D':
 				params.logfd = open(optarg,
@@ -234,7 +234,7 @@ main(int argc, char *argv[])
 					exit(2);
 				}
 				break;
-			case 's':
+			case 'p':
 				if (strtoul_safe(optarg, &spacing, 0))
 					exit(2);
 				break;

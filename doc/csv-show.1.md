@@ -45,7 +45,7 @@ There are 3 backends: **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3
 
 **none** backend simply prints everything to standard output.
 
--s, \--spacing *NUM*
+-p, \--spacing *NUM*
 :   use *NUM* spaces between columns instead of 3
 
 -u, \--ui *curses*/*less*/*none*
