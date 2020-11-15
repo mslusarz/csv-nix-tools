@@ -1,0 +1,3 @@
+id:int,col1:float,col2:float,col3:float
+1,0.1,10.5,0.999999
+3,-99999999.9,0.2,-77

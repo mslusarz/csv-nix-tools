@@ -1,0 +1,1 @@
+2nd argument of 'strb2int' must be between 2 and 36

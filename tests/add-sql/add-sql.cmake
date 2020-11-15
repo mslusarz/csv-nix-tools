@@ -45,27 +45,27 @@ test("csv-add-sql -n 'num2_mod_num3' -e 'num2 % num3'\
 	add-sql_num_mod)
 
 
-test("csv-add-sql -n 'num2_bit_and_num3' -e 'tostring(num2 & num3, 16)'"
+test("csv-add-sql -n 'num2_bit_and_num3' -e 'int2strb(num2 & num3, 16)'"
 	data/rpn-add-num-hex.csv data/rpn-add-num-bit-and.csv data/empty.txt 0
 	add-sql_num_bit_and)
 
-test("csv-add-sql -n 'num2_bit_or_num' -e 'tostring(num2 | num, 16)'"
+test("csv-add-sql -n 'num2_bit_or_num' -e 'int2strb(num2 | num, 16)'"
 	data/rpn-add-num-hex.csv data/rpn-add-num-bit-or.csv data/empty.txt 0
 	add-sql_num_bit_or)
 
-test("csv-add-sql -n 'num2_bit_xor_num' -e 'tostring(num2 ^ num, 16)'"
+test("csv-add-sql -n 'num2_bit_xor_num' -e 'int2strb(num2 ^ num, 16)'"
 	data/rpn-add-num-hex.csv data/rpn-add-num-bit-xor.csv data/empty.txt 0
 	add-sql_num_bit_xor)
 
-test("csv-add-sql -n 'bit_neg_num2' -e 'tostring(~num2, 16)'"
+test("csv-add-sql -n 'bit_neg_num2' -e 'int2strb(~num2, 16)'"
 	data/rpn-add-num-hex.csv data/rpn-add-num-bit-neg.csv data/empty.txt 0
 	add-sql_num_bit_neg)
 
-test("csv-add-sql -n 'num2_lshift_num' -e 'tostring(num2 << num, 16)'"
+test("csv-add-sql -n 'num2_lshift_num' -e 'int2strb(num2 << num, 16)'"
 	data/rpn-add-num-hex.csv data/rpn-add-num-bit-lshift.csv data/empty.txt 0
 	add-sql_num_bit_lshift)
 
-test("csv-add-sql -n 'num2_rshift_num' -e 'tostring(num2 >> num, 16)'"
+test("csv-add-sql -n 'num2_rshift_num' -e 'int2strb(num2 >> num, 16)'"
 	data/rpn-add-num-hex.csv data/rpn-add-num-bit-rshift.csv data/empty.txt 0
 	add-sql_num_bit_rshift)
 
@@ -137,12 +137,12 @@ test("csv-add-sql -n str1_like_%12 -e \"str1 like '%12'\"\
 	add-sql_str_like)
 
 
-test("csv-add-sql -n str_to_int -e 'toint(str, 10)'\
+test("csv-add-sql -n str_to_int -e 'toint(str)'\
 		  -n num_to_string   -e 'tostring(num)'\
-		  -n num_to_string2  -e 'tostring(num, 2)'\
-		  -n num_to_string8  -e 'tostring(num, 8)'\
-		  -n num_to_string10 -e 'tostring(num, 10)'\
-		  -n num_to_string16 -e 'tostring(num, 16)'"
+		  -n num_to_string2  -e 'int2strb(num, 2)'\
+		  -n num_to_string8  -e 'int2strb(num, 8)'\
+		  -n num_to_string10 -e 'int2strb(num, 10)'\
+		  -n num_to_string16 -e 'int2strb(num, 16)'"
 	data/rpn-add-num-base.csv data/rpn-add-convert-noparse.csv data/empty.txt 0
 	add-sql_str_to_int_num_to_str)
 
@@ -186,6 +186,10 @@ test("csv-add-sql -n 'num' -e \"next('a')\""
 test("csv-add-sql -n 'num' -e \"next()\""
 	data/3-columns-3-rows.csv data/rpn-add-next.csv data/empty.txt 0
 	add-sql_next2)
+
+test("csv-add-sql -n col2tripled -e 'col2 * 3'"
+	data/floats.csv add-sql/floats.csv data/empty.txt 0
+	add-sql_floats)
 
 test("csv-add-sql --help" data/empty.csv add-sql/help.txt data/empty.txt 2
 	add-sql_help)

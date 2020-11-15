@@ -18,7 +18,7 @@
 
 struct cb_params {
 	const struct col_header *headers;
-	const bool *is_int;
+	const bool *quote;
 	bool first_row;
 };
 
@@ -93,9 +93,7 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 		printf("   \"%s\": ", params->headers[i].name);
 
 		const char *str = buf + col_offs[i];
-		if (params->is_int[i]) {
-			printf("%s", str);
-		} else {
+		if (params->quote[i]) {
 			const char *unquoted = str;
 			if (str[0] == '"')
 				unquoted = csv_unquot(str);
@@ -104,6 +102,8 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 
 			if (str[0] == '"')
 				free((char *)unquoted);
+		} else {
+			printf("%s", str);
 		}
 
 		if (i < ncols - 1)
@@ -126,6 +126,7 @@ main(int argc, char *argv[])
 	struct cb_params params;
 
 	setlocale(LC_ALL, "");
+	setlocale(LC_NUMERIC, "C");
 
 	while ((opt = getopt_long(argc, argv, "", opts, NULL)) != -1) {
 		switch (opt) {
@@ -148,10 +149,12 @@ main(int argc, char *argv[])
 	params.headers = headers;
 	params.first_row = true;
 
-	bool *is_int = xmalloc_nofail(nheaders, sizeof(is_int[0]));
-	for (size_t i = 0; i < nheaders; ++i)
-		is_int[i] = strcmp(headers[i].type, "int") == 0;
-	params.is_int = is_int;
+	bool *quote = xmalloc_nofail(nheaders, sizeof(quote[0]));
+	for (size_t i = 0; i < nheaders; ++i) {
+		quote[i] = strcmp(headers[i].type, "int") != 0 &&
+				strcmp(headers[i].type, "float") != 0;
+	}
+	params.quote = quote;
 
 	printf("{\n");
 
@@ -165,7 +168,7 @@ main(int argc, char *argv[])
 	       "}\n");
 
 	csv_destroy_ctx(s);
-	free(is_int);
+	free(quote);
 
 	return 0;
 }

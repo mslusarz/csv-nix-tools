@@ -34,6 +34,7 @@ void error(const char *str);
 %option noyywrap
 %option case-insensitive
 
+flt_number [-]{0,1}[0-9]+\.[0-9]*
 bin_number 0b[01]+
 hex_number 0x[0-9a-fA-F]+
 oct_number 0[0-7]*
@@ -61,8 +62,17 @@ literal2 \"[^"]*\"
 "strlen"	{ dbg_printf("LEX: matching LENGTH\n"); return LENGTH; }
 "substr"	{ dbg_printf("LEX: matching SUBSTR\n"); return SUBSTR; }
 "like"		{ dbg_printf("LEX: matching LIKE\n"); return LIKE; }
+"tofloat"	{ dbg_printf("LEX: matching TOFLOAT\n"); return TOFLOAT; }
 "toint"		{ dbg_printf("LEX: matching TOINT\n"); return TOINT; }
 "tostring"	{ dbg_printf("LEX: matching TOSTRING\n"); return TOSTRING; }
+"str2int"	{ dbg_printf("LEX: matching STR2INT\n"); return STR2INT; }
+"strb2int"	{ dbg_printf("LEX: matching STRB2INT\n"); return STRB2INT; }
+"int2str"	{ dbg_printf("LEX: matching INT2STR\n"); return INT2STR; }
+"int2strb"	{ dbg_printf("LEX: matching INT2STRB\n"); return INT2STRB; }
+"flt2str"	{ dbg_printf("LEX: matching FLT2STR\n"); return FLT2STR; }
+"str2flt"	{ dbg_printf("LEX: matching STR2FLT\n"); return STR2FLT; }
+"int2flt"	{ dbg_printf("LEX: matching INT2FLT\n"); return INT2FLT; }
+"flt2int"	{ dbg_printf("LEX: matching FLT2INT\n"); return FLT2INT; }
 "replace"	{ dbg_printf("LEX: matching REPLACE\n"); return REPLACE; }
 "replace_bre"	{ dbg_printf("LEX: matching REPLACE_BRE\n"); return REPLACE_BRE; }
 "replace_ere"	{ dbg_printf("LEX: matching REPLACE_ERE\n"); return REPLACE_ERE; }
@@ -90,6 +100,7 @@ literal2 \"[^"]*\"
 {hex_number}	{ dbg_printf("LEX: matching hex_number\n"); if (strtoll_safe(yytext + 2, &yylval.number, 16)) exit(2); return NUMBER; }
 {oct_number}	{ dbg_printf("LEX: matching oct_number\n"); if (strtoll_safe(yytext + 1, &yylval.number, 8)) exit(2); return NUMBER; }
 {bin_number}	{ dbg_printf("LEX: matching bin_number\n"); if (strtoll_safe(yytext + 2, &yylval.number, 2)) exit(2); return NUMBER; }
+{flt_number}	{ dbg_printf("LEX: matching flt_number\n"); if (strtod_safe(yytext, &yylval.dbl)) exit(2); return FLT_NUMBER; }
 {alpha}		{ dbg_printf("LEX: matching alpha '%s'\n", yytext); yylval.name = strdup(yytext); return STRING; }
 {literal1}	{ dbg_printf("LEX: matching literal1 '%s'\n", yytext); yylval.name = strndup(yytext + 1, strlen(yytext) - 2); return LITERAL; }
 {literal2}	{ dbg_printf("LEX: matching literal2 '%s'\n", yytext); yylval.name = strndup(yytext + 1, strlen(yytext) - 2); return LITERAL; }

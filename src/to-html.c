@@ -179,6 +179,7 @@ main(int argc, char *argv[])
 	params.split_results_max_size = 0;
 
 	setlocale(LC_ALL, "");
+	setlocale(LC_NUMERIC, "C");
 
 	char **set_colorpair = NULL;
 	size_t set_colorpair_num = 0;
@@ -227,7 +228,8 @@ main(int argc, char *argv[])
 
 	params.alignments = xmalloc_nofail(nheaders, sizeof(params.alignments[0]));
 	for (size_t i = 0; i < nheaders; ++i) {
-		if (strcmp(headers[i].type, "int") == 0)
+		if (strcmp(headers[i].type, "int") == 0 ||
+				strcmp(headers[i].type, "float") == 0)
 			params.alignments[i] = RIGHT;
 		else
 			params.alignments[i] = LEFT;

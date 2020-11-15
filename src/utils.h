@@ -111,8 +111,17 @@ enum rpn_operator {
 	RPN_STRLEN,		/* string length */
 	RPN_CONCAT,		/* concatenation of 2 strings */
 	RPN_LIKE,		/* SQL LIKE operator */
-	RPN_TOSTRING,		/* convert int to string */
-	RPN_TOINT,		/* convert string to int */
+	RPN_TOFLOAT,		/* convert whatever to float */
+	RPN_TOINT,		/* convert whatever to int */
+	RPN_TOSTRING,		/* convert whatever to string */
+	RPN_INT2STR,		/* convert int to string */
+	RPN_INT2STRB,		/* convert int to string with base */
+	RPN_INT2FLT,		/* convert int to float */
+	RPN_STR2INT,		/* convert string to int */
+	RPN_STRB2INT,		/* convert string with base to int */
+	RPN_STR2FLT,		/* convert string to float */
+	RPN_FLT2INT,		/* convert float to int */
+	RPN_FLT2STR,		/* convert float to string */
 	RPN_LT,			/* less */
 	RPN_LE,			/* less or equal */
 	RPN_GT,			/* greater */
@@ -130,11 +139,13 @@ enum rpn_operator {
 	RPN_MATCHES_BRE,	/* string matches basic regular expression */
 	RPN_MATCHES_ERE,	/* string matches extended regular expression */
 	RPN_NEXT,		/* next integer from named sequence */
+	RPN_MAX = RPN_NEXT
 };
 
 enum rpn_variant_type {
 	RPN_LLONG,
 	RPN_PCHAR,
+	RPN_DOUBLE,
 };
 
 struct rpn_variant {
@@ -142,6 +153,7 @@ struct rpn_variant {
 	union {
 		long long llong;
 		char *pchar;
+		double dbl;
 	};
 };
 
@@ -178,7 +190,15 @@ void rpn_fini(void);
 
 typedef void (*print_fn)(const void *ptr);
 
-enum data_type { TYPE_STRING, TYPE_STRING_ARR, TYPE_INT, TYPE_INT_ARR };
+/* don't change order */
+enum data_type {
+	TYPE_STRING,
+	TYPE_STRING_ARR,
+	TYPE_INT,
+	TYPE_INT_ARR,
+	TYPE_FLOAT,
+	TYPE_FLOAT_ARR,
+};
 
 struct column_info {
 	bool vis;

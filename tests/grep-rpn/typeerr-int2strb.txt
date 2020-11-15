@@ -1,0 +1,1 @@
+'int2strb' can operate only on integer values

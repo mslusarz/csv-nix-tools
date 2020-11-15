@@ -251,6 +251,9 @@ test("csv-group-members -T | csv-sqlite -T 'select * from group_member' | csv-co
 	data/one-column-one-row.csv sqlite/group_members-columns.csv data/empty.txt 0
 	sqlite_group_members_count_columns)
 
+test("csv-sqlite 'select * from input where col2 < 1000.0'" data/floats.csv sqlite/float-not-1000.csv data/empty.txt 0
+	sqlite_floats)
+
 test("csv-sqlite --help" data/empty.csv sqlite/help.txt data/empty.txt 2
 	sqlite_help)
 

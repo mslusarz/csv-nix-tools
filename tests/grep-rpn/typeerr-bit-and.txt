@@ -1,0 +1,1 @@
+'bit and' can operate only on integer values

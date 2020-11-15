@@ -20,6 +20,7 @@ Variables:
 
 Constants:
   [-][1-9][0-9]*    decimal integer                 1, 1294, -89
+  [-][0-9]+.[0-9]*  floating point number           1.0, 12.94, -0.89
   [-]0x[0-9a-fA-F]+ hexadecimal integer             0x1, 0x1A34, -0x8A
   [-]0[0-9]+        octal integer                   01, 01234, -067
   [-]0b[01]+        binary integer                  0b1, 0b1101, -0b10
@@ -53,8 +54,16 @@ Operators/functions:
   strlen, length    string length                   %str strlen, %str length
   concat            concatenation                   %str1 %str2 concat
   like              match pattern                   %str 'patt%' like
-  tostring          convert to string               %num %base tostring
-  toint             convert to integer              %str %base toint
+  tostring          convert to string               %num tostring
+  toint             convert to integer              %str toint
+  int2str           convert integer to string       %num int2str
+  int2strs          convert integer to string (base)%num %base int2strb
+  int2flt           convert integer to float        %num int2flt
+  str2int           convert string to integer       %str str2int
+  strb2int          convert string to integer (base)%str %base strb2int
+  str2flt           convert string to float         %str str2flt
+  flt2int           convert float to integer        %flt flt2int
+  flt2str           convert float to string         %flt flt2str
   replace           replace string                  %str 'pat' 'repl' %casesens replace
   replace_bre       replace string using basic RE   %str 'pat' 'bre' %casesens replace_bre
   replace_ere       replace string using ext. RE    %str 'pat' 'ere' %casesens replace_ere

@@ -194,6 +194,7 @@ main(int argc, char *argv[])
 	struct cb_params params;
 
 	setlocale(LC_ALL, "");
+	setlocale(LC_NUMERIC, "C");
 
 	params.table = NULL;
 

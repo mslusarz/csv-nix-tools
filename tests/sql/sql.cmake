@@ -123,27 +123,27 @@ test("csv-sql 'select num, num2, num3, num2 % num3 as num2_mod_num3, num2 % (num
 	sql_num_mod)
 
 
-test("csv-sql 'select tostring(num2 & num3, 16) as num2_bit_and_num3 from input'"
+test("csv-sql 'select int2strb(num2 & num3, 16) as num2_bit_and_num3 from input'"
 	data/rpn-add-num-hex.csv data/sql-num-bit-and.csv data/empty.txt 0
 	sql_num_bit_and)
 
-test("csv-sql 'select tostring(num2 | num, 16) as num2_bit_or_num from input'"
+test("csv-sql 'select int2strb(num2 | num, 16) as num2_bit_or_num from input'"
 	data/rpn-add-num-hex.csv data/sql-num-bit-or.csv data/empty.txt 0
 	sql_num_bit_or)
 
-test("csv-sql 'select tostring(num2 ^ num, 16) as num2_bit_xor_num from input'"
+test("csv-sql 'select int2strb(num2 ^ num, 16) as num2_bit_xor_num from input'"
 	data/rpn-add-num-hex.csv data/sql-num-bit-xor.csv data/empty.txt 0
 	sql_num_bit_xor)
 
-test("csv-sql 'select tostring(~num2, 16) as bit_neg_num2 from input'"
+test("csv-sql 'select int2strb(~num2, 16) as bit_neg_num2 from input'"
 	data/rpn-add-num-hex.csv data/sql-num-bit-neg.csv data/empty.txt 0
 	sql_num_bit_neg)
 
-test("csv-sql 'select tostring(num2 << num, 16) as num2_lshift_num from input'"
+test("csv-sql 'select int2strb(num2 << num, 16) as num2_lshift_num from input'"
 	data/rpn-add-num-hex.csv data/sql-num-bit-lshift.csv data/empty.txt 0
 	sql_num_bit_lshift)
 
-test("csv-sql 'select tostring(num2 >> num, 16) as num2_rshift_num from input'"
+test("csv-sql 'select int2strb(num2 >> num, 16) as num2_rshift_num from input'"
 	data/rpn-add-num-hex.csv data/sql-num-bit-rshift.csv data/empty.txt 0
 	sql_num_bit_rshift)
 
@@ -216,25 +216,15 @@ test("csv-sql 'select str1, str2, str1 like \"%12\" as \"str1_like_%12\", str1 l
 	data/rpn-add-str.csv data/rpn-add-str-like.csv data/empty.txt 0
 	sql_str_like)
 
-test("csv-sql 'select num, str, toint(str, 10) as str_to_int,\
+test("csv-sql 'select num, str, toint(str) as str_to_int,\
 			 tostring(num) as num_to_string,\
-			 tostring(num, 2) as num_to_string2,\
-			 tostring(num, 8) as num_to_string8,\
-			 tostring(num, 10) as num_to_string10,\
-			 tostring(num, 16) as num_to_string16\
+			 int2strb(num, 2) as num_to_string2,\
+			 int2strb(num, 8) as num_to_string8,\
+			 int2strb(num, 10) as num_to_string10,\
+			 int2strb(num, 16) as num_to_string16\
 		    from input'"
 	data/rpn-add-num-base.csv data/rpn-add-convert.csv data/empty.txt 0
 	sql_str_to_int_int_to_str)
-
-test("csv-sql 'select num, str, toint(str) as str_to_int,\
-			 tostring(num) as num_to_string,\
-			 tostring(num, 2) as num_to_string2,\
-			 tostring(num, 8) as num_to_string8,\
-			 tostring(num, 10) as num_to_string10,\
-			 tostring(num, 16) as num_to_string16\
-		    from input'"
-	data/rpn-add-num-base.csv data/rpn-add-convert.csv data/empty.txt 0
-	sql_str_to_int_int_to_str2)
 
 test("csv-sql 'select num, num2, num3, num2 + num3 as num2_plus_num3 from input where num2_plus_num3 == 50'"
 	data/rpn-add-num-dec.csv sql/where-col-expr.csv data/empty.txt 0
@@ -294,6 +284,10 @@ test("csv-sql 'select id, name from input order by id/2, name desc'"
 test("csv-sql 'select id, id/2 as id2, name from input order by id2, name desc'"
 	sql/order-by-in.csv sql/order-by-id2-name_desc.csv data/empty.txt 0
 	sql_order_by_id2_name_desc)
+
+test("csv-sql 'select *, col2 * 3 as col2tripled from input'"
+	data/floats.csv sql/floats.csv data/empty.txt 0
+	sql_floats)
 
 test("csv-sql --help" data/empty.csv sql/help.txt data/empty.txt 2
 	sql_help)

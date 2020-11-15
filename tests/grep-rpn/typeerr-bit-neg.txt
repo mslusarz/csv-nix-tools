@@ -1,0 +1,1 @@
+'bit negation' can operate only on integer values

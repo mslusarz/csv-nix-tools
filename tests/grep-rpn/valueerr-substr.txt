@@ -1,0 +1,1 @@
+negative length (-1) for 'substr' operator

@@ -52,6 +52,7 @@ Constants:
 | syntax           | description                   | example                   |
 |------------------|-------------------------------|---------------------------|
 | [-]\[1-9\]\[0-9\]*| decimal integer              | 1, 1294, -89              |
+| [-][0-9]+.[0-9]* | floating point number         | 1.0, 12.94, -0.89         |
 | [-]0x[0-9a-fA-F]+| hexadecimal integer           | 0x1, 0x1A34, -0x8A        |
 | [-]0[0-9]+       | octal integer                 | 01, 01234, -067           |
 | [-]0b[01]+       | binary integer                | 0b1, 0b1101, -0b10        |

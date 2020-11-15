@@ -1,0 +1,1 @@
+'multiplication' can operate only on numeric values

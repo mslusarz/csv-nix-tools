@@ -111,8 +111,6 @@ rpn_parse(struct rpn_expression *exp, char *str,
 			tkn.col.type = headers[tkn.col.num].type;
 		} else if (isdigit(token[0])) {
 			tkn.type = RPN_CONSTANT;
-			tkn.constant.type = RPN_LLONG;
-			int base = 0;
 
 			if (token[0] == '0' && token[1] == 'b') {
 				/* 0b-0 is not a valid binary number */
@@ -123,15 +121,24 @@ rpn_parse(struct rpn_expression *exp, char *str,
 					goto fail;
 				}
 
-				base = 2;
 				token += 2;
-			}
 
-			if (strtoll_safe(token, &tkn.constant.llong, base))
-				goto fail;
+				tkn.constant.type = RPN_LLONG;
+				if (strtoll_safe(token, &tkn.constant.llong, 2))
+					goto fail;
+			} else {
+				if (index(token, '.') || index(token, 'e')) {
+					tkn.constant.type = RPN_DOUBLE;
+					if (strtod_safe(token, &tkn.constant.dbl))
+						goto fail;
+				} else {
+					tkn.constant.type = RPN_LLONG;
+					if (strtoll_safe(token, &tkn.constant.llong, 0))
+						goto fail;
+				}
+			}
 		} else if (token[0] == '-' && isdigit(token[1])) {
 			tkn.type = RPN_CONSTANT;
-			tkn.constant.type = RPN_LLONG;
 
 			if (token[1] == '0' && token[2] == 'b') {
 				/* -0b-0 is not a valid binary number */
@@ -142,12 +149,20 @@ rpn_parse(struct rpn_expression *exp, char *str,
 					goto fail;
 				}
 
+				tkn.constant.type = RPN_LLONG;
 				if (strtoll_safe(token + 3, &tkn.constant.llong, 2))
 					goto fail;
 				tkn.constant.llong = -tkn.constant.llong;
 			} else {
-				if (strtoll_safe(token, &tkn.constant.llong, 0))
-					goto fail;
+				if (index(token, '.') || index(token, 'e')) {
+					tkn.constant.type = RPN_DOUBLE;
+					if (strtod_safe(token, &tkn.constant.dbl))
+						goto fail;
+				} else {
+					tkn.constant.type = RPN_LLONG;
+					if (strtoll_safe(token, &tkn.constant.llong, 0))
+						goto fail;
+				}
 			}
 		} else if (token[0] == '\'' || token[0] == '"') {
 			tkn.type = RPN_CONSTANT;
@@ -209,6 +224,24 @@ rpn_parse(struct rpn_expression *exp, char *str,
 				tkn.operator = RPN_TOSTRING;
 			else if (strcmp(token, "toint") == 0)
 				tkn.operator = RPN_TOINT;
+			else if (strcmp(token, "tofloat") == 0)
+				tkn.operator = RPN_TOFLOAT;
+			else if (strcmp(token, "int2str") == 0)
+				tkn.operator = RPN_INT2STR;
+			else if (strcmp(token, "int2strb") == 0)
+				tkn.operator = RPN_INT2STRB;
+			else if (strcmp(token, "int2flt") == 0)
+				tkn.operator = RPN_INT2FLT;
+			else if (strcmp(token, "str2int") == 0)
+				tkn.operator = RPN_STR2INT;
+			else if (strcmp(token, "strb2int") == 0)
+				tkn.operator = RPN_STRB2INT;
+			else if (strcmp(token, "str2flt") == 0)
+				tkn.operator = RPN_STR2FLT;
+			else if (strcmp(token, "flt2int") == 0)
+				tkn.operator = RPN_FLT2INT;
+			else if (strcmp(token, "flt2str") == 0)
+				tkn.operator = RPN_FLT2STR;
 			else if (strcmp(token, "lt") == 0)
 				tkn.operator = RPN_LT;
 			else if (strcmp(token, "le") == 0)
@@ -283,11 +316,6 @@ expression_type(const struct rpn_expression *exp,
 	switch(last_token->type) {
 		case RPN_OPERATOR:
 			switch (last_token->operator) {
-				case RPN_ADD:
-				case RPN_SUB:
-				case RPN_MUL:
-				case RPN_DIV:
-				case RPN_MOD:
 				case RPN_BIT_OR:
 				case RPN_BIT_AND:
 				case RPN_BIT_XOR:
@@ -299,6 +327,9 @@ expression_type(const struct rpn_expression *exp,
 				case RPN_LOGIC_XOR:
 				case RPN_LOGIC_NOT:
 				case RPN_TOINT:
+				case RPN_STR2INT:
+				case RPN_STRB2INT:
+				case RPN_FLT2INT:
 				case RPN_STRLEN:
 				case RPN_LIKE:
 				case RPN_LT:
@@ -314,11 +345,23 @@ expression_type(const struct rpn_expression *exp,
 
 				case RPN_SUBSTR:
 				case RPN_CONCAT:
+				case RPN_INT2STR:
+				case RPN_INT2STRB:
+				case RPN_FLT2STR:
 				case RPN_TOSTRING:
 				case RPN_REPLACE:
 				case RPN_REPLACE_BRE:
 				case RPN_REPLACE_ERE:
 					return "string";
+				case RPN_INT2FLT:
+				case RPN_STR2FLT:
+				case RPN_TOFLOAT:
+					return "float";
+				case RPN_ADD:
+				case RPN_SUB:
+				case RPN_MUL:
+				case RPN_DIV:
+				case RPN_MOD:
 				case RPN_IF:
 					return expression_type(exp, headers,
 							fallback_idx - 1);
@@ -330,6 +373,10 @@ expression_type(const struct rpn_expression *exp,
 					return "int";
 				case RPN_PCHAR:
 					return "string";
+				case RPN_DOUBLE:
+					return "float";
+				default:
+					abort();
 			}
 			break;
 		case RPN_COLUMN:

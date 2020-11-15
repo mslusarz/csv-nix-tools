@@ -52,11 +52,13 @@ usage(FILE *out)
 
 struct cb_params {
 	size_t *cols;
+	enum data_type *types;
 	size_t ncols;
 
 	bool *active_cols;
 
 	long long *sums;
+	double *dblsums;
 	size_t rows;
 
 	size_t table_column;
@@ -85,21 +87,31 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 
 		const char *val = &buf[col_offs[params->cols[i]]];
 
-		long long llval;
-		if (strtoll_safe(val, &llval, 0))
-			return -1;
+		if (params->types[i] == TYPE_INT) {
+			long long llval;
+			if (strtoll_safe(val, &llval, 0))
+				return -1;
 
-		if (llval > 0 && params->sums[i] > LLONG_MAX - llval) {
-			fprintf(stderr, "integer overflow\n");
-			return -1;
+			if (llval > 0 && params->sums[i] > LLONG_MAX - llval) {
+				fprintf(stderr, "integer overflow\n");
+				return -1;
+			}
+
+			if (llval < 0 && params->sums[i] < LLONG_MIN - llval) {
+				fprintf(stderr, "integer underflow\n");
+				return -1;
+			}
+
+			params->sums[i] += llval;
+		} else if (params->types[i] == TYPE_FLOAT) {
+			double dbl;
+			if (strtod_safe(val, &dbl))
+				return -1;
+
+			params->dblsums[i] += dbl;
+		} else {
+			assert(0);
 		}
-
-		if (llval < 0 && params->sums[i] < LLONG_MIN - llval) {
-			fprintf(stderr, "integer underflow\n");
-			return -1;
-		}
-
-		params->sums[i] += llval;
 	}
 
 	params->rows++;
@@ -166,6 +178,7 @@ main(int argc, char *argv[])
 	size_t nheaders = csv_get_headers(s, &headers);
 
 	params.cols = xmalloc_nofail(nheaders, sizeof(params.cols[0]));
+	params.types = xmalloc_nofail(nheaders, sizeof(params.types[0]));
 	params.active_cols = xcalloc_nofail(nheaders,
 			sizeof(params.active_cols[0]));
 
@@ -197,7 +210,11 @@ main(int argc, char *argv[])
 		}
 
 		const char *t = headers[idx].type;
-		if (strcmp(t, "int") != 0) {
+		if (strcmp(t, "int") == 0) {
+			params.types[params.ncols] = TYPE_INT;
+		} else if (strcmp(t, "float") == 0) {
+			params.types[params.ncols] = TYPE_FLOAT;
+		} else {
 			fprintf(stderr,
 				"Type '%s', used by column '%s', is not supported by csv-avg.\n",
 				t, col);
@@ -228,7 +245,11 @@ main(int argc, char *argv[])
 	}
 
 	params.sums = xcalloc_nofail(params.ncols, sizeof(params.sums[0]));
+	params.dblsums = xmalloc_nofail(params.ncols, sizeof(params.dblsums[0]));
 	params.rows = 0;
+
+	for (size_t i = 0; i < params.ncols; ++i)
+		params.dblsums[i] = 0.0;
 
 	char *name;
 	size_t consumed = 0;
@@ -274,16 +295,31 @@ main(int argc, char *argv[])
 	}
 
 	for (size_t i = start_idx; i < params.ncols - 1; ++i) {
-		if (params.active_cols[i])
-			printf("%lld,", params.rows ? params.sums[i] /
-					(long long)params.rows : 0);
-		else
+		if (params.active_cols[i]) {
+			if (params.types[i] == TYPE_INT) {
+				printf("%lld,", params.rows ? params.sums[i] /
+						(long long)params.rows : 0);
+			} else if (params.types[i] == TYPE_FLOAT) {
+				printf("%f,", params.rows ? params.dblsums[i] /
+						(double)params.rows : 0);
+			} else {
+				assert(0);
+			}
+		} else {
 			putchar(',');
+		}
 	}
 
 	if (params.active_cols[params.ncols - 1]) {
-		printf("%lld", params.rows ? params.sums[params.ncols - 1] /
-				(long long)params.rows : 0);
+		if (params.types[params.ncols - 1] == TYPE_INT) {
+			printf("%lld", params.rows ? params.sums[params.ncols - 1] /
+					(long long)params.rows : 0);
+		} else if (params.types[params.ncols - 1] == TYPE_FLOAT) {
+			printf("%f", params.rows ? params.dblsums[params.ncols - 1] /
+					(double)params.rows : 0);
+		} else {
+			assert(0);
+		}
 	}
 
 	putchar('\n');
@@ -291,7 +327,9 @@ main(int argc, char *argv[])
 	free(params.active_cols);
 	free(params.cols);
 	free(params.sums);
+	free(params.dblsums);
 	free(params.table);
+	free(params.types);
 
 	return 0;
 }

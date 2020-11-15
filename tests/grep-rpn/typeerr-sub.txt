@@ -1,0 +1,1 @@
+'subtraction' can operate only on numeric values

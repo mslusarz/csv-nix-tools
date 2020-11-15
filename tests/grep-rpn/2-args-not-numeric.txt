@@ -1,1 +1,0 @@
-+,-,*,/,%,|,&,^,<<,>>,and,or,xor can operate only on numeric values

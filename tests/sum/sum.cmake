@@ -46,6 +46,9 @@ test("csv-sum -T t2 -c id" data/2-tables.csv sum/2-tables-sum2.csv data/empty.tx
 test("csv-sum -T t2 -c id -n new1" data/2-tables.csv sum/2-tables-sum2-n1.csv data/empty.txt 0
 	sum-2tables-sum2-n1)
 
+test("csv-sum -c id,col1,col2,col3" data/floats.csv sum/floats.csv data/empty.txt 0
+	sum-floats)
+
 test("csv-sum --help" data/empty.csv sum/help.txt data/empty.txt 2
 	sum_help)
 

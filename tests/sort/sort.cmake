@@ -28,5 +28,8 @@ test("csv-sort -T t2 -c col2" sort/2-tables.csv sort/2-tables-sorted2.csv data/e
 test("csv-sort --help" data/empty.csv sort/help.txt data/empty.txt 2
 	sort_help)
 
+test("csv-sort -c col3" data/floats.csv sort/floats.csv data/empty.txt 0
+	sort_floats)
+
 test("csv-sort --version" data/empty.csv data/git-version.txt data/empty.txt 0
 	sort_version)

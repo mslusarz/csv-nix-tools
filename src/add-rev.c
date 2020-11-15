@@ -122,6 +122,7 @@ main(int argc, char *argv[])
 	unsigned show_flags = SHOW_DISABLED;
 
 	setlocale(LC_ALL, "");
+	setlocale(LC_NUMERIC, "C");
 
 	params.table = NULL;
 	params.table_column = SIZE_MAX;

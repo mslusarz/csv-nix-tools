@@ -6,6 +6,7 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <math.h>
 #include <regex.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -151,11 +152,66 @@ next(char *name)
 	return *v;
 }
 
+static const char *oper2txt[] = {
+	[RPN_ADD] = "addition",
+	[RPN_SUB] = "subtraction",
+	[RPN_MUL] = "multiplication",
+	[RPN_DIV] = "division",
+	[RPN_MOD] = "modulo",
+	[RPN_BIT_OR] = "bit or",
+	[RPN_BIT_AND] = "bit and",
+	[RPN_BIT_XOR] = "bit xor",
+	[RPN_BIT_NEG] = "bit negation",
+	[RPN_BIT_LSHIFT] = "bit left shift",
+	[RPN_BIT_RSHIFT] = "bit right shift",
+	[RPN_SUBSTR] = "substr",
+	[RPN_STRLEN] = "strlen",
+	[RPN_CONCAT] = "concat",
+	[RPN_LIKE] = "like",
+	[RPN_TOFLOAT] = "tofloat",
+	[RPN_TOINT] = "toint",
+	[RPN_TOSTRING] = "tostring",
+	[RPN_INT2STR] = "int2str",
+	[RPN_INT2STRB] = "int2strb",
+	[RPN_INT2FLT] = "int2flt",
+	[RPN_STR2INT] = "str2int",
+	[RPN_STRB2INT] = "strb2int",
+	[RPN_STR2FLT] = "str2flt",
+	[RPN_FLT2INT] = "flt2int",
+	[RPN_FLT2STR] = "flt2str",
+	[RPN_LT] = "less than",
+	[RPN_LE] = "less or equal",
+	[RPN_GT] = "greater than",
+	[RPN_GE] = "greater or equal",
+	[RPN_EQ] = "equal",
+	[RPN_NE] = "not equal",
+	[RPN_LOGIC_OR] = "logic or",
+	[RPN_LOGIC_AND] = "logic and",
+	[RPN_LOGIC_NOT] = "logic not",
+	[RPN_LOGIC_XOR] = "logic xor",
+	[RPN_IF] = "if",
+	[RPN_REPLACE] = "replace",
+	[RPN_REPLACE_BRE] = "replace_bre",
+	[RPN_REPLACE_ERE] = "replace_ere",
+	[RPN_MATCHES_BRE] = "matches_bre",
+	[RPN_MATCHES_ERE] = "matches_ere",
+	[RPN_NEXT] = "next",
+};
+
+static bool
+is_numeric(enum rpn_variant_type t)
+{
+	return t == RPN_LLONG || t == RPN_DOUBLE;
+}
+
 static int
 eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 {
 	size_t height = *pheight;
 	struct rpn_variant *stack = *pstack;
+	enum rpn_variant_type type1, type2;
+
+	assert(ARRAY_SIZE(oper2txt) == RPN_MAX + 1);
 
 	switch (oper) {
 	case RPN_ADD:
@@ -163,6 +219,20 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 	case RPN_MUL:
 	case RPN_DIV:
 	case RPN_MOD:
+		if (height < 2) {
+			fprintf(stderr, "not enough stack entries\n");
+			return -1;
+		}
+		height--;
+		type1 = stack[height - 1].type;
+		type2 = stack[height].type;
+		if (!is_numeric(type1) || !is_numeric(type2)) {
+			fprintf(stderr,
+				"'%s' can operate only on numeric values\n",
+				oper2txt[oper]);
+			return -1;
+		}
+		break;
 	case RPN_BIT_OR:
 	case RPN_BIT_AND:
 	case RPN_BIT_XOR:
@@ -178,7 +248,9 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		height--;
 		if (stack[height - 1].type != RPN_LLONG ||
 				stack[height].type != RPN_LLONG) {
-			fprintf(stderr, "+,-,*,/,%%,|,&,^,<<,>>,and,or,xor can operate only on numeric values\n");
+			fprintf(stderr,
+				"'%s' can operate only on integer values\n",
+				oper2txt[oper]);
 			return -1;
 		}
 		break;
@@ -189,7 +261,9 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 			return -1;
 		}
 		if (stack[height - 1].type != RPN_LLONG) {
-			fprintf(stderr, "not/bit_neg can operate only on numeric values\n");
+			fprintf(stderr,
+				"'%s' can operate only on integer values\n",
+				oper2txt[oper]);
 			return -1;
 		}
 		break;
@@ -202,7 +276,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		if (stack[height - 1].type != RPN_PCHAR ||
 				stack[height].type != RPN_LLONG ||
 				stack[height + 1].type != RPN_LLONG) {
-			fprintf(stderr, "invalid types for substr operator\n");
+			fprintf(stderr, "invalid types for 'substr' operator\n");
 			return -1;
 		}
 		break;
@@ -214,7 +288,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		height--;
 		if (stack[height - 1].type != RPN_PCHAR ||
 				stack[height].type != RPN_PCHAR) {
-			fprintf(stderr, "invalid types for concat operator\n");
+			fprintf(stderr, "invalid types for 'concat' operator\n");
 			return -1;
 		}
 		break;
@@ -226,11 +300,33 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		height--;
 		if (stack[height - 1].type != RPN_PCHAR ||
 				stack[height].type != RPN_PCHAR) {
-			fprintf(stderr, "invalid types for like operator\n");
+			fprintf(stderr, "invalid types for 'like' operator\n");
 			return -1;
 		}
 		break;
+	case RPN_STRLEN:
+		if (height < 1) {
+			fprintf(stderr, "not enough stack entries\n");
+			return -1;
+		}
+
+		if (stack[height - 1].type != RPN_PCHAR) {
+			fprintf(stderr, "'strlen' can operate only on string values\n");
+			return -1;
+		}
+
+		break;
+	case RPN_TOFLOAT:
+	case RPN_TOINT:
 	case RPN_TOSTRING:
+		if (height < 1) {
+			fprintf(stderr, "not enough stack entries\n");
+			return -1;
+		}
+		type1 = stack[height - 1].type;
+
+		break;
+	case RPN_INT2STRB:
 		if (height < 2) {
 			fprintf(stderr, "not enough stack entries\n");
 			return -1;
@@ -238,12 +334,12 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 
 		height--;
 		if (stack[height - 1].type != RPN_LLONG) {
-			fprintf(stderr, "tostring can operate only on numeric values\n");
+			fprintf(stderr, "'int2strb' can operate only on integer values\n");
 			return -1;
 		}
 
 		if (stack[height].type != RPN_LLONG) {
-			fprintf(stderr, "base must be a numeric value\n");
+			fprintf(stderr, "base must be an integer value\n");
 			return -1;
 		}
 
@@ -255,19 +351,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		}
 
 		break;
-	case RPN_STRLEN:
-		if (height < 1) {
-			fprintf(stderr, "not enough stack entries\n");
-			return -1;
-		}
-
-		if (stack[height - 1].type != RPN_PCHAR) {
-			fprintf(stderr, "strlen can operate only on string values\n");
-			return -1;
-		}
-
-		break;
-	case RPN_TOINT:
+	case RPN_STRB2INT:
 		if (height < 2) {
 			fprintf(stderr, "not enough stack entries\n");
 			return -1;
@@ -275,19 +359,91 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		height--;
 
 		if (stack[height - 1].type != RPN_PCHAR) {
-			fprintf(stderr, "1st argument of toint must be a string\n");
+			fprintf(stderr, "1st argument of 'strb2int' must be a string\n");
 			return -1;
 		}
 
 		if (stack[height].type != RPN_LLONG) {
-			fprintf(stderr, "2nd argument of toint must be a number\n");
+			fprintf(stderr, "2nd argument of 'strb2int' must be an integer\n");
 			return -1;
 		}
 
 		/* 2 and 36 come from strtoll man page */
 		if (stack[height].llong < 2 || stack[height].llong > 36) {
 			fprintf(stderr,
-				"2nd argument of toint must be between 2 and 36\n");
+				"2nd argument of 'strb2int' must be between 2 and 36\n");
+			return -1;
+		}
+
+		break;
+	case RPN_INT2STR:
+		if (height < 1) {
+			fprintf(stderr, "not enough stack entries\n");
+			return -1;
+		}
+
+		if (stack[height - 1].type != RPN_LLONG) {
+			fprintf(stderr, "'int2str' can operate only on integer values\n");
+			return -1;
+		}
+
+		break;
+	case RPN_STR2INT:
+		if (height < 1) {
+			fprintf(stderr, "not enough stack entries\n");
+			return -1;
+		}
+
+		if (stack[height - 1].type != RPN_PCHAR) {
+			fprintf(stderr, "'str2int' can operate only on string values\n");
+			return -1;
+		}
+
+		break;
+	case RPN_INT2FLT:
+		if (height < 1) {
+			fprintf(stderr, "not enough stack entries\n");
+			return -1;
+		}
+
+		if (stack[height - 1].type != RPN_LLONG) {
+			fprintf(stderr, "'int2flt' can operate only on integer values\n");
+			return -1;
+		}
+
+		break;
+	case RPN_FLT2INT:
+		if (height < 1) {
+			fprintf(stderr, "not enough stack entries\n");
+			return -1;
+		}
+
+		if (stack[height - 1].type != RPN_DOUBLE) {
+			fprintf(stderr, "'flt2int' can operate only on float values\n");
+			return -1;
+		}
+
+		break;
+	case RPN_FLT2STR:
+		if (height < 1) {
+			fprintf(stderr, "not enough stack entries\n");
+			return -1;
+		}
+
+		if (stack[height - 1].type != RPN_DOUBLE) {
+			fprintf(stderr, "'flt2str' can operate only on float values\n");
+			return -1;
+		}
+
+		break;
+	case RPN_STR2FLT:
+		if (height < 1) {
+			fprintf(stderr, "not enough stack entries\n");
+			return -1;
+		}
+
+		if (stack[height - 1].type != RPN_PCHAR) {
+			fprintf(stderr, "'str2flt' can operate only on string values\n");
 			return -1;
 		}
 
@@ -304,9 +460,12 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		}
 		height--;
 
-		if (stack[height - 1].type != stack[height].type) {
+		type1 = stack[height - 1].type;
+		type2 = stack[height].type;
+		if (is_numeric(type1) != is_numeric(type2)) {
 			fprintf(stderr,
-				"comparison operators can operate only on the same type values\n");
+				"'%s' can't compare string and numeric value\n",
+				oper2txt[oper]);
 			return -1;
 		}
 		break;
@@ -318,7 +477,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		height -= 2;
 		if (stack[height - 1].type != RPN_LLONG ||
 				stack[height].type != stack[height + 1].type) {
-			fprintf(stderr, "invalid types for if operator\n");
+			fprintf(stderr, "invalid types for 'if' operator\n");
 			return -1;
 		}
 		break;
@@ -334,7 +493,8 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 				stack[height].type != RPN_PCHAR ||
 				stack[height + 1].type != RPN_PCHAR ||
 				stack[height + 2].type != RPN_LLONG) {
-			fprintf(stderr, "invalid types for replace operator\n");
+			fprintf(stderr, "invalid types for '%s' operator\n",
+					oper2txt[oper]);
 			return -1;
 		}
 		break;
@@ -348,7 +508,8 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		if (stack[height - 1].type != RPN_PCHAR ||
 				stack[height].type != RPN_PCHAR ||
 				stack[height + 1].type != RPN_LLONG) {
-			fprintf(stderr, "invalid types for matches* operator\n");
+			fprintf(stderr, "invalid types for '%s' operator\n",
+					oper2txt[oper]);
 			return -1;
 		}
 		break;
@@ -359,7 +520,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		}
 
 		if (stack[height - 1].type != RPN_PCHAR) {
-			fprintf(stderr, "invalid type for next operator\n");
+			fprintf(stderr, "invalid type for 'next' operator\n");
 			return -1;
 		}
 		break;
@@ -372,13 +533,15 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 	case RPN_LOGIC_OR:
 	case RPN_LOGIC_XOR:
 		if (stack[height].llong != 0 && stack[height].llong != 1) {
-			fprintf(stderr, "logic operators can operate only on 0/1 values\n");
+			fprintf(stderr, "'%s' can operate only on 0/1 values\n",
+					oper2txt[oper]);
 			return -1;
 		}
 		/* fall through */
 	case RPN_LOGIC_NOT:
 		if (stack[height - 1].llong != 0 && stack[height - 1].llong != 1) {
-			fprintf(stderr, "logic operators can operate only on 0/1 values\n");
+			fprintf(stderr, "'%s' can operate only on 0/1 values\n",
+					oper2txt[oper]);
 			return -1;
 		}
 		break;
@@ -388,23 +551,137 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 
 	switch (oper) {
 	case RPN_ADD:
-		stack[height - 1].llong += stack[height].llong;
+		if (type1 == RPN_LLONG) {
+			if (type2 == RPN_LLONG) {
+				stack[height - 1].llong += stack[height].llong;
+			} else {
+				assert(type2 == RPN_DOUBLE);
+				stack[height - 1].dbl =
+					((double)stack[height - 1].llong) +
+					stack[height].dbl;
+				stack[height - 1].type = RPN_DOUBLE;
+			}
+		} else {
+			assert(type1 == RPN_DOUBLE);
+			if (type2 == RPN_LLONG) {
+				stack[height - 1].dbl += stack[height].llong;
+			} else {
+				assert(type2 == RPN_DOUBLE);
+				stack[height - 1].dbl += stack[height].dbl;
+			}
+		}
 		break;
 	case RPN_SUB:
-		stack[height - 1].llong -= stack[height].llong;
+		if (type1 == RPN_LLONG) {
+			if (type2 == RPN_LLONG) {
+				stack[height - 1].llong -= stack[height].llong;
+			} else {
+				assert(type2 == RPN_DOUBLE);
+				stack[height - 1].dbl =
+					((double)stack[height - 1].llong) -
+					stack[height].dbl;
+				stack[height - 1].type = RPN_DOUBLE;
+			}
+		} else {
+			assert(type1 == RPN_DOUBLE);
+			if (type2 == RPN_LLONG) {
+				stack[height - 1].dbl -= stack[height].llong;
+			} else {
+				assert(type2 == RPN_DOUBLE);
+				stack[height - 1].dbl -= stack[height].dbl;
+			}
+		}
 		break;
 	case RPN_MUL:
-		stack[height - 1].llong *= stack[height].llong;
+		if (type1 == RPN_LLONG) {
+			if (type2 == RPN_LLONG) {
+				stack[height - 1].llong *= stack[height].llong;
+			} else {
+				assert(type2 == RPN_DOUBLE);
+				stack[height - 1].dbl =
+					((double)stack[height - 1].llong) *
+					stack[height].dbl;
+				stack[height - 1].type = RPN_DOUBLE;
+			}
+		} else {
+			assert(type1 == RPN_DOUBLE);
+			if (type2 == RPN_LLONG) {
+				stack[height - 1].dbl *= stack[height].llong;
+			} else {
+				assert(type2 == RPN_DOUBLE);
+				stack[height - 1].dbl *= stack[height].dbl;
+			}
+		}
 		break;
 	case RPN_DIV:
-		if (stack[height].llong == 0) {
-			fprintf(stderr, "division by 0\n");
-			return -1;
+		if (type2 == RPN_LLONG) {
+			if (stack[height].llong == 0) {
+				fprintf(stderr, "division by 0\n");
+				return -1;
+			}
+		} else {
+			if (stack[height].dbl == 0.0) {
+				fprintf(stderr, "division by 0.0\n");
+				return -1;
+			}
 		}
-		stack[height - 1].llong /= stack[height].llong;
+
+		if (type1 == RPN_LLONG) {
+			if (type2 == RPN_LLONG) {
+				stack[height - 1].llong /= stack[height].llong;
+			} else {
+				assert(type2 == RPN_DOUBLE);
+				stack[height - 1].dbl =
+					((double)stack[height - 1].llong) /
+					stack[height].dbl;
+				stack[height - 1].type = RPN_DOUBLE;
+			}
+		} else {
+			assert(type1 == RPN_DOUBLE);
+			if (type2 == RPN_LLONG) {
+				stack[height - 1].dbl /= stack[height].llong;
+			} else {
+				assert(type2 == RPN_DOUBLE);
+				stack[height - 1].dbl /= stack[height].dbl;
+			}
+		}
 		break;
 	case RPN_MOD:
-		stack[height - 1].llong %= stack[height].llong;
+		if (type2 == RPN_LLONG) {
+			if (stack[height].llong == 0) {
+				fprintf(stderr, "modulo 0\n");
+				return -1;
+			}
+		} else {
+			if (stack[height].dbl == 0.0) {
+				fprintf(stderr, "modulo 0.0\n");
+				return -1;
+			}
+		}
+
+		if (type1 == RPN_LLONG) {
+			if (type2 == RPN_LLONG) {
+				stack[height - 1].llong %= stack[height].llong;
+			} else {
+				assert(type2 == RPN_DOUBLE);
+				stack[height - 1].dbl =
+					fmod(stack[height - 1].llong,
+					     stack[height].dbl);
+				stack[height - 1].type = RPN_DOUBLE;
+			}
+		} else {
+			assert(type1 == RPN_DOUBLE);
+			if (type2 == RPN_LLONG) {
+				stack[height - 1].dbl =
+					fmod(stack[height - 1].dbl,
+					     stack[height].llong);
+			} else {
+				assert(type2 == RPN_DOUBLE);
+				stack[height - 1].dbl =
+					fmod(stack[height - 1].dbl,
+					     stack[height].dbl);
+			}
+		}
 		break;
 	case RPN_BIT_OR:
 		stack[height - 1].llong |= stack[height].llong;
@@ -441,7 +718,7 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		ssize_t start = (ssize_t)stack[height].llong;
 		if (stack[height + 1].llong < 0) {
 			fprintf(stderr,
-				"negative length (%lld) for substring operator\n",
+				"negative length (%lld) for 'substr' operator\n",
 				stack[height + 1].llong);
 			return -1;
 		}
@@ -550,7 +827,77 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 
 		break;
 	}
+	case RPN_TOFLOAT: {
+		double dbl;
+		if (type1 == RPN_LLONG) {
+			dbl = stack[height - 1].llong;
+		} else if (type1 == RPN_DOUBLE) {
+			dbl = stack[height - 1].dbl;
+		} else if (type1 == RPN_PCHAR) {
+			const char *str = stack[height - 1].pchar;
+			if (strtod_safe(str, &dbl) < 0)
+				return -1;
+
+			free(stack[height - 1].pchar);
+		} else {
+			abort();
+		}
+
+		stack[height - 1].type = RPN_DOUBLE;
+		stack[height - 1].dbl = dbl;
+
+		break;
+	}
+	case RPN_TOINT: {
+		long long val;
+		if (type1 == RPN_LLONG) {
+			val = stack[height - 1].llong;
+		} else if (type1 == RPN_DOUBLE) {
+			val = stack[height - 1].dbl;
+		} else if (type1 == RPN_PCHAR) {
+			const char *str = stack[height - 1].pchar;
+			int base = 0;
+			if (str[0] == '0' && str[1] == 'b') {
+				str += 2;
+				base = 2;
+			}
+
+			if (strtoll_safe(str, &val, base) < 0)
+				return -1;
+
+			free(stack[height - 1].pchar);
+		} else {
+			abort();
+		}
+
+		stack[height - 1].type = RPN_LLONG;
+		stack[height - 1].llong = val;
+
+		break;
+	}
 	case RPN_TOSTRING: {
+		char *str;
+		if (type1 == RPN_LLONG) {
+			str = tostring(stack[height - 1].llong, 10);
+			if (!str)
+				return -1;
+		} else if (type1 == RPN_DOUBLE) {
+			if (csv_asprintf(&str, "%f", stack[height - 1].dbl) < 0) {
+				perror("asprintf");
+				return -1;
+			}
+		} else if (type1 == RPN_PCHAR) {
+			str = stack[height - 1].pchar;
+		} else {
+			abort();
+		}
+
+		stack[height - 1].type = RPN_PCHAR;
+		stack[height - 1].pchar = str;
+
+		break;
+	}
+	case RPN_INT2STRB: {
 		long long val = stack[height - 1].llong;
 		long long base = stack[height].llong;
 		char *str = tostring(val, base);
@@ -562,12 +909,18 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 
 		break;
 	}
-	case RPN_TOINT: {
+	case RPN_STRB2INT: {
 		long long ret;
 		const char *str = stack[height - 1].pchar;
 		int base = (int)stack[height].llong;
-		if (str[0] == '0' && str[1] == 'b' && base == 2)
-			str += 2;
+		if (str[0] == '0' && str[1] == 'b') {
+			if (base == 2) {
+				str += 2;
+			} else if (base == 0) {
+				str += 2;
+				base = 2;
+			}
+		}
 
 		if (strtoll_safe(str, &ret, base) < 0)
 			return -1;
@@ -578,10 +931,85 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		stack[height - 1].llong = ret;
 		break;
 	}
+	case RPN_INT2STR: {
+		long long val = stack[height - 1].llong;
+		char *str = tostring(val, 10);
+		if (!str)
+			return -1;
+
+		stack[height - 1].type = RPN_PCHAR;
+		stack[height - 1].pchar = str;
+
+		break;
+	}
+	case RPN_STR2INT: {
+		long long ret;
+		const char *str = stack[height - 1].pchar;
+		int base = 0;
+		if (str[0] == '0' && str[1] == 'b') {
+			str += 2;
+			base = 2;
+		}
+
+		if (strtoll_safe(str, &ret, base) < 0)
+			return -1;
+
+		free(stack[height - 1].pchar);
+
+		stack[height - 1].type = RPN_LLONG;
+		stack[height - 1].llong = ret;
+		break;
+	}
+	case RPN_INT2FLT: {
+		stack[height - 1].type = RPN_DOUBLE;
+		stack[height - 1].dbl = stack[height - 1].llong;
+
+		break;
+	}
+	case RPN_FLT2INT: {
+		stack[height - 1].type = RPN_LLONG;
+		stack[height - 1].llong = stack[height - 1].dbl;
+
+		break;
+	}
+	case RPN_FLT2STR: {
+		char *str;
+		if (csv_asprintf(&str, "%f", stack[height - 1].dbl) < 0) {
+			perror("asprintf");
+			return -1;
+		}
+
+		stack[height - 1].type = RPN_PCHAR;
+		stack[height - 1].pchar = str;
+
+		break;
+	}
+	case RPN_STR2FLT: {
+		double dbl;
+		if (strtod_safe(stack[height - 1].pchar, &dbl))
+			return -1;
+
+		free(stack[height - 1].pchar);
+
+		stack[height - 1].type = RPN_DOUBLE;
+		stack[height - 1].dbl = dbl;
+
+		break;
+	}
 	case RPN_LT:
-		if (stack[height - 1].type == RPN_LLONG)
-			stack[height - 1].llong = stack[height - 1].llong < stack[height].llong ? 1 : 0;
-		else {
+		if (type1 == RPN_LLONG) {
+			if (type2 == RPN_LLONG)
+				stack[height - 1].llong = stack[height - 1].llong < stack[height].llong ? 1 : 0;
+			else
+				stack[height - 1].llong = stack[height - 1].llong < stack[height].dbl ? 1 : 0;
+		} else if (type1 == RPN_DOUBLE) {
+			if (type2 == RPN_LLONG)
+				stack[height - 1].llong = stack[height - 1].dbl < stack[height].llong ? 1 : 0;
+			else
+				stack[height - 1].llong = stack[height - 1].dbl < stack[height].dbl ? 1 : 0;
+			stack[height - 1].type = RPN_LLONG;
+		} else {
+			assert(type1 == RPN_PCHAR);
 			int ret = strcmp(stack[height - 1].pchar, stack[height].pchar) < 0 ? 1 : 0;
 
 			free(stack[height - 1].pchar);
@@ -592,9 +1020,19 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		}
 		break;
 	case RPN_LE:
-		if (stack[height - 1].type == RPN_LLONG)
-			stack[height - 1].llong = stack[height - 1].llong <= stack[height].llong ? 1 : 0;
-		else {
+		if (type1 == RPN_LLONG) {
+			if (type2 == RPN_LLONG)
+				stack[height - 1].llong = stack[height - 1].llong <= stack[height].llong ? 1 : 0;
+			else
+				stack[height - 1].llong = stack[height - 1].llong <= stack[height].dbl ? 1 : 0;
+		} else if (type1 == RPN_DOUBLE) {
+			if (type2 == RPN_LLONG)
+				stack[height - 1].llong = stack[height - 1].dbl <= stack[height].llong ? 1 : 0;
+			else
+				stack[height - 1].llong = stack[height - 1].dbl <= stack[height].dbl ? 1 : 0;
+			stack[height - 1].type = RPN_LLONG;
+		} else {
+			assert(type1 == RPN_PCHAR);
 			int ret = strcmp(stack[height - 1].pchar, stack[height].pchar) <= 0 ? 1 : 0;
 
 			free(stack[height - 1].pchar);
@@ -605,9 +1043,19 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		}
 		break;
 	case RPN_GT:
-		if (stack[height - 1].type == RPN_LLONG)
-			stack[height - 1].llong = stack[height - 1].llong > stack[height].llong ? 1 : 0;
-		else {
+		if (type1 == RPN_LLONG) {
+			if (type2 == RPN_LLONG)
+				stack[height - 1].llong = stack[height - 1].llong > stack[height].llong ? 1 : 0;
+			else
+				stack[height - 1].llong = stack[height - 1].llong > stack[height].dbl ? 1 : 0;
+		} else if (type1 == RPN_DOUBLE) {
+			if (type2 == RPN_LLONG)
+				stack[height - 1].llong = stack[height - 1].dbl > stack[height].llong ? 1 : 0;
+			else
+				stack[height - 1].llong = stack[height - 1].dbl > stack[height].dbl ? 1 : 0;
+			stack[height - 1].type = RPN_LLONG;
+		} else {
+			assert(type1 == RPN_PCHAR);
 			int ret = strcmp(stack[height - 1].pchar, stack[height].pchar) > 0 ? 1 : 0;
 
 			free(stack[height - 1].pchar);
@@ -618,9 +1066,19 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		}
 		break;
 	case RPN_GE:
-		if (stack[height - 1].type == RPN_LLONG)
-			stack[height - 1].llong = stack[height - 1].llong >= stack[height].llong ? 1 : 0;
-		else {
+		if (type1 == RPN_LLONG) {
+			if (type2 == RPN_LLONG)
+				stack[height - 1].llong = stack[height - 1].llong >= stack[height].llong ? 1 : 0;
+			else
+				stack[height - 1].llong = stack[height - 1].llong >= stack[height].dbl ? 1 : 0;
+		} else if (type1 == RPN_DOUBLE) {
+			if (type2 == RPN_LLONG)
+				stack[height - 1].llong = stack[height - 1].dbl >= stack[height].llong ? 1 : 0;
+			else
+				stack[height - 1].llong = stack[height - 1].dbl >= stack[height].dbl ? 1 : 0;
+			stack[height - 1].type = RPN_LLONG;
+		} else {
+			assert(type1 == RPN_PCHAR);
 			int ret = strcmp(stack[height - 1].pchar, stack[height].pchar) >= 0 ? 1 : 0;
 
 			free(stack[height - 1].pchar);
@@ -631,9 +1089,19 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		}
 		break;
 	case RPN_EQ:
-		if (stack[height - 1].type == RPN_LLONG)
-			stack[height - 1].llong = stack[height - 1].llong == stack[height].llong ? 1 : 0;
-		else {
+		if (type1 == RPN_LLONG) {
+			if (type2 == RPN_LLONG)
+				stack[height - 1].llong = stack[height - 1].llong == stack[height].llong ? 1 : 0;
+			else
+				stack[height - 1].llong = stack[height - 1].llong == stack[height].dbl ? 1 : 0;
+		} else if (type1 == RPN_DOUBLE) {
+			if (type2 == RPN_LLONG)
+				stack[height - 1].llong = stack[height - 1].dbl == stack[height].llong ? 1 : 0;
+			else
+				stack[height - 1].llong = stack[height - 1].dbl == stack[height].dbl ? 1 : 0;
+			stack[height - 1].type = RPN_LLONG;
+		} else {
+			assert(type1 == RPN_PCHAR);
 			int ret = strcmp(stack[height - 1].pchar, stack[height].pchar) == 0 ? 1 : 0;
 
 			free(stack[height - 1].pchar);
@@ -644,9 +1112,19 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		}
 		break;
 	case RPN_NE:
-		if (stack[height - 1].type == RPN_LLONG)
-			stack[height - 1].llong = stack[height - 1].llong != stack[height].llong ? 1 : 0;
-		else {
+		if (type1 == RPN_LLONG) {
+			if (type2 == RPN_LLONG)
+				stack[height - 1].llong = stack[height - 1].llong != stack[height].llong ? 1 : 0;
+			else
+				stack[height - 1].llong = stack[height - 1].llong != stack[height].dbl ? 1 : 0;
+		} else if (type1 == RPN_DOUBLE) {
+			if (type2 == RPN_LLONG)
+				stack[height - 1].llong = stack[height - 1].dbl != stack[height].llong ? 1 : 0;
+			else
+				stack[height - 1].llong = stack[height - 1].dbl != stack[height].dbl ? 1 : 0;
+			stack[height - 1].type = RPN_LLONG;
+		} else {
+			assert(type1 == RPN_PCHAR);
 			int ret = strcmp(stack[height - 1].pchar, stack[height].pchar) != 0 ? 1 : 0;
 
 			free(stack[height - 1].pchar);
@@ -805,7 +1283,11 @@ rpn_eval(const struct rpn_expression *exp,
 				stack[height].type = RPN_LLONG;
 				if (strtoll_safe(str, &stack[height].llong, 0))
 					goto fail;
-			} else {
+			} else if (strcmp(t->col.type, "float") == 0) {
+				stack[height].type = RPN_DOUBLE;
+				if (strtod_safe(str, &stack[height].dbl))
+					goto fail;
+			} else if (strcmp(t->col.type, "string") == 0) {
 				stack[height].type = RPN_PCHAR;
 				if (str[0] == '"')
 					stack[height].pchar = csv_unquot(str);
@@ -813,6 +1295,8 @@ rpn_eval(const struct rpn_expression *exp,
 					stack[height].pchar = xstrdup(str);
 				if (!stack[height].pchar)
 					goto fail;
+			} else {
+				abort();
 			}
 			height++;
 		} else if (t->type == RPN_OPERATOR) {

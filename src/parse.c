@@ -74,7 +74,9 @@ add_header(struct csv_ctx *ctx, char *start)
 	if (strcmp(type, "int") != 0 &&
 			strcmp(type, "int[]") != 0 &&
 			strcmp(type, "string") != 0 &&
-			strcmp(type, "string[]") != 0) {
+			strcmp(type, "string[]") != 0 &&
+			strcmp(type, "float") != 0 &&
+			strcmp(type, "float[]") != 0) {
 		fprintf(ctx->err, "unsupported type '%s'\n", type);
 		return -1;
 	}

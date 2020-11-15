@@ -33,11 +33,14 @@ dbg_printf(const char *format, ...)
 %token SELECT AS FROM WHERE STRING NUMBER COMMA LITERAL EQ NE LT GT LE GE
 %token OR AND XOR NOT LPAREN RPAREN ADD SUB MUL DIV MOD CONCAT IF
 %token BIT_OR BIT_XOR BIT_AND BIT_NEG BIT_LSHIFT BIT_RSHIFT OTHER
-%token LENGTH SUBSTR LIKE TOSTRING TOINT REPLACE REPLACE_BRE REPLACE_ERE
+%token LENGTH SUBSTR LIKE TOSTRING TOINT TOFLOAT FLT_NUMBER
+%token REPLACE REPLACE_BRE REPLACE_ERE
 %token MATCHES_BRE MATCHES_ERE NEXT ORDER BY ASC DESC
+%token INT2STR INT2STRB STR2INT STRB2INT INT2FLT FLT2INT FLT2STR STR2FLT
 
 %type <name> STRING
 %type <number> NUMBER
+%type <dbl> FLT_NUMBER
 %type <name> LITERAL
 
 %left OR
@@ -56,6 +59,7 @@ dbg_printf(const char *format, ...)
 %union {
 	char *name;
 	long long number;
+	double dbl;
 }
 
 %%
@@ -63,9 +67,10 @@ dbg_printf(const char *format, ...)
 prog:
 	@PROG@
 
-value: STRING     { dbg_printf("BISON: string '%s'\n", $1); sql_stack_push_string($1); }
-	| NUMBER  { dbg_printf("BISON: number '%d'\n", $1); sql_stack_push_llong($1); }
-	| LITERAL { dbg_printf("BISON: literal %s\n",  $1); sql_stack_push_literal($1); }
+value: STRING		{ dbg_printf("BISON: string '%s'\n", $1); sql_stack_push_string($1); }
+	| NUMBER	{ dbg_printf("BISON: number '%d'\n", $1); sql_stack_push_llong($1); }
+	| FLT_NUMBER	{ dbg_printf("BISON: float number '%f'\n", $1); sql_stack_push_dbl($1); }
+	| LITERAL	{ dbg_printf("BISON: literal %s\n",  $1); sql_stack_push_literal($1); }
 
 column:
 	expr				{ sql_column_done(); }
@@ -108,10 +113,21 @@ expr:     LPAREN expr RPAREN
 	| SUBSTR LPAREN expr COMMA expr RPAREN { sql_stack_push_llong(LLONG_MAX); sql_stack_push_op(RPN_SUBSTR); }
 	| LENGTH LPAREN expr RPAREN	{ sql_stack_push_op(RPN_STRLEN); }
 	| IF LPAREN expr COMMA expr COMMA expr	RPAREN { sql_stack_push_op(RPN_IF); }
-	| TOSTRING LPAREN expr COMMA expr RPAREN { sql_stack_push_op(RPN_TOSTRING); }
-	| TOSTRING LPAREN expr RPAREN { sql_stack_push_llong(10); sql_stack_push_op(RPN_TOSTRING); }
-	| TOINT LPAREN expr COMMA expr RPAREN { sql_stack_push_op(RPN_TOINT); }
-	| TOINT LPAREN expr RPAREN { sql_stack_push_llong(10); sql_stack_push_op(RPN_TOINT); }
+
+	| TOSTRING  LPAREN expr RPAREN { sql_stack_push_op(RPN_TOSTRING); }
+	| TOINT     LPAREN expr RPAREN { sql_stack_push_op(RPN_TOINT); }
+	| TOFLOAT   LPAREN expr RPAREN { sql_stack_push_op(RPN_TOFLOAT); }
+
+	| INT2STRB LPAREN expr COMMA expr RPAREN { sql_stack_push_op(RPN_INT2STRB); }
+	| STRB2INT LPAREN expr COMMA expr RPAREN { sql_stack_push_op(RPN_STRB2INT); }
+
+	| INT2STR LPAREN expr RPAREN { sql_stack_push_op(RPN_INT2STR); }
+	| STR2INT LPAREN expr RPAREN { sql_stack_push_op(RPN_STR2INT); }
+	| FLT2STR LPAREN expr RPAREN { sql_stack_push_op(RPN_FLT2STR); }
+	| STR2FLT LPAREN expr RPAREN { sql_stack_push_op(RPN_STR2FLT); }
+	| INT2FLT LPAREN expr RPAREN { sql_stack_push_op(RPN_INT2FLT); }
+	| FLT2INT LPAREN expr RPAREN { sql_stack_push_op(RPN_FLT2INT); }
+
 	| REPLACE LPAREN expr COMMA expr COMMA expr COMMA expr RPAREN { sql_stack_push_op(RPN_REPLACE); }
 	| REPLACE LPAREN expr COMMA expr COMMA expr RPAREN { sql_stack_push_llong(1); sql_stack_push_op(RPN_REPLACE); }
 	| REPLACE_BRE LPAREN expr COMMA expr COMMA expr COMMA expr RPAREN { sql_stack_push_op(RPN_REPLACE_BRE); }

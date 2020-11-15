@@ -7,7 +7,6 @@
 - handle NUL bytes
 - i18n
 - export as much as possible as a library(ies)
-- Coverity
 - fuzzing
 
 # TODO (low level)
@@ -31,7 +30,7 @@
 
 ## Random ideas
 - export data as bash/python/etc script?
-- float support?
+- arbitrary precision arithmetic (with libgmp?)
 - importing from other tools (lspci -mm?, strace?, lsof -F, ss, dpkg, rpm)?
 - loops and temporary variables in rpn?
 - built-in pipes? (csv "ls | grep -c size -F 0 | cut -c name")

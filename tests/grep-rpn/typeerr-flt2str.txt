@@ -1,0 +1,1 @@
+'flt2str' can operate only on float values

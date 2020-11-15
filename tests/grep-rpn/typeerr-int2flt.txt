@@ -1,0 +1,1 @@
+'int2flt' can operate only on integer values

@@ -142,25 +142,41 @@ cmp(const void *p1, const void *p2, void *arg)
 		if (strcmp(val1, val2) == 0)
 			continue;
 
-		if (strcmp(headers[col].type, "int") != 0)
+		if (strcmp(headers[col].type, "int") == 0) {
+			long long llval1, llval2;
+
+			if (strtoll_safe(val1, &llval1, 0))
+				exit(2);
+
+			if (strtoll_safe(val2, &llval2, 0))
+				exit(2);
+
+			if (llval1 < llval2)
+				return -1;
+
+			if (llval1 > llval2)
+				return 1;
+
+			return 0;
+		} else if (strcmp(headers[col].type, "float") == 0) {
+			double dval1, dval2;
+
+			if (strtod_safe(val1, &dval1))
+				exit(2);
+
+			if (strtod_safe(val2, &dval2))
+				exit(2);
+
+			if (dval1 < dval2)
+				return -1;
+
+			if (dval1 > dval2)
+				return 1;
+
+			return 0;
+		} else {
 			return strcmp(val1, val2);
-
-		/* handle integers */
-		long long llval1, llval2;
-
-		if (strtoll_safe(val1, &llval1, 0))
-			exit(2);
-
-		if (strtoll_safe(val2, &llval2, 0))
-			exit(2);
-
-		if (llval1 < llval2)
-			return -1;
-
-		if (llval1 > llval2)
-			return 1;
-
-		return 0;
+		}
 	}
 
 	return 0;

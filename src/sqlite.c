@@ -113,6 +113,11 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 			if (strtoll_safe(&buf[col_offs[i]], &val, 0) < 0)
 				exit(2);
 			ret = sqlite3_bind_int64(ins->insert, idx + 1, val);
+		} else if (strcmp(headers[i].type, "float") == 0) {
+			double val;
+			if (strtod_safe(&buf[col_offs[i]], &val) < 0)
+				exit(2);
+			ret = sqlite3_bind_double(ins->insert, idx + 1, val);
 		} else {
 			const char *str = &buf[col_offs[i]];
 			if (str[0] == '"') {
@@ -156,6 +161,8 @@ type(const char *t)
 {
 	if (strcmp(t, "int") == 0)
 		return "int";
+	else if (strcmp(t, "float") == 0)
+		return "real";
 	else
 		return "text";
 }
@@ -260,6 +267,8 @@ sqlite_type_to_csv_name(int t)
 		return "int";
 	else if (t == SQLITE_TEXT)
 		return "string";
+	else if (t == SQLITE_FLOAT)
+		return "float";
 	else if (t == SQLITE_NULL)
 		return NULL;
 
@@ -450,6 +459,8 @@ print_val(sqlite3_stmt *select, size_t i)
 	} else if (type == SQLITE_TEXT) {
 		const char *txt = (const char *)sqlite3_column_text(select, i);
 		csv_print_quoted(txt, strlen(txt));
+	} else if (type == SQLITE_FLOAT) {
+		printf("%f", sqlite3_column_double(select, i));
 	} else if (type == SQLITE_NULL) {
 		/* nothing to do here */
 	} else {

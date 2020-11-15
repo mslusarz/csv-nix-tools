@@ -147,8 +147,8 @@ build_tool(csv-to-xml		src/to-xml.c)
 build_tool(csv-uniq		src/uniq.c)
 build_tool(csv-users		src/users.c src/usr-grp.c src/merge_utils.c)
 
-target_link_libraries(csv-add-rpn	csvrpn)
-target_link_libraries(csv-grep-rpn	csvrpn)
+target_link_libraries(csv-add-rpn	csvrpn m)
+target_link_libraries(csv-grep-rpn	csvrpn m)
 
 if (C11THREADS_FOUND)
 	build_tool(csv-diff		src/diff.c)
@@ -243,9 +243,9 @@ if (BUILD_SQL)
 	target_include_directories(csv-grep-sql PRIVATE src)
 	target_include_directories(csv-add-sql PRIVATE src)
 
-	target_link_libraries(csv-sql csvrpn)
-	target_link_libraries(csv-grep-sql csvrpn)
-	target_link_libraries(csv-add-sql csvrpn)
+	target_link_libraries(csv-sql csvrpn m)
+	target_link_libraries(csv-grep-sql csvrpn m)
+	target_link_libraries(csv-add-sql csvrpn m)
 endif()
 
 if(LIBPROCPS_FOUND)

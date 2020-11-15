@@ -1,1 +1,0 @@
-logic operators can operate only on 0/1 values

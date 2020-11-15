@@ -912,7 +912,12 @@ csvci_set_columns_order(struct column_info *columns, size_t *ncolumns)
 
 /* order must match the one in enum output_types */
 static const char *output_types_str[] = {
-	"string", "int", "string[]", "int[]",
+	"string",
+	"string[]",
+	"int",
+	"int[]",
+	"float",
+	"float[]",
 };
 
 void

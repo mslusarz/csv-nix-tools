@@ -1,0 +1,1 @@
+'addition' can operate only on numeric values

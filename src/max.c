@@ -6,8 +6,10 @@
 
 #include <assert.h>
 #include <errno.h>
+#include <float.h>
 #include <getopt.h>
 #include <limits.h>
+#include <locale.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -58,6 +60,7 @@ struct cb_params {
 
 	long long *max_int;
 	char **max_str;
+	double *max_dbl;
 	size_t *str_size;
 
 	size_t table_column;
@@ -93,7 +96,13 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 
 			if (llval > params->max_int[i])
 				params->max_int[i] = llval;
+		} else if (params->types[i] == TYPE_FLOAT) {
+			double dbl;
+			if (strtod_safe(val, &dbl))
+				return -1;
 
+			if (dbl > params->max_dbl[i])
+				params->max_dbl[i] = dbl;
 		} else {
 			const char *unquoted = val;
 			if (val[0] == '"')
@@ -136,6 +145,10 @@ main(int argc, char *argv[])
 	char *new_name = NULL;
 	unsigned show_flags = SHOW_DISABLED;
 	size_t table_len = 0;
+
+// TODO unicode/locale
+//	setlocale(LC_ALL, "");
+//	setlocale(LC_NUMERIC, "C");
 
 	params.cols = NULL;
 	params.types = NULL;
@@ -223,6 +236,8 @@ main(int argc, char *argv[])
 			params.types[params.ncols] = TYPE_INT;
 		else if (strcmp(t, "string") == 0)
 			params.types[params.ncols] = TYPE_STRING;
+		else if (strcmp(t, "float") == 0)
+			params.types[params.ncols] = TYPE_FLOAT;
 		else
 			type_not_supported(t, col);
 
@@ -255,10 +270,13 @@ main(int argc, char *argv[])
 			sizeof(params.max_str[0]));
 	params.str_size = xmalloc_nofail(params.ncols,
 			sizeof(params.str_size[0]));
+	params.max_dbl = xmalloc_nofail(params.ncols,
+			sizeof(params.max_dbl[0]));
 	for (size_t i = 0; i < params.ncols; ++i) {
 		params.max_int[i] = LLONG_MIN;
 		params.max_str[i] = NULL;
 		params.str_size[i] = 0;
+		params.max_dbl[i] = -DBL_MAX;
 	}
 
 	char *name;
@@ -309,6 +327,8 @@ main(int argc, char *argv[])
 			putchar(',');
 		} else if (params.types[i] == TYPE_INT) {
 			printf("%lld,", params.max_int[i]);
+		} else if (params.types[i] == TYPE_FLOAT) {
+			printf("%f,", params.max_dbl[i]);
 		} else {
 			csv_print_quoted(params.max_str[i],
 					strlen(params.max_str[i]));
@@ -320,6 +340,8 @@ main(int argc, char *argv[])
 	if (params.active_cols[idx]) {
 		if (params.types[idx] == TYPE_INT)
 			printf("%lld", params.max_int[idx]);
+		else if (params.types[idx] == TYPE_FLOAT)
+			printf("%f", params.max_dbl[idx]);
 		else
 			csv_print_quoted(params.max_str[idx],
 					strlen(params.max_str[idx]));
@@ -335,6 +357,7 @@ main(int argc, char *argv[])
 		free(params.max_str[i]);
 	free(params.max_str);
 	free(params.str_size);
+	free(params.max_dbl);
 	free(params.table);
 
 	return 0;

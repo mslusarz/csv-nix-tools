@@ -75,12 +75,14 @@ process_exp(const struct rpn_expression *exp, const char *buf,
 	if (rpn_eval(exp, buf, col_offs, &ret))
 		exit(2);
 
-	if (ret.type == RPN_LLONG)
+	if (ret.type == RPN_LLONG) {
 		printf("%lld%c", ret.llong, sep);
-	else if (ret.type == RPN_PCHAR) {
+	} else if (ret.type == RPN_PCHAR) {
 		csv_print_quoted(ret.pchar, strlen(ret.pchar));
 		fputc(sep, stdout);
 		free(ret.pchar);
+	} else if (ret.type == RPN_DOUBLE) {
+		printf("%f%c", ret.dbl, sep);
 	} else {
 		fprintf(stderr, "unknown type %d\n", ret.type);
 		exit(2);
@@ -349,6 +351,10 @@ cmp(const void *p1, const void *p2, void *arg)
 			if (c == 0)
 				continue;
 			less = c < 0;
+		} else if (v1->type == RPN_DOUBLE) {
+			if (v1->dbl == v2->dbl)
+				continue;
+			less = v1->dbl < v2->dbl;
 		} else {
 			assert(!"unhandled type");
 			abort();
@@ -368,6 +374,10 @@ main(int argc, char *argv[])
 {
 	int opt;
 	unsigned show_flags = SHOW_DISABLED;
+
+// TODO unicode/locale
+//	setlocale(LC_ALL, "");
+//	setlocale(LC_NUMERIC, "C");
 
 	while ((opt = getopt_long(argc, argv, "sS", opts, NULL)) != -1) {
 		switch (opt) {

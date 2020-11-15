@@ -22,9 +22,9 @@ The extensions are:
 - each column has a type, encoded in the name using name:type syntax
 - optional "_table" column having special meaning
 
-Currently used types are: string, int, string[], int[], although array types
-are not well supported at the moment (they are produced by some tools, but
-there's no easy way to process them).
+Currently used types are: string, int, float, string[], int[], float[],
+although array types are not well supported at the moment (they are produced
+by some tools, but there's no easy way to process them).
 
 Column "_table" resolves a problem of storing multiple sets of data in one
 CSV stream. It allows:

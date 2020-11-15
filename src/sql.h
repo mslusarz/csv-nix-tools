@@ -22,6 +22,7 @@ void sql_stack_push(const struct rpn_token *token);
 void sql_stack_push_string(char *str);
 void sql_stack_push_llong(long long l);
 void sql_stack_push_literal(char *str);
+void sql_stack_push_dbl(double d);
 void sql_stack_push_op(enum rpn_operator);
 
 void sql_column_done(void);

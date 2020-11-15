@@ -94,6 +94,18 @@ sql_stack_push_literal(char *str)
 }
 
 void
+sql_stack_push_dbl(double d)
+{
+	struct rpn_token tk;
+
+	tk.type = RPN_CONSTANT;
+	tk.constant.type = RPN_DOUBLE;
+	tk.constant.dbl = d;
+
+	sql_stack_push(&tk);
+}
+
+void
 sql_stack_push_op(enum rpn_operator op)
 {
 	struct rpn_token tk;

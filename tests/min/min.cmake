@@ -43,6 +43,9 @@ test("csv-min -T t2 -c id" data/2-tables.csv min/2-tables-min2.csv data/empty.tx
 test("csv-min -T t2 -c id -n new1" data/2-tables.csv min/2-tables-min2-n1.csv data/empty.txt 0
 	min-2tables-min2-n1)
 
+test("csv-min -c id,col1,col2,col3" data/floats.csv min/floats.csv data/empty.txt 0
+	min-floats)
+
 test("csv-min --help" data/empty.csv min/help.txt data/empty.txt 2
 	min_help)
 

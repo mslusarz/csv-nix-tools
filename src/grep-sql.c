@@ -96,6 +96,10 @@ main(int argc, char *argv[])
 	struct cb_params params;
 	unsigned show_flags = SHOW_DISABLED;
 
+// TODO unicode/locale
+//	setlocale(LC_ALL, "");
+//	setlocale(LC_NUMERIC, "C");
+
 	params.expressions = NULL;
 	params.count = 0;
 	params.table = NULL;

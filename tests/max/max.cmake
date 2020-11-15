@@ -43,6 +43,9 @@ test("csv-max -T t1 -c id,something -n new1,new2" data/2-tables.csv max/2-tables
 test("csv-max -T t2 -c id -n new1" data/2-tables.csv max/2-tables-max2-n1.csv data/empty.txt 0
 	max-2tables-max2-n1)
 
+test("csv-max -c id,col1,col2,col3" data/floats.csv max/floats.csv data/empty.txt 0
+	max-floats)
+
 test("csv-max --help" data/empty.csv max/help.txt data/empty.txt 2
 	max_help)
 

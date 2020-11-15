@@ -1,0 +1,1 @@
+'logic or' can operate only on 0/1 values

@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <getopt.h>
 #include <limits.h>
+#include <locale.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -60,6 +61,7 @@ struct cb_params {
 
 	long long *sums_int;
 	char **sums_str;
+	double *sums_dbl;
 	size_t *str_used;
 	size_t *str_sizes;
 	const char *sep;
@@ -107,6 +109,12 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 			}
 
 			params->sums_int[i] += llval;
+		} else if (params->types[i] == TYPE_FLOAT) {
+			double dbl;
+			if (strtod_safe(val, &dbl))
+				return -1;
+
+			params->sums_dbl[i] += dbl;
 		} else {
 			const char *unquoted = val;
 			if (val[0] == '"')
@@ -162,6 +170,10 @@ main(int argc, char *argv[])
 	unsigned show_flags = SHOW_DISABLED;
 	char *sep = NULL;
 	size_t table_len = 0;
+
+// TODO unicode/locale
+//	setlocale(LC_ALL, "");
+//	setlocale(LC_NUMERIC, "C");
 
 	params.cols = NULL;
 	params.types = NULL;
@@ -252,6 +264,8 @@ main(int argc, char *argv[])
 			params.types[params.ncols] = TYPE_INT;
 		else if (strcmp(t, "string") == 0)
 			params.types[params.ncols] = TYPE_STRING;
+		else if (strcmp(t, "float") == 0)
+			params.types[params.ncols] = TYPE_FLOAT;
 		else
 			type_not_supported(t, col);
 
@@ -286,11 +300,16 @@ main(int argc, char *argv[])
 			sizeof(params.str_used[0]));
 	params.str_sizes = xcalloc_nofail(params.ncols,
 			sizeof(params.str_sizes[0]));
+	params.sums_dbl = xmalloc_nofail(params.ncols,
+			sizeof(params.sums_dbl[0]));
 	params.sep = sep;
 	if (sep)
 		params.sep_len = strlen(sep);
 	else
 		params.sep_len = 0;
+
+	for (size_t i = 0; i < params.ncols; ++i)
+		params.sums_dbl[i] = 0.0;
 
 	char *name;
 	size_t consumed = 0;
@@ -340,6 +359,8 @@ main(int argc, char *argv[])
 			putchar(',');
 		} else if (params.types[i] == TYPE_INT) {
 			printf("%lld,", params.sums_int[i]);
+		} else if (params.types[i] == TYPE_FLOAT) {
+			printf("%f,", params.sums_dbl[i]);
 		} else {
 			csv_print_quoted(params.sums_str[i],
 					params.str_used[i]);
@@ -351,6 +372,8 @@ main(int argc, char *argv[])
 	if (params.active_cols[idx]) {
 		if (params.types[idx] == TYPE_INT)
 			printf("%lld", params.sums_int[idx]);
+		else if (params.types[idx] == TYPE_FLOAT)
+			printf("%f", params.sums_dbl[idx]);
 		else
 			csv_print_quoted(params.sums_str[idx],
 					params.str_used[idx]);
@@ -368,6 +391,7 @@ main(int argc, char *argv[])
 	free(params.sums_str);
 	free(params.str_used);
 	free(params.str_sizes);
+	free(params.sums_dbl);
 	free(params.table);
 
 	return 0;

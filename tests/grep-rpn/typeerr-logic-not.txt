@@ -1,0 +1,1 @@
+'logic not' can operate only on integer values

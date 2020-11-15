@@ -149,12 +149,14 @@ process_exp(struct rpn_expression *exp, const char *buf, const size_t *col_offs,
 	if (rpn_eval(exp, buf, col_offs, &ret))
 		exit(2);
 
-	if (ret.type == RPN_LLONG)
+	if (ret.type == RPN_LLONG) {
 		printf("%lld%c", ret.llong, sep);
-	else if (ret.type == RPN_PCHAR) {
+	} else if (ret.type == RPN_PCHAR) {
 		csv_print_quoted(ret.pchar, strlen(ret.pchar));
 		fputc(sep, stdout);
 		free(ret.pchar);
+	} else if (ret.type == RPN_DOUBLE) {
+		printf("%f%c", ret.dbl, sep);
 	} else {
 		fprintf(stderr, "unknown type %d\n", ret.type);
 		exit(2);
@@ -216,6 +218,10 @@ main(int argc, char *argv[])
 	char **names = NULL;
 	unsigned show_flags = SHOW_DISABLED;
 	char *new_column = NULL;
+
+// TODO unicode/locale
+//	setlocale(LC_ALL, "");
+//	setlocale(LC_NUMERIC, "C");
 
 	Params.columns.col = NULL;
 	Params.columns.count = 0;

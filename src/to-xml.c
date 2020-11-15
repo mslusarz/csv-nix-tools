@@ -108,7 +108,11 @@ main(int argc, char *argv[])
 	bool print_header = true;
 	struct cb_params params;
 
-	const char *loc = setlocale(LC_ALL, "");
+	const char *locret = setlocale(LC_ALL, "");
+	/* setlocale value is valid only until next call */
+	char *loc = xstrdup_nofail(locret);
+
+	setlocale(LC_NUMERIC, "C");
 
 	params.generic_names = false;
 
@@ -195,6 +199,7 @@ main(int argc, char *argv[])
 
 	printf("<?xml version=\"1.0\"");
 
+	char *origloc = loc;
 	while (*loc != 0 && *loc != '.')
 		loc++;
 	if (*loc == '.')
@@ -205,6 +210,7 @@ main(int argc, char *argv[])
 			printf("%c", *loc++);
 		printf("\"");
 	}
+	free(origloc);
 
 	printf("?>\n");
 	printf("<root>\n");

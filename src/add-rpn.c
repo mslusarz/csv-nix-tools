@@ -50,6 +50,7 @@ usage(FILE *out)
 	fprintf(out, "\n");
 	fprintf(out, "Constants:\n");
 	fprintf(out, "  [-][1-9][0-9]*    decimal integer                 1, 1294, -89\n");
+	fprintf(out, "  [-][0-9]+.[0-9]*  floating point number           1.0, 12.94, -0.89\n");
 	fprintf(out, "  [-]0x[0-9a-fA-F]+ hexadecimal integer             0x1, 0x1A34, -0x8A\n");
 	fprintf(out, "  [-]0[0-9]+        octal integer                   01, 01234, -067\n");
 	fprintf(out, "  [-]0b[01]+        binary integer                  0b1, 0b1101, -0b10\n");
@@ -83,8 +84,16 @@ usage(FILE *out)
 	fprintf(out, "  strlen, length    string length                   %%str strlen, %%str length\n");
 	fprintf(out, "  concat            concatenation                   %%str1 %%str2 concat\n");
 	fprintf(out, "  like              match pattern                   %%str 'patt%%' like\n");
-	fprintf(out, "  tostring          convert to string               %%num %%base tostring\n");
-	fprintf(out, "  toint             convert to integer              %%str %%base toint\n");
+	fprintf(out, "  tostring          convert to string               %%num tostring\n");
+	fprintf(out, "  toint             convert to integer              %%str toint\n");
+	fprintf(out, "  int2str           convert integer to string       %%num int2str\n");
+	fprintf(out, "  int2strs          convert integer to string (base)%%num %%base int2strb\n");
+	fprintf(out, "  int2flt           convert integer to float        %%num int2flt\n");
+	fprintf(out, "  str2int           convert string to integer       %%str str2int\n");
+	fprintf(out, "  strb2int          convert string to integer (base)%%str %%base strb2int\n");
+	fprintf(out, "  str2flt           convert string to float         %%str str2flt\n");
+	fprintf(out, "  flt2int           convert float to integer        %%flt flt2int\n");
+	fprintf(out, "  flt2str           convert float to string         %%flt flt2str\n");
 	fprintf(out, "  replace           replace string                  %%str 'pat' 'repl' %%casesens replace\n");
 	fprintf(out, "  replace_bre       replace string using basic RE   %%str 'pat' 'bre' %%casesens replace_bre\n");
 	fprintf(out, "  replace_ere       replace string using ext. RE    %%str 'pat' 'ere' %%casesens replace_ere\n");
@@ -110,12 +119,14 @@ process_exp(struct rpn_expression *exp, const char *buf, const size_t *col_offs,
 	if (rpn_eval(exp, buf, col_offs, &ret))
 		exit(2);
 
-	if (ret.type == RPN_LLONG)
+	if (ret.type == RPN_LLONG) {
 		printf("%lld%c", ret.llong, sep);
-	else if (ret.type == RPN_PCHAR) {
+	} else if (ret.type == RPN_PCHAR) {
 		csv_print_quoted(ret.pchar, strlen(ret.pchar));
 		fputc(sep, stdout);
 		free(ret.pchar);
+	} else if (ret.type == RPN_DOUBLE) {
+		printf("%f%c", ret.dbl, sep);
 	} else {
 		fprintf(stderr, "unknown type %d\n", ret.type);
 		exit(2);
@@ -166,6 +177,10 @@ main(int argc, char *argv[])
 	struct cb_params params;
 	unsigned show_flags = SHOW_DISABLED;
 	char *new_column = NULL;
+
+// TODO unicode/locale
+//	setlocale(LC_ALL, "");
+//	setlocale(LC_NUMERIC, "C");
 
 	memset(&params, 0, sizeof(params));
 	params.table = NULL;
