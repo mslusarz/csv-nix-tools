@@ -112,57 +112,26 @@ rpn_parse(struct rpn_expression *exp, char *str,
 		} else if (isdigit(token[0])) {
 			tkn.type = RPN_CONSTANT;
 
-			if (token[0] == '0' && token[1] == 'b') {
-				/* 0b-0 is not a valid binary number */
-				if (token[2] == '-') {
-					fprintf(stderr,
-						"value '%s' is not an integer\n",
-						token);
-					goto fail;
-				}
-
-				token += 2;
-
-				tkn.constant.type = RPN_LLONG;
-				if (strtoll_safe(token, &tkn.constant.llong, 2))
+			if (index(token, '.') || index(token, 'e')) {
+				tkn.constant.type = RPN_DOUBLE;
+				if (strtod_safe(token, &tkn.constant.dbl))
 					goto fail;
 			} else {
-				if (index(token, '.') || index(token, 'e')) {
-					tkn.constant.type = RPN_DOUBLE;
-					if (strtod_safe(token, &tkn.constant.dbl))
-						goto fail;
-				} else {
-					tkn.constant.type = RPN_LLONG;
-					if (strtoll_safe(token, &tkn.constant.llong, 0))
-						goto fail;
-				}
+				tkn.constant.type = RPN_LLONG;
+				if (strtoll_safe(token, &tkn.constant.llong, 0))
+					goto fail;
 			}
 		} else if (token[0] == '-' && isdigit(token[1])) {
 			tkn.type = RPN_CONSTANT;
 
-			if (token[1] == '0' && token[2] == 'b') {
-				/* -0b-0 is not a valid binary number */
-				if (token[3] == '-') {
-					fprintf(stderr,
-						"value '%s' is not an integer\n",
-						token);
+			if (index(token, '.') || index(token, 'e')) {
+				tkn.constant.type = RPN_DOUBLE;
+				if (strtod_safe(token, &tkn.constant.dbl))
 					goto fail;
-				}
-
-				tkn.constant.type = RPN_LLONG;
-				if (strtoll_safe(token + 3, &tkn.constant.llong, 2))
-					goto fail;
-				tkn.constant.llong = -tkn.constant.llong;
 			} else {
-				if (index(token, '.') || index(token, 'e')) {
-					tkn.constant.type = RPN_DOUBLE;
-					if (strtod_safe(token, &tkn.constant.dbl))
-						goto fail;
-				} else {
-					tkn.constant.type = RPN_LLONG;
-					if (strtoll_safe(token, &tkn.constant.llong, 0))
-						goto fail;
-				}
+				tkn.constant.type = RPN_LLONG;
+				if (strtoll_safe(token, &tkn.constant.llong, 0))
+					goto fail;
 			}
 		} else if (token[0] == '\'' || token[0] == '"') {
 			tkn.type = RPN_CONSTANT;

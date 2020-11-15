@@ -856,13 +856,8 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 			val = stack[height - 1].dbl;
 		} else if (type1 == RPN_PCHAR) {
 			const char *str = stack[height - 1].pchar;
-			int base = 0;
-			if (str[0] == '0' && str[1] == 'b') {
-				str += 2;
-				base = 2;
-			}
 
-			if (strtoll_safe(str, &val, base) < 0)
+			if (strtoll_safe(str, &val, 0) < 0)
 				return -1;
 
 			free(stack[height - 1].pchar);
@@ -913,14 +908,6 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 		long long ret;
 		const char *str = stack[height - 1].pchar;
 		int base = (int)stack[height].llong;
-		if (str[0] == '0' && str[1] == 'b') {
-			if (base == 2) {
-				str += 2;
-			} else if (base == 0) {
-				str += 2;
-				base = 2;
-			}
-		}
 
 		if (strtoll_safe(str, &ret, base) < 0)
 			return -1;
@@ -945,13 +932,8 @@ eval_oper(enum rpn_operator oper, struct rpn_variant **pstack, size_t *pheight)
 	case RPN_STR2INT: {
 		long long ret;
 		const char *str = stack[height - 1].pchar;
-		int base = 0;
-		if (str[0] == '0' && str[1] == 'b') {
-			str += 2;
-			base = 2;
-		}
 
-		if (strtoll_safe(str, &ret, base) < 0)
+		if (strtoll_safe(str, &ret, 0) < 0)
 			return -1;
 
 		free(stack[height - 1].pchar);
