@@ -49,7 +49,9 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -C, --use-color-columns    use columns with _color suffix\n");
 	fprintf(out, "  -p, --spacing NUM          use NUM spaces between columns instead of 3\n");
-	fprintf(out, "  -u, --ui TYPE              choose UI TYPE: ncurses, less, none\n");
+	fprintf(out, "  -u, --ui TYPE              choose UI TYPE: ncurses, less, none, auto\n");
+	fprintf(out, "  -s                         short for -u none\n");
+	fprintf(out, "  -S                         short for -u auto\n");
 	fprintf(out, "      --no-header            remove column headers\n");
 	fprintf(out, "      --set-color COLNAME:[fg=]COLOR1[,bg=COLOR2]\n");
 	fprintf(out, "                             set COLOR1 as foreground and COLOR2 as\n");
@@ -185,7 +187,7 @@ main(int argc, char *argv[])
 		NCURSES,
 		LESS,
 		NONE
-	} ui = GUESS;
+	} ui = NONE;
 
 	size_t spacing = DEFAULT_SPACING;
 
@@ -208,7 +210,7 @@ main(int argc, char *argv[])
 	size_t set_colorpair_num = 0;
 	bool use_color_columns = false;
 
-	while ((opt = getopt_long(argc, argv, "Cu:p:", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "Cu:p:sS", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'D':
 				params.logfd = open(optarg,
@@ -228,6 +230,8 @@ main(int argc, char *argv[])
 					ui = LESS;
 				else if (strcmp(optarg, "none") == 0)
 					ui = NONE;
+				else if (strcmp(optarg, "auto") == 0)
+					ui = GUESS;
 				else {
 					fprintf(stderr, "Invalid value for --ui option\n");
 					usage(stderr);
@@ -237,6 +241,12 @@ main(int argc, char *argv[])
 			case 'p':
 				if (strtoul_safe(optarg, &spacing, 0))
 					exit(2);
+				break;
+			case 's':
+				ui = NONE;
+				break;
+			case 'S':
+				ui = GUESS;
 				break;
 			case 't':
 				print_types = true;

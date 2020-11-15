@@ -52,6 +52,12 @@ There are 3 backends: **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3
 :   use UI based on **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3x.html)**(3),
 **[less](http://man7.org/linux/man-pages/man1/less.1.html)**(1), or nothing(tm)
 
+-s
+:   short for \--ui none
+
+-S
+:   short for \--ui auto
+
 \--no-header
 :   remove column headers
 
