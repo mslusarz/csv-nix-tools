@@ -31,6 +31,9 @@ void csv_print_line_reordered(FILE *out, const char *buf,
 		const size_t *col_offs, size_t ncols, bool nl,
 		const size_t *idx);
 
+int strtoll_safe2(const char *str, long long *val, int base, bool verbose);
+int strtod_safe2(const char *str, double *val, bool verbose);
+
 int strtoll_safe(const char *str, long long *val, int base);
 int strtoull_safe(const char *str, unsigned long long *val, int base);
 int strtol_safe(const char *str, long *val, int base);

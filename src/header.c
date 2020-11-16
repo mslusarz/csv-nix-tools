@@ -39,8 +39,7 @@ usage(FILE *out)
 "                             set type of column NAME1 to TYPE1, etc.\n");
 	fprintf(out,
 "  -G, --guess-types          add types to columns by guessing based on their\n"
-"                             contents\n"
-"                             (NOT IMPLEMENTED YET)\n");
+"                             contents\n");
 	fprintf(out, "  -m, --remove               remove column header\n");
 	fprintf(out,
 "  -M, --remove-types         remove types from columns\n");
@@ -52,16 +51,84 @@ usage(FILE *out)
 	describe_version(out);
 }
 
+struct line {
+	char *buf;
+	size_t *col_offs;
+};
+
 struct cb_params {
+	bool guess_types;
+	struct line *lines;
+	size_t size;
+	size_t used;
+	enum data_type *types;
 };
 
 static int
 next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 {
-	UNUSED(arg);
-//	struct cb_params *params = arg;
+	struct cb_params *params = arg;
 
-	csv_print_line(stdout, buf, col_offs, ncols, true);
+	if (!params->guess_types) {
+		csv_print_line(stdout, buf, col_offs, ncols, true);
+
+		return 0;
+	}
+
+	for (size_t i = 0; i < ncols; ++i) {
+		if (params->types[i] == TYPE_STRING)
+			continue;
+
+		const char *data = &buf[col_offs[i]];
+
+		if (params->types[i] == TYPE_INT) {
+			long long val;
+			if (strtoll_safe2(data, &val, 0, false) == 0)
+				continue;
+			params->types[i] = TYPE_FLOAT;
+		}
+
+		if (params->types[i] == TYPE_FLOAT) {
+			double val;
+			if (strtod_safe2(data, &val, false) == 0)
+				continue;
+			params->types[i] = TYPE_STRING;
+		}
+	}
+
+	if (params->used == params->size) {
+		if (params->size == 0)
+			params->size = 16;
+		else
+			params->size *= 2;
+
+		struct line *newlines = xrealloc(params->lines,
+				params->size, sizeof(params->lines[0]));
+		if (!newlines)
+			return -1;
+
+		params->lines = newlines;
+	}
+
+	struct line *line = &params->lines[params->used];
+
+	size_t len = col_offs[ncols - 1] +
+			strlen(buf + col_offs[ncols - 1]) + 1;
+
+	line->buf = xmalloc(len, 1);
+	if (!line->buf)
+		return -1;
+
+	size_t col_offs_size = ncols * sizeof(col_offs[0]);
+	line->col_offs = xmalloc(col_offs_size, 1);
+	if (!line->col_offs) {
+		free(line->buf);
+		return -1;
+	}
+
+	memcpy(line->buf, buf, len);
+	memcpy(line->col_offs, col_offs, col_offs_size);
+	params->used++;
 
 	return 0;
 }
@@ -83,6 +150,10 @@ main(int argc, char *argv[])
 
 	struct column_change *changes = NULL;
 	size_t nchanges = 0;
+	params.guess_types = false;
+	params.lines = NULL;
+	params.size = 0;
+	params.used = 0;
 
 	while ((opt = getopt_long(argc, argv, "e:GmMn:sS", opts, NULL)) != -1) {
 		switch (opt) {
@@ -127,8 +198,9 @@ main(int argc, char *argv[])
 
 				break;
 			}
-//			case 'G': /* guess-types */
-//				break;
+			case 'G': /* guess-types */
+				params.guess_types = true;
+				break;
 			case 'm': /* remove */
 				print_header = false;
 				break;
@@ -173,7 +245,19 @@ main(int argc, char *argv[])
 
 	if (show_flags && !print_header) {
 		fprintf(stderr,
-			"--remove and --show can't be used at the same time\n");
+			"--remove and --show can't be used together\n");
+		exit(2);
+	}
+
+	if (params.guess_types && !print_header) {
+		fprintf(stderr,
+			"--remove and --guess-types can't be used together\n");
+		exit(2);
+	}
+
+	if (params.guess_types && !print_types) {
+		fprintf(stderr,
+			"--remove-types and --guess-types can't be used together\n");
 		exit(2);
 	}
 
@@ -185,6 +269,46 @@ main(int argc, char *argv[])
 
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);
+
+	if (params.guess_types) {
+		params.types = xmalloc_nofail(nheaders, sizeof(params.types[0]));
+		for (size_t i = 0; i < nheaders; ++i)
+			params.types[i] = TYPE_INT;
+
+		if (csv_read_all(s, &next_row, &params) < 0)
+			exit(2);
+
+		for (size_t i = 0; i < nheaders; ++i) {
+			bool found = false;
+			struct column_change *ch = NULL;
+
+			for (size_t j = 0; j < nchanges; ++j) {
+				ch = &changes[j];
+				if (strcmp(ch->name, headers[i].name) != 0)
+					continue;
+				found = true;
+
+				break;
+			}
+
+			if (!found) {
+				changes = xrealloc_nofail(changes, nchanges + 1, sizeof(changes[0]));
+				ch = &changes[nchanges++];
+
+				ch->name = xstrdup_nofail(headers[i].name);
+				ch->new_name = NULL;
+			}
+
+			if (params.types[i] == TYPE_INT)
+				ch->new_type = xstrdup_nofail("int");
+			else if (params.types[i] == TYPE_FLOAT)
+				ch->new_type = xstrdup_nofail("float");
+			else if (params.types[i] == TYPE_STRING)
+				ch->new_type = xstrdup_nofail("string");
+			else
+				abort();
+		}
+	}
 
 	if (print_header) {
 		for (size_t i = 0; i < nheaders; ++i) {
@@ -225,8 +349,21 @@ main(int argc, char *argv[])
 		}
 	}
 
-	if (csv_read_all(s, &next_row, &params) < 0)
-		exit(2);
+	if (params.guess_types) {
+		for (size_t i = 0; i < params.used; ++i) {
+			struct line *line = &params.lines[i];
+			csv_print_line(stdout, line->buf, line->col_offs, nheaders, true);
+
+			free(line->buf);
+			free(line->col_offs);
+		}
+
+		free(params.lines);
+		free(params.types);
+	} else {
+		if (csv_read_all(s, &next_row, &params) < 0)
+			exit(2);
+	}
 
 	csv_destroy_ctx(s);
 

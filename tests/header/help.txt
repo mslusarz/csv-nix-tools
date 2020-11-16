@@ -7,7 +7,6 @@ Options:
                              set type of column NAME1 to TYPE1, etc.
   -G, --guess-types          add types to columns by guessing based on their
                              contents
-                             (NOT IMPLEMENTED YET)
   -m, --remove               remove column header
   -M, --remove-types         remove types from columns
   -n, --rename NAME,NEW-NAME rename column NAME to NEW-NAME

@@ -110,7 +110,7 @@ csv_str_replace(const char *str, const char *pattern, const char *replacement,
 }
 
 int
-strtoll_safe(const char *str, long long *val, int base)
+strtoll_safe2(const char *str, long long *val, int base, bool verbose)
 {
 	const char *origstr = str;
 	char *end;
@@ -134,29 +134,37 @@ strtoll_safe(const char *str, long long *val, int base)
 	long long llval = strtoll(str, &end, base);
 
 	if (llval == LLONG_MIN && errno) {
-		fprintf(stderr,
-			"value '%s' is too small to be held in %ld-bit signed integer\n",
-			origstr, 8 * sizeof(llval));
+		if (verbose) {
+			fprintf(stderr,
+				"value '%s' is too small to be held in %ld-bit signed integer\n",
+				origstr, 8 * sizeof(llval));
+		}
 		return -1;
 	}
 
 	if (llval == LLONG_MAX && errno) {
-		fprintf(stderr,
-			"value '%s' is too big to be held in %ld-bit signed integer\n",
-			origstr, 8 * sizeof(llval));
+		if (verbose) {
+			fprintf(stderr,
+				"value '%s' is too big to be held in %ld-bit signed integer\n",
+				origstr, 8 * sizeof(llval));
+		}
 		return -1;
 	}
 
 	if (*end) {
-		fprintf(stderr,
-			"value '%s' is not an integer\n", origstr);
+		if (verbose) {
+			fprintf(stderr,
+				"value '%s' is not an integer\n", origstr);
+		}
 		return -1;
 	}
 
 	if (neg) {
 		if (llval <= 0) {
-			fprintf(stderr,
-				"value '%s' is not an integer\n", origstr);
+			if (verbose) {
+				fprintf(stderr,
+					"value '%s' is not an integer\n", origstr);
+			}
 			return -1;
 		}
 		llval = -llval;
@@ -164,6 +172,12 @@ strtoll_safe(const char *str, long long *val, int base)
 
 	*val = llval;
 	return 0;
+}
+
+int
+strtoll_safe(const char *str, long long *val, int base)
+{
+	return strtoll_safe2(str, val, base, true);
 }
 
 int
@@ -295,7 +309,7 @@ strtou_safe(const char *str, unsigned *val, int base)
 }
 
 int
-strtod_safe(const char *str, double *val)
+strtod_safe2(const char *str, double *val, bool verbose)
 {
 	char *end;
 
@@ -303,28 +317,40 @@ strtod_safe(const char *str, double *val)
 	double dbl = strtod(str, &end);
 
 	if (dbl == 0 && errno) {
-		/* should we just assume 0? */
-		fprintf(stderr,
-			"value '%s' caused a double underflow (%s)\n",
-			str, strerror(errno));
+		if (verbose) {
+			/* should we just assume 0? */
+			fprintf(stderr,
+				"value '%s' caused a double underflow (%s)\n",
+				str, strerror(errno));
+		}
 		return -1;
 	}
 
 	if ((dbl == HUGE_VAL || dbl == -HUGE_VAL) && errno) {
-		fprintf(stderr,
-			"value '%s' caused a double overflow (%s)\n",
-			str, strerror(errno));
+		if (verbose) {
+			fprintf(stderr,
+				"value '%s' caused a double overflow (%s)\n",
+				str, strerror(errno));
+		}
 		return -1;
 	}
 
 	if (*end) {
-		fprintf(stderr,
-			"value '%s' is not a double value\n", str);
+		if (verbose) {
+			fprintf(stderr,
+				"value '%s' is not a double value\n", str);
+		}
 		return -1;
 	}
 
 	*val = dbl;
 	return 0;
+}
+
+int
+strtod_safe(const char *str, double *val)
+{
+	return strtod_safe2(str, val, true);
 }
 
 char *

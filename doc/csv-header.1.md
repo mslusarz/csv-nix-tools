@@ -25,7 +25,7 @@ the column header transformed.
 :   set type of column *NAME1* to *TYPE1*, type of column *NAME2* to *TYPE2*, etc.
 
 -G, \--guess-types
-:   (NOT IMPLEMENTED YET) add types to columns by guessing based on their contents
+:   add types to columns by guessing based on their contents
 
 -M, \--remove-types
 :   remove types from columns
