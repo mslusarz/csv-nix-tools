@@ -43,11 +43,17 @@
 <p><strong>less</strong> backend supports everything the command <strong>less</strong>(1) supports.</p>
 <p><strong>none</strong> backend simply prints everything to standard output.</p>
 <dl>
-<dt>-s, --spacing <em>NUM</em></dt>
+<dt>-p, --spacing <em>NUM</em></dt>
 <dd>use <em>NUM</em> spaces between columns instead of 3
 </dd>
 <dt>-u, --ui <em>curses</em>/<em>less</em>/<em>none</em></dt>
 <dd>use UI based on <strong><a href="http://man7.org/linux/man-pages/man3/ncurses.3x.html">ncurses</a></strong>(3), <strong><a href="http://man7.org/linux/man-pages/man1/less.1.html">less</a></strong>(1), or nothing(tm)
+</dd>
+<dt>-s</dt>
+<dd>short for --ui none
+</dd>
+<dt>-S</dt>
+<dd>short for --ui auto
 </dd>
 <dt>--no-header</dt>
 <dd>remove column headers
