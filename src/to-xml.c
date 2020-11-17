@@ -110,7 +110,9 @@ main(int argc, char *argv[])
 
 	const char *locret = setlocale(LC_ALL, "");
 	/* setlocale value is valid only until next call */
-	char *loc = xstrdup_nofail(locret);
+	char *loc = NULL;
+	if (locret)
+		loc = xstrdup_nofail(locret);
 
 	setlocale(LC_NUMERIC, "C");
 
@@ -199,18 +201,20 @@ main(int argc, char *argv[])
 
 	printf("<?xml version=\"1.0\"");
 
-	char *origloc = loc;
-	while (*loc != 0 && *loc != '.')
-		loc++;
-	if (*loc == '.')
-		loc++;
-	if (*loc) {
-		printf(" encoding=\"");
-		while (*loc != 0 && *loc != '@')
-			printf("%c", *loc++);
-		printf("\"");
+	if (loc) {
+		char *origloc = loc;
+		while (*loc != 0 && *loc != '.')
+			loc++;
+		if (*loc == '.')
+			loc++;
+		if (*loc) {
+			printf(" encoding=\"");
+			while (*loc != 0 && *loc != '@')
+				printf("%c", *loc++);
+			printf("\"");
+		}
+		free(origloc);
 	}
-	free(origloc);
 
 	printf("?>\n");
 	printf("<root>\n");
