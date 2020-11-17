@@ -139,7 +139,7 @@ inet_data_attr_cb(const struct nlattr *attr, void *data)
 	int type = mnl_attr_get_type(attr);
 
 	if (mnl_attr_type_valid(attr, INET_DIAG_MAX) < 0) {
-		fprintf(stderr, "unknown attribute %hu\n", attr->nla_type);
+//		fprintf(stderr, "unknown attribute %hu\n", attr->nla_type);
 		return MNL_CB_OK;
 	}
 
@@ -399,7 +399,7 @@ unix_data_attr_cb(const struct nlattr *attr, void *data)
 	int type = mnl_attr_get_type(attr);
 
 	if (mnl_attr_type_valid(attr, UNIX_DIAG_MAX) < 0) {
-		fprintf(stderr, "unknown attribute %hu\n", attr->nla_type);
+//		fprintf(stderr, "unknown attribute %hu\n", attr->nla_type);
 		return MNL_CB_OK;
 	}
 
