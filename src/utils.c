@@ -229,19 +229,23 @@ strtol_safe(const char *str, long *val, int base)
 	if (strtoll_safe(str, &l, base))
 		return -1;
 
+#if LONG_MIN != LLONG_MIN
 	if (l < LONG_MIN) {
 		fprintf(stderr,
 			"value '%s' is too big to be held in %ld-bit signed integer\n",
 			str, 8 * sizeof(*val));
 		return -1;
 	}
+#endif
 
+#if LONG_MAX != LLONG_MAX
 	if (l > LONG_MAX) {
 		fprintf(stderr,
 			"value '%s' is too big to be held in %ld-bit signed integer\n",
 			str, 8 * sizeof(*val));
 		return -1;
 	}
+#endif
 
 	*val = (long)l;
 	return 0;
@@ -254,12 +258,14 @@ strtoul_safe(const char *str, unsigned long *val, int base)
 	if (strtoull_safe(str, &l, base))
 		return -1;
 
+#if ULONG_MAX != ULLONG_MAX
 	if (l > ULONG_MAX) {
 		fprintf(stderr,
 			"value '%s' is too big to be held in %ld-bit unsigned integer\n",
 			str, 8 * sizeof(*val));
 		return -1;
 	}
+#endif
 
 	*val = (unsigned long)l;
 	return 0;
