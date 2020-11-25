@@ -51,16 +51,9 @@ usage(FILE *out)
 	describe_version(out);
 }
 
-struct line {
-	char *buf;
-	size_t *col_offs;
-};
-
 struct cb_params {
 	bool guess_types;
-	struct line *lines;
-	size_t size;
-	size_t used;
+	struct lines lines;
 	enum data_type *types;
 };
 
@@ -96,41 +89,7 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 		}
 	}
 
-	if (params->used == params->size) {
-		if (params->size == 0)
-			params->size = 16;
-		else
-			params->size *= 2;
-
-		struct line *newlines = xrealloc(params->lines,
-				params->size, sizeof(params->lines[0]));
-		if (!newlines)
-			return -1;
-
-		params->lines = newlines;
-	}
-
-	struct line *line = &params->lines[params->used];
-
-	size_t len = col_offs[ncols - 1] +
-			strlen(buf + col_offs[ncols - 1]) + 1;
-
-	line->buf = xmalloc(len, 1);
-	if (!line->buf)
-		return -1;
-
-	size_t col_offs_size = ncols * sizeof(col_offs[0]);
-	line->col_offs = xmalloc(col_offs_size, 1);
-	if (!line->col_offs) {
-		free(line->buf);
-		return -1;
-	}
-
-	memcpy(line->buf, buf, len);
-	memcpy(line->col_offs, col_offs, col_offs_size);
-	params->used++;
-
-	return 0;
+	return lines_add(&params->lines, buf, col_offs, ncols);
 }
 
 int
@@ -151,9 +110,8 @@ main(int argc, char *argv[])
 	struct column_change *changes = NULL;
 	size_t nchanges = 0;
 	params.guess_types = false;
-	params.lines = NULL;
-	params.size = 0;
-	params.used = 0;
+
+	lines_init(&params.lines);
 
 	while ((opt = getopt_long(argc, argv, "e:GmMn:sS", opts, NULL)) != -1) {
 		switch (opt) {
@@ -350,15 +308,15 @@ main(int argc, char *argv[])
 	}
 
 	if (params.guess_types) {
-		for (size_t i = 0; i < params.used; ++i) {
-			struct line *line = &params.lines[i];
+		struct lines *lines = &params.lines;
+		for (size_t i = 0; i < lines->used; ++i) {
+			struct line *line = &lines->data[i];
 			csv_print_line(stdout, line->buf, line->col_offs, nheaders, true);
 
-			free(line->buf);
-			free(line->col_offs);
+			lines_free_one(line);
 		}
+		lines_fini(lines);
 
-		free(params.lines);
 		free(params.types);
 	} else {
 		if (csv_read_all(s, &next_row, &params) < 0)

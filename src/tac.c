@@ -38,15 +38,8 @@ usage(FILE *out)
 	describe_version(out);
 }
 
-struct line {
-	char *buf;
-	size_t *col_offs;
-};
-
 struct cb_params {
-	struct line *lines;
-	size_t size;
-	size_t used;
+	struct lines lines;
 };
 
 static int
@@ -54,41 +47,7 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 {
 	struct cb_params *params = arg;
 
-	if (params->used == params->size) {
-		if (params->size == 0)
-			params->size = 16;
-		else
-			params->size *= 2;
-
-		struct line *newlines = xrealloc(params->lines,
-				params->size, sizeof(params->lines[0]));
-		if (!newlines)
-			return -1;
-
-		params->lines = newlines;
-	}
-
-	struct line *line = &params->lines[params->used];
-
-	size_t len = col_offs[ncols - 1] +
-			strlen(buf + col_offs[ncols - 1]) + 1;
-
-	line->buf = xmalloc(len, 1);
-	if (!line->buf)
-		return -1;
-
-	size_t col_offs_size = ncols * sizeof(col_offs[0]);
-	line->col_offs = xmalloc(col_offs_size, 1);
-	if (!line->col_offs) {
-		free(line->buf);
-		return -1;
-	}
-
-	memcpy(line->buf, buf, len);
-	memcpy(line->col_offs, col_offs, col_offs_size);
-	params->used++;
-
-	return 0;
+	return lines_add(&params->lines, buf, col_offs, ncols);
 }
 
 static int
@@ -232,19 +191,20 @@ main(int argc, char *argv[])
 		struct input *in = &inputs[i];
 		struct cb_params params;
 		memset(&params, 0, sizeof(params));
+		lines_init(&params.lines);
 
 		csv_read_all_nofail(in->s, &next_row, &params);
 
-		for (size_t j = params.used; j > 0; --j) {
+		struct lines *lines = &params.lines;
+		for (size_t j = lines->used; j > 0; --j) {
 			size_t k = j - 1;
-			print_row(params.lines[k].buf, params.lines[k].col_offs,
-					nheaders, in->idx);
-			free(params.lines[k].buf);
-			free(params.lines[k].col_offs);
+			struct line *line = &lines->data[k];
+			print_row(line->buf, line->col_offs, nheaders, in->idx);
+			lines_free_one(line);
 		}
 
 		csv_destroy_ctx(in->s);
-		free(params.lines);
+		lines_fini(&params.lines);
 		free(in->idx);
 		fclose(in->f);
 	}

@@ -259,4 +259,27 @@ void util_split_term(char *str, const char *sep,
 unsigned
 util_sprintf(char *str, const char *format, ...) __attribute__ ((format(printf, 2, 3)));
 
+struct line {
+	char *buf;
+	size_t *col_offs;
+	void *user;
+};
+
+struct lines {
+	struct line *data;
+	size_t size;
+	size_t used;
+};
+
+void lines_init(struct lines *lines);
+
+int lines_add(struct lines *lines,
+	      const char *buf,
+	      const size_t *col_offs,
+	      size_t ncols);
+
+void lines_free_one(struct line *line);
+
+void lines_fini(struct lines *lines);
+
 #endif

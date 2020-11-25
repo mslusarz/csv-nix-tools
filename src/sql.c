@@ -50,20 +50,12 @@ struct order_conditions {
 	size_t count;
 };
 
-struct line {
-	char *buf;
-	size_t *col_offs;
-	struct rpn_variant *order;
-};
-
 struct cb_params {
 	struct columns columns;
 	struct rpn_expression where;
 	struct order_conditions order_by;
 
-	struct line *lines;
-	size_t size;
-	size_t used;
+	struct lines lines;
 };
 
 static void
@@ -107,7 +99,6 @@ print_row(const struct columns *columns, const char *buf, const size_t *col_offs
 static int
 next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 {
-	UNUSED(ncols);
 	struct cb_params *params = arg;
 	struct rpn_variant ret;
 
@@ -123,54 +114,26 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 	}
 
 	if (params->order_by.count) {
-		if (params->used == params->size) {
-			if (params->size == 0)
-				params->size = 16;
-			else
-				params->size *= 2;
+		struct lines *lines = &params->lines;
+		int ret = lines_add(lines, buf, col_offs, ncols);
+		if (ret)
+			return ret;
+		struct line *line = &lines->data[lines->used - 1];
 
-			struct line *newlines = xrealloc(params->lines,
-					params->size, sizeof(params->lines[0]));
-			if (!newlines)
-				return -1;
-
-			params->lines = newlines;
-		}
-
-		struct line *line = &params->lines[params->used];
-
-		size_t len = col_offs[ncols - 1] +
-				strlen(buf + col_offs[ncols - 1]) + 1;
-
-		line->buf = xmalloc(len, 1);
-		if (!line->buf)
-			return -1;
-
-		size_t col_offs_size = ncols * sizeof(col_offs[0]);
-		line->col_offs = xmalloc(col_offs_size, 1);
-		if (!line->col_offs) {
-			free(line->buf);
+		struct rpn_variant *order = line->user =
+			xmalloc(params->order_by.count, sizeof(struct rpn_variant));
+		if (!order) {
+			lines_free_one(line);
+			lines->used--;
 			return -1;
 		}
-
-		line->order = xmalloc(params->order_by.count, sizeof(line->order[0]));
-		if (!line->order) {
-			free(line->buf);
-			free(line->col_offs);
-			return -1;
-		}
-
-		memcpy(line->buf, buf, len);
-		memcpy(line->col_offs, col_offs, col_offs_size);
 
 		const struct rpn_expression *exp;
 		for (size_t i = 0; i < params->order_by.count; ++i) {
 			exp = &params->order_by.cond[i].expr;
-			if (rpn_eval(exp, buf, col_offs, &line->order[i]))
+			if (rpn_eval(exp, buf, col_offs, &order[i]))
 				exit(2);
 		}
-
-		params->used++;
 
 		return 0;
 	}
@@ -318,8 +281,7 @@ print_column_header(size_t i, char sep)
 }
 
 struct sort_params {
-	const struct line *lines;
-	size_t nlines;
+	const struct lines *lines;
 
 	const struct order_conditions *order_by;
 };
@@ -331,14 +293,16 @@ cmp(const void *p1, const void *p2, void *arg)
 	size_t idx1 = *(const size_t *)p1;
 	size_t idx2 = *(const size_t *)p2;
 
-	const struct line *line1 = &params->lines[idx1];
-	const struct line *line2 = &params->lines[idx2];
+	const struct line *line1 = &params->lines->data[idx1];
+	const struct line *line2 = &params->lines->data[idx2];
 
 	for (size_t i = 0; i < params->order_by->count; ++i) {
 		bool asc = params->order_by->cond[i].asc;
+		const struct rpn_variant *order1 = line1->user;
+		const struct rpn_variant *order2 = line2->user;
 
-		const struct rpn_variant *v1 = &line1->order[i];
-		const struct rpn_variant *v2 = &line2->order[i];
+		const struct rpn_variant *v1 = &order1[i];
+		const struct rpn_variant *v2 = &order2[i];
 
 		assert(v1->type == v2->type);
 		bool less;
@@ -404,6 +368,8 @@ main(int argc, char *argv[])
 
 	csv_show(show_flags);
 
+	lines_init(&Params.lines);
+
 	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
 
 	csv_read_header_nofail(s);
@@ -435,21 +401,21 @@ main(int argc, char *argv[])
 
 	csv_read_all_nofail(s, &next_row, &Params);
 
+	struct lines *lines = &Params.lines;
 	if (Params.order_by.count) {
 		struct sort_params sort_params;
-		sort_params.lines = Params.lines;
-		sort_params.nlines = Params.used;
+		sort_params.lines = lines;
 		sort_params.order_by = &Params.order_by;
 
-		size_t *row_idx = xmalloc_nofail(Params.used, sizeof(row_idx[0]));
+		size_t *row_idx = xmalloc_nofail(lines->used, sizeof(row_idx[0]));
 
-		for (size_t i = 0; i < Params.used; ++i)
+		for (size_t i = 0; i < lines->used; ++i)
 			row_idx[i] = i;
 
-		csv_qsort_r(row_idx, Params.used, sizeof(row_idx[0]), cmp, &sort_params);
+		csv_qsort_r(row_idx, lines->used, sizeof(row_idx[0]), cmp, &sort_params);
 
-		for (size_t i = 0; i < Params.used; ++i) {
-			struct line *line = &Params.lines[row_idx[i]];
+		for (size_t i = 0; i < lines->used; ++i) {
+			struct line *line = &lines->data[row_idx[i]];
 			print_row(&Params.columns, line->buf, line->col_offs);
 		}
 
@@ -459,20 +425,22 @@ main(int argc, char *argv[])
 	csv_destroy_ctx(s);
 
 	if (Params.order_by.count) {
-		for (size_t i = 0; i < Params.used; ++i) {
-			struct line *line = &Params.lines[i];
-			free(line->buf);
-			free(line->col_offs);
+		for (size_t i = 0; i < lines->used; ++i) {
+			struct line *line = &lines->data[i];
+			struct rpn_variant *order = line->user;
+
 			for (size_t j = 0; j < Params.order_by.count; ++j)
-				if (line->order[j].type == RPN_PCHAR)
-					free(line->order[j].pchar);
-			free(line->order);
+				if (order[j].type == RPN_PCHAR)
+					free(order[j].pchar);
+			free(order);
+
+			lines_free_one(line);
 		}
 
 		for (size_t i = 0; i < Params.order_by.count; ++i)
 			rpn_free(&Params.order_by.cond[i].expr);
 		free(Params.order_by.cond);
-		free(Params.lines);
+		lines_fini(&Params.lines);
 	}
 
 	for (size_t i = 0; i < columns->count; ++i) {

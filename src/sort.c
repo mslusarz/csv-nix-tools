@@ -46,15 +46,8 @@ usage(FILE *out)
 	describe_version(out);
 }
 
-struct line {
-	char *buf;
-	size_t *col_offs;
-};
-
 struct cb_params {
-	struct line *lines;
-	size_t size;
-	size_t used;
+	struct lines lines;
 
 	size_t table_column;
 	char *table;
@@ -74,41 +67,7 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 		}
 	}
 
-	if (params->used == params->size) {
-		if (params->size == 0)
-			params->size = 16;
-		else
-			params->size *= 2;
-
-		struct line *newlines = xrealloc(params->lines,
-				params->size, sizeof(params->lines[0]));
-		if (!newlines)
-			return -1;
-
-		params->lines = newlines;
-	}
-
-	struct line *line = &params->lines[params->used];
-
-	size_t len = col_offs[ncols - 1] +
-			strlen(buf + col_offs[ncols - 1]) + 1;
-
-	line->buf = xmalloc(len, 1);
-	if (!line->buf)
-		return -1;
-
-	size_t col_offs_size = ncols * sizeof(col_offs[0]);
-	line->col_offs = xmalloc(col_offs_size, 1);
-	if (!line->col_offs) {
-		free(line->buf);
-		return -1;
-	}
-
-	memcpy(line->buf, buf, len);
-	memcpy(line->col_offs, col_offs, col_offs_size);
-	params->used++;
-
-	return 0;
+	return lines_add(&params->lines, buf, col_offs, ncols);
 }
 
 struct sort_params {
@@ -117,8 +76,7 @@ struct sort_params {
 	size_t *columns;
 	size_t ncolumns;
 
-	struct line *lines;
-	size_t nlines;
+	struct lines *lines;
 };
 
 int
@@ -128,7 +86,7 @@ cmp(const void *p1, const void *p2, void *arg)
 	size_t idx1 = *(const size_t *)p1;
 	size_t idx2 = *(const size_t *)p2;
 	const struct col_header *headers = params->headers;
-	struct line *lines = params->lines;
+	struct line *lines = params->lines->data;
 
 	for (size_t i = 0; i < params->ncolumns; ++i) {
 		size_t col = params->columns[i];
@@ -187,8 +145,7 @@ print_line(struct line *line, size_t ncols)
 {
 	csv_print_line(stdout, line->buf, line->col_offs, ncols, true);
 
-	free(line->buf);
-	free(line->col_offs);
+	lines_free_one(line);
 }
 
 int
@@ -197,9 +154,6 @@ main(int argc, char *argv[])
 	int opt;
 	struct cb_params params;
 	bool reverse = false;
-	params.lines = NULL;
-	params.size = 0;
-	params.used = 0;
 	char *cols = NULL;
 	struct sort_params sort_params;
 	unsigned show_flags = SHOW_DISABLED;
@@ -208,6 +162,7 @@ main(int argc, char *argv[])
 	sort_params.ncolumns = 0;
 	params.table = NULL;
 	params.table_column = SIZE_MAX;
+	lines_init(&params.lines);
 
 	while ((opt = getopt_long(argc, argv, "c:rsST:", opts, NULL)) != -1) {
 		switch (opt) {
@@ -287,26 +242,27 @@ main(int argc, char *argv[])
 
 	csv_read_all_nofail(s, &next_row, &params);
 
-	size_t *row_idx = xmalloc_nofail(params.used, sizeof(row_idx[0]));
+	struct lines *lines = &params.lines;
+	size_t *row_idx = xmalloc_nofail(lines->used, sizeof(row_idx[0]));
 
-	for (size_t i = 0; i < params.used; ++i)
+	for (size_t i = 0; i < lines->used; ++i)
 		row_idx[i] = i;
 
 	sort_params.headers = headers;
-	sort_params.lines = params.lines;
-	sort_params.nlines = params.used;
-	csv_qsort_r(row_idx, params.used, sizeof(row_idx[0]), cmp, &sort_params);
+	sort_params.lines = &params.lines;
+	csv_qsort_r(row_idx, lines->used, sizeof(row_idx[0]), cmp, &sort_params);
 
+	struct line *line = params.lines.data;
 	if (reverse) {
-		for (size_t i = params.used; i > 0; --i)
-			print_line(&params.lines[row_idx[i - 1]], nheaders);
+		for (size_t i = lines->used; i > 0; --i)
+			print_line(&line[row_idx[i - 1]], nheaders);
 	} else {
-		for (size_t i = 0; i < params.used; ++i)
-			print_line(&params.lines[row_idx[i]], nheaders);
+		for (size_t i = 0; i < lines->used; ++i)
+			print_line(&line[row_idx[i]], nheaders);
 	}
 
 	free(row_idx);
-	free(params.lines);
+	lines_fini(&params.lines);
 	free(params.table);
 	free(sort_params.columns);
 

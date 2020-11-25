@@ -1050,3 +1050,64 @@ describe_version(FILE *out)
 {
 	fprintf(out, "      --version              output version information and exit\n");
 }
+
+void
+lines_init(struct lines *lines)
+{
+	lines->data = NULL;
+	lines->size = 0;
+	lines->used = 0;
+}
+
+int
+lines_add(struct lines *lines, const char *buf, const size_t *col_offs,
+	  size_t ncols)
+{
+	if (lines->used == lines->size) {
+		if (lines->size == 0)
+			lines->size = 16;
+		else
+			lines->size *= 2;
+
+		struct line *newlines =
+			xrealloc(lines->data, lines->size, sizeof(struct line));
+		if (!newlines)
+			return -1;
+
+		lines->data = newlines;
+	}
+
+	struct line *line = &lines->data[lines->used];
+
+	size_t len = col_offs[ncols - 1] + strlen(buf + col_offs[ncols - 1]) + 1;
+
+	line->buf = xmalloc(len, 1);
+	if (!line->buf)
+		return -1;
+
+	size_t col_offs_size = ncols * sizeof(col_offs[0]);
+	line->col_offs = xmalloc(col_offs_size, 1);
+	if (!line->col_offs) {
+		free(line->buf);
+		return -1;
+	}
+
+	memcpy(line->buf, buf, len);
+	memcpy(line->col_offs, col_offs, col_offs_size);
+	lines->used++;
+
+	return 0;
+}
+
+void
+lines_free_one(struct line *line)
+{
+	free(line->buf);
+	free(line->col_offs);
+}
+
+void
+lines_fini(struct lines *lines)
+{
+	free(lines->data);
+}
