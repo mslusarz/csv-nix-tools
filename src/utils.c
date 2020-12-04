@@ -627,7 +627,9 @@ csv_show(unsigned flags)
 			show[idx++] = "--use-color-columns";
 
 		if (flags & SHOW_SIMPLE)
-			show[idx++] = "--ui=none";
+			show[idx++] = "-s";
+		else if (flags & SHOW_FULL)
+			show[idx++] = "-S";
 
 		show[idx++] = NULL;
 
