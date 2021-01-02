@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -142,7 +142,7 @@ first_value(void *arg)
 long long
 next(char *name)
 {
-	if (!Seq && csv_ht_init(&Seq, free))
+	if (!Seq && csv_ht_init(&Seq, free, 0))
 		exit(2);
 
 	long long *v = csv_ht_get_value(Seq, name, first_value, NULL);

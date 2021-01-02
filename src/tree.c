@@ -238,12 +238,8 @@ main(int argc, char *argv[])
 	char *sum = NULL;
 	char *new_sum_name = NULL;
 	char *parent = NULL;
-	struct csv_ht *ht = NULL;
 
 	lines_init(&params.lines);
-
-	if (csv_ht_init(&ht, destroy_line_info))
-		exit(2);
 
 	while ((opt = getopt_long(argc, argv, "i:k:m:p:sS", opts, NULL)) != -1) {
 		switch (opt) {
@@ -350,6 +346,10 @@ main(int argc, char *argv[])
 
 	struct line_info **line_infos;
 	line_infos = xmalloc_nofail(lines->used, sizeof(line_infos[0]));
+
+	struct csv_ht *ht = NULL;
+	if (csv_ht_init(&ht, destroy_line_info, lines->used))
+		exit(2);
 
 	for (size_t i = 0; i < lines->used; ++i) {
 		struct line *line = &lines->data[i];

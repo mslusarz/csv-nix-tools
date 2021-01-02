@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <search.h>
@@ -26,15 +26,18 @@ struct csv_ht {
 };
 
 int
-csv_ht_init(struct csv_ht **htp, void (*destroy_value)(void *))
+csv_ht_init(struct csv_ht **htp, void (*destroy_value)(void *),
+		size_t initial_size)
 {
 	struct csv_ht *ht;
 	ht = *htp = xmalloc(1, sizeof(*ht));
 	if (!ht)
 		return 2;
 
-	ht->keys_max = 4;
-	ht->table_size = 4;
+	if (initial_size == 0)
+		initial_size = 4;
+	ht->keys_max = initial_size;
+	ht->table_size = initial_size;
 	ht->ht = NULL;
 	ht->inserted = 0;
 	ht->destroy_value = destroy_value;

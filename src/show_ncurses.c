@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <curses.h>
@@ -376,11 +376,11 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 		start_color();
 		use_default_colors();
 
-		if (csv_ht_init(&params->color_pairs, NULL)) {
+		if (csv_ht_init(&params->color_pairs, NULL, 0)) {
 			endwin();
 			exit(2);
 		}
-		if (csv_ht_init(&params->colors, free)) {
+		if (csv_ht_init(&params->colors, free, 0)) {
 			endwin();
 			exit(2);
 		}

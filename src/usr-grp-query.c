@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <stdlib.h>
@@ -77,10 +77,10 @@ destroy_value(void *v)
 int
 usr_grp_query_init(void)
 {
-	if (csv_ht_init(&users_ht, &destroy_value))
+	if (csv_ht_init(&users_ht, &destroy_value, 0))
 		return 2;
 
-	if (csv_ht_init(&groups_ht, &destroy_value)) {
+	if (csv_ht_init(&groups_ht, &destroy_value, 0)) {
 		csv_ht_destroy(&users_ht);
 		return 2;
 	}
