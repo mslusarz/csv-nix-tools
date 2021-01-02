@@ -41,8 +41,10 @@ See **csv-tables-tut**(7) for introduction into tables support in csv-nix-tools.
 - **csv-group-members**(1) - list system groups and users that belong to them
 - **csv-groups**(1) - list system groups
 - **csv-ls**(1) - list files
+- **csv-lstree**(1) - list files in hierachical manner (wrapper around **csv-ls**(1) and **csv-tree**(1))
 - **csv-netstat**(1) - list network connections
 - **csv-ps**(1) - list processes
+- **csv-pstree**(1) - list processes in hierachical manner (wrapper around **csv-ps**(1) and **csv-tree**(1))
 - **csv-users**(1) - list system users
 
 # PROCESSING TOOLS #

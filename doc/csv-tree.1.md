@@ -55,4 +55,4 @@ back data with hierarchical information.
 
 # SEE ALSO #
 
-**csv-nix-tools**(7)
+**csv-lstree**(1), **csv-pstree**(1), **csv-nix-tools**(7)

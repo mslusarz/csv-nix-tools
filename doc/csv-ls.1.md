@@ -18,7 +18,7 @@ csv-ls - list files in CSV format
 
 # DESCRIPTION #
 
-List information about the FILEs (the current directory by default).
+List information about FILEs (current directory by default).
 Sort entries alphabetically if -U is not specified.
 
 -a, \--all

@@ -1,0 +1,25 @@
+#!/bin/bash -e
+
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright 2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+
+set -o pipefail
+
+show=
+OPTIND=1
+
+while getopts "sS" opt; do
+    case "$opt" in
+    s)  show=-s
+        ;;
+    S)  show=-S
+        ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+
+csv-ps -c pid,ppid,command,vm_rss_KiB "$@" | \
+	csv-tree --key pid --parent ppid --indent command --sum vm_rss_KiB | \
+	csv-cut -c pid,vm_rss_KiB,command $show

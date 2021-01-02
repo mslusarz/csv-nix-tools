@@ -151,6 +151,12 @@ build_tool(csv-users		src/users.c src/usr-grp.c src/merge_utils.c)
 target_link_libraries(csv-add-rpn	csvrpn m)
 target_link_libraries(csv-grep-rpn	csvrpn m)
 
+install(FILES ${CMAKE_SOURCE_DIR}/src/csv-lstree
+	DESTINATION ${CMAKE_INSTALL_BINDIR}
+	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+			GROUP_READ GROUP_EXECUTE
+			WORLD_READ WORLD_EXECUTE)
+
 if (C11THREADS_FOUND)
 	build_tool(csv-diff		src/diff.c)
 	target_link_libraries(csv-diff ${CMAKE_THREAD_LIBS_INIT})
@@ -264,6 +270,12 @@ if(LIBPROCPS_FOUND)
 	endif()
 
 	target_link_libraries(csv-ps ${LIBPROCPS_LIBRARIES})
+
+	install(FILES ${CMAKE_SOURCE_DIR}/src/csv-pstree
+		DESTINATION ${CMAKE_INSTALL_BINDIR}
+		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+				GROUP_READ GROUP_EXECUTE
+				WORLD_READ WORLD_EXECUTE)
 endif()
 
 if(LIBMNL_FOUND)
@@ -360,6 +372,7 @@ endif()
 	gen1_doc(head)
 	gen1_doc(header)
 	gen1_doc(ls)
+	gen1_doc(lstree)
 	gen1_doc(max)
 	gen1_doc(merge)
 	gen1_doc(min)
@@ -369,6 +382,7 @@ endif()
 	gen1_doc(plot)
 if(LIBPROCPS_FOUND)
 	gen1_doc(ps)
+	gen1_doc(pstree)
 endif()
 	gen1_doc(show)
 	gen1_doc(sort)
