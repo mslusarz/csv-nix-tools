@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 /*
@@ -892,6 +892,10 @@ main(int argc, char *argv[])
 				perror("close");
 			continue;
 		}
+
+		size_t alen = strlen(argv[i]);
+		if (alen > 1 && argv[i][alen - 1] == '/')
+			argv[i][alen - 1] = 0;
 
 		if (S_ISDIR(buf.st_mode) && !dir) {
 			ret |= list(argv[i], fd, recursive, all, sort, columns,
