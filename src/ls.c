@@ -463,12 +463,16 @@ print_full_path(const void *p)
 				csv_requires_quoting(f->path, path_len)) {
 			size_t len = dirpath_len + 1 + path_len;
 			char *buf = xmalloc_nofail(len + 1, 1);
-			sprintf(buf, "%s/%s", f->dirpath, f->path);
+			if (strcmp(f->dirpath, "/") != 0)
+				sprintf(buf, "%s/%s", f->dirpath, f->path);
+			else
+				sprintf(buf, "/%s", f->path);
 			csv_print_quoted(buf, len);
 			free(buf);
 		} else {
 			fwrite(f->dirpath, 1, dirpath_len, stdout);
-			fputc('/', stdout);
+			if (strcmp(f->dirpath, "/") != 0)
+				fputc('/', stdout);
 			fwrite(f->path, 1, path_len, stdout);
 		}
 	} else {
