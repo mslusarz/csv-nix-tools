@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: BSD-3-Clause
-Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
 -->
 
 ---
@@ -74,6 +74,7 @@ See **csv-tables-tut**(7) for introduction into tables support in csv-nix-tools.
 - **csv-sum**(1) - take a sum of numerical or string column(s)
 - **csv-tac**(1) - concatenate CSV files and print on the standard output in reverse
 - **csv-tail**(1) - print on the standard output the end of a CSV file from standard input
+- **csv-tree**(1) - process hierarchical data
 - **csv-uniq**(1) - merge adjacent duplicate rows
 
 # SINK TOOLS #

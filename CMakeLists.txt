@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 cmake_minimum_required(VERSION 3.3)
@@ -144,6 +144,7 @@ build_tool(csv-tail		src/tail.c)
 build_tool(csv-to-html		src/to-html.c)
 build_tool(csv-to-json		src/to-json.c)
 build_tool(csv-to-xml		src/to-xml.c)
+build_tool(csv-tree		src/tree.c)
 build_tool(csv-uniq		src/uniq.c)
 build_tool(csv-users		src/users.c src/usr-grp.c src/merge_utils.c)
 
@@ -383,6 +384,7 @@ endif()
 	gen1_doc(to-html)
 	gen1_doc(to-json)
 	gen1_doc(to-xml)
+	gen1_doc(tree)
 	gen1_doc(uniq)
 	gen1_doc(users)
 endif()
