@@ -100,8 +100,8 @@ if(COVERAGE)
        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage")
 endif()
 
-add_library(csvshared STATIC src/parse.c src/ht_posix.c src/ht_glibc.c src/utils.c src/utils_glibc.c)
-add_library(csvrpn STATIC src/rpn_eval.c src/rpn_parse.c src/regex_cache.c src/ht_posix.c src/ht_glibc.c)
+add_library(csvshared STATIC src/parse.c src/ht.c src/utils.c src/utils_glibc.c)
+add_library(csvrpn STATIC src/rpn_eval.c src/rpn_parse.c src/regex_cache.c src/ht.c)
 
 function(build_tool name)
 	add_executable(${name} ${ARGN})
