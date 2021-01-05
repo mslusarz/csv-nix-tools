@@ -137,8 +137,10 @@ See [TODO](TODO.md)
 [csv-groups]:        https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-groups.1.html
 [csv-group-members]: https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-group-members.1.html
 [csv-ls]:            https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-ls.1.html
+[csv-lstree]:        https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-lstree.1.html
 [csv-netstat]:       https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-netstat.1.html
 [csv-ps]:            https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-ps.1.html
+[csv-pstree]:        https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-pstree.1.html
 [csv-users]:         https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-users.1.html
 
 [csv-add-concat]:    https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-add-concat.1.html
@@ -168,6 +170,7 @@ See [TODO](TODO.md)
 [csv-sum]:           https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-sum.1.html
 [csv-tac]:           https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-tac.1.html
 [csv-tail]:          https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-tail.1.html
+[csv-tree]:          https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-tree.1.html
 [csv-uniq]:          https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-uniq.1.html
 
 [csv-exec]:          https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-exec.1.html
