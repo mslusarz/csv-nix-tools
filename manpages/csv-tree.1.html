@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>csv-tree</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">csv-tree</h1>
+</header>
+<h1 id="name">NAME</h1>
+<p>csv-tree - process hierarchical CSV data</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-tree</strong> [OPTION]…</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>Read CSV stream from standard input, build hierarchical structure and print back data with hierarchical information.</p>
+<dl>
+<dt>-i, --indent=<em>NAME</em>[,<em>NEW-NAME</em>]</dt>
+<dd>indent data from column <em>NAME</em> and put it in a new column <em>NEW-NAME</em>, if <em>NEW-NAME</em> is omitted column <em>NAME</em> is replaced
+</dd>
+<dt>-k, --key=<em>NAME</em></dt>
+<dd>use column <em>NAME</em> as a unique key identifying each row
+</dd>
+<dt>-p, --parent=<em>NAME</em></dt>
+<dd>use column <em>NAME</em> as a pointer to parent row
+</dd>
+<dt>-m, --sum=<em>NAME</em>[,<em>NEW-NAME</em>]</dt>
+<dd>sum data from column <em>NAME</em> and put it in a new column <em>NEW-NAME</em>, if <em>NEW-NAME</em> is omitted column <em>NAME</em> is replaced
+</dd>
+<dt>-s, --show</dt>
+<dd>print output in table format
+</dd>
+<dt>-S, --show-full</dt>
+<dd>print output in table format with pager
+</dd>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt><code>csv-ls -llR /usr/local | csv-tree -k full_path -p parent -i name -m size | csv-cut -c size,name -S</code></dt>
+<dd>recursively print files and directories from /usr/local in tree structure
+</dd>
+<dt><code>csv-ps | csv-tree -k pid -p ppid -i command -n vm_rss_KiB | csv-cut -c vm_rss_KiB,command -S</code></dt>
+<dd>print process tree with combined memory usage
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="csv-lstree.1.html">csv-lstree</a></strong>(1), <strong><a href="csv-pstree.1.html">csv-pstree</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>
