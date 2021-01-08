@@ -21,6 +21,9 @@ csv-tree - process hierarchical CSV data
 Read CSV stream from standard input, build hierarchical structure and print
 back data with hierarchical information.
 
+-f, \--filter=*KEY*
+:   print only the matching row and its descendants
+
 -i, \--indent=*NAME*[,*NEW-NAME*]
 :   indent data from column *NAME* and put it in a new column *NEW-NAME*, if *NEW-NAME* is omitted column *NAME* is replaced
 

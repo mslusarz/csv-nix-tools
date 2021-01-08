@@ -369,3 +369,15 @@ udp        ::                        5353   ::                  0               
 raw        ::                          58   ::                  0                    0           
 
 ```
+
+Kill process $PID and all its descendants:
+
+```
+$ csv-ps | csv-tree --key pid --parent ppid --filter $PID | csv-exec kill %pid
+```
+
+or:
+
+```
+$ csv-pstree -f $PID | csv-exec kill %pid
+```

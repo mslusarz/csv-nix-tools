@@ -5,11 +5,16 @@
 
 set -o pipefail
 
+filter=
+filteropt=
 show=
 OPTIND=1
 
-while getopts "sS" opt; do
+while getopts "f:sS" opt; do
     case "$opt" in
+    f)  filter=--filter
+        filteropt="$OPTARG"
+        ;;
     s)  show=-s
         ;;
     S)  show=-S
@@ -21,5 +26,5 @@ shift $((OPTIND-1))
 
 
 csv-ps -c pid,ppid,command,vm_rss_KiB "$@" | \
-	csv-tree --key pid --parent ppid --indent command --sum vm_rss_KiB | \
+	csv-tree --key pid --parent ppid --indent command --sum vm_rss_KiB $filter "$filteropt" | \
 	csv-cut -c pid,vm_rss_KiB,command $show

@@ -17,6 +17,7 @@
 #include "utils.h"
 
 static const struct option opts[] = {
+	{"filter",	required_argument,	NULL, 'f'},
 	{"indent",	required_argument,	NULL, 'i'},
 	{"key",		required_argument,	NULL, 'k'},
 	{"parent",	required_argument,	NULL, 'p'},
@@ -36,6 +37,8 @@ usage(FILE *out)
 "back data with hierarchical information\n");
 	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
+	fprintf(out,
+"  -f, --filter=KEY           print only the matching row and its descendants\n");
 	fprintf(out,
 "  -i, --indent=NAME[,NEW-NAME]\n"
 "                             indent data from column NAME and put it in a new\n"
@@ -69,6 +72,8 @@ struct line_info {
 
 	long long int isum;
 	double fsum;
+
+	bool filtered;
 };
 
 static void
@@ -189,40 +194,48 @@ aggregate(struct lines *lines, struct line_info *cur_row, size_t sum_col,
 }
 
 static void
-print(struct lines *lines, struct line_info *cur_row, size_t ncols, size_t lvl,
+process(struct lines *lines, struct line_info *cur_row, size_t ncols, size_t lvl,
 		size_t indent_col, bool indent_replace,
-		size_t sum_col, bool sum_replace, bool sum_is_int)
+		size_t sum_col, bool sum_replace, bool sum_is_int,
+		bool filter_set, bool print)
 {
 	struct line *line = &lines->data[cur_row->cur_idx];
+	if (filter_set && !print)
+		print = cur_row->filtered;
 
-	for (size_t i = 0; i < ncols - 1; ++i) {
-		print_col(cur_row, line, i, lvl, indent_col, indent_replace,
-				sum_col, sum_replace, sum_is_int);
-		putchar(',');
+	if (print) {
+		for (size_t i = 0; i < ncols - 1; ++i) {
+			print_col(cur_row, line, i, lvl, indent_col,
+					indent_replace, sum_col, sum_replace,
+					sum_is_int);
+			putchar(',');
+		}
+
+		print_col(cur_row, line, ncols - 1, lvl, indent_col,
+				indent_replace, sum_col, sum_replace,
+				sum_is_int);
+
+		if (!indent_replace && indent_col != CSV_NOT_FOUND) {
+			putchar(',');
+
+			indent_column(line, indent_col, lvl);
+		}
+		if (!sum_replace && sum_col != CSV_NOT_FOUND) {
+			putchar(',');
+
+			if (sum_is_int)
+				printf("%lld", cur_row->isum);
+			else
+				printf("%f", cur_row->fsum);
+		}
+		putchar('\n');
 	}
-
-	print_col(cur_row, line, ncols - 1, lvl, indent_col, indent_replace,
-			sum_col, sum_replace, sum_is_int);
-
-	if (!indent_replace && indent_col != CSV_NOT_FOUND) {
-		putchar(',');
-
-		indent_column(line, indent_col, lvl);
-	}
-	if (!sum_replace && sum_col != CSV_NOT_FOUND) {
-		putchar(',');
-
-		if (sum_is_int)
-			printf("%lld", cur_row->isum);
-		else
-			printf("%f", cur_row->fsum);
-	}
-	putchar('\n');
 
 	for (size_t j = 0; j < cur_row->nchildren; ++j) {
-		print(lines, cur_row->children_idx[j], ncols, lvl + 1,
+		process(lines, cur_row->children_idx[j], ncols, lvl + print,
 			indent_col, indent_replace,
-			sum_col, sum_replace, sum_is_int);
+			sum_col, sum_replace, sum_is_int,
+			filter_set, print);
 	}
 }
 
@@ -238,11 +251,16 @@ main(int argc, char *argv[])
 	char *sum = NULL;
 	char *new_sum_name = NULL;
 	char *parent = NULL;
+	char *filter = NULL;
 
 	lines_init(&params.lines);
 
-	while ((opt = getopt_long(argc, argv, "i:k:m:p:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "f:i:k:m:p:sS", opts, NULL)) != -1) {
 		switch (opt) {
+			case 'f':
+				free(filter);
+				filter = xstrdup_nofail(optarg);;
+				break;
 			case 'i':
 				free(indent);
 				indent = xstrdup_nofail(optarg);
@@ -351,17 +369,24 @@ main(int argc, char *argv[])
 	if (csv_ht_init(&ht, destroy_line_info, lines->used))
 		exit(2);
 
+	bool filter_found = false;
 	for (size_t i = 0; i < lines->used; ++i) {
 		struct line *line = &lines->data[i];
+		char *key = &line->buf[line->col_offs[key_col]];
 
 		struct line_info *cur_row = csv_ht_get_value(ht,
-				&line->buf[line->col_offs[key_col]],
+				key,
 				get_line_info_slow,
 				NULL);
 		struct line_info *parent = csv_ht_get_value(ht,
 				&line->buf[line->col_offs[parent_col]],
 				get_line_info_slow,
 				NULL);
+
+		if (filter && !filter_found && strcmp(key, filter) == 0) {
+			cur_row->filtered = true;
+			filter_found = true;
+		}
 
 		line_infos[i] = cur_row;
 
@@ -408,9 +433,10 @@ main(int argc, char *argv[])
 		if (sum)
 			aggregate(lines, cur_row, sum_col, sum_is_int);
 
-		print(lines, cur_row, nheaders, 0,
+		process(lines, cur_row, nheaders, 0,
 			indent_col, new_indent_name == indent,
-			sum_col, new_sum_name == sum, sum_is_int);
+			sum_col, new_sum_name == sum, sum_is_int,
+			filter != NULL, filter == NULL);
 	}
 
 	for (size_t i = 0; i < lines->used; ++i) {
@@ -428,6 +454,7 @@ main(int argc, char *argv[])
 	free(parent);
 	free(sum);
 	free(indent);
+	free(filter);
 
 	return 0;
 }

@@ -10,7 +10,7 @@ section: 1
 
 # NAME #
 
-csv-lstree - list files in hierachical manner
+csv-lstree - list files in hierarchical manner
 
 # SYNOPSIS #
 
@@ -20,13 +20,13 @@ csv-lstree - list files in hierachical manner
 
 Recursively list FILEs (starting from current directory by default).
 
--f, \--full-path
+-f
 :   add parent directory prefix to file names
 
--s, \--show
+-s
 :   print output in table format
 
--S, \--show-full
+-S
 :   print output in table format with pager
 
 # EXAMPLES #

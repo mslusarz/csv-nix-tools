@@ -10,7 +10,7 @@ section: 1
 
 # NAME #
 
-csv-pstree - list processes in hierachical manner
+csv-pstree - list processes in hierarchical manner
 
 # SYNOPSIS #
 
@@ -18,19 +18,24 @@ csv-pstree - list processes in hierachical manner
 
 # DESCRIPTION #
 
-List processes in hierachical manner.
+List processes in hierarchical manner.
 
--s, \--show
+-f *PID*
+:   print only process *PID* and its descendants
+
+-s
 :   print output in table format
 
--S, \--show-full
+-S
 :   print output in table format with pager
 
 # EXAMPLES #
 
-`csv-pstree`
-
 `csv-pstree -s`
+
+`csv-pstree -f 2 -s`
+
+`csv-pstree -f 1 | csv-exec kill %pid`
 
 # SEE ALSO #
 
