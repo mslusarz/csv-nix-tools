@@ -4,13 +4,6 @@
  * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
-/*
- * TODO:
- * - threads?
- * - figure out what to do with these columns:
- * 	wchan, tty, tpgid, exit_signal, *signals*, alarm, kstk*, flags
- */
-
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
