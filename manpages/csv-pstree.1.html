@@ -17,22 +17,26 @@
 <h1 class="title">csv-pstree</h1>
 </header>
 <h1 id="name">NAME</h1>
-<p>csv-pstree - list processes in hierachical manner</p>
+<p>csv-pstree - list processes in hierarchical manner</p>
 <h1 id="synopsis">SYNOPSIS</h1>
 <p><strong>csv-pstree</strong> [OPTION]… [FILE]…</p>
 <h1 id="description">DESCRIPTION</h1>
-<p>List processes in hierachical manner.</p>
+<p>List processes in hierarchical manner.</p>
 <dl>
-<dt>-s, --show</dt>
+<dt>-f <em>PID</em></dt>
+<dd>print only process <em>PID</em> and its descendants
+</dd>
+<dt>-s</dt>
 <dd>print output in table format
 </dd>
-<dt>-S, --show-full</dt>
+<dt>-S</dt>
 <dd>print output in table format with pager
 </dd>
 </dl>
 <h1 id="examples">EXAMPLES</h1>
-<p><code>csv-pstree</code></p>
 <p><code>csv-pstree -s</code></p>
+<p><code>csv-pstree -f 2 -s</code></p>
+<p><code>csv-pstree -f 1 | csv-exec kill %pid</code></p>
 <h1 id="see-also">SEE ALSO</h1>
 <p><strong><a href="csv-ps.1.html">csv-ps</a></strong>(1), <strong><a href="csv-tree.1.html">csv-tree</a></strong>(1), <strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
 </body>
