@@ -73,10 +73,10 @@ Source:
 - **[csv-groups]** - lists system groups
 - **[csv-group-members]** - lists system groups and users that belong to them
 - **[csv-ls]** - lists files
-- **[csv-lstree]** - list files in hierachical manner (wrapper around **[csv-ls]** and **[csv-tree]**)
+- **[csv-lstree]** - lists files in hierachical manner (wrapper around **[csv-ls]** and **[csv-tree]**)
 - **[csv-netstat]** - lists network connections
-- **[csv-ps]** - lists processes (WIP)
-- **[csv-pstree]** - list processes in hierachical manner (wrapper around **[csv-ps]** and **[csv-tree]**)
+- **[csv-ps]** - lists processes
+- **[csv-pstree]** - lists processes in hierachical manner (wrapper around **[csv-ps]** and **[csv-tree]**)
 - **[csv-users]** - lists system users
 
 Filtering/processing:
@@ -107,7 +107,7 @@ Filtering/processing:
 - **[csv-sum]** - takes a sum of numerical or string column(s)
 - **[csv-tac]** - concatenates files in reverse
 - **[csv-tail]** - outputs the last N rows
-- **[csv-tree]** - process hierarchical data
+- **[csv-tree]** - processes hierarchical data
 - **[csv-uniq]** - merges adjacent duplicate rows
 
 Sink:
