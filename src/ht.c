@@ -82,14 +82,15 @@ csv_ht_destroy(struct csv_ht **_ht)
 		struct kv *kv = &ht->kvs[i];
 
 		free(kv->key);
-		if (kv->value)
+		if (kv->value && ht->destroy_value)
 			ht->destroy_value(kv->value);
 
 		kv = kv->next;
 		while (kv) {
 			struct kv *next = kv->next;
 			free(kv->key);
-			ht->destroy_value(kv->value);
+			if (kv->value && ht->destroy_value)
+				ht->destroy_value(kv->value);
 			free(kv);
 			kv = next;
 		}
