@@ -1,0 +1,42 @@
+Notable changes:
+
+2021-01-08
+  - csv-tree: add --filter option
+
+2021-01-02
+  - new tool: csv-tree
+  - new tool: csv-lstree
+  - new tool: csv-pstree
+
+2020-11-16
+  - csv-header: implement --guess-types option
+  - add support for base 2 numbers everywhere
+
+2020-11-15
+  - support float data type
+
+2020-08-09
+  - csv-ls: colorful output with -S
+
+2020-08-08
+  - new tool: csv-to-html
+  - new tool: csv-to-xml
+  - new tool: csv-to-json
+
+2020-08-02
+  - new tool: csv-diff
+
+2020-07-14
+  - new tool: csv-plot
+
+2020-07-06
+  - csv-show: add support for colors
+
+2020-06-21
+  - csv-sql: implement ORDER BY clause
+
+2020-01-12
+  - add support for next, matches_ere, matches_bre, replace_ere, replace_bre operators in sql and rpn tools
+
+2020-01-11
+  - add support for replace operator in sql and rpn tools
