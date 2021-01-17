@@ -46,6 +46,8 @@
   - ps: supgid_names, cmdline, environ, cgroup, what about fds/fdinfo?
   - group-members: merge it with groups/users?
 - tool for generating dot scripts? (or other graphviz tools)
+- tool for transposing data?
+- tool for splitting files?
 
 ## Possible data sources
 - df/mountinfo
