@@ -357,6 +357,7 @@ add_file(FILE *f, size_t num, sqlite3 *db, bool load_tables)
 			if (build_queries(t->headers, t->nheaders, &t->create,
 					&t->insert, t->name))
 				exit(2);
+			free(t->headers);
 		}
 	} else {
 		struct table *t;
