@@ -436,11 +436,17 @@ add_file(FILE *f, size_t num, sqlite3 *db, bool load_tables)
 }
 
 static void
-print_col(sqlite3_stmt *select, size_t i)
+print_col(sqlite3_stmt *select, size_t i, bool table_prefix)
 {
 	const char *name = sqlite3_column_name(select, i);
 	int type = sqlite3_column_type(select, i);
 	const char *type_str = sqlite_type_to_csv_name(type);
+
+	if (table_prefix) {
+		const char *tname = sqlite3_column_table_name(select, i);
+		if (tname)
+			printf("%s_", tname);
+	}
 
 	if (type_str) {
 		printf("%s:%s", name, type_str);
@@ -605,13 +611,42 @@ main(int argc, char *argv[])
 	size_t cols = (size_t)cnt;
 	assert(cols >= 1);
 
+	const char **names = xmalloc_nofail(cols, sizeof(*names));
+	bool *table_prefix = xmalloc_nofail(cols, sizeof(*table_prefix));
+	for (size_t i = 0; i < cols; ++i) {
+		names[i] = sqlite3_column_name(select, i);
+		table_prefix[i] = false;
+	}
+
+	for (size_t i = 0; i < cols; ++i) {
+		if (table_prefix[i])
+			continue;
+
+		for (size_t j = 0; j < cols; ++j) {
+			if (i == j)
+				continue;
+
+			if (table_prefix[j])
+				continue;
+
+			if (strcmp(names[i], names[j]) != 0)
+				continue;
+
+			table_prefix[i] = true;
+			table_prefix[j] = true;
+		}
+	}
+	free(names);
+
 	for (size_t i = 0; i < cols - 1; ++i) {
-		print_col(select, i);
+		print_col(select, i, table_prefix[i]);
 		fputc(',', stdout);
 	}
 
-	print_col(select, cols - 1);
+	print_col(select, cols - 1, table_prefix[cols - 1]);
 	fputc('\n', stdout);
+
+	free(table_prefix);
 
 	while (ret == SQLITE_ROW) {
 		for (size_t i = 0; i < cols - 1; ++i) {
