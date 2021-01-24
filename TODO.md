@@ -31,6 +31,8 @@
 - cut: multiple input files
 - ps: threads?
 - ps: figure out what to do with these columns: wchan, tty, tpgid, exit_signal, \*signals\*, alarm, kstk\*, flags
+- grep: search on all columns
+- grep: -e by default
 
 ## Random ideas
 - arbitrary precision arithmetic (with libgmp?)
@@ -48,11 +50,17 @@
 - tool for generating dot scripts? (or other graphviz tools)
 - tool for transposing data?
 - tool for splitting files?
+- csv-printf
+- csv-add-printf?
+- csv-peek? (stdin->stdout, stdin->csv-show->stderr)
+- make csv type extension optional?
+- sqlite: loading files into tables without csv-merge
 
 ## Possible data sources
 - df/mountinfo
 - free
 - id
+- date
 - uname
 - w/who
 - fuser/lsof
@@ -66,11 +74,15 @@
 - lscpu
 - lshw
 - lsblk
+- lsgpu
+- lsmod/modinfo?
 - lsns
 - last
 - lspci -mm?
 - strace?
+- ltrace?
 - lsof -F
 - ss
+- sysctl?
 - dpkg -l
 - rpm -qa
