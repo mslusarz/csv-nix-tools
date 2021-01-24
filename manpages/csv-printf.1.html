@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>csv-printf</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">csv-printf</h1>
+</header>
+<h1 id="name">NAME</h1>
+<p>csv-printf - formats data using printf</p>
+<h1 id="synopsis">SYNOPSIS</h1>
+<p><strong>csv-printf</strong> [OPTION]… FORMAT [COLUMNS]…</p>
+<h1 id="description">DESCRIPTION</h1>
+<p>Read CSV stream from standard input and print back data using <strong>printf</strong>(3).</p>
+<dl>
+<dt>--help</dt>
+<dd>display this help and exit
+</dd>
+<dt>--version</dt>
+<dd>output version information and exit
+</dd>
+</dl>
+<h1 id="examples">EXAMPLES</h1>
+<dl>
+<dt><code>csv-ls -c dev,ino | csv-printf "0x%x/%d\n" dev ino</code></dt>
+<dd>prints device and inode number in specified format
+</dd>
+</dl>
+<h1 id="see-also">SEE ALSO</h1>
+<p><strong><a href="http://www.cplusplus.com/reference/cstdio/printf/">printf</a></strong>(3), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
+</body>
+</html>
