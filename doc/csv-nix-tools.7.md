@@ -70,6 +70,7 @@ See **csv-tables-tut**(7) for introduction into tables support in csv-nix-tools.
 - **csv-max**(1) - take a maximum value of numerical or string column(s)
 - **csv-merge**(1) - merge multiple CSV streams
 - **csv-min**(1) - take a minimum value of numerical or string column(s)
+- **csv-peek**(1) - peek at the CSV stream and pass it unmodified
 - **csv-sort**(1) - sort CSV file by column(s)
 - **csv-sql**(1) - process CSV input data using simplified SQL syntax
 - **csv-sqlite**(1) - process CSV input data using SQLite

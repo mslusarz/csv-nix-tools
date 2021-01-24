@@ -101,6 +101,7 @@ Filtering/processing:
 - **[csv-max]** - takes a maximum value of numerical or string column(s)
 - **[csv-merge]** - merges multiple input streams
 - **[csv-min]** - takes a minimum value of numerical or string column(s)
+- **[csv-peek]** - peek at the CSV stream and pass it unmodified
 - **[csv-sort]** - sorts input by column(s)
 - **[csv-sql]** - processes input data using simplified (but very fast) SQL-based syntax
 - **[csv-sqlite]** - processes input data using SQLite (requires loading the whole input before processing)
@@ -165,6 +166,7 @@ See [TODO](TODO.md)
 [csv-max]:           https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-max.1.html
 [csv-merge]:         https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-merge.1.html
 [csv-min]:           https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-min.1.html
+[csv-peek]:          https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-peek.1.html
 [csv-sort]:          https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-sort.1.html
 [csv-sql]:           https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-sql.1.html
 [csv-sqlite]:        https://marcin.slusarz.eu/csv-nix-tools/manpages/csv-sqlite.1.html

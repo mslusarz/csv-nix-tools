@@ -14,6 +14,7 @@
 - lstree: add tests
 - pstree: add tests
 - printf: add tests
+- peek: add tests
 - sum,count,min,max,avg: --group-by=col1,col2
 - uniq: --count
 - show: fix column width calc when input is in utf
@@ -52,7 +53,6 @@
 - tool for transposing data?
 - tool for splitting files?
 - csv-add-printf?
-- csv-peek? (stdin->stdout, stdin->csv-show->stderr)
 - make csv type extension optional?
 - sqlite: loading files into tables without csv-merge
 
