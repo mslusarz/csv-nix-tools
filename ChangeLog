@@ -1,5 +1,8 @@
 Notable changes:
 
+2021-01-24:
+  - new tool: csv-printf
+
 2021-01-08
   - csv-tree: add --filter option
 

@@ -13,6 +13,7 @@
 - tree: add tests
 - lstree: add tests
 - pstree: add tests
+- printf: add tests
 - sum,count,min,max,avg: --group-by=col1,col2
 - uniq: --count
 - show: fix column width calc when input is in utf
@@ -50,7 +51,6 @@
 - tool for generating dot scripts? (or other graphviz tools)
 - tool for transposing data?
 - tool for splitting files?
-- csv-printf
 - csv-add-printf?
 - csv-peek? (stdin->stdout, stdin->csv-show->stderr)
 - make csv type extension optional?

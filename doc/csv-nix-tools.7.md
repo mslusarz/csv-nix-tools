@@ -83,6 +83,7 @@ See **csv-tables-tut**(7) for introduction into tables support in csv-nix-tools.
 
 - **csv-exec**(1) - execute an external command for each row
 - **csv-plot**(1) - generate 2D or 3D graph using gnuplot
+- **csv-printf**(1) - formats data using **[printf](http://www.cplusplus.com/reference/cstdio/printf/)**(3)
 - **csv-show**(1) - print in human-readable format
 - **csv-to-html**(1) - print in HTML format
 - **csv-to-json**(1) - print in JSON format
