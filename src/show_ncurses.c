@@ -451,8 +451,12 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 #define STEP (COLS / 2)
 
 	size_t max_line = 0;
-	for (size_t i = 0; i < nheaders; ++i)
+	for (size_t i = 0; i < nheaders; ++i) {
+		if (is_color_column && is_color_column[i])
+			continue;
 		max_line += params->max_lengths[i] + spacing;
+	}
+
 	if (max_line >= INT_MAX) {
 		fprintf(stderr, "max line length exceeds %d\n", INT_MAX);
 		exit(2);
@@ -566,6 +570,9 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 			int new_off = 0;
 
 			for (size_t i = 0; i < nheaders; ++i) {
+				if (is_color_column && is_color_column[i])
+					continue;
+
 				size_t len = params->max_lengths[i] + spacing;
 
 				if (new_off + len >= xoff) {
@@ -583,11 +590,15 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 			int old_xoff = xoff;
 			int new_off = 0;
 
-			for (size_t i = 0; i < nheaders - 1; ++i) {
+			for (size_t i = 0; i < nheaders; ++i) {
+				if (is_color_column && is_color_column[i])
+					continue;
+
 				new_off += params->max_lengths[i] + spacing;
 
 				if (new_off > xoff) {
-					xoff = new_off;
+					if (new_off < max_line)
+						xoff = new_off;
 					break;
 				}
 			}
