@@ -1,4 +1,4 @@
-name:string
+name
 dir with spaces
 "dir,with,commas"
 dir.with.dots

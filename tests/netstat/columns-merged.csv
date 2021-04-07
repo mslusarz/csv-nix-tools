@@ -1,1 +1,1 @@
-_table:string,table1.name:string,table1.id:int,table1.something:int,socket.family:string,socket.inode:int,socket.state:string
+_table,table1.name:string,table1.id:int,table1.something:int,socket.family,socket.inode:int,socket.state

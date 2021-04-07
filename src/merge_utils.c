@@ -86,7 +86,7 @@ csvmu_print_header(struct csvmu_ctx *ctx, struct column_info *columns,
 {
 	char *prefix = NULL;
 	if (ctx->table) {
-		printf("%s:string,", TABLE_COLUMN);
+		printf("%s,", TABLE_COLUMN);
 
 		prefix = xmalloc_nofail(strlen(ctx->table) + 1 + 1, 1);
 		sprintf(prefix, "%s%c", ctx->table, TABLE_SEPARATOR);

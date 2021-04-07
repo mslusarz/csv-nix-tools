@@ -1,1 +1,1 @@
-_table:string,table1.name:string,table1.id:int,table1.something:int,user.name:string,user.uid:int,user.gid:int,user.dir:string,user.shell:string
+_table,table1.name:string,table1.id:int,table1.something:int,user.name,user.uid:int,user.gid:int,user.dir,user.shell

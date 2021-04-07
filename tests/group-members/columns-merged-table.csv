@@ -1,1 +1,1 @@
-_table:string,table1.name:string,table1.id:int,table1.something:int,meh.group_name:string,meh.user_name:string
+_table,table1.name:string,table1.id:int,table1.something:int,meh.group_name,meh.user_name

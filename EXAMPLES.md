@@ -2,7 +2,7 @@ List of files in `doc` directory:
 
 ```
 $ csv-ls doc
-name:string
+name
 csv-cat.1.md
 csv-head.1.md
 csv-nix-tools.7.md
@@ -15,7 +15,7 @@ Extended information about files in `doc` directory:
 
 ```
 $ csv-ls -l doc
-type_mode:string,nlink:int,owner_name:string,group_name:string,size:int,mtime:string,name:string,symlink:string
+type_mode,nlink:int,owner_name,group_name,size:int,mtime,name,symlink
 -rwxr-xr-x ,1,marcin,marcin,773,2019-12-23 01:24:58.478029642,csv-cat.1.md,
 -rwxr-xr-x ,1,marcin,marcin,721,2019-12-23 02:15:21.074174728,csv-head.1.md,
 -rwxr-xr-x ,1,marcin,marcin,1673,2019-12-23 02:16:07.494064188,csv-nix-tools.7.md,
@@ -42,7 +42,7 @@ Extended^3 information about files in `doc` directory:
 
 ```
 $ csv-ls -lll doc
-type_mode:string,nlink:int,owner_name:string,group_name:string,size:int,mtime:string,name:string,symlink:string,parent:string,type:int,type_name:string,mode:int,owner_read:int,owner_write:int,owner_execute:int,group_read:int,group_write:int,group_execute:int,other_read:int,other_write:int,other_execute:int,setuid:int,setgid:int,sticky:int,owner_id:int,group_id:int,ctime:string,atime:string,full_path:string,mtime_sec:int,mtime_nsec:int,ctime_sec:int,ctime_nsec:int,atime_sec:int,atime_nsec:int,dev:int,ino:int,rdev:int,blksize:int,blocks:int
+type_mode,nlink:int,owner_name,group_name,size:int,mtime,name,symlink,parent,type:int,type_name,mode:int,owner_read:int,owner_write:int,owner_execute:int,group_read:int,group_write:int,group_execute:int,other_read:int,other_write:int,other_execute:int,setuid:int,setgid:int,sticky:int,owner_id:int,group_id:int,ctime,atime,full_path,mtime_sec:int,mtime_nsec:int,ctime_sec:int,ctime_nsec:int,atime_sec:int,atime_nsec:int,dev:int,ino:int,rdev:int,blksize:int,blocks:int
 -rwxr-xr-x ,1,marcin,marcin,773,2019-12-23 01:24:58.478029642,csv-cat.1.md,,doc,0100000,reg,0644,1,1,0,1,0,0,1,0,0,0,0,0,1000,1000,2019-12-23 01:24:58.478029642,2019-12-29 20:13:34.710830508,doc/csv-cat.1.md,1577060698,478029642,1577060698,478029642,1577646814,710830508,0x801,16122673,0,4096,8
 -rwxr-xr-x ,1,marcin,marcin,721,2019-12-23 02:15:21.074174728,csv-head.1.md,,doc,0100000,reg,0644,1,1,0,1,0,0,1,0,0,0,0,0,1000,1000,2019-12-23 02:15:21.074174728,2019-12-29 20:13:34.710830508,doc/csv-head.1.md,1577063721,74174728,1577063721,74174728,1577646814,710830508,0x801,16122671,0,4096,8
 -rwxr-xr-x ,1,marcin,marcin,1673,2019-12-23 02:16:07.494064188,csv-nix-tools.7.md,,doc,0100000,reg,0644,1,1,0,1,0,0,1,0,0,0,0,0,1000,1000,2019-12-23 02:16:07.494064188,2019-12-29 20:13:34.710830508,doc/csv-nix-tools.7.md,1577063767,494064188,1577063767,494064188,1577646814,710830508,0x801,16125292,0,4096,8
@@ -55,7 +55,7 @@ All Makefiles in the current directory and below:
 
 ```
 $ csv-ls -c size,parent,name -R . | csv-grep -c name -x -F Makefile
-size:int,parent:string,name:string
+size:int,parent,name
 55358,./build,Makefile
 6345,./build/tests,Makefile
 ```
@@ -64,7 +64,7 @@ Files and their sizes sorted by size and name, in descending order:
 
 ```
 $ csv-ls -c size,name | csv-sort -r -c size,name
-size:int,name:string
+size:int,name
 14660,ls.c
 7238,sort.c
 6297,parse.c
@@ -114,7 +114,7 @@ sum(size):int
 
 ```
 $ csv-ls -c size,name . | csv-sort -r -c size | csv-head -n 4
-size:int,name:string
+size:int,name
 14660,ls.c
 7238,sort.c
 6297,parse.c
@@ -127,7 +127,7 @@ List of files, split name into base and extension:
 
 ```
 $ csv-ls -c size,name | csv-add-split -c name -e . -n base,ext -r
-size:int,name:string,base:string,ext:string
+size:int,name,base,ext
 123,file1,file1,
 456,file2.ext,file2,ext
 789,file3.ext.in,file3.ext,in
@@ -165,7 +165,7 @@ List of files whose 2nd character is 'o':
 
 ```
 $ csv-ls | csv-grep -c name -e '^.o'
-name:string
+name
 concat.c
 sort.c
 ```
@@ -223,7 +223,7 @@ List of files whose size is between 2000 and 3000 bytes (from the slowest to the
 
 ```
 $ csv-ls -c size,name | csv-sqlite "select size, name from input where size > 2000 and size < 3000"
-size:int,name:string
+size:int,name
 2204,parse.h
 ```
 

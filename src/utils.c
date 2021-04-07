@@ -994,17 +994,25 @@ static const char *output_types_str[] = {
 	"float[]",
 };
 
+static void
+print_header_with_prefix(const struct column_info *column, const char *prefix, char sep)
+{
+	if (column->type == TYPE_STRING) {
+		printf("%s%s%c", prefix, column->name, sep);
+	} else {
+		const char *type = output_types_str[column->type];
+		printf("%s%s:%s%c", prefix, column->name, type, sep);
+	}
+}
+
 void
 csvci_print_header_with_prefix(struct column_info *columns,
 		size_t ncolumns, const char *prefix)
 {
-	for (size_t i = 0; i < ncolumns - 1; ++i) {
-		printf("%s%s:%s,", prefix, columns[i].name,
-				output_types_str[columns[i].type]);
-	}
+	for (size_t i = 0; i < ncolumns - 1; ++i)
+		print_header_with_prefix(&columns[i], prefix, ',');
 
-	printf("%s%s:%s\n", prefix, columns[ncolumns - 1].name,
-			output_types_str[columns[ncolumns - 1].type]);
+	print_header_with_prefix(&columns[ncolumns - 1], prefix, '\n');
 }
 
 void
