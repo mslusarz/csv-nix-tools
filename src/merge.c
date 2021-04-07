@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -128,6 +128,7 @@ add_nameless_input(const char *table, FILE *f)
 
 		h->name = name;
 		h->type = xstrdup_nofail(headers_cur[i].type);
+		h->had_type = headers_cur[i].had_type;
 	}
 
 	Inputs = xrealloc_nofail(Inputs, Ninputs + 1, sizeof(Inputs[0]));
@@ -170,6 +171,7 @@ add_input(FILE *f)
 
 		nh->name = xstrdup_nofail(h->name);
 		nh->type = xstrdup_nofail(h->type);
+		nh->had_type = h->had_type;
 
 		size_t idx = csv_find(Headers, Nheaders + out_idx, h->name);
 		if (idx != CSV_NOT_FOUND) {
@@ -278,7 +280,7 @@ main(int argc, char *argv[])
 
 	printf("%s:string,", TABLE_COLUMN);
 
-	csv_print_header(stdout, Headers, Nheaders);
+	csv_print_headers(stdout, Headers, Nheaders);
 
 	for (size_t i = 0; i < Ninputs; ++i) {
 		struct input *in = &Inputs[i];

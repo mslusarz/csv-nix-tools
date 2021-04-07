@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <getopt.h>
@@ -269,6 +269,15 @@ main(int argc, char *argv[])
 	}
 
 	if (print_header) {
+		bool any_str_column_had_type = false;
+		for (size_t i = 0; i < nheaders; ++i) {
+			if (headers[i].had_type &&
+					strcmp(headers[i].type, "string") == 0) {
+				any_str_column_had_type = true;
+				break;
+			}
+		}
+
 		for (size_t i = 0; i < nheaders; ++i) {
 			bool found = false;
 			for (size_t j = 0; j < nchanges; ++j) {
@@ -283,10 +292,13 @@ main(int argc, char *argv[])
 					printf("%s", ch->name);
 
 				if (print_types) {
-					if (ch->new_type)
-						printf(":%s", ch->new_type);
-					else
+					if (ch->new_type) {
+						if (any_str_column_had_type ||
+							strcmp(ch->new_type, "string") != 0)
+							printf(":%s", ch->new_type);
+					} else if (headers[i].had_type) {
 						printf(":%s", headers[i].type);
+					}
 				}
 
 				found = true;
@@ -296,7 +308,7 @@ main(int argc, char *argv[])
 			if (!found) {
 				printf("%s", headers[i].name);
 
-				if (print_types)
+				if (print_types && headers[i].had_type)
 					printf(":%s", headers[i].type);
 			}
 

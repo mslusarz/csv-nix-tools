@@ -1,4 +1,4 @@
-input:int,x:string,y1:string,y2:string
+input:int,x,y1,y2
 1,0,5,-2
 2,0,15,-12
 1,5,20,-12

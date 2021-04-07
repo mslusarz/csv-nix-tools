@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <getopt.h>
@@ -175,12 +175,23 @@ main(int argc, char *argv[])
 	free(input_col);
 	input_col = NULL;
 
-	for (size_t i = 0; i < nheaders; ++i)
-		printf("%s:%s,", headers[i].name, headers[i].type);
+	bool any_str_column_had_type = false;
+	for (size_t i = 0; i < nheaders; ++i) {
+		csv_print_header(stdout, &headers[i], ',');
+
+		if (any_str_column_had_type)
+			continue;
+
+		if (headers[i].had_type && strcmp(headers[i].type, "string") == 0)
+			any_str_column_had_type = true;
+	}
 
 	if (params.table)
 		printf("%s.", params.table);
-	printf("%s:string\n", new_name);
+	if (any_str_column_had_type)
+		printf("%s:string\n", new_name);
+	else
+		printf("%s\n", new_name);
 
 	free(new_name);
 	new_name = NULL;

@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -201,12 +201,13 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 }
 
 static void
-describe_column(struct column *column, char sep)
+describe_column(struct column *column, char sep, bool any_str_column_had_type)
 {
-	printf("%s:%s%c",
-			column->name,
-			rpn_expression_type(&column->expr, Headers),
-			sep);
+	const char *type = rpn_expression_type(&column->expr, Headers);
+	if (any_str_column_had_type || strcmp(type, "string") != 0)
+		printf("%s:%s%c", column->name, type, sep);
+	else
+		printf("%s%c", column->name, sep);
 }
 
 int
@@ -316,13 +317,21 @@ main(int argc, char *argv[])
 	free(expressions);
 	free(names);
 
-	for (size_t i = 0; i < Nheaders; ++i)
-		printf("%s:%s,", Headers[i].name, Headers[i].type);
+	bool any_str_column_had_type = false;
+	for (size_t i = 0; i < Nheaders; ++i) {
+		csv_print_header(stdout, &Headers[i], ',');
+
+		if (any_str_column_had_type)
+			continue;
+
+		if (Headers[i].had_type && strcmp(Headers[i].type, "string") == 0)
+			any_str_column_had_type = true;
+	}
 
 	struct columns *columns = &Params.columns;
 	for (size_t i = 0; i < columns->count - 1; ++i)
-		describe_column(&columns->col[i], ',');
-	describe_column(&columns->col[columns->count - 1], '\n');
+		describe_column(&columns->col[i], ',', any_str_column_had_type);
+	describe_column(&columns->col[columns->count - 1], '\n', any_str_column_had_type);
 
 	csv_read_all_nofail(s, &next_row, &Params);
 

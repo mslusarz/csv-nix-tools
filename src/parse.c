@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <errno.h>
@@ -58,7 +58,8 @@ static int
 add_header(struct csv_ctx *ctx, char *start)
 {
 	char *type = strchr(start, ':');
-	if (type)
+	bool had_type = type != NULL;
+	if (had_type)
 		*type++ = 0;
 	else
 		type = "string";
@@ -83,6 +84,7 @@ add_header(struct csv_ctx *ctx, char *start)
 
 	ctx->headers[ctx->nheaders].name = start;
 	ctx->headers[ctx->nheaders].type = type;
+	ctx->headers[ctx->nheaders].had_type = had_type;
 	ctx->nheaders++;
 
 	return 0;

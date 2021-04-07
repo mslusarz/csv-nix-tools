@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -185,7 +185,7 @@ main(int argc, char *argv[])
 		}
 	}
 
-	csv_print_header(stdout, headers, nheaders);
+	csv_print_headers(stdout, headers, nheaders);
 
 	for (size_t i = 0; i < ninputs; ++i) {
 		struct input *in = &inputs[i];

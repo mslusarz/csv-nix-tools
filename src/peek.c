@@ -172,8 +172,8 @@ main(int argc, char *argv[])
 	else
 		params.side = stderr;
 
-	csv_print_header(stdout, headers, nheaders);
-	csv_print_header(params.side, headers, nheaders);
+	csv_print_headers(stdout, headers, nheaders);
+	csv_print_headers(params.side, headers, nheaders);
 
 	if (csv_read_all(s, &next_row, &params) < 0)
 		exit(2);

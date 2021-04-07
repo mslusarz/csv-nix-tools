@@ -1,4 +1,4 @@
-num1:int,num2:int,desc_num1:string
+num1:int,num2:int,desc_num1
 0,0,zero
 0,1,zero
 1,0,one

@@ -1,4 +1,4 @@
-col1:string,col2:int,col3:float,col4:string
+col1,col2:int,col3:float,col4
 1,2,3,4
 aaa,22,33.0,44.0
 bbb,222,333.3,ccc

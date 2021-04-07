@@ -1,12 +1,13 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #ifndef CSV_PARSE_H
 #define CSV_PARSE_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 
@@ -15,6 +16,7 @@ struct csv_ctx;
 struct col_header {
 	const char *name;
 	const char *type;
+	bool had_type;
 };
 
 struct csv_ctx *csv_create_ctx(FILE *in, FILE *err);

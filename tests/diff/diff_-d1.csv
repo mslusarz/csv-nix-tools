@@ -1,4 +1,4 @@
-input:int,x:string,y1:string,y2:string,x_diff:int,y1_diff:int,y2_diff:int
+input:int,x,y1,y2,x_diff:int,y1_diff:int,y2_diff:int
 1,0,5,-2,0,1,1
 2,0,15,-12,0,1,1
 1,5,20,-12,0,1,0

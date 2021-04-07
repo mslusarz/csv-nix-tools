@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2020-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -105,6 +105,7 @@ add_input(FILE *f, struct input *in, size_t file_idx, size_t num_user_headers,
 				}
 
 				user_headers[j].type = headers_cur[idx].type;
+				user_headers[j].had_type = headers_cur[idx].had_type;
 
 				in->idx[j] = idx;
 			}
@@ -399,6 +400,7 @@ main(int argc, char *argv[])
 		for (size_t i = 0; i < num_user_headers; ++i) {
 			user_headers[i].name = cols + results[i].start;
 			user_headers[i].type = NULL;
+			user_headers[i].had_type = false;
 		}
 		free(results);
 	}
@@ -435,22 +437,25 @@ main(int argc, char *argv[])
 	csv_show(show_flags);
 
 	if (!brief) {
-		printf("input:int");
+		printf("input:int,");
 
-		for (size_t i = 0; i < Nheaders; ++i)
-			printf(",%s:%s", Headers[i].name, Headers[i].type);
+		for (size_t i = 0; i < Nheaders - 1; ++i)
+			csv_print_header(stdout, &Headers[i], ',');
+		char sep = (diffs || colors) ? ',' : '\n';
+		csv_print_header(stdout, &Headers[Nheaders - 1], sep);
 
 		if (diffs) {
-			for (size_t i = 0; i < Nheaders; ++i)
-				printf(",%s_diff:int", Headers[i].name);
+			for (size_t i = 0; i < Nheaders - 1; ++i)
+				printf("%s_diff:int,", Headers[i].name);
+			sep = colors ? ',' : '\n';
+			printf("%s_diff:int%c", Headers[Nheaders - 1].name, sep);
 		}
 
 		if (colors) {
-			for (size_t i = 0; i < Nheaders; ++i)
-				printf(",%s_color:string", Headers[i].name);
+			for (size_t i = 0; i < Nheaders - 1; ++i)
+				printf("%s_color,", Headers[i].name);
+			printf("%s_color\n", Headers[Nheaders - 1].name);
 		}
-
-		printf("\n");
 	}
 
 	mtx_init_nofail(&GlobalDataMtx, mtx_plain);

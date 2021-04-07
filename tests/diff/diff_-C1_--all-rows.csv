@@ -1,4 +1,4 @@
-input:int,x:string,y1:string,y2:string,x_color:string,y1_color:string,y2_color:string
+input:int,x,y1,y2,x_color,y1_color,y2_color
 1,-7,-16,12,,,
 2,-7,-16,12,,,
 1,-6,-13,10,,,

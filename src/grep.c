@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <getopt.h>
@@ -351,7 +351,7 @@ main(int argc, char *argv[])
 			free(pattern);
 	}
 
-	csv_print_header(stdout, headers, nheaders);
+	csv_print_headers(stdout, headers, nheaders);
 
 	params.conditions = conditions;
 	params.nconditions = nconditions;

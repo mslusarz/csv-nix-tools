@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #ifndef CSV_UTILS_H
@@ -21,8 +21,9 @@
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
-void csv_print_header(FILE *out, const struct col_header *headers,
+void csv_print_headers(FILE *out, const struct col_header *headers,
 		size_t nheaders);
+void csv_print_header(FILE *out, const struct col_header *header, char sep);
 
 void csv_print_line(FILE *out, const char *buf, const size_t *col_offs,
 		size_t ncols, bool nl);

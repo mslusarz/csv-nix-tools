@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <getopt.h>
@@ -264,24 +264,28 @@ main(int argc, char *argv[])
 		}
 	}
 
-	for (size_t i = 0; i < nheaders; ++i)
-		printf("%s:%s,", headers[i].name, headers[i].type);
+	bool had_string_types = false;
+	for (size_t i = 0; i < nheaders; ++i) {
+		csv_print_header(stdout, &headers[i], ',');
+		if (had_string_types)
+			continue;
+		had_string_types = headers[i].had_type &&
+				strcmp(headers[i].type, "string") == 0;
+	}
 
-	for (size_t i = 0; i < nexpressions - 1; ++i) {
+	for (size_t i = 0; i < nexpressions; ++i) {
 		if (params.table)
 			printf("%s.", params.table);
 
-		printf("%s:%s,", names[i],
-			rpn_expression_type(&params.expressions[i],
-					headers));
+		const char *type = rpn_expression_type(&params.expressions[i],
+				headers);
+		char sep = (i == nexpressions - 1) ? '\n' : ',';
+
+		if (had_string_types || strcmp(type, "string") != 0)
+			printf("%s:%s%c", names[i], type, sep);
+		else
+			printf("%s%c", names[i], sep);
 	}
-
-	if (params.table)
-		printf("%s.", params.table);
-
-	printf("%s:%s\n", names[nexpressions - 1],
-		rpn_expression_type(&params.expressions[nexpressions - 1],
-					headers));
 
 	for (size_t i = 0; i < nexpressions; ++i) {
 		free(expressions[i]);

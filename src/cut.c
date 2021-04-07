@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <errno.h>
@@ -240,10 +240,9 @@ main(int argc, char *argv[])
 
 	if (params.ncols > 0) {
 		for (size_t i = 0; i < params.ncols - 1; ++i)
-			printf("%s:%s,", headers[params.cols[i]].name,
-					headers[params.cols[i]].type);
-		printf("%s:%s\n", headers[params.cols[params.ncols - 1]].name,
-				headers[params.cols[params.ncols - 1]].type);
+			csv_print_header(stdout, &headers[params.cols[i]], ',');
+		csv_print_header(stdout,
+				&headers[params.cols[params.ncols - 1]], '\n');
 
 		csv_read_all_nofail(s, &next_row, &params);
 	}

@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -193,11 +193,15 @@ main(int argc, char *argv[])
 	input_col = NULL;
 
 	for (size_t i = 0; i < nheaders; ++i)
-		printf("%s:%s,", headers[i].name, headers[i].type);
+		csv_print_header(stdout, &headers[i], ',');
 
 	if (params.table)
 		printf("%s.", params.table);
-	printf("%s:string\n", new_name);
+
+	if (headers[params.col].had_type)
+		printf("%s:string\n", new_name);
+	else
+		printf("%s\n", new_name);
 
 	free(new_name);
 	new_name = NULL;

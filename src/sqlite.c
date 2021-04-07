@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -278,7 +278,8 @@ sqlite_type_to_csv_name(int t)
 }
 
 static void
-add_file(FILE *f, size_t num, sqlite3 *db, bool load_tables)
+add_file(FILE *f, size_t num, sqlite3 *db, bool load_tables,
+		bool *any_str_column_had_type)
 {
 	struct csv_ctx *s = csv_create_ctx_nofail(f, stderr);
 
@@ -300,6 +301,16 @@ add_file(FILE *f, size_t num, sqlite3 *db, bool load_tables)
 	size_t ntables = 0;
 
 	size_t table_column = SIZE_MAX;
+
+	if (!*any_str_column_had_type) {
+		for (size_t i = 0; i < nheaders; ++i) {
+			if (headers[i].had_type &&
+					strcmp(headers[i].type, "string") == 0) {
+				*any_str_column_had_type = true;
+				break;
+			}
+		}
+	}
 
 	if (load_tables) {
 		for (size_t i = 0; i < nheaders; ++i) {
@@ -348,6 +359,7 @@ add_file(FILE *f, size_t num, sqlite3 *db, bool load_tables)
 			t->headers[t->nheaders].name = headers[i].name
 					+ table_len + 1;
 			t->headers[t->nheaders].type = headers[i].type;
+			t->headers[t->nheaders].had_type = headers[i].had_type;
 			t->nheaders++;
 		}
 
@@ -436,7 +448,8 @@ add_file(FILE *f, size_t num, sqlite3 *db, bool load_tables)
 }
 
 static void
-print_col(sqlite3_stmt *select, size_t i, bool table_prefix)
+print_col(sqlite3_stmt *select, size_t i, bool table_prefix,
+		bool any_str_column_had_type)
 {
 	const char *name = sqlite3_column_name(select, i);
 	int type = sqlite3_column_type(select, i);
@@ -449,12 +462,18 @@ print_col(sqlite3_stmt *select, size_t i, bool table_prefix)
 	}
 
 	if (type_str) {
-		printf("%s:%s", name, type_str);
+		if (any_str_column_had_type || strcmp(type_str, "string") != 0)
+			printf("%s:%s", name, type_str);
+		else
+			printf("%s", name);
 		return;
 	}
 
-	/* guess */
-	printf("%s:string", name);
+	/* guess string */
+	if (any_str_column_had_type)
+		printf("%s:string", name);
+	else
+		printf("%s", name);
 }
 
 static void
@@ -526,8 +545,10 @@ main(int argc, char *argv[])
 		exit(2);
 	}
 
+	bool any_str_column_had_type = false;
+
 	if (ninputs == 0) {
-		add_file(stdin, SIZE_MAX, db, tables);
+		add_file(stdin, SIZE_MAX, db, tables, &any_str_column_had_type);
 	} else {
 		bool stdin_used = false;
 		for (size_t i = 0; i < ninputs; ++i) {
@@ -551,7 +572,7 @@ main(int argc, char *argv[])
 				exit(2);
 			}
 
-			add_file(f, i + 1, db, tables);
+			add_file(f, i + 1, db, tables, &any_str_column_had_type);
 
 			if (strcmp(path, "-") != 0)
 				fclose(f);
@@ -639,11 +660,11 @@ main(int argc, char *argv[])
 	free(names);
 
 	for (size_t i = 0; i < cols - 1; ++i) {
-		print_col(select, i, table_prefix[i]);
+		print_col(select, i, table_prefix[i], any_str_column_had_type);
 		fputc(',', stdout);
 	}
 
-	print_col(select, cols - 1, table_prefix[cols - 1]);
+	print_col(select, cols - 1, table_prefix[cols - 1], any_str_column_had_type);
 	fputc('\n', stdout);
 
 	free(table_prefix);

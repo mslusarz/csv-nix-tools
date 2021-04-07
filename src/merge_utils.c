@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -68,7 +68,7 @@ csvmu_add_columns_to_stdin(const char *prefix, struct column_info *columns,
 		if (i == cfg.table_column)
 			continue;
 
-		printf("%s:%s,", input_headers[i].name, input_headers[i].type);
+		csv_print_header(stdout, &input_headers[i], ',');
 	}
 	csvci_print_header_with_prefix(columns, ncolumns, prefix);
 

@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -269,7 +269,7 @@ sql_order_by_expr_done(bool asc)
 }
 
 static void
-print_column_header(size_t i, char sep)
+print_column_header(size_t i, char sep, bool any_str_column_had_type)
 {
 	const struct column *col = &Params.columns.col[i];
 	if (col->name)
@@ -277,7 +277,11 @@ print_column_header(size_t i, char sep)
 	else
 		printf("unnamed%lu", i);
 
-	printf(":%s%c", rpn_expression_type(&col->expr, Headers), sep);
+	const char *type = rpn_expression_type(&col->expr, Headers);
+	if (any_str_column_had_type || strcmp(type, "string") != 0)
+		printf(":%s", type);
+
+	putchar(sep);
 }
 
 struct sort_params {
@@ -390,11 +394,19 @@ main(int argc, char *argv[])
 
 	fclose(in);
 
+	bool any_str_column_had_type = false;
+	for (size_t i = 0; i < Nheaders; ++i) {
+		if (Headers[i].had_type && strcmp(Headers[i].type, "string") == 0) {
+			any_str_column_had_type = true;
+			break;
+		}
+	}
+
 	struct columns *columns = &Params.columns;
 	for (size_t i = 0; i < columns->count - 1; ++i)
-		print_column_header(i, ',');
+		print_column_header(i, ',', any_str_column_had_type);
 
-	print_column_header(columns->count - 1, '\n');
+	print_column_header(columns->count - 1, '\n', any_str_column_had_type);
 
 	if (columns->count < 1)
 		abort();

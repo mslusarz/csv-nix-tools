@@ -410,12 +410,24 @@ main(int argc, char *argv[])
 		parent->children_idx[parent->nchildren++] = cur_row;
 	}
 
-	for (size_t i = 0; i < nheaders - 1; ++i)
-		printf("%s:%s,", headers[i].name, headers[i].type);
-	printf("%s:%s", headers[nheaders - 1].name,
-			headers[nheaders - 1].type);
-	if (new_indent_name != indent)
-		printf(",%s:string", new_indent_name);
+	bool any_str_column_had_type = false;
+	for (size_t i = 0; i < nheaders; ++i) {
+		csv_print_header(stdout, &headers[i], i == nheaders - 1 ? 0 : ',');
+
+		if (any_str_column_had_type)
+			continue;
+
+		if (headers[i].had_type && strcmp(headers[i].type, "string") == 0)
+			any_str_column_had_type = true;
+	}
+
+	if (new_indent_name != indent) {
+		if (any_str_column_had_type)
+			printf(",%s:string", new_indent_name);
+		else
+			printf(",%s", new_indent_name);
+	}
+
 	if (new_sum_name != sum) {
 		if (sum_is_int)
 			printf(",%s:int", new_sum_name);

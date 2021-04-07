@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -355,12 +355,22 @@ main(int argc, char *argv[])
 
 	csv_show(show_flags);
 
-	for (size_t i = 0; i < nheaders; ++i)
-		printf("%s:%s,", headers[i].name, headers[i].type);
+	bool had_string_types = false;
+	for (size_t i = 0; i < nheaders; ++i) {
+		csv_print_header(stdout, &headers[i], ',');
+		if (had_string_types)
+			continue;
+		had_string_types = headers[i].had_type &&
+				strcmp(headers[i].type, "string") == 0;
+	}
 
 	if (params.table)
 		printf("%s.", params.table);
-	printf("%s:string\n", new_colname);
+
+	if (had_string_types)
+		printf("%s:string\n", new_colname);
+	else
+		printf("%s\n", new_colname);
 
 	free(new_colname);
 

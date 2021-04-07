@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2020-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <getopt.h>
@@ -360,7 +360,7 @@ main(int argc, char *argv[])
 
 			print(headers[i].name, SIZE_MAX);
 
-			if (print_types) {
+			if (print_types && headers[i].had_type) {
 				printf("<span style=\"font-weight: normal\">");
 				printf(" : ");
 				print(headers[i].type, SIZE_MAX);

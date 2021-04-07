@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -20,12 +20,25 @@
 #include "utils.h"
 
 void
-csv_print_header(FILE *out, const struct col_header *headers, size_t nheaders)
+csv_print_header(FILE *out, const struct col_header *header, char sep)
+{
+	fprintf(out, "%s", header->name);
+
+	if (header->had_type)
+		fprintf(out, ":%s", header->type);
+	else
+		assert(strcmp(header->type, "string") == 0);
+
+	if (sep)
+		fputc(sep, out);
+}
+
+void
+csv_print_headers(FILE *out, const struct col_header *headers, size_t nheaders)
 {
 	for (size_t i = 0; i < nheaders - 1; ++i)
-		fprintf(out, "%s:%s,", headers[i].name, headers[i].type);
-	fprintf(out, "%s:%s\n", headers[nheaders - 1].name,
-			headers[nheaders - 1].type);
+		csv_print_header(out, &headers[i], ',');
+	csv_print_header(out, &headers[nheaders - 1], '\n');
 }
 
 void
@@ -570,25 +583,42 @@ csv_print_table_func_header(const struct col_header *h, const char *func,
 		if (strncmp(h->name, table, table_len) == 0 &&
 				h->name[table_len] == TABLE_SEPARATOR) {
 			if (name) {
-				printf("%s.%s:%s%c", table, name, h->type, sep);
+				if (h->had_type)
+					printf("%s.%s:%s%c", table, name, h->type, sep);
+				else
+					printf("%s.%s%c", table, name, sep);
 				return 1;
 			} else {
-				printf("%s.%s(%s):%s%c", table, func,
-						h->name + table_len + 1,
-						h->type, sep);
+				if (h->had_type)
+					printf("%s.%s(%s):%s%c", table, func,
+							h->name + table_len + 1,
+							h->type, sep);
+				else
+					printf("%s.%s(%s)%c", table, func,
+							h->name + table_len + 1,
+							sep);
 				return 0;
 			}
 		} else {
 			/* other table or _table column*/
-			printf("%s:%s%c", h->name, h->type, sep);
+			if (h->had_type)
+				printf("%s:%s%c", h->name, h->type, sep);
+			else
+				printf("%s%c", h->name, sep);
 			return 0;
 		}
 	} else {
 		if (name) {
-			printf("%s:%s%c", name, h->type, sep);
+			if (h->had_type)
+				printf("%s:%s%c", name, h->type, sep);
+			else
+				printf("%s%c", name, sep);
 			return 1;
 		} else {
-			printf("%s(%s):%s%c", func, h->name, h->type, sep);
+			if (h->had_type)
+				printf("%s(%s):%s%c", func, h->name, h->type, sep);
+			else
+				printf("%s(%s)%c", func, h->name, sep);
 			return 0;
 		}
 	}

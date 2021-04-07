@@ -53,7 +53,6 @@
 - tool for transposing data?
 - tool for splitting files?
 - csv-add-printf?
-- make csv type extension optional?
 - sqlite: loading files into tables without csv-merge
 
 ## Possible data sources
