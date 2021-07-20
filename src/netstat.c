@@ -156,6 +156,7 @@ inet_data_attr_cb(const struct nlattr *attr, void *data)
 		}
 		break;
 	case INET_DIAG_VEGASINFO:
+#if 0
 		/* not seen yet */
 		raise(SIGTRAP);
 		if (mnl_attr_validate2(attr, MNL_TYPE_BINARY,
@@ -163,6 +164,7 @@ inet_data_attr_cb(const struct nlattr *attr, void *data)
 			return attr_val_err(type);
 		}
 		break;
+#endif
 	case INET_DIAG_CONG:
 		if (mnl_attr_validate(attr, MNL_TYPE_STRING) < 0) {
 			return attr_val_err(type);
@@ -186,6 +188,7 @@ inet_data_attr_cb(const struct nlattr *attr, void *data)
 		if (mnl_attr_validate(attr, MNL_TYPE_U8) < 0)
 			return attr_val_err(type);
 		break;
+#if 0
 	case INET_DIAG_DCTCPINFO:
 		/* not seen yet */
 		raise(SIGTRAP);
@@ -195,6 +198,7 @@ inet_data_attr_cb(const struct nlattr *attr, void *data)
 			return attr_val_err(type);
 		}
 		break;
+#endif
 	case INET_DIAG_PROTOCOL:
 		if (mnl_attr_validate(attr, MNL_TYPE_U8) < 0)
 			return attr_val_err(type);
@@ -203,6 +207,7 @@ inet_data_attr_cb(const struct nlattr *attr, void *data)
 		if (mnl_attr_validate(attr, MNL_TYPE_U8) < 0)
 			return attr_val_err(type);
 		break;
+#if 0
 	case INET_DIAG_LOCALS:
 		/* not seen yet */
 		raise(SIGTRAP);
@@ -240,10 +245,12 @@ inet_data_attr_cb(const struct nlattr *attr, void *data)
 			return attr_val_err(type);
 		}
 		break;
+#endif
 	case INET_DIAG_CLASS_ID:
 		if (mnl_attr_validate(attr, MNL_TYPE_U32) < 0)
 			return attr_val_err(type);
 		break;
+#if 0
 	case INET_DIAG_MD5SIG:
 		/* requires NET_ADMIN? */
 		/* not seen yet */
@@ -254,12 +261,18 @@ inet_data_attr_cb(const struct nlattr *attr, void *data)
 		if (mnl_attr_validate(attr, MNL_TYPE_BINARY) < 0)
 			return attr_val_err(type);
 		break;
-	default:
-		fprintf(stderr, "unknown attr type: %d\n", type);
-#ifndef NDEBUG
-		abort();
+	case INET_DIAG_ULP_INFO:
+		break;
+	case INET_DIAG_SK_BPF_STORAGES:
+		break;
+	case INET_DIAG_CGROUP_ID:
+		break;
+	case INET_DIAG_SOCKOPT:
+		break;
 #endif
-		return MNL_CB_ERROR;
+	default:
+//		fprintf(stderr, "unknown attr type: %d\n", type);
+		return MNL_CB_OK;
 	}
 
 	tb[type] = attr;
