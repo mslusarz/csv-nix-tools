@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2020-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <errno.h>
@@ -113,7 +113,9 @@ gnuplot(void)
 		}
 		execvp(plot[0], plot);
 
-		perror("execvp");
+		perror("execvp(gnuplot)");
+		if (errno == ENOENT)
+			fprintf(stderr, "gnuplot not installed?\n");
 		exit(2);
 	}
 

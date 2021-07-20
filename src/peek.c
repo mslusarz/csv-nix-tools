@@ -5,6 +5,7 @@
  */
 
 #include <assert.h>
+#include <errno.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -110,7 +111,9 @@ csv_peek_show(FILE **subprocess_in, FILE **subprocess_out)
 
 		execvp(show[0], show);
 
-		perror("execvp");
+		perror("execvp(csv-show)");
+		if (errno == ENOENT)
+			fprintf(stderr, "csv-show not installed?\n");
 		exit(2);
 	}
 

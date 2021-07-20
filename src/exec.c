@@ -1,10 +1,11 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
+#include <errno.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -70,6 +71,8 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 
 		execvp(argv[0], argv);
 		perror("execvp");
+		if (errno == ENOENT)
+			fprintf(stderr, "'%s' not installed?\n", argv[0]);
 		exit(2);
 	}
 

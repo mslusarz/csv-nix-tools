@@ -677,7 +677,9 @@ csv_show(unsigned flags)
 		}
 		execvp(show[0], show);
 
-		perror("execvp");
+		perror("execvp(csv-show)");
+		if (errno == ENOENT)
+			fprintf(stderr, "csv-show not installed?\n");
 		exit(2);
 	}
 

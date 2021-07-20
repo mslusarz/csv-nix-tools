@@ -1,9 +1,10 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -80,7 +81,9 @@ static_ui(bool less, struct cb_params *params, const struct col_header *headers,
 			}
 			execvp(less[0], less);
 
-			perror("execvp");
+			perror("execvp(less)");
+			if (errno == ENOENT)
+				fprintf(stderr, "less not installed?\n");
 			exit(2);
 		}
 
