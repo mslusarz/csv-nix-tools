@@ -26,7 +26,7 @@ usage(FILE *out)
 {
 	fprintf(out, "Usage: csv-peek [OPTION]... FORMAT [COLUMNS]...\n");
 	fprintf(out,
-"Read CSV stream from standard input and ...\n");
+"Read CSV stream from standard input, write it to stdout and its copy to stderr.\n");
 	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
 	describe_Show(out);

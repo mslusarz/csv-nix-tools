@@ -1,5 +1,5 @@
 Usage: csv-peek [OPTION]... FORMAT [COLUMNS]...
-Read CSV stream from standard input and ...
+Read CSV stream from standard input, write it to stdout and its copy to stderr.
 
 Options:
   -s, --show                 print output in table format
