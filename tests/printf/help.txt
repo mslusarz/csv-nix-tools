@@ -1,0 +1,8 @@
+Usage: csv-printf [OPTION]... FORMAT [COLUMNS]...
+Read CSV stream from standard input and print back data using printf(3)
+
+Options:
+  -s, --show                 print output in table format
+  -S, --show-full            print output in table format with pager
+      --help                 display this help and exit
+      --version              output version information and exit
