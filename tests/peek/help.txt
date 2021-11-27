@@ -1,0 +1,7 @@
+Usage: csv-peek [OPTION]... FORMAT [COLUMNS]...
+Read CSV stream from standard input and ...
+
+Options:
+  -s, --show                 print output in table format
+      --help                 display this help and exit
+      --version              output version information and exit

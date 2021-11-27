@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 # Copyright 2019, Sebastian Pidek <sebastian.pidek@gmail.com>
-# Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 # conventions for test names:
@@ -81,6 +81,7 @@ inc(max)
 inc(merge)
 inc(min)
 inc(netstat)
+inc(peek)
 inc(plot)
 inc(ps)
 inc(show)

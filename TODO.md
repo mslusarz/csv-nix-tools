@@ -14,7 +14,6 @@
 - lstree: add tests
 - pstree: add tests
 - printf: add tests
-- peek: add tests
 - sum,count,min,max,avg: --group-by=col1,col2
 - uniq: --count
 - show: fix column width calc when input is in utf
