@@ -100,7 +100,20 @@ if(COVERAGE)
        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage")
 endif()
 
-add_library(csvshared STATIC src/parse.c src/ht.c src/utils.c src/utils_glibc.c)
+option(FAULT_INJECTION "Fault injection testing" OFF)
+if (FAULT_INJECTION)
+	add_library(csvalloc    SHARED src/alloc.c)
+	add_library(csvallocfi  SHARED src/alloc-fault-injection.c)
+
+	set_target_properties(csvallocfi PROPERTIES LIBRARY_OUTPUT_DIRECTORY "fi")
+	set_target_properties(csvallocfi PROPERTIES OUTPUT_NAME "csvalloc")
+
+	add_library(csvshared STATIC src/parse.c src/ht.c src/utils.c src/utils_glibc.c)
+	target_link_libraries(csvshared csvalloc)
+else()
+	add_library(csvshared STATIC src/parse.c src/ht.c src/utils.c src/utils_glibc.c src/alloc.c)
+endif()
+
 add_library(csvrpn STATIC src/rpn_eval.c src/rpn_parse.c src/regex_cache.c src/ht.c)
 
 function(build_tool name)

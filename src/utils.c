@@ -791,31 +791,11 @@ util_split_term(char *str, const char *sep,
 }
 
 char *
-xstrdup(const char *str)
-{
-	char *ret = strdup(str);
-	if (!ret)
-		perror("strdup");
-
-	return ret;
-}
-
-char *
 xstrdup_nofail(const char *str)
 {
 	char *ret = xstrdup(str);
 	if (!ret)
 		exit(2);
-
-	return ret;
-}
-
-char *
-xstrndup(const char *str, size_t n)
-{
-	char *ret = strndup(str, n);
-	if (!ret)
-		perror("strndup");
 
 	return ret;
 }
@@ -831,16 +811,6 @@ xstrndup_nofail(const char *str, size_t n)
 }
 
 void *
-xmalloc(size_t count, size_t size)
-{
-	void *ret = malloc(count * size);
-	if (!ret)
-		perror("malloc");
-
-	return ret;
-}
-
-void *
 xmalloc_nofail(size_t count, size_t size)
 {
 	void *ret = xmalloc(count, size);
@@ -851,31 +821,11 @@ xmalloc_nofail(size_t count, size_t size)
 }
 
 void *
-xcalloc(size_t count, size_t size)
-{
-	void *ret = calloc(count, size);
-	if (!ret)
-		perror("calloc");
-
-	return ret;
-}
-
-void *
 xcalloc_nofail(size_t count, size_t size)
 {
 	void *ret = xcalloc(count, size);
 	if (!ret)
 		exit(2);
-
-	return ret;
-}
-
-void *
-xrealloc(void *ptr, size_t count, size_t size)
-{
-	void *ret = realloc(ptr, count * size);
-	if (!ret)
-		perror("realloc");
 
 	return ret;
 }

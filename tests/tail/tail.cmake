@@ -26,6 +26,13 @@ test("csv-tail --lines=1" data/one-column-one-row.csv data/one-column-one-row.cs
 test("csv-tail -n 1" data/one-column-one-row.csv data/one-column-one-row.csv data/empty.txt 0
 	tail_-n_1)
 
+if (FAULT_INJECTION)
+	test("csv-tail -n 1" data/one-column-one-row.csv tail/zero-lines.csv data/malloc-enomem.txt 2
+		tail_-n_1_line_alloc_failure)
+	set_tests_properties(tail_-n_1_line_alloc_failure PROPERTIES
+		ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/fi/;CSVNIXTOOLS_XMALLOC_FAIL_ON_SIZE=12")
+endif()
+
 test("csv-tail --lines 2" data/one-column-one-row.csv data/one-column-one-row.csv data/empty.txt 0
 	tail_--lines=2_but_there_is_only_1_line_in_input)
 
