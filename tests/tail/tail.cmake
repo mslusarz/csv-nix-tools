@@ -17,6 +17,9 @@ test("csv-tail --lines=0" data/one-column-one-row.csv tail/zero-lines.csv data/e
 test("csv-tail -n 0" data/one-column-one-row.csv tail/zero-lines.csv data/empty.txt 0
 	tail_-n_0)
 
+test("csv-tail -n meh" data/one-column-one-row.csv data/empty.txt tail/invalid-num.txt 2
+	tail_-n_invalid)
+
 test("csv-tail --lines=1" data/one-column-one-row.csv data/one-column-one-row.csv data/empty.txt 0
 	tail_--lines=1)
 
