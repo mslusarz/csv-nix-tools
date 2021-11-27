@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 test("csv-merge --table table1 --path-without-table ${DATA_DIR}/one-column-one-row.csv" data/empty.csv merge/table1-one-column-one-row.csv data/empty.txt 0
@@ -33,6 +33,9 @@ test("csv-merge --version" data/empty.csv data/git-version.txt data/empty.txt 0
 
 test("csv-merge --table table1 --path-without-table - -s" data/2-columns-3-rows.csv merge/show.txt data/empty.txt 0
 	merge_show)
+
+test("csv-merge --table table1 --path-without-table - -S" data/2-columns-3-rows.csv merge/show.txt data/empty.txt 0
+	merge_show_-S)
 
 test("csv-merge --table table1 --path-without-table - --table table2 --path-without-table -" data/2-columns-3-rows.csv data/empty.txt merge/stdin-twice.txt 2
 	merge_stdin_twice)

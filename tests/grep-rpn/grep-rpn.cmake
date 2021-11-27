@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 test("csv-grep-rpn -e '%id 2 =='" data/3-columns-3-rows.csv data/rpn-filter-row-2.csv data/empty.txt 0
@@ -9,6 +9,9 @@ test("csv-grep-rpn -e '%id 2 =='" data/3-columns-3-rows.csv data/rpn-filter-row-
 
 test("csv-grep-rpn -e '%id 2 ==' -s" data/3-columns-3-rows.csv data/rpn-filter-row-2.txt data/empty.txt 0
 	grep-rpn_eq_-s)
+
+test("csv-grep-rpn -e '%id 2 ==' -S" data/3-columns-3-rows.csv data/rpn-filter-row-2.txt data/empty.txt 0
+	grep-rpn_eq_-S)
 
 test("csv-grep-rpn -e '%id 2 !='" data/3-columns-3-rows.csv data/rpn-filter-rows-1-3.csv data/empty.txt 0
 	grep-rpn_ne)

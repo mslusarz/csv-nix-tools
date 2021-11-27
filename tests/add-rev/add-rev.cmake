@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 test("csv-add-rev -c name -n name-reversed"
@@ -19,6 +19,10 @@ endif()
 test("csv-add-rev -c name -n name-reversed -s"
 	data/3-columns-3-rows.csv add-rev/string-reversed.txt data/empty.txt 0
 	add-rev_string_-s)
+
+test("csv-add-rev -c name -n name-reversed -S"
+	data/3-columns-3-rows.csv add-rev/string-reversed.txt data/empty.txt 0
+	add-rev_string_-S)
 
 test("csv-add-rev -c id -n id-reversed"
 	data/3-columns-3-rows.csv data/empty.txt add-rev/rev-int.txt 2

@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 test("csv-uniq -c col1" uniq/input1.csv uniq/output1.csv data/empty.txt 0 uniq-1)
@@ -9,6 +9,8 @@ test("csv-uniq -c col1" uniq/input1.csv uniq/output1.csv data/empty.txt 0 uniq-1
 test("csv-uniq -c col3,col2,col1" uniq/input2.csv uniq/output2.csv data/empty.txt 0 uniq-2)
 
 test("csv-uniq -c col3,col2,col1 -s" uniq/input2.csv uniq/output2.txt data/empty.txt 0 uniq-2-s)
+
+test("csv-uniq -c col3,col2,col1 -S" uniq/input2.csv uniq/output2.txt data/empty.txt 0 uniq-2-S)
 
 test("csv-uniq -c col3" uniq/input2.csv uniq/output3.csv data/empty.txt 0 uniq-3)
 

@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 if (BUILD_SQL)
@@ -17,6 +17,10 @@ test("csv-add-sql -e 'num * 2 as num_mul_2'"
 test("csv-add-sql -n 'num_mul_2' -e 'num * 2' -s"
 	data/rpn-add-num-dec.csv data/rpn-add-num-mul.txt data/empty.txt 0
 	add-sql_num_mul_-s)
+
+test("csv-add-sql -n 'num_mul_2' -e 'num * 2' -S"
+	data/rpn-add-num-dec.csv data/rpn-add-num-mul.txt data/empty.txt 0
+	add-sql_num_mul_-S)
 
 test("csv-add-sql -n 'num_add_num2' -e 'num + num2'"
 	data/rpn-add-num-dec.csv data/rpn-add-num-sum.csv data/empty.txt 0

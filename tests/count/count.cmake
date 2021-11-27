@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 test("csv-count" data/empty.txt data/empty.csv count/help.txt 2
@@ -24,6 +24,9 @@ test("csv-count -c -r" data/2-columns-3-rows.csv count/2-cols-3-rows.txt data/em
 
 test("csv-count -c -r -s" data/2-columns-3-rows.csv count/2-cols-3-rows-s.txt data/empty.txt 0
 	count_-c_-r_2_cols_3_rows-s)
+
+test("csv-count -c -r -S" data/2-columns-3-rows.csv count/2-cols-3-rows-s.txt data/empty.txt 0
+	count_-c_-r_2_cols_3_rows-S)
 
 test("csv-count --help" data/empty.csv count/help.txt data/empty.txt 2
 	count_help)

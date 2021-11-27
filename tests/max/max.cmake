@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 test("csv-max -c id" data/id-column-3-rows.csv max/id.csv data/empty.txt 0
@@ -24,6 +24,9 @@ test("csv-max -c col3,col1 -n new1,new2" data/3-numeric-columns-4-rows.csv max/2
 
 test("csv-max -c col3,col1 -s" data/3-numeric-columns-4-rows.csv max/2-columns.txt data/empty.txt 0
 	max-2-columns-s)
+
+test("csv-max -c col3,col1 -S" data/3-numeric-columns-4-rows.csv max/2-columns.txt data/empty.txt 0
+	max-2-columns-S)
 
 test("csv-max -c col1,col2,col3,col4" data/text1.csv max/text1.csv data/empty.txt 0
 	max-text1)

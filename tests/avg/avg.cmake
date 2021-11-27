@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 test("csv-avg -c id" data/id-column-3-rows.csv avg/id.csv data/empty.txt 0
@@ -24,6 +24,9 @@ test("csv-avg -c col3,col1 -n new1,new2" data/3-numeric-columns-4-rows.csv avg/2
 
 test("csv-avg -c col3,col1 -s" data/3-numeric-columns-4-rows.csv avg/2-columns-s.txt data/empty.txt 0
 	avg-2-columns-s)
+
+test("csv-avg -c col3,col1 -S" data/3-numeric-columns-4-rows.csv avg/2-columns-s.txt data/empty.txt 0
+	avg-2-columns-S)
 
 test("csv-avg -T t1 -c id,something" data/2-tables.csv avg/2-tables-avg1.csv data/empty.txt 0
 	avg-2tables-avg1)

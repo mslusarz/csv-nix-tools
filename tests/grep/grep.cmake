@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 test("csv-grep" data/one-column-one-row.csv data/empty.csv grep/help.txt 2
@@ -16,6 +16,9 @@ test("csv-grep -c name -e or" data/3-columns-3-rows.csv grep/name-or.csv data/em
 
 test("csv-grep -c name -e or -s" data/3-columns-3-rows.csv grep/name-or.txt data/empty.txt 0
 	grep_-c_name_-e_or_-s)
+
+test("csv-grep -c name -e or -S" data/3-columns-3-rows.csv grep/name-or.txt data/empty.txt 0
+	grep_-c_name_-e_or_-S)
 
 test("csv-grep -c name -x -e or" data/3-columns-3-rows.csv grep/not-found.csv data/empty.txt 0
 	grep_-c_name_-x_-e_or)

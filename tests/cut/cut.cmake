@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 # Copyright 2019, Sebastian Pidek <sebastian.pidek@gmail.com>
-# Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 test("csv-cut" data/empty.txt data/empty.csv data/eof.txt 2
@@ -74,6 +74,9 @@ test("csv-cut -c name,something" data/3-columns-3-rows.csv data/2-columns-3-rows
 
 test("csv-cut -c name,something -s" data/3-columns-3-rows.csv cut/2-columns-3-rows.txt data/empty.txt 0
 	cut_2_fields_using_-c_-s)
+
+test("csv-cut -c name,something -S" data/3-columns-3-rows.csv cut/2-columns-3-rows.txt data/empty.txt 0
+	cut_2_fields_using_-c_-S)
 
 test("csv-cut --columns name,something" data/3-columns-3-rows.csv data/2-columns-3-rows.csv data/empty.txt 0
 	cut_2_fields_using_--columns_with_spaces)

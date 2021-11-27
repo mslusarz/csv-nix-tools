@@ -1,0 +1,7 @@
+input   x   y1   y2    x_color   y1_color   y2_color
+    1   0   5    -2              bg=red     bg=red
+    2   0   15   -12             bg=green   bg=green
+    1   5   20   -12             bg=red     
+    2   5   23   -12             bg=green   
+    1   8   29   -18                        bg=red
+    2   8   29   -20                        bg=green
