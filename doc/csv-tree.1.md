@@ -53,7 +53,7 @@ back data with hierarchical information.
 `csv-ls -llR /usr/local | csv-tree -k full_path -p parent -i name -m size | csv-cut -c size,name -S`
 :   recursively print files and directories from /usr/local in tree structure
 
-`csv-ps | csv-tree -k pid -p ppid -i command -n vm_rss_KiB | csv-cut -c vm_rss_KiB,command -S`
+`csv-ps | csv-tree -k pid -p ppid -i command -m vm_rss_KiB | csv-cut -c vm_rss_KiB,command -S`
 :   print process tree with combined memory usage
 
 # SEE ALSO #
