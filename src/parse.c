@@ -90,23 +90,16 @@ add_header(struct csv_ctx *ctx, char *start)
 	return 0;
 }
 
-int
-csv_read_header(struct csv_ctx *ctx)
+void
+csv_insert_header(struct csv_ctx *ctx, char *header)
 {
-	ssize_t line_len;
+	ctx->header_line = header;
+	ctx->header_line_size = strlen(header);
+}
 
-	errno = 0;
-	line_len = getline(&ctx->header_line, &ctx->header_line_size, ctx->in);
-	if (line_len < 1) {
-		if (errno)
-			fprintf(ctx->err, "getline: %s\n", strerror(errno));
-		else if (feof(ctx->in))
-			fprintf(ctx->err, "EOF while reading header\n");
-		else
-			fprintf(ctx->err, "unrecognized error from getline: %ld\n", line_len);
-		return -1;
-	}
-
+int
+csv_parse_header(struct csv_ctx *ctx)
+{
 	char *start = ctx->header_line;
 	char *comma;
 	do {
@@ -129,6 +122,26 @@ csv_read_header(struct csv_ctx *ctx)
 	*nl = 0;
 
 	return add_header(ctx, start);
+}
+
+int
+csv_read_header(struct csv_ctx *ctx)
+{
+	ssize_t line_len;
+
+	errno = 0;
+	line_len = getline(&ctx->header_line, &ctx->header_line_size, ctx->in);
+	if (line_len < 1) {
+		if (errno)
+			fprintf(ctx->err, "getline: %s\n", strerror(errno));
+		else if (feof(ctx->in))
+			fprintf(ctx->err, "EOF while reading header\n");
+		else
+			fprintf(ctx->err, "unrecognized error from getline: %ld\n", line_len);
+		return -1;
+	}
+
+	return csv_parse_header(ctx);
 }
 
 void

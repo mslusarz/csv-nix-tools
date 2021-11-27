@@ -1,5 +1,11 @@
 Notable changes:
 
+2021-11-27:
+  - csv-header: implement --add option
+
+2021-04-07:
+  - all tools avoid adding :string to each string column
+
 2021-01-24:
   - new tool: csv-printf
   - new tool: csv-peek

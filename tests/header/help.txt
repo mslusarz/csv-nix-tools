@@ -3,7 +3,9 @@ Read CSV stream from standard input and print back to standard output with
 the column header transformed.
 
 Options:
-  -e, --set-types NAME1:TYPE1[,NAME1:TYPE2...]
+  -a, --add NAME1[:TYPE1][,NAME2[:TYPE2]...]
+                             add header
+  -e, --set-types NAME1:TYPE1[,NAME2:TYPE2...]
                              set type of column NAME1 to TYPE1, etc.
   -G, --guess-types          add types to columns by guessing based on their
                              contents

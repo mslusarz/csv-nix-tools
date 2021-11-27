@@ -14,6 +14,7 @@
 #include "utils.h"
 
 static const struct option opts[] = {
+	{"add",		required_argument,	NULL, 'a'},
 	{"set-types",	required_argument,	NULL, 'e'},
 	{"guess-types",	no_argument,		NULL, 'G'},
 	{"remove",	no_argument,		NULL, 'm'},
@@ -35,7 +36,10 @@ usage(FILE *out)
 	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
 	fprintf(out,
-"  -e, --set-types NAME1:TYPE1[,NAME1:TYPE2...]\n"
+"  -a, --add NAME1[:TYPE1][,NAME2[:TYPE2]...]\n"
+"                             add header\n");
+	fprintf(out,
+"  -e, --set-types NAME1:TYPE1[,NAME2:TYPE2...]\n"
 "                             set type of column NAME1 to TYPE1, etc.\n");
 	fprintf(out,
 "  -G, --guess-types          add types to columns by guessing based on their\n"
@@ -100,6 +104,7 @@ main(int argc, char *argv[])
 	bool print_header = true;
 	bool print_types = true;
 	unsigned show_flags = SHOW_DISABLED;
+	char *header = NULL;
 
 	struct column_change {
 		char *name;
@@ -113,8 +118,17 @@ main(int argc, char *argv[])
 
 	lines_init(&params.lines);
 
-	while ((opt = getopt_long(argc, argv, "e:GmMn:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "a:e:GmMn:sS", opts, NULL)) != -1) {
 		switch (opt) {
+			case 'a': {
+				size_t len = strlen(optarg);
+				free(header);
+				header = xmalloc_nofail(len + 2, 1);
+				strncpy(header, optarg, len);
+				header[len] = '\n';
+				header[len + 1] = 0;
+				break;
+			}
 			case 'e': { /* set-types col1:type1[,col2:type2] */
 				char *saveptr1;
 				char *tmp = strtok_r(optarg, ",", &saveptr1);
@@ -223,7 +237,13 @@ main(int argc, char *argv[])
 
 	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
 
-	csv_read_header_nofail(s);
+	if (header) {
+		csv_insert_header(s, header);
+		if (csv_parse_header(s))
+			exit(2);
+	} else {
+		csv_read_header_nofail(s);
+	}
 
 	const struct col_header *headers;
 	size_t nheaders = csv_get_headers(s, &headers);

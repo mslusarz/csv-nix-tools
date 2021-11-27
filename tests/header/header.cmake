@@ -28,6 +28,9 @@ test("csv-header -G" header/2-columns-3-rows-notypes.csv header/2-columns-3-rows
 test("csv-header -G" header/guess-in.csv header/guess-out.csv data/empty.txt 0
 	header_guess_types2)
 
+test("csv-header -a name,something:int" header/2-columns-3-rows-noheader.csv header/2-columns-3-rows.csv data/empty.txt 0
+	header_add)
+
 test("csv-header --help" data/empty.csv header/help.txt data/empty.txt 2
 	header_help)
 

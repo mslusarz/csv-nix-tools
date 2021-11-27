@@ -22,17 +22,20 @@ struct col_header {
 struct csv_ctx *csv_create_ctx(FILE *in, FILE *err);
 struct csv_ctx *csv_create_ctx_nofail(FILE *in, FILE *err);
 
-int csv_read_header(struct csv_ctx *s);
-void csv_read_header_nofail(struct csv_ctx *s);
+int csv_read_header(struct csv_ctx *ctx);
+void csv_read_header_nofail(struct csv_ctx *ctx);
 
-size_t csv_get_headers(struct csv_ctx *s, const struct col_header **headers);
+void csv_insert_header(struct csv_ctx *ctx, char *header);
+int csv_parse_header(struct csv_ctx *ctx);
+
+size_t csv_get_headers(struct csv_ctx *ctx, const struct col_header **headers);
 
 typedef int (*csv_row_cb)(const char *buf, const size_t *col_offs,
 		size_t ncols, void *arg);
 
-int csv_read_all(struct csv_ctx *s, csv_row_cb cb, void *arg);
-void csv_read_all_nofail(struct csv_ctx *s, csv_row_cb cb, void *arg);
+int csv_read_all(struct csv_ctx *ctx, csv_row_cb cb, void *arg);
+void csv_read_all_nofail(struct csv_ctx *ctx, csv_row_cb cb, void *arg);
 
-void csv_destroy_ctx(struct csv_ctx *s);
+void csv_destroy_ctx(struct csv_ctx *ctx);
 
 #endif

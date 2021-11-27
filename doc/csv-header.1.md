@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: BSD-3-Clause
-Copyright 2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+Copyright 2020-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
 -->
 
 ---
@@ -20,6 +20,9 @@ csv-header - process header of a CSV file
 
 Read CSV stream from standard input and print back to standard output with
 the column header transformed.
+
+-a, \--add *NAME1*[:*TYPE1*][,*NAME2*[:*TYPE2*]...]
+:   add header
 
 -e, \--set-types *NAME1*:*TYPE1*[,*NAME2*:*TYPE2*...]
 :   set type of column *NAME1* to *TYPE1*, type of column *NAME2* to *TYPE2*, etc.

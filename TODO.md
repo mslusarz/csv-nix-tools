@@ -19,7 +19,6 @@
 - uniq: --count
 - show: fix column width calc when input is in utf
 - source-tools: add option to add and remove columns
-- header: implement add
 - show: ability to lock columns (make them always visible)
 - show: implement "search" and "help" in the ncurses backend
 - sql/rpn: data(colname, relativerownum)
