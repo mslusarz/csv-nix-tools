@@ -1,0 +1,20 @@
+Usage: csv-tree [OPTION]...
+Read CSV stream from standard input, build hierarchical structure and print
+back data with hierarchical information
+
+Options:
+  -f, --filter=KEY           print only the matching row and its descendants
+  -i, --indent=NAME[,NEW-NAME]
+                             indent data from column NAME and put it in a new
+                             column NEW-NAME, if NEW-NAME is omitted column
+                             NAME is replaced
+  -k, --key=NAME             use column NAME as a unique key identifying
+                             each row
+  -m, --sum=NAME[,NEW-NAME]  sum data from column NAME and put it in a new
+                             column NEW-NAME, if NEW-NAME is omitted column
+                             NAME is replaced
+  -p, --parent=NAME          use column NAME as a pointer to parent row
+  -s, --show                 print output in table format
+  -S, --show-full            print output in table format with pager
+      --help                 display this help and exit
+      --version              output version information and exit

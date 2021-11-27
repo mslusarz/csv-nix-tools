@@ -10,7 +10,7 @@
 - fuzz testing
 
 # TODO (low level)
-- tree: add tests
+- tree: add more tests
 - lstree: add tests
 - pstree: add tests
 - printf: add more tests
