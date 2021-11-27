@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 /* see sock_diag(7) for explanation of what printed columns mean */
