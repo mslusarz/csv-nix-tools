@@ -38,6 +38,12 @@ test("csv-cut --columns=notExistingColumn" data/one-column-one-row.csv data/empt
 test("csv-cut -r -c name,id,something" data/3-columns-3-rows.csv data/empty.txt data/empty.txt 0
 	cut_reverse_all)
 
+test("csv-cut -r -c notExistingColumn" data/3-columns-3-rows.csv data/empty.txt cut/column-not-found.txt 2
+	cut_remove_not_existant_column)
+
+test("csv-cut -r -c name,name" data/3-columns-3-rows.csv data/empty.txt cut/remove-column-twice.txt 2
+	cut_remove_column_twice)
+
 
 test("csv-cut -c name" data/3-columns-3-rows.csv cut/name-column-3-rows.csv data/empty.txt 0
 	cut_the_name_field_using_-c)
@@ -99,13 +105,20 @@ test("csv-cut -c id,id,id,id,id" data/3-columns-3-rows.csv cut/id-5-times.csv da
 
 
 test("csv-cut -T t1 -c id,something" data/2-tables.csv cut/2-tables-cut1.csv data/empty.txt 0
-	cut-2tables-cut1)
+	cut_2tables-cut1)
 
 test("csv-cut -T t2 -c id" data/2-tables.csv cut/2-tables-cut2.csv data/empty.txt 0
-	cut-2tables-cut2)
+	cut_2tables-cut2)
 
 test("csv-cut -T t1 -r -c id" data/2-tables.csv cut/2-tables-cut3.csv data/empty.txt 0
-	cut-2tables-cut3)
+	cut_2tables-cut3)
+
+test("csv-cut -T t1 -c id,something" data/3-columns-3-rows.csv data/empty.txt cut/no-table-column.txt 2
+	cut_tables-no-table-column)
+
+test("csv-cut -T t1 -r -c name,name" data/2-tables.csv data/empty.txt cut/remove-column-twice-table.txt 2
+	cut_table_remove_column_twice)
+
 
 test("csv-cut --help" data/empty.csv cut/help.txt data/empty.txt 2
 	cut_help)
