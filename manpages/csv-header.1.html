@@ -5,11 +5,13 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>csv-header</title>
-  <style type="text/css">
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
   </style>
 </head>
 <body>
@@ -23,6 +25,9 @@
 <h1 id="description">DESCRIPTION</h1>
 <p>Read CSV stream from standard input and print back to standard output with the column header transformed.</p>
 <dl>
+<dt>-a, --add <em>NAME1</em>[:<em>TYPE1</em>][,<em>NAME2</em>[:<em>TYPE2</em>]…]</dt>
+<dd>add header
+</dd>
 <dt>-e, --set-types <em>NAME1</em>:<em>TYPE1</em>[,<em>NAME2</em>:<em>TYPE2</em>…]</dt>
 <dd>set type of column <em>NAME1</em> to <em>TYPE1</em>, type of column <em>NAME2</em> to <em>TYPE2</em>, etc.
 </dd>

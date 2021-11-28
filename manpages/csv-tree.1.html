@@ -5,11 +5,13 @@
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>csv-tree</title>
-  <style type="text/css">
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
   </style>
 </head>
 <body>
@@ -56,7 +58,7 @@
 <dt><code>csv-ls -llR /usr/local | csv-tree -k full_path -p parent -i name -m size | csv-cut -c size,name -S</code></dt>
 <dd>recursively print files and directories from /usr/local in tree structure
 </dd>
-<dt><code>csv-ps | csv-tree -k pid -p ppid -i command -n vm_rss_KiB | csv-cut -c vm_rss_KiB,command -S</code></dt>
+<dt><code>csv-ps | csv-tree -k pid -p ppid -i command -m vm_rss_KiB | csv-cut -c vm_rss_KiB,command -S</code></dt>
 <dd>print process tree with combined memory usage
 </dd>
 </dl>
