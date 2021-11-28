@@ -29,8 +29,7 @@ test("csv-tail -n 1" data/one-column-one-row.csv data/one-column-one-row.csv dat
 if (FAULT_INJECTION)
 	test("csv-tail -n 1" data/one-column-one-row.csv tail/zero-lines.csv data/malloc-enomem.txt 2
 		tail_-n_1_line_alloc_failure)
-	set_tests_properties(tail_-n_1_line_alloc_failure PROPERTIES
-		ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/fi/;CSVNIXTOOLS_XMALLOC_FAIL_ON_SIZE=12")
+	append_envs(tail_-n_1_line_alloc_failure "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/fi/;CSVNIXTOOLS_XMALLOC_FAIL_ON_SIZE=12")
 endif()
 
 test("csv-tail --lines 2" data/one-column-one-row.csv data/one-column-one-row.csv data/empty.txt 0

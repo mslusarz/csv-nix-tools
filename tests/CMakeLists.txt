@@ -46,6 +46,12 @@ function(test cmd input stdout stderr expected_res name)
 	test_with_cwd(${cmd} ${input} ${stdout} ${stderr} ${expected_res} ${name} "")
 endfunction()
 
+function(append_envs test envs)
+	get_test_property(${test} ENVIRONMENT TEST_ENV)
+	set_tests_properties(${test} PROPERTIES ENVIRONMENT "${envs};${TEST_ENV}")
+	unset(TEST_ENV)
+endfunction()
+
 function(inc name)
 	include(${name}/${name}.cmake)
 endfunction()
