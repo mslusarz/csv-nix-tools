@@ -122,7 +122,7 @@ add_nameless_input(const char *table, FILE *f)
 
 		size_t idx = csv_find(Headers, Nheaders + i, name);
 		if (idx != CSV_NOT_FOUND) {
-			fprintf(stderr, "column '%s' already exists\n", h->name);
+			fprintf(stderr, "column '%s' already exists\n", name);
 			exit(2);
 		}
 

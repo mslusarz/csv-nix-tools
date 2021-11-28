@@ -113,7 +113,7 @@ test("csv-cut -T t2 -c id" data/2-tables.csv cut/2-tables-cut2.csv data/empty.tx
 test("csv-cut -T t1 -r -c id" data/2-tables.csv cut/2-tables-cut3.csv data/empty.txt 0
 	cut_2tables-cut3)
 
-test("csv-cut -T t1 -c id,something" data/3-columns-3-rows.csv data/empty.txt cut/no-table-column.txt 2
+test("csv-cut -T t1 -c id,something" data/3-columns-3-rows.csv data/empty.txt data/no-table-column.txt 2
 	cut_tables-no-table-column)
 
 test("csv-cut -T t1 -r -c name,name" data/2-tables.csv data/empty.txt cut/remove-column-twice-table.txt 2
