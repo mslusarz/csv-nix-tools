@@ -33,7 +33,7 @@ and print back to standard output a merged CSV with tables.
 -S, \--show-full
 :   print output in table format with pager
 
-\--path-with-table *FILE*
+-P, \--path-with-table *FILE*
 :   read CSV stream with table from *FILE*; '-' means standard input
 
 \--help

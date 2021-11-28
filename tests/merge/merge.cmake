@@ -22,7 +22,7 @@ test("csv-merge --path-with-table ${DATA_DIR}/../merge/2-files-different-columns
 test("csv-merge --table table3 --path-without-table ${DATA_DIR}/3-columns-3-rows.csv --path-with-table ${DATA_DIR}/../merge/2-files-different-columns.csv" data/empty.csv merge/normal_table.csv data/empty.txt 0
 	merge_normal_table)
 
-test("csv-merge --path-with-table ${DATA_DIR}/../merge/2-files-different-columns.csv --table table3 --path-without-table ${DATA_DIR}/3-columns-3-rows.csv --path-with-table ${DATA_DIR}/../merge/table4-one-column-one-row.csv" data/empty.csv merge/table_normal_table.csv data/empty.txt 0
+test("csv-merge -P ${DATA_DIR}/../merge/2-files-different-columns.csv --table table3 --path-without-table ${DATA_DIR}/3-columns-3-rows.csv --path-with-table ${DATA_DIR}/../merge/table4-one-column-one-row.csv" data/empty.csv merge/table_normal_table.csv data/empty.txt 0
 	merge_table_normal_table)
 
 test("csv-merge --help" data/empty.csv merge/help.txt data/empty.txt 2

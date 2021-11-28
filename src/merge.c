@@ -60,7 +60,7 @@ usage(FILE *out)
 	describe_Show(out);
 	describe_Show_full(out);
 	fprintf(out,
-"      --path-with-table FILE\n"
+"  -P, --path-with-table FILE\n"
 "                             read CSV stream with table from FILE;\n"
 "                             '-' means standard input\n");
 	describe_help(out);
