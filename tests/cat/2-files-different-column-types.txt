@@ -1,0 +1,1 @@
+column 'col2' have different types in different inputs

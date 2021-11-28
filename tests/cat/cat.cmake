@@ -19,6 +19,12 @@ test("csv-cat ${DATA_DIR}/3-different-order-columns-3-rows.csv ${DATA_DIR}/../ca
 test("csv-cat ${DATA_DIR}/one-column-one-row.csv ${DATA_DIR}/2-columns-3-rows.csv" data/empty.csv data/empty.csv cat/2-files-different-num-columns.txt 2
 	cat_two_files_different_columns)
 
+test("csv-cat ${DATA_DIR}/../cat/2-files-different-column-names-file1.csv ${DATA_DIR}/../cat/2-files-different-column-names-file2.csv" data/empty.csv data/empty.csv cat/2-files-different-column-names.txt 2
+	cat_two_different_column_names)
+
+test("csv-cat ${DATA_DIR}/../cat/2-files-different-column-types-file1.csv ${DATA_DIR}/../cat/2-files-different-column-types-file2.csv" data/empty.csv data/empty.csv cat/2-files-different-column-types.txt 2
+	cat_two_different_column_types)
+
 test("csv-cat --help" data/empty.csv cat/help.txt data/empty.txt 2
 	cat_help)
 
