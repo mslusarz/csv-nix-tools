@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: BSD-3-Clause
-Copyright 2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+Copyright 2021-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
 -->
 
 ---
@@ -29,6 +29,9 @@ back data with hierarchical information.
 
 -k, \--key=*NAME*
 :   use column *NAME* as a unique key identifying each row
+
+-l, \--level
+:   add 'level' column
 
 -p, \--parent=*NAME*
 :   use column *NAME* as a pointer to parent row

@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2021-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -20,6 +20,7 @@ static const struct option opts[] = {
 	{"filter",	required_argument,	NULL, 'f'},
 	{"indent",	required_argument,	NULL, 'i'},
 	{"key",		required_argument,	NULL, 'k'},
+	{"level",	no_argument,		NULL, 'l'},
 	{"parent",	required_argument,	NULL, 'p'},
 	{"show",	no_argument,		NULL, 's'},
 	{"sum",		required_argument,	NULL, 'm'},
@@ -47,6 +48,8 @@ usage(FILE *out)
 	fprintf(out,
 "  -k, --key=NAME             use column NAME as a unique key identifying\n"
 "                             each row\n");
+	fprintf(out,
+"  -l, --level                add 'level' column\n");
 	fprintf(out,
 "  -m, --sum=NAME[,NEW-NAME]  sum data from column NAME and put it in a new\n"
 "                             column NEW-NAME, if NEW-NAME is omitted column\n"
@@ -197,7 +200,7 @@ static void
 process(struct lines *lines, struct line_info *cur_row, size_t ncols, size_t lvl,
 		size_t indent_col, bool indent_replace,
 		size_t sum_col, bool sum_replace, bool sum_is_int,
-		bool filter_set, bool print)
+		bool filter_set, bool print, bool print_lvl)
 {
 	struct line *line = &lines->data[cur_row->cur_idx];
 	if (filter_set && !print)
@@ -228,6 +231,12 @@ process(struct lines *lines, struct line_info *cur_row, size_t ncols, size_t lvl
 			else
 				printf("%f", cur_row->fsum);
 		}
+
+		if (print_lvl) {
+			putchar(',');
+			printf("%zu", lvl);
+		}
+
 		putchar('\n');
 	}
 
@@ -235,7 +244,7 @@ process(struct lines *lines, struct line_info *cur_row, size_t ncols, size_t lvl
 		process(lines, cur_row->children_idx[j], ncols, lvl + print,
 			indent_col, indent_replace,
 			sum_col, sum_replace, sum_is_int,
-			filter_set, print);
+			filter_set, print, print_lvl);
 	}
 }
 
@@ -252,10 +261,11 @@ main(int argc, char *argv[])
 	char *new_sum_name = NULL;
 	char *parent = NULL;
 	char *filter = NULL;
+	bool print_lvl = false;
 
 	lines_init(&params.lines);
 
-	while ((opt = getopt_long(argc, argv, "f:i:k:m:p:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "f:i:k:lm:p:sS", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'f':
 				free(filter);
@@ -268,6 +278,9 @@ main(int argc, char *argv[])
 			case 'k':
 				free(key);
 				key = xstrdup_nofail(optarg);
+				break;
+			case 'l':
+				print_lvl = true;
 				break;
 			case 'm':
 				free(sum);
@@ -434,6 +447,10 @@ main(int argc, char *argv[])
 		else
 			printf(",%s:float", new_sum_name);
 	}
+
+	if (print_lvl)
+		printf(",level:int");
+
 	printf("\n");
 
 	for (size_t i = 0; i < lines->used; ++i) {
@@ -448,7 +465,7 @@ main(int argc, char *argv[])
 		process(lines, cur_row, nheaders, 0,
 			indent_col, new_indent_name == indent,
 			sum_col, new_sum_name == sum, sum_is_int,
-			filter != NULL, filter == NULL);
+			filter != NULL, filter == NULL, print_lvl);
 	}
 
 	for (size_t i = 0; i < lines->used; ++i) {
