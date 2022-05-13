@@ -1,28 +1,35 @@
 #!/bin/bash -e
 
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2021-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
 
 set -o pipefail
 
-show=
+treeopts=
+columns=size
+cutopts=
 indentcol=name
 OPTIND=1
 
-while getopts "fsS" opt; do
+while getopts "fLsS" opt; do
     case "$opt" in
     f)  indentcol=full_path
         ;;
-    s)  show=-s
+    L)  treeopts=-L
+        columns=$columns,level
         ;;
-    S)  show=-S
+    s)  cutopts=-s
+        ;;
+    S)  cutopts=-S
         ;;
     esac
 done
 
 shift $((OPTIND-1))
 
+columns=$columns,$indentcol
+
 csv-ls -a -c full_path,parent,name,size -R "$@" | \
 	csv-grep -v -c name -x -F . -c name -x -F .. | \
-	csv-tree --key full_path --parent parent --indent $indentcol --sum size | \
-	csv-cut -c size,$indentcol $show
+	csv-tree --key full_path --parent parent --indent $indentcol --sum size $treeopts | \
+	csv-cut -c $columns $cutopts

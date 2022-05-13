@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: BSD-3-Clause
-Copyright 2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+Copyright 2021-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
 -->
 
 ---
@@ -23,6 +23,9 @@ Recursively list FILEs (starting from current directory by default).
 -f
 :   add parent directory prefix to file names
 
+-L
+:   add 'level' column
+
 -s
 :   print output in table format
 
@@ -34,6 +37,8 @@ Recursively list FILEs (starting from current directory by default).
 `csv-lstree`
 
 `csv-lstree -s /usr/local`
+
+`csv-lstree -L ~ | csv-grep-sql -e 'level < 2' | csv-cut -c size,name -S`
 
 # SEE ALSO #
 
