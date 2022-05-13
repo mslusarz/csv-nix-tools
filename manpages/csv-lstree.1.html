@@ -28,6 +28,9 @@
 <dt>-f</dt>
 <dd>add parent directory prefix to file names
 </dd>
+<dt>-L</dt>
+<dd>add ‘level’ column
+</dd>
 <dt>-s</dt>
 <dd>print output in table format
 </dd>
@@ -38,6 +41,7 @@
 <h1 id="examples">EXAMPLES</h1>
 <p><code>csv-lstree</code></p>
 <p><code>csv-lstree -s /usr/local</code></p>
+<p><code>csv-lstree -L ~ | csv-grep-sql -e 'level &lt; 2' | csv-cut -c size,name -S</code></p>
 <h1 id="see-also">SEE ALSO</h1>
 <p><strong><a href="csv-ls.1.html">csv-ls</a></strong>(1), <strong><a href="csv-tree.1.html">csv-tree</a></strong>(1), <strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
 </body>
