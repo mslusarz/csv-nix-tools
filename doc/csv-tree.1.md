@@ -30,7 +30,7 @@ back data with hierarchical information.
 -k, \--key=*NAME*
 :   use column *NAME* as a unique key identifying each row
 
--l, \--level
+-L, \--level
 :   add 'level' column
 
 -p, \--parent=*NAME*

@@ -20,7 +20,7 @@ static const struct option opts[] = {
 	{"filter",	required_argument,	NULL, 'f'},
 	{"indent",	required_argument,	NULL, 'i'},
 	{"key",		required_argument,	NULL, 'k'},
-	{"level",	no_argument,		NULL, 'l'},
+	{"level",	no_argument,		NULL, 'L'},
 	{"parent",	required_argument,	NULL, 'p'},
 	{"show",	no_argument,		NULL, 's'},
 	{"sum",		required_argument,	NULL, 'm'},
@@ -49,7 +49,7 @@ usage(FILE *out)
 "  -k, --key=NAME             use column NAME as a unique key identifying\n"
 "                             each row\n");
 	fprintf(out,
-"  -l, --level                add 'level' column\n");
+"  -L, --level                add 'level' column\n");
 	fprintf(out,
 "  -m, --sum=NAME[,NEW-NAME]  sum data from column NAME and put it in a new\n"
 "                             column NEW-NAME, if NEW-NAME is omitted column\n"
@@ -265,7 +265,7 @@ main(int argc, char *argv[])
 
 	lines_init(&params.lines);
 
-	while ((opt = getopt_long(argc, argv, "f:i:k:lm:p:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "f:i:k:Lm:p:sS", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'f':
 				free(filter);
@@ -279,7 +279,7 @@ main(int argc, char *argv[])
 				free(key);
 				key = xstrdup_nofail(optarg);
 				break;
-			case 'l':
+			case 'L':
 				print_lvl = true;
 				break;
 			case 'm':

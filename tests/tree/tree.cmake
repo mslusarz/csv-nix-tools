@@ -13,7 +13,7 @@ test("csv-tree -k full_path -p parent -i name -m size -s" tree/ls-sys-module8250
 test("csv-tree -k full_path -p parent -i name -m size -S" tree/ls-sys-module8250.csv tree/ls-sys-module8250-tree.txt data/empty.txt 0
 	tree_basic_-S)
 
-test("csv-tree -k full_path -p parent -i name -m size -l" tree/ls-sys-module8250.csv tree/ls-sys-module8250-tree-level.csv data/empty.txt 0
+test("csv-tree -k full_path -p parent -i name -m size -L" tree/ls-sys-module8250.csv tree/ls-sys-module8250-tree-level.csv data/empty.txt 0
 	tree_with_level)
 
 test("csv-tree --help" data/empty.csv tree/help.txt data/empty.txt 2

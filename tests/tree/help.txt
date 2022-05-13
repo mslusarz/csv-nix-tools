@@ -10,7 +10,7 @@ Options:
                              NAME is replaced
   -k, --key=NAME             use column NAME as a unique key identifying
                              each row
-  -l, --level                add 'level' column
+  -L, --level                add 'level' column
   -m, --sum=NAME[,NEW-NAME]  sum data from column NAME and put it in a new
                              column NEW-NAME, if NEW-NAME is omitted column
                              NAME is replaced
