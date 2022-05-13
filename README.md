@@ -22,8 +22,7 @@ into a single stream (see the [tables tutorial]) and processing it in any way
 user wants to, including powerful SQL syntax, without leaving the shell.
 
 # Status
-This project is in alpha stage. Everything listed below is functional,
-but in the future, many things can change (IOW don't run this in production yet).
+This project is in beta stage. Everything listed below is functional and works as documented.
 Currently, it builds and runs on Linux with glibc only, but portability patches
 are welcomed. Although the project has NIX in the name and many source tools
 are Unix or even Linux-specific, sane portability patches, even for non-Unix
