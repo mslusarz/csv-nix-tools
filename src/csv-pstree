@@ -7,10 +7,12 @@ set -o pipefail
 
 filter=
 filteropt=
-level=
 treeopts=
 cutopts=
 OPTIND=1
+
+incolumns=euid_name,pid,ppid,%cpu,vm_rss_KiB,tty_id,state,start_time,cpu_time,processor,command
+outcolumns=euid_name,pid,ppid,%cpu,vm_rss_KiB,vm_rss_KiB_sum,tty_id,state,start_time,cpu_time,processor,command
 
 while getopts "f:LsS" opt; do
     case "$opt" in
@@ -18,7 +20,7 @@ while getopts "f:LsS" opt; do
         filteropt="$OPTARG"
         ;;
     L)  treeopts=-L
-        level=level,
+        outcolumns=level,$outcolumns
         ;;
     s)  cutopts=-s
         ;;
@@ -27,10 +29,8 @@ while getopts "f:LsS" opt; do
     esac
 done
 
-columns=euid_name,pid,ppid,%cpu,vm_rss_KiB,tty_id,state,start_time,cpu_time,processor,command
-
 shift $((OPTIND-1))
 
-csv-ps -c $columns "$@" | \
-	csv-tree --key pid --parent ppid --indent command --sum vm_rss_KiB $treeopts $filter "$filteropt" | \
-	csv-cut -c $level$columns $cutopts
+csv-ps -c $incolumns "$@" | \
+	csv-tree --key pid --parent ppid --indent command --sum vm_rss_KiB,vm_rss_KiB_sum $treeopts $filter "$filteropt" | \
+	csv-cut -c $outcolumns $cutopts
