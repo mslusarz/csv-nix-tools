@@ -1,30 +1,36 @@
 #!/bin/bash -e
 
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2021-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
 
 set -o pipefail
 
 filter=
 filteropt=
-show=
+treeopts=
+cutopts=
 OPTIND=1
+columns=pid
 
-while getopts "f:sS" opt; do
+while getopts "f:LsS" opt; do
     case "$opt" in
     f)  filter=--filter
         filteropt="$OPTARG"
         ;;
-    s)  show=-s
+    L)  treeopts=-L
+        columns=$columns,level
         ;;
-    S)  show=-S
+    s)  cutopts=-s
+        ;;
+    S)  cutopts=-S
         ;;
     esac
 done
 
+columns=$columns,vm_rss_KiB,command
+
 shift $((OPTIND-1))
 
-
 csv-ps -c pid,ppid,command,vm_rss_KiB "$@" | \
-	csv-tree --key pid --parent ppid --indent command --sum vm_rss_KiB $filter "$filteropt" | \
-	csv-cut -c pid,vm_rss_KiB,command $show
+	csv-tree --key pid --parent ppid --indent command --sum vm_rss_KiB $treeopts $filter "$filteropt" | \
+	csv-cut -c $columns $cutopts

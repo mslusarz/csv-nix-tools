@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: BSD-3-Clause
-Copyright 2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+Copyright 2021-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
 -->
 
 ---
@@ -22,6 +22,9 @@ List processes in hierarchical manner.
 
 -f *PID*
 :   print only process *PID* and its descendants
+
+-L
+:   add 'level' column
 
 -s
 :   print output in table format
