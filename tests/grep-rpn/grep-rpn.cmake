@@ -1,8 +1,17 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
+
+test("csv-grep-rpn" data/empty.csv data/empty.txt grep-rpn/help.txt 2
+	grep-rpn_no_args)
+
+test("csv-grep-rpn -e 'bleh'" data/3-columns-3-rows.csv data/empty.txt data/rpn-filter-invalid-expression.txt 2
+	grep-rpn_invalid_expression)
+
+test("csv-grep-rpn -e '%name'" data/3-columns-3-rows.csv data/empty.txt data/rpn-filter-non-numeric-expression.txt 2
+	grep-rpn_non_numeric_expression)
 
 test("csv-grep-rpn -e '%id 2 =='" data/3-columns-3-rows.csv data/rpn-filter-row-2.csv data/empty.txt 0
 	grep-rpn_eq)
@@ -327,6 +336,8 @@ test("csv-grep-rpn -e '%name 2 -1 substr %name =='" data/3-columns-3-rows.csv da
 test("csv-grep-rpn -T t1 -e \"%name '%or%' like\"" grep-rpn/2-tables.csv grep-rpn/2-tables-t1-or.csv data/empty.txt 0
 	grep-rpn_-T_t1_-e_name_or_like)
 
+test("csv-grep-rpn -T t1 -e \"%name '%or%' like\"" data/no-table.csv data/empty.txt data/no-table-column.txt 2
+	grep-rpn_no_table)
 
 test("csv-grep-rpn -e '%col2 1000 =='" data/floats.csv grep-rpn/float-1000.csv data/empty.txt 0
 	grep-rpn_float-eq-int)
