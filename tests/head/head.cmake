@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 #
 # Copyright 2019, Sebastian Pidek <sebastian.pidek@gmail.com>
-# Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 test("csv-head" data/empty.csv data/empty.csv data/eof.txt 2
@@ -46,6 +46,12 @@ test("csv-head --lines=3" data/3-columns-3-rows.csv data/3-columns-3-rows.csv da
 
 test("csv-head -n 3" data/3-columns-3-rows.csv data/3-columns-3-rows.csv data/empty.txt 0
 	head_-n_3_and_there_are_3_lines_in_input)
+
+test("csv-head -n not-a-number" data/one-column-one-row.csv data/empty.txt head/not-a-number.txt 2
+	head_-n_not-a-number)
+
+test("csv-head -n 1" data/quot-invalid.csv data/quot-invalid-stdout.csv data/quot-invalid-stderr.txt 2
+	head_invalid_input)
 
 test("csv-head --help" data/empty.csv head/help.txt data/empty.txt 2
 	head_help)
