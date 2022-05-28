@@ -25,7 +25,7 @@ test("csv-add-concat -T t1 -- new = 'X ' %name ' Y'" data/2-tables.csv add-conca
 test("csv-add-concat new_column = %name ' - ' %something" add-concat/no-types-quot-in.csv add-concat/no-types-quot-out.csv data/empty.txt 0
 	add-concat_no_types_quot)
 
-test("csv-add-concat new_column %name" data/empty.csv data/empty.txt add-concat/help.txt 2
+test("csv-add-concat new_column %name %something" data/empty.csv data/empty.txt add-concat/help.txt 2
 	add-concat_no_equal)
 
 test("csv-add-concat new_column = %naame ' - ' %id" data/3-columns-3-rows.csv data/empty.txt add-concat/column-not-found.txt 2
