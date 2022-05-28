@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 if (BUILD_SQL)
@@ -53,6 +53,15 @@ test("csv-grep-sql -e 'id / 2 == 1'" data/3-columns-3-rows.csv data/rpn-filter-r
 
 test("csv-grep-sql -e 'length(name) == 11'" data/3-columns-3-rows.csv data/rpn-filter-row-1.csv data/empty.txt 0
 	grep-sql_length)
+
+test("csv-grep-sql -e 'length(name) == 0xb'" data/3-columns-3-rows.csv data/rpn-filter-row-1.csv data/empty.txt 0
+	grep-sql_length_hex)
+
+test("csv-grep-sql -e 'length(name) == 013'" data/3-columns-3-rows.csv data/rpn-filter-row-1.csv data/empty.txt 0
+	grep-sql_length_oct)
+
+test("csv-grep-sql -e 'length(name) == 0b1011'" data/3-columns-3-rows.csv data/rpn-filter-row-1.csv data/empty.txt 0
+	grep-sql_length_bin)
 
 test("csv-grep-sql -e \"substr(name, 3, 1) == 'r'\"" data/3-columns-3-rows.csv data/rpn-filter-row-1.csv data/empty.txt 0
 	grep-sql_substr)
