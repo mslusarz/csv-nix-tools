@@ -12,8 +12,8 @@ OPTIND=1
 
 treesumopts="--sum size,size_sum"
 
-incolumns=full_path,parent,name,size
-outcolumns=size,size_sum
+incolumns=full_path,parent,name,size,type_mode,nlink,owner_name,group_name,symlink,mtime
+outcolumns=type_mode,nlink,owner_name,group_name,size,size_sum,mtime,NAME,symlink
 
 function append_column() {
     if [ "$1" != "" ]; then
@@ -83,7 +83,7 @@ done
 shift $((OPTIND-1))
 
 if [ "$customcolumns" = "0" ]; then
-    outcolumns=$outcolumns,$indentcol
+    outcolumns=$(echo "$outcolumns" | sed "s/,NAME,/,$indentcol,/")
 fi
 
 csv-ls -a -c $incolumns -R "$@" | \
