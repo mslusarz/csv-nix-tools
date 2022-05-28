@@ -6,17 +6,72 @@
 set -o pipefail
 
 treeopts=
-columns=size,size_sum
 cutopts=
 indentcol=name
 OPTIND=1
 
-while getopts "fLsS" opt; do
+treesumopts="--sum size,size_sum"
+
+incolumns=full_path,parent,name,size
+outcolumns=size,size_sum
+
+function append_column() {
+    if [ "$1" != "" ]; then
+        if [ "$incolumns" = "" ]; then
+            incolumns=$1
+        else
+            incolumns=$incolumns,$1;
+        fi
+    fi
+
+    if [ "$2" != "" ]; then
+        if [ "$outcolumns" = "" ]; then
+            outcolumns=$2
+        else
+            outcolumns=$outcolumns,$2;
+        fi
+    fi
+}
+
+customcolumns=0
+
+while getopts "c:fLsS" opt; do
     case "$opt" in
+    c)  full_path_exists=0
+        parent_exists=0
+        name_exists=0
+        size_exists=0
+        size_sum_exists=0
+        incolumns=""
+        outcolumns=""
+        for col in $(echo $OPTARG | tr "," "\n")
+        do
+            if   [ "$col" = "size_sum"       ]; then size_sum_exists=1; append_column "size" "size_sum";
+            elif [ "$col" = "level"          ]; then treeopts=-L;       append_column "" "level";
+            else
+                append_column "$col" "$col"
+                if   [ "$col" = "full_path"  ]; then full_path_exists=1;
+                elif [ "$col" = "parent"     ]; then parent_exists=1;
+                elif [ "$col" = "name"       ]; then name_exists=1;
+                elif [ "$col" = "size"       ]; then size_exists=1;
+                fi
+            fi
+        done
+
+	# columns we must have for csv-tree
+        if [ "$full_path_exists" = "0" ]; then append_column "full_path" ""; fi
+        if [ "$parent_exists"    = "0" ]; then append_column "parent" ""; fi
+        if [ "$name_exists"      = "0" ]; then append_column "name" ""; fi
+
+        if [ "$size_sum_exists" = "0" ]; then
+            treesumopts="";
+        fi
+        customcolumns=1
+        ;;
     f)  indentcol=full_path
         ;;
     L)  treeopts=-L
-        columns=$columns,level
+        outcolumns=level,$outcolumns
         ;;
     s)  cutopts=-s
         ;;
@@ -27,9 +82,11 @@ done
 
 shift $((OPTIND-1))
 
-columns=$columns,$indentcol
+if [ "$customcolumns" = "0" ]; then
+    outcolumns=$outcolumns,$indentcol
+fi
 
-csv-ls -a -c full_path,parent,name,size -R "$@" | \
+csv-ls -a -c $incolumns -R "$@" | \
 	csv-grep -v -c name -x -F . -c name -x -F .. | \
-	csv-tree --key full_path --parent parent --indent $indentcol --sum size,size_sum $treeopts | \
-	csv-cut -c $columns $cutopts
+	csv-tree --key full_path --parent parent --indent $indentcol $treesumopts $treeopts | \
+	csv-cut -c $outcolumns $cutopts

@@ -20,6 +20,9 @@ csv-lstree - list files in hierarchical manner
 
 Recursively list FILEs (starting from current directory by default).
 
+-c *NAME1*[,*NAME2*...]
+:   choose the list of columns
+
 -f
 :   add parent directory prefix to file names
 
