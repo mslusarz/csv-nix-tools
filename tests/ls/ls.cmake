@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 test_with_cwd("csv-ls -c name"
@@ -27,6 +27,11 @@ test_with_cwd("csv-ls -c name -M"
 test_with_cwd("csv-ls -c name -M -N lorem"
 	data/3-columns-3-rows-with-table.csv ls/files_and_dirs_merged_table.csv data/empty.txt 0
 	ls-merge-new-table
+	${CMAKE_SOURCE_DIR}/tests/ls/files)
+
+test_with_cwd("csv-ls -c name -M -N lorem"
+	data/no-table.csv "" data/no-table-column-in-input.txt 2
+	ls-merge-no-table
 	${CMAKE_SOURCE_DIR}/tests/ls/files)
 
 test_with_cwd("csv-ls | csv-count -c"

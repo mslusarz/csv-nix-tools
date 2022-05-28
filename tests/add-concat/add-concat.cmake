@@ -31,7 +31,7 @@ test("csv-add-concat new_column %name %something" data/empty.csv data/empty.txt 
 test("csv-add-concat new_column = %naame ' - ' %id" data/3-columns-3-rows.csv data/empty.txt add-concat/column-not-found.txt 2
 	add-concat_unknown_column)
 
-test("csv-add-concat -T t1 -- new2 = 'X ' %name ' Y'" add-concat/no-table.csv data/empty.txt add-concat/table-not-found.txt 2
+test("csv-add-concat -T t1 -- new2 = 'X ' %name ' Y'" data/no-table.csv data/empty.txt add-concat/table-not-found.txt 2
 	add-concat_table_not_found)
 
 test("csv-add-concat --help" data/empty.csv add-concat/help.txt data/empty.txt 2
