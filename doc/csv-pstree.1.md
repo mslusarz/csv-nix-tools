@@ -20,6 +20,9 @@ csv-pstree - list processes in hierarchical manner
 
 List processes in hierarchical manner.
 
+-c *NAME1*[,*NAME2*...]
+:   choose the list of columns
+
 -f *PID*
 :   print only process *PID* and its descendants
 
@@ -34,11 +37,13 @@ List processes in hierarchical manner.
 
 # EXAMPLES #
 
-`csv-pstree -s`
+`csv-pstree -S`
 
-`csv-pstree -f 2 -s`
+`csv-pstree -f 2 -S`
 
 `csv-pstree -f 1 | csv-exec kill %pid`
+
+`csv-pstree -c pid,command -S`
 
 # SEE ALSO #
 

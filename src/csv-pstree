@@ -10,12 +10,61 @@ filteropt=
 treeopts=
 cutopts=
 OPTIND=1
+treesumopts="--sum vm_rss_KiB,vm_rss_KiB_sum"
 
 incolumns=euid_name,pid,ppid,%cpu,vm_rss_KiB,tty_id,state,start_time,cpu_time,processor,command
 outcolumns=euid_name,pid,ppid,%cpu,vm_rss_KiB,vm_rss_KiB_sum,tty_id,state,start_time,cpu_time,processor,command
 
-while getopts "f:LsS" opt; do
+function append_column() {
+    if [ "$1" != "" ]; then
+        if [ "$incolumns" = "" ]; then
+            incolumns=$1
+        else
+            incolumns=$incolumns,$1;
+        fi
+    fi
+
+    if [ "$2" != "" ]; then
+        if [ "$outcolumns" = "" ]; then
+            outcolumns=$2
+        else
+            outcolumns=$outcolumns,$2;
+        fi
+    fi
+}
+
+while getopts "c:f:LsS" opt; do
     case "$opt" in
+    c)  pid_exists=0
+        ppid_exists=0
+        command_exists=0
+        rss_exists=0
+        rss_sum_exists=0
+        incolumns=""
+        outcolumns=""
+        for col in $(echo $OPTARG | tr "," "\n")
+        do
+            if   [ "$col" = "vm_rss_KiB_sum" ]; then rss_sum_exists=1; append_column "vm_rss_KiB" "vm_rss_KiB_sum";
+            elif [ "$col" = "level"          ]; then treeopts=-L;      append_column "" "level";
+            else
+                append_column "$col" "$col"
+                if   [ "$col" = "pid"            ]; then pid_exists=1;
+                elif [ "$col" = "ppid"           ]; then ppid_exists=1;
+                elif [ "$col" = "command"        ]; then command_exists=1;
+                elif [ "$col" = "vm_rss_KiB"     ]; then rss_exists=1;
+                fi
+            fi
+        done
+
+	# columns we must have for csv-tree
+        if [ "$pid_exists"     = "0" ]; then append_column "pid" ""; fi
+        if [ "$ppid_exists"    = "0" ]; then append_column "ppid" ""; fi
+        if [ "$command_exists" = "0" ]; then append_column "command" ""; fi
+
+        if [ "$rss_sum_exists" = "0" ]; then
+            treesumopts="";
+        fi
+        ;;
     f)  filter=--filter
         filteropt="$OPTARG"
         ;;
@@ -32,5 +81,5 @@ done
 shift $((OPTIND-1))
 
 csv-ps -c $incolumns "$@" | \
-	csv-tree --key pid --parent ppid --indent command --sum vm_rss_KiB,vm_rss_KiB_sum $treeopts $filter "$filteropt" | \
+	csv-tree --key pid --parent ppid --indent command $treesumopts $treeopts $filter "$filteropt" | \
 	csv-cut -c $outcolumns $cutopts
