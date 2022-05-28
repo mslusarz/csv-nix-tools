@@ -25,8 +25,14 @@
 <h1 id="description">DESCRIPTION</h1>
 <p>List processes in hierarchical manner.</p>
 <dl>
+<dt>-c <em>NAME1</em>[,<em>NAME2</em>…]</dt>
+<dd>choose the list of columns
+</dd>
 <dt>-f <em>PID</em></dt>
 <dd>print only process <em>PID</em> and its descendants
+</dd>
+<dt>-L</dt>
+<dd>add ‘level’ column
 </dd>
 <dt>-s</dt>
 <dd>print output in table format
@@ -36,9 +42,10 @@
 </dd>
 </dl>
 <h1 id="examples">EXAMPLES</h1>
-<p><code>csv-pstree -s</code></p>
-<p><code>csv-pstree -f 2 -s</code></p>
+<p><code>csv-pstree -S</code></p>
+<p><code>csv-pstree -f 2 -S</code></p>
 <p><code>csv-pstree -f 1 | csv-exec kill %pid</code></p>
+<p><code>csv-pstree -c pid,command -S</code></p>
 <h1 id="see-also">SEE ALSO</h1>
 <p><strong><a href="csv-ps.1.html">csv-ps</a></strong>(1), <strong><a href="csv-tree.1.html">csv-tree</a></strong>(1), <strong><a href="csv-show.1.html">csv-show</a></strong>(1), <strong><a href="csv-nix-tools.7.html">csv-nix-tools</a></strong>(7)</p>
 </body>
