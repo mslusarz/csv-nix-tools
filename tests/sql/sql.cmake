@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 if (BUILD_SQL)
@@ -292,6 +292,10 @@ test("csv-sql 'select id, id/2 as id2, name from input order by id2, name desc'"
 test("csv-sql 'select *, col2 * 3 as col2tripled from input'"
 	data/floats.csv sql/floats.csv data/empty.txt 0
 	sql_floats)
+
+test("csv-sql 'select aaa from input'"
+	data/3-columns-3-rows.csv data/empty.txt sql/column-not-exists.txt 2
+	sql_select_not-exists)
 
 test("csv-sql --help" data/empty.csv sql/help.txt data/empty.txt 2
 	sql_help)
