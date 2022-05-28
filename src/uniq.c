@@ -173,7 +173,7 @@ main(int argc, char *argv[])
 	if (params.table) {
 		params.table_column = csv_find(headers, nheaders, TABLE_COLUMN);
 		if (params.table_column == CSV_NOT_FOUND) {
-			fprintf(stderr, "column %s not found\n", TABLE_COLUMN);
+			fprintf(stderr, "column '%s' not found\n", TABLE_COLUMN);
 			exit(2);
 		}
 		params.cols[params.ncols++] = params.table_column;
