@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -32,6 +32,7 @@ static const struct option opts[] = {
 	{"spacing",		required_argument,	NULL, 'p'},
 	{"use-color-columns",	no_argument,		NULL, 'C' },
 	{"set-color",		required_argument,	NULL, 'c' },
+	{"interactive",		no_argument,		NULL, 'i' },
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{"debug",		required_argument,	NULL, 'D'},
@@ -48,6 +49,7 @@ usage(FILE *out)
 	fprintf(out, "\n");
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -C, --use-color-columns    use columns with _color suffix\n");
+	fprintf(out, "  -i, --interactive          line-selection mode (ncurses backend only)\n");
 	fprintf(out, "  -p, --spacing NUM          use NUM spaces between columns instead of 3\n");
 	fprintf(out, "  -u, --ui TYPE              choose UI TYPE: ncurses, less, none, auto\n");
 	fprintf(out, "  -s                         short for -u none\n");
@@ -182,6 +184,7 @@ main(int argc, char *argv[])
 	struct cb_params params;
 	bool print_header = true;
 	bool print_types = false;
+	bool interactive = false;
 	enum {
 		GUESS,
 		NCURSES,
@@ -210,7 +213,7 @@ main(int argc, char *argv[])
 	size_t set_colorpair_num = 0;
 	bool use_color_columns = false;
 
-	while ((opt = getopt_long(argc, argv, "Cu:p:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "Ciu:p:sS", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'D':
 				params.logfd = open(optarg,
@@ -261,6 +264,9 @@ main(int argc, char *argv[])
 			case 'C':
 				use_color_columns = true;
 				break;
+			case 'i':
+				interactive = true;
+				break;
 			case 'H':
 				print_header = false;
 				break;
@@ -290,6 +296,11 @@ main(int argc, char *argv[])
 		exit(2);
 	}
 #endif
+
+	if (interactive && ui != NCURSES) {
+		fprintf(stderr, "interactive mode is supported only by ncurses backend\n");
+		exit(2);
+	}
 
 	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
 
@@ -324,7 +335,7 @@ main(int argc, char *argv[])
 #ifdef NCURSESW_ENABLED
 		curses_ui(&params, headers, nheaders, print_header,
 				print_types, spacing, alignments, set_colorpair,
-				set_colorpair_num, use_color_columns);
+				set_colorpair_num, use_color_columns, interactive);
 #endif
 	} else {
 		static_ui(ui == LESS, &params, headers, nheaders, print_header,

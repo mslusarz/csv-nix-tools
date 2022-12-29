@@ -1,9 +1,10 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
+#include <assert.h>
 #include <curses.h>
 #include <fcntl.h>
 #include <limits.h>
@@ -197,7 +198,9 @@ show(struct cb_params *params,
 	bool use_color_columns,
 	bool *is_color_column,
 	size_t *color_column_index,
-	size_t *col_offsets)
+	size_t *col_offsets,
+	bool interactive,
+	size_t selected_line)
 {
 	char **data = params->lines;
 	size_t *max_lengths = params->max_lengths;
@@ -275,6 +278,8 @@ show(struct cb_params *params,
 			size_t len = strlen(buf + col_offsets[i - 1]);
 			col_offsets[i] = col_offsets[i - 1] + len + 1;
 		}
+		if (interactive && ln == selected_line)
+			attron(A_REVERSE);
 
 		for (size_t i = 0; i < nheaders; ++i) {
 			bool truncated;
@@ -297,10 +302,7 @@ show(struct cb_params *params,
 
 			if (alignments[i] == RIGHT)
 				for (size_t j = 0; j < max_lengths[i] - len; ++j)
-					mvaddch(ypos, xpos - xoff + j, ' ');
-
-			if (alignments[i] == RIGHT)
-				xpos += max_lengths[i] - len;
+					mvaddch(ypos, xpos++ - xoff, ' ');
 
 			nprint(ypos, xpos - xoff, buf + col_offsets[i], &truncated);
 
@@ -310,22 +312,22 @@ show(struct cb_params *params,
 				break;
 			}
 
-			if (alignments[i] == LEFT)
-				for (size_t j = len; j < max_lengths[i]; ++j)
-					mvaddch(ypos, xpos - xoff + j, ' ');
-
 			xpos += len;
 
 			if (alignments[i] == LEFT)
-				if (i < nheaders - 1)
-					xpos += max_lengths[i] - len;
+				for (size_t j = 0; j < max_lengths[i] - len; ++j)
+					mvaddch(ypos, xpos++ - xoff, ' ');
 
 			if (i < nheaders - 1)
-				xpos += spacing;
+				for (size_t j = 0; j < spacing; ++j)
+					mvaddch(ypos, xpos++ - xoff, ' ');
 
 			if (colpair != -1)
 				attroff(COLOR_PAIR(colpair));
 		}
+
+		if (interactive && ln == selected_line)
+			attroff(A_REVERSE);
 	}
 }
 
@@ -334,7 +336,7 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 		size_t nheaders, bool print_header, bool print_types,
 		size_t spacing, enum alignment *alignments,
 		char **set_colorpair, size_t set_colorpairs_num,
-		bool use_color_columns)
+		bool use_color_columns, bool interactive)
 {
 	if (close(0)) {
 		perror("close");
@@ -446,6 +448,7 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 
 	int ch = 0;
 	size_t first_line = 0;
+	size_t selected_line = 0;
 	size_t nlines; /* number of lines to show */
 	int xoff = 0;
 #define STEP (COLS / 2)
@@ -491,7 +494,7 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 		show(params, headers, nheaders, first_line, nlines,  xoff,
 			spacing, print_header, print_types, alignments,
 			use_color_columns, is_color_column, color_column_index,
-			col_offsets_buf);
+			col_offsets_buf, interactive, selected_line);
 		refresh();
 
 		if (params->logfd >= 0) {
@@ -502,17 +505,44 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 			}
 		}
 
+		size_t onscreen_line = 0;
+		if (interactive) {
+			assert(selected_line >= first_line);
+			onscreen_line = selected_line - first_line;
+		}
+
 		ch = getch();
 		if (ch == KEY_DOWN || ch == 'j') {
-			if (first_line + nlines >= params->nlines)
-				beep();
-			else
-				first_line++;
+			if (interactive) {
+				if (selected_line + 1 == params->nlines) {
+					beep();
+				} else {
+					if (onscreen_line >= nlines - 1)
+						first_line++;
+					selected_line++;
+				}
+			} else {
+				if (first_line + nlines >= params->nlines)
+					beep();
+				else
+					first_line++;
+			}
 		} else if (ch == KEY_UP || ch == 'k') {
-			if (first_line > 0)
-				first_line--;
-			else
-				beep();
+			if (interactive) {
+				if (selected_line > 0)
+					selected_line--;
+				if (onscreen_line == 0) {
+					if (first_line > 0)
+						first_line--;
+					else
+						beep();
+				}
+			} else {
+				if (first_line > 0)
+					first_line--;
+				else
+					beep();
+			}
 		} else if (ch == KEY_RIGHT) {
 			if (xoff + COLS < max_line)
 				xoff += STEP;
@@ -526,27 +556,72 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 			else
 				xoff = 0;
 		} else if (ch == KEY_NPAGE || ch == ' ') {
-			if (first_line + nlines >= params->nlines)
-				beep();
-			else
-				first_line += LINES - 1 - print_header;
+			if (interactive) {
+				if (selected_line == params->nlines - 1)
+					beep();
+				else {
+					selected_line += nlines;
+					first_line += nlines;
+					if (selected_line >= params->nlines)
+						selected_line = params->nlines - 1;
+					if (first_line + nlines >= params->nlines)
+						first_line = params->nlines - nlines;
+				}
+			} else {
+				if (first_line + nlines >= params->nlines)
+					beep();
+				else
+					first_line += nlines - 1;
+			}
 		} else if (ch == KEY_PPAGE || ch == KEY_BACKSPACE) {
-			if (first_line >= LINES - 1 - print_header)
-				first_line -= LINES - 1 - print_header;
-			else if (first_line == 0)
-				beep();
-			else
-				first_line = 0;
+			if (interactive) {
+				if (selected_line > nlines)
+					selected_line -= nlines;
+				else
+					selected_line = 0;
+
+				if (first_line >= nlines)
+					first_line -= nlines;
+				else if (first_line == 0)
+					beep();
+				else
+					first_line = 0;
+			} else {
+				if (first_line >= nlines - 1)
+					first_line -= nlines - 1;
+				else if (first_line == 0)
+					beep();
+				else
+					first_line = 0;
+			}
 		} else if (ch == KEY_HOME) {
-			if (first_line == 0)
-				beep();
-			else
-				first_line = 0;
+			if (interactive) {
+				if (selected_line == 0)
+					beep();
+				else {
+					first_line = 0;
+					selected_line = 0;
+				}
+			} else {
+				if (first_line == 0)
+					beep();
+				else
+					first_line = 0;
+			}
 		} else if (ch == KEY_END) {
-			if (first_line == params->nlines - nlines)
-				beep();
-			else
-				first_line = params->nlines - nlines;
+			if (interactive) {
+				if (selected_line == params->nlines - 1)
+					beep();
+				else {
+					first_line = params->nlines - nlines;
+					selected_line = params->nlines - 1;
+				}
+			} else {
+				if (first_line == params->nlines - nlines)
+					beep();
+				else
+					first_line = params->nlines - nlines;
+			}
 		} else if (ch == KEY_SHOME) {
 			if (xoff == 0)
 				beep();

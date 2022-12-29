@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #ifndef CSV_SHOW_H
@@ -43,7 +43,7 @@ void curses_ui(struct cb_params *params, const struct col_header *headers,
 		size_t nheaders, bool print_header, bool print_types,
 		size_t spacing, enum alignment *alignments,
 		char **set_colorpair, size_t set_colorpairs_num,
-		bool use_color_columns);
+		bool use_color_columns, bool interactive);
 void curses_ui_exit();
 #endif
 

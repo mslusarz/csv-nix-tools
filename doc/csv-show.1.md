@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: BSD-3-Clause
-Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+Copyright 2019-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
 -->
 
 ---
@@ -77,6 +77,9 @@ There are 3 backends: **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3
 
 -C, \--use-color-columns
 :   use columns with _color suffix to render each cell
+
+-i, \--interactive
+:   line-selection mode (ncurses backend only)
 
 \--with-types
 :   print types in column headers
