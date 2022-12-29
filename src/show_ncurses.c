@@ -204,7 +204,7 @@ show(struct cb_params *params,
 	int *col_color_pairs = params->col_color_pairs;
 	size_t ypos = 0;
 
-	clear();
+	erase();
 
 	if (print_header) {
 		int xpos = 0;
