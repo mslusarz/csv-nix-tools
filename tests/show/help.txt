@@ -8,7 +8,7 @@ Options:
   -p, --spacing NUM          use NUM spaces between columns instead of 3
   -u, --ui TYPE              choose UI TYPE: curses, less, none, auto
   -s                         short for -u none
-  -S                         short for -u auto
+  -S                         short for -u curses
       --no-header            remove column headers
       --set-color COLNAME:[fg=]COLOR1[,bg=COLOR2]
                              set COLOR1 as foreground and COLOR2 as

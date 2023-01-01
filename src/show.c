@@ -53,7 +53,7 @@ usage(FILE *out)
 	fprintf(out, "  -p, --spacing NUM          use NUM spaces between columns instead of 3\n");
 	fprintf(out, "  -u, --ui TYPE              choose UI TYPE: curses, less, none, auto\n");
 	fprintf(out, "  -s                         short for -u none\n");
-	fprintf(out, "  -S                         short for -u auto\n");
+	fprintf(out, "  -S                         short for -u curses\n");
 	fprintf(out, "      --no-header            remove column headers\n");
 	fprintf(out, "      --set-color COLNAME:[fg=]COLOR1[,bg=COLOR2]\n");
 	fprintf(out, "                             set COLOR1 as foreground and COLOR2 as\n");
@@ -190,7 +190,7 @@ main(int argc, char *argv[])
 		NCURSES,
 		LESS,
 		NONE
-	} ui = NONE;
+	} ui = GUESS;
 
 	size_t spacing = DEFAULT_SPACING;
 
@@ -249,7 +249,7 @@ main(int argc, char *argv[])
 				ui = NONE;
 				break;
 			case 'S':
-				ui = GUESS;
+				ui = NCURSES;
 				break;
 			case 't':
 				print_types = true;

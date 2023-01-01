@@ -22,6 +22,7 @@ Print CSV file from standard input in human-readable format, using tables, witho
 
 There are 3 backends: **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3x.html)**(3)-based,
 **[less](http://man7.org/linux/man-pages/man1/less.1.html)**(1)-based, and no-backend.
+By default backend is guessed based on whether standard output is a terminal.
 
 **ncurses** backend:
 
@@ -56,7 +57,7 @@ There are 3 backends: **[ncurses](http://man7.org/linux/man-pages/man3/ncurses.3
 :   short for \--ui none
 
 -S
-:   short for \--ui auto
+:   short for \--ui curses
 
 \--no-header
 :   remove column headers
