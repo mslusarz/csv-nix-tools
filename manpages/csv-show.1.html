@@ -24,7 +24,7 @@
 <p><strong>csv-show</strong> [OPTION]…</p>
 <h1 id="description">DESCRIPTION</h1>
 <p>Print CSV file from standard input in human-readable format, using tables, without types.</p>
-<p>There are 3 backends: <strong><a href="http://man7.org/linux/man-pages/man3/ncurses.3x.html">ncurses</a></strong>(3)-based, <strong><a href="http://man7.org/linux/man-pages/man1/less.1.html">less</a></strong>(1)-based, and no-backend.</p>
+<p>There are 3 backends: <strong><a href="http://man7.org/linux/man-pages/man3/ncurses.3x.html">ncurses</a></strong>(3)-based, <strong><a href="http://man7.org/linux/man-pages/man1/less.1.html">less</a></strong>(1)-based, and no-backend. By default backend is guessed based on whether standard output is a terminal.</p>
 <p><strong>ncurses</strong> backend:</p>
 <ul>
 <li><p>keeps column names at the top of the screen at all times</p></li>
@@ -55,7 +55,7 @@
 <dd>short for --ui none
 </dd>
 <dt>-S</dt>
-<dd>short for --ui auto
+<dd>short for --ui curses
 </dd>
 <dt>--no-header</dt>
 <dd>remove column headers
@@ -71,6 +71,12 @@
 </dd>
 <dt>-C, --use-color-columns</dt>
 <dd>use columns with _color suffix to render each cell
+</dd>
+<dt>-i, --interactive</dt>
+<dd>line-selection mode (ncurses backend only)
+</dd>
+<dt>--on-key <em>key</em>,<em>text</em>,<em>action</em>[,<em>return</em>]</dt>
+<dd>in interactive mode, show <em>text</em> as <em>key</em>’s description, on <em>key</em> pipe current row to <em>action</em> (either a command or special text ‘stdout’) and quit unless <em>return</em> suboption was used, <em>key</em> can be one of: <em>enter</em>, <em>f1</em>, <em>f2</em>, <em>f3</em>, <em>f4</em>, <em>f5</em>, <em>f6</em>, <em>f7</em>, <em>f8</em>, <em>f9</em>, <em>f10</em>, <em>f11</em>, <em>f12</em>
 </dd>
 <dt>--with-types</dt>
 <dd>print types in column headers
