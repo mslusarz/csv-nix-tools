@@ -13,9 +13,6 @@ test("csv-add-concat new_column = %name ' - ' %id" data/3-columns-3-rows.csv add
 test("csv-add-concat new_column = %name ' - ' %id -s" data/3-columns-3-rows.csv add-concat/2-cols-s.txt data/empty.txt 0
 	add-concat_2_cols-s)
 
-test("csv-add-concat new_column = %name ' - ' %id -S" data/3-columns-3-rows.csv add-concat/2-cols-s.txt data/empty.txt 0
-	add-concat_2_cols-S)
-
 test("csv-add-concat new_column = %name ', ' %id" data/3-columns-3-rows.csv add-concat/2-cols-comma.csv data/empty.txt 0
 	add-concat_2_cols_comma)
 

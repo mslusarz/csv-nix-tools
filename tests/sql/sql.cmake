@@ -14,10 +14,6 @@ test("csv-sql 'select * from input' -s"
 	data/3-columns-3-rows.csv data/3-columns-3-rows.txt data/empty.txt 0
 	sql_select_all_from_input_-s)
 
-test("csv-sql 'select * from input' -S"
-	data/3-columns-3-rows.csv data/3-columns-3-rows.txt data/empty.txt 0
-	sql_select_all_from_input_-S)
-
 test("csv-sql 'select * from input where id == 2'"
 	data/3-columns-3-rows.csv data/rpn-filter-row-2.csv data/empty.txt 0
 	sql_select_all_from_input_where_id==2)

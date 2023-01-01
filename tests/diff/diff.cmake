@@ -12,9 +12,6 @@ test("csv-diff ${DATA_DIR}/../diff/data1.csv ${DATA_DIR}/../diff/data2.csv" data
 test("csv-diff ${DATA_DIR}/../diff/data1.csv ${DATA_DIR}/../diff/data2.csv -s" data/empty.csv diff/diff.txt data/empty.txt 0
 	diff_all_columns_-s)
 
-test("csv-diff ${DATA_DIR}/../diff/data1.csv ${DATA_DIR}/../diff/data2.csv -S" data/empty.csv diff/diff-S.txt data/empty.txt 0
-	diff_all_columns_-S)
-
 test("csv-diff -c x,y1 ${DATA_DIR}/../diff/data1.csv ${DATA_DIR}/../diff/data2.csv" data/empty.csv diff/diff_-c.csv data/empty.txt 1
 	diff_columns)
 

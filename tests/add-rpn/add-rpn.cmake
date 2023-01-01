@@ -12,10 +12,6 @@ test("csv-add-rpn -n 'num_mul_2' -e '%num 2 *' -s"
 	data/rpn-add-num-dec.csv data/rpn-add-num-mul.txt data/empty.txt 0
 	add-rpn_num_mul_-s)
 
-test("csv-add-rpn -n 'num_mul_2' -e '%num 2 *' -S"
-	data/rpn-add-num-dec.csv data/rpn-add-num-mul.txt data/empty.txt 0
-	add-rpn_num_mul_-S)
-
 test("csv-add-rpn -n 'num_add_num2' -e '%num %num2 +'"
 	data/rpn-add-num-dec.csv data/rpn-add-num-sum.csv data/empty.txt 0
 	add-rpn_num_sum)

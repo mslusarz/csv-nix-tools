@@ -46,9 +46,6 @@ test("csv-merge --version" data/empty.csv data/git-version.txt data/empty.txt 0
 test("csv-merge --table table1 --path-without-table - -s" data/2-columns-3-rows.csv merge/show.txt data/empty.txt 0
 	merge_show)
 
-test("csv-merge --table table1 --path-without-table - -S" data/2-columns-3-rows.csv merge/show.txt data/empty.txt 0
-	merge_show_-S)
-
 test("csv-merge --table table1 --path-without-table - --table table2 --path-without-table -" data/2-columns-3-rows.csv data/empty.txt merge/stdin-twice.txt 2
 	merge_stdin_twice)
 

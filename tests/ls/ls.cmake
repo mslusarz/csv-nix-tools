@@ -14,11 +14,6 @@ test_with_cwd("csv-ls -c name,owner_execute,symlink,type_name -ls"
 	ls-files-s
 	${CMAKE_SOURCE_DIR}/tests/ls/files)
 
-test_with_cwd("csv-ls -c name,owner_execute,symlink,type_name -lS"
-	data/empty.txt ls/files_and_dirs.txt data/empty.txt 0
-	ls-files-S
-	${CMAKE_SOURCE_DIR}/tests/ls/files)
-
 test_with_cwd("csv-ls -c name -M"
 	data/3-columns-3-rows-with-table.csv ls/files_and_dirs_merged.csv data/empty.txt 0
 	ls-merge

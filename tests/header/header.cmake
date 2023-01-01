@@ -22,9 +22,6 @@ test("csv-header -n name,newname -n something,somethingelse" data/2-columns-3-ro
 test("csv-header -s" data/2-columns-3-rows.csv header/2-columns-3-rows.txt data/empty.txt 0
 	header_-s)
 
-test("csv-header -S" data/2-columns-3-rows.csv header/2-columns-3-rows.txt data/empty.txt 0
-	header_-S)
-
 test("csv-header -G" header/2-columns-3-rows-notypes.csv header/2-columns-3-rows.csv data/empty.txt 0
 	header_guess_types1)
 

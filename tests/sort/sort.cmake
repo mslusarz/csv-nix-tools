@@ -19,9 +19,6 @@ test("csv-sort -c id,name -r" sort/2-cols.csv sort/2-cols-rsorted.csv data/empty
 test("csv-sort -c id,name -s" sort/2-cols.csv sort/2-cols-sorted.txt data/empty.txt 0
 	sort_2_cols_-s)
 
-test("csv-sort -c id,name -S" sort/2-cols.csv sort/2-cols-sorted.txt data/empty.txt 0
-	sort_2_cols_-S)
-
 test("csv-sort -T t1 -c id" sort/2-tables.csv sort/2-tables-sorted1.csv data/empty.txt 0
 	sort_2_tables_sort_1st)
 

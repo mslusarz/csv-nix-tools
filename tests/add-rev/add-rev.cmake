@@ -20,10 +20,6 @@ test("csv-add-rev -c name -n name-reversed -s"
 	data/3-columns-3-rows.csv add-rev/string-reversed.txt data/empty.txt 0
 	add-rev_string_-s)
 
-test("csv-add-rev -c name -n name-reversed -S"
-	data/3-columns-3-rows.csv add-rev/string-reversed.txt data/empty.txt 0
-	add-rev_string_-S)
-
 test("csv-add-rev -c id -n id-reversed"
 	data/3-columns-3-rows.csv data/empty.txt add-rev/rev-int.txt 2
 	add-rev_int)

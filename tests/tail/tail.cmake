@@ -53,9 +53,6 @@ test("csv-tail -n 3" data/3-columns-3-rows.csv data/3-columns-3-rows.csv data/em
 test("csv-tail -n 2 -s" data/3-columns-3-rows.csv tail/tail-n-2-s.txt data/empty.txt 0
 	tail_-n_2_-s)
 
-test("csv-tail -n 2 -S" data/3-columns-3-rows.csv tail/tail-n-2-s.txt data/empty.txt 0
-	tail_-n_2_-S)
-
 test("csv-tail --help" data/empty.csv tail/help.txt data/empty.txt 2
 	tail_help)
 

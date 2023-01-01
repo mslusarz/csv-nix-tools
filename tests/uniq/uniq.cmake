@@ -10,8 +10,6 @@ test("csv-uniq -c col3,col2,col1" uniq/input2.csv uniq/output2.csv data/empty.tx
 
 test("csv-uniq -c col3,col2,col1 -s" uniq/input2.csv uniq/output2.txt data/empty.txt 0 uniq-2-s)
 
-test("csv-uniq -c col3,col2,col1 -S" uniq/input2.csv uniq/output2.txt data/empty.txt 0 uniq-2-S)
-
 test("csv-uniq -c col3" uniq/input2.csv uniq/output3.csv data/empty.txt 0 uniq-3)
 
 test("csv-uniq -c _table,t1.str,t1.int,t2.string,t2.integer" uniq/input3.csv uniq/output4a.csv data/empty.txt 0 uniq-no-table)

@@ -13,9 +13,6 @@ test("csv-tac ${DATA_DIR}/one-column-one-row.csv ${DATA_DIR}/one-column-one-row.
 test("csv-tac ${DATA_DIR}/one-column-one-row.csv ${DATA_DIR}/one-column-one-row.csv -s" data/empty.csv tac/2-files.txt data/empty.txt 0
 	tac_two_files_-s)
 
-test("csv-tac ${DATA_DIR}/one-column-one-row.csv ${DATA_DIR}/one-column-one-row.csv -S" data/empty.csv tac/2-files.txt data/empty.txt 0
-	tac_two_files_-S)
-
 test("csv-tac ${DATA_DIR}/3-different-order-columns-3-rows.csv ${CMAKE_CURRENT_SOURCE_DIR}/tac/3-columns-2-last-rows.csv" data/empty.csv tac/2-different-files.csv data/empty.txt 0
 	tac_two_different_files)
 

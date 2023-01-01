@@ -10,9 +10,6 @@ test("csv-add-exec -n name2 -c name -- sed 's/file/name/g'" add-exec/files.csv a
 test("csv-add-exec -n name2 -c name -s -- sed 's/file/name/g'" add-exec/files.csv add-exec/names.txt data/empty.txt 0
 	add-exec_sed_-s)
 
-test("csv-add-exec -n name2 -c name -S -- sed 's/file/name/g'" add-exec/files.csv add-exec/names.txt data/empty.txt 0
-	add-exec_sed_-S)
-
 test("csv-add-exec -T t1 -n name2 -c name -- sed 's/o/O/g'" data/2-tables.csv add-exec/2-tables-add1.csv data/empty.txt 0
 	add-exec_2tables-add1)
 

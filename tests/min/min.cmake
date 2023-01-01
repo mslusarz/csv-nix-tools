@@ -25,9 +25,6 @@ test("csv-min -c col3,col1 -n new1,new2" data/3-numeric-columns-4-rows.csv min/2
 test("csv-min -c col3,col1 -s" data/3-numeric-columns-4-rows.csv min/2-columns.txt data/empty.txt 0
 	min-2-columns-s)
 
-test("csv-min -c col3,col1 -S" data/3-numeric-columns-4-rows.csv min/2-columns.txt data/empty.txt 0
-	min-2-columns-S)
-
 test("csv-min -c col1,col2,col3,col4" data/text1.csv min/text1.csv data/empty.txt 0
 	min-text1)
 

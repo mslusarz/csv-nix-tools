@@ -12,10 +12,6 @@ test("csv-add-substring -c name -n substr2 -p 2 -s"
 	data/3-columns-3-rows.csv add-substring/p2.txt data/empty.txt 0
 	add-substring_p2_-s)
 
-test("csv-add-substring -c name -n substr2 -p 2 -S"
-	data/3-columns-3-rows.csv add-substring/p2.txt data/empty.txt 0
-	add-substring_p2_-S)
-
 test("csv-add-substring -c name -n last_char -p -1 -l 1"
 	data/3-columns-3-rows.csv add-substring/p-1.csv data/empty.txt 0
 	add-substring_p_1)

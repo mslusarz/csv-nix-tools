@@ -26,9 +26,6 @@ test("csv-head -n 1" data/one-column-one-row.csv data/one-column-one-row.csv dat
 test("csv-head -n 1 -s" data/one-column-one-row.csv head/one-column-one-row.txt data/empty.txt 0
 	head_-n_1_-s)
 
-test("csv-head -n 1 -S" data/one-column-one-row.csv head/one-column-one-row.txt data/empty.txt 0
-	head_-n_1_-S)
-
 test("csv-head --lines 2" data/one-column-one-row.csv data/one-column-one-row.csv data/empty.txt 0
 	head_--lines=2_but_there_is_only_1_line_in_input)
 

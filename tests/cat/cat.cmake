@@ -34,9 +34,6 @@ test("csv-cat --version" data/empty.csv data/git-version.txt data/empty.txt 0
 test("csv-cat -s" data/2-columns-3-rows.csv cat/show.txt data/empty.txt 0
 	cat_show)
 
-test("csv-cat -S" data/2-columns-3-rows.csv cat/show.txt data/empty.txt 0
-	cat_show_-S)
-
 test("csv-cat - -" data/2-columns-3-rows.csv data/empty.txt cat/stdin-twice.txt 2
 	cat_stdin_twice)
 

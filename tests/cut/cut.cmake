@@ -81,9 +81,6 @@ test("csv-cut -c name,something" data/3-columns-3-rows.csv data/2-columns-3-rows
 test("csv-cut -c name,something -s" data/3-columns-3-rows.csv cut/2-columns-3-rows.txt data/empty.txt 0
 	cut_2_fields_using_-c_-s)
 
-test("csv-cut -c name,something -S" data/3-columns-3-rows.csv cut/2-columns-3-rows.txt data/empty.txt 0
-	cut_2_fields_using_-c_-S)
-
 test("csv-cut --columns name,something" data/3-columns-3-rows.csv data/2-columns-3-rows.csv data/empty.txt 0
 	cut_2_fields_using_--columns_with_spaces)
 

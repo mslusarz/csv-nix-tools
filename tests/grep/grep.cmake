@@ -17,9 +17,6 @@ test("csv-grep -c name -e or" data/3-columns-3-rows.csv grep/name-or.csv data/em
 test("csv-grep -c name -e or -s" data/3-columns-3-rows.csv grep/name-or.txt data/empty.txt 0
 	grep_-c_name_-e_or_-s)
 
-test("csv-grep -c name -e or -S" data/3-columns-3-rows.csv grep/name-or.txt data/empty.txt 0
-	grep_-c_name_-e_or_-S)
-
 test("csv-grep -c name -x -e or" data/3-columns-3-rows.csv grep/not-found.csv data/empty.txt 0
 	grep_-c_name_-x_-e_or)
 

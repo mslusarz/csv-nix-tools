@@ -12,9 +12,6 @@ test("csv-grep-sql -e 'id == 2'" data/3-columns-3-rows.csv data/rpn-filter-row-2
 test("csv-grep-sql -e 'id == 2' -s" data/3-columns-3-rows.csv data/rpn-filter-row-2.txt data/empty.txt 0
 	grep-sql_eq_-s)
 
-test("csv-grep-sql -e 'id == 2' -S" data/3-columns-3-rows.csv data/rpn-filter-row-2.txt data/empty.txt 0
-	grep-sql_eq_-S)
-
 test("csv-grep-sql -e 'id != 2'" data/3-columns-3-rows.csv data/rpn-filter-rows-1-3.csv data/empty.txt 0
 	grep-sql_ne)
 
