@@ -6,7 +6,7 @@ Options:
   -C, --use-color-columns    use columns with _color suffix
   -i, --interactive          line-selection mode (ncurses backend only)
   -p, --spacing NUM          use NUM spaces between columns instead of 3
-  -u, --ui TYPE              choose UI TYPE: ncurses, less, none, auto
+  -u, --ui TYPE              choose UI TYPE: curses, less, none, auto
   -s                         short for -u none
   -S                         short for -u auto
       --no-header            remove column headers

@@ -51,7 +51,7 @@ usage(FILE *out)
 	fprintf(out, "  -C, --use-color-columns    use columns with _color suffix\n");
 	fprintf(out, "  -i, --interactive          line-selection mode (ncurses backend only)\n");
 	fprintf(out, "  -p, --spacing NUM          use NUM spaces between columns instead of 3\n");
-	fprintf(out, "  -u, --ui TYPE              choose UI TYPE: ncurses, less, none, auto\n");
+	fprintf(out, "  -u, --ui TYPE              choose UI TYPE: curses, less, none, auto\n");
 	fprintf(out, "  -s                         short for -u none\n");
 	fprintf(out, "  -S                         short for -u auto\n");
 	fprintf(out, "      --no-header            remove column headers\n");
