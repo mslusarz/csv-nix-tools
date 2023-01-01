@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: BSD-3-Clause
-Copyright 2019-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
+Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
 -->
 
 ---
@@ -81,6 +81,9 @@ By default backend is guessed based on whether standard output is a terminal.
 
 -i, \--interactive
 :   line-selection mode (ncurses backend only)
+
+\--on-key *key*,*text*,*action*[,*return*]
+:   in interactive mode, show *text* as *key*'s description, on *key* pipe current row to *action* (either a command or special text 'stdout') and quit unless *return* suboption was used, *key* can be one of: *enter*, *f1*, *f2*, *f3*, *f4*, *f5*, *f6*, *f7*, *f8*, *f9*, *f10*, *f11*, *f12*
 
 \--with-types
 :   print types in column headers

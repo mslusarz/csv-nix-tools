@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -186,6 +186,16 @@ nprint(int y, int x, const char *str, bool *truncated)
 }
 
 static void
+get_col_offsets(size_t *col_offsets, const char *buf, size_t nheaders)
+{
+	col_offsets[0] = 0;
+	for (size_t i = 1; i < nheaders + 1; ++i) {
+		size_t len = strlen(buf + col_offsets[i - 1]);
+		col_offsets[i] = col_offsets[i - 1] + len + 1;
+	}
+}
+
+static void
 show(struct cb_params *params,
 	const struct col_header *headers, size_t nheaders,
 
@@ -200,7 +210,9 @@ show(struct cb_params *params,
 	size_t *color_column_index,
 	size_t *col_offsets,
 	bool interactive,
-	size_t selected_line)
+	size_t selected_line,
+	struct on_key *key_config,
+	size_t key_config_size)
 {
 	char **data = params->lines;
 	size_t *max_lengths = params->max_lengths;
@@ -273,11 +285,8 @@ show(struct cb_params *params,
 		char *buf = data[ln];
 		int xpos = 0;
 
-		col_offsets[0] = 0;
-		for (size_t i = 1; i < nheaders + 1; ++i) {
-			size_t len = strlen(buf + col_offsets[i - 1]);
-			col_offsets[i] = col_offsets[i - 1] + len + 1;
-		}
+		get_col_offsets(col_offsets, buf, nheaders);
+
 		if (interactive && ln == selected_line)
 			attron(A_REVERSE);
 
@@ -329,6 +338,84 @@ show(struct cb_params *params,
 		if (interactive && ln == selected_line)
 			attroff(A_REVERSE);
 	}
+
+	if (key_config_size == 0)
+		return;
+	size_t opt_len = COLS / key_config_size;
+	for (size_t i = 0; i < key_config_size; ++i) {
+		struct on_key *k = &key_config[i];
+		size_t key_len = strlen(k->key);
+		const char *delim = "=";
+		size_t delim_len = strlen(delim);
+		size_t text_len = strlen(k->text);
+
+		size_t rem;
+		if (i == key_config_size - 1)
+			rem = COLS - opt_len * (key_config_size - 1);
+		else
+			rem = opt_len - 1;
+
+		if (key_len > rem)
+			key_len = rem;
+		rem -= key_len;
+
+		if (delim_len > rem)
+			delim_len = rem;
+		rem -= delim_len;
+
+		if (text_len > rem)
+			text_len = rem;
+		rem -= text_len;
+
+		attron(A_REVERSE);
+		size_t ypos = LINES - 1;
+		size_t xpos = i * opt_len;
+		mvaddnstr(ypos, xpos, k->key, key_len);   xpos += key_len;
+		mvaddnstr(ypos, xpos, delim, delim_len);  xpos += delim_len;
+		mvaddnstr(ypos, xpos, k->text, text_len); xpos += text_len;
+
+		while (rem--)
+			mvaddch(ypos, xpos++, ' ');
+
+		attroff(A_REVERSE);
+	}
+}
+
+static size_t *print_lines = NULL;
+static size_t print_lines_num = 0;
+
+static void
+run_action(const struct col_header *headers, size_t nheaders,
+	   size_t *col_offsets, struct cb_params *params, size_t selected_line,
+	   const char *action)
+{
+	if (strcmp(action, "stdout") == 0) {
+		print_lines = xrealloc_nofail(print_lines,
+				++print_lines_num,
+				sizeof(print_lines[0]));
+		print_lines[print_lines_num - 1] = selected_line;
+		return;
+	}
+
+	FILE *f = popen(action, "w");
+
+	if (!f) {
+		perror("popen");
+		exit(2);
+	}
+
+	csv_print_headers(f, headers, nheaders);
+
+	const char *buf = params->lines[selected_line];
+
+	get_col_offsets(col_offsets, buf, nheaders);
+
+	csv_print_line(f, buf, col_offsets, nheaders, true);
+
+	if (pclose(f) == -1) {
+		perror("pclose");
+		exit(2);
+	}
 }
 
 void
@@ -336,32 +423,39 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 		size_t nheaders, bool print_header, bool print_types,
 		size_t spacing, enum alignment *alignments,
 		char **set_colorpair, size_t set_colorpairs_num,
-		bool use_color_columns, bool interactive)
+		bool use_color_columns, bool interactive,
+		struct on_key *key_config, size_t key_config_size)
 {
 	if (close(0)) {
 		perror("close");
 		exit(2);
 	}
 
-	char *tty = ttyname(1);
-	if (!tty) {
-		perror("ttyname");
-		exit(2);
-	}
-
-	int fd = open(tty, O_RDONLY);
-	if (fd < 0) {
-		perror("open");
-		exit(2);
-	}
-
-	if (fd != 0) /* impossible */
-		abort();
+	/* detach terminal from standard output */
+	FILE *ttyfile = fopen("/dev/tty", "r+");
+	SCREEN *screen = newterm(NULL, ttyfile, ttyfile);
+	set_term(screen);
 
 	params->used_pairs = 1;
 	params->used_colors = COLOR_WHITE + 1;
 
-	initscr();
+	for (size_t i = 0; i < key_config_size; ++i) {
+		struct on_key *k = &key_config[i];
+		const char *kk = k->key;
+		if (strcmp(kk, "ENTER") == 0) {
+			k->key_value = KEY_ENTER;
+		} else if (kk[0] == 'F') {
+			unsigned f = 0;
+			if (strtou_safe(kk + 1, &f, 0)) {
+				fprintf(stderr, "'%s' is not a number\n", kk + 1);
+				exit(2);
+			}
+			k->key_value = KEY_F(f);
+		} else {
+			fprintf(stderr, "unknown key '%s'\n", kk);
+			exit(2);
+		}
+	}
 
 	params->col_color_pairs = xmalloc_nofail(nheaders,
 			sizeof(params->col_color_pairs[0]));
@@ -465,12 +559,16 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 		exit(2);
 	}
 
+	if (!interactive)
+		key_config_size = 0;
+	bool quit = false;
+
 	do {
 		/*
 		 * determine how many lines of data we can show,
 		 * max is the height of the window minus 1 if header must be shown
 		 */
-		nlines = LINES - print_header;
+		nlines = LINES - print_header - (key_config_size > 0 ? 1 : 0);
 
 		/* is there enough data to fill one screen? */
 		if (nlines > params->nlines)
@@ -494,7 +592,8 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 		show(params, headers, nheaders, first_line, nlines,  xoff,
 			spacing, print_header, print_types, alignments,
 			use_color_columns, is_color_column, color_column_index,
-			col_offsets_buf, interactive, selected_line);
+			col_offsets_buf, interactive, selected_line,
+			key_config, key_config_size);
 		refresh();
 
 		if (params->logfd >= 0) {
@@ -684,9 +783,24 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 			// TODO implement search
 		} else if (ch == 'h') {
 			// TODO implement help
-		}
+		} else {
+			int ch_fixed = ch;
+			if (ch == 10 || ch == 13)
+				ch_fixed = KEY_ENTER;
 
-	} while (ch != 'q');
+			for (size_t i = 0; i < key_config_size; ++i) {
+				if (ch_fixed != key_config[i].key_value)
+					continue;
+
+				run_action(headers, nheaders, col_offsets_buf,
+					   params, selected_line,
+					   key_config[i].action);
+				if (!key_config[i].return_to_ui)
+					quit = true;
+				break;
+			}
+		}
+	} while (ch != 'q' && !quit);
 
 	if (params->logfd >= 0) {
 		if (write(params->logfd, &ch, sizeof(ch)) != sizeof(ch)) {
@@ -697,10 +811,23 @@ curses_ui(struct cb_params *params, const struct col_header *headers,
 		close(params->logfd);
 	}
 
+	endwin();
+
+	if (print_lines_num)
+		csv_print_headers(stdout, headers, nheaders);
+
+	for (size_t i = 0; i < print_lines_num; ++i) {
+		const char *buf = params->lines[print_lines[i]];
+
+		get_col_offsets(col_offsets_buf, buf, nheaders);
+
+		csv_print_line(stdout, buf, col_offsets_buf, nheaders, true);
+	}
+
+	free(print_lines);
+
 	for (size_t i = 0; i < params->nlines; ++i)
 		free(params->lines[i]);
-
-	endwin();
 
 	if (set_colorpairs_num || use_color_columns) {
 		csv_ht_destroy(&params->color_pairs);

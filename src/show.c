@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -33,6 +33,7 @@ static const struct option opts[] = {
 	{"use-color-columns",	no_argument,		NULL, 'C' },
 	{"set-color",		required_argument,	NULL, 'c' },
 	{"interactive",		no_argument,		NULL, 'i' },
+	{"on-key",		required_argument,	NULL, 'k' },
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{"debug",		required_argument,	NULL, 'D'},
@@ -50,6 +51,8 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	fprintf(out, "  -C, --use-color-columns    use columns with _color suffix\n");
 	fprintf(out, "  -i, --interactive          line-selection mode (ncurses backend only)\n");
+	fprintf(out, "  -k, --on-key KEY,TEXT,ACTION[,return]\n");
+	fprintf(out, "                             associate ACTION with KEY, described by TEXT\n");
 	fprintf(out, "  -p, --spacing NUM          use NUM spaces between columns instead of 3\n");
 	fprintf(out, "  -u, --ui TYPE              choose UI TYPE: curses, less, none, auto\n");
 	fprintf(out, "  -s                         short for -u none\n");
@@ -213,7 +216,10 @@ main(int argc, char *argv[])
 	size_t set_colorpair_num = 0;
 	bool use_color_columns = false;
 
-	while ((opt = getopt_long(argc, argv, "Ciu:p:sS", opts, NULL)) != -1) {
+	struct on_key *key_config = NULL;
+	size_t key_config_size = 0;
+
+	while ((opt = getopt_long(argc, argv, "Cik:u:p:sS", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'D':
 				params.logfd = open(optarg,
@@ -267,6 +273,32 @@ main(int argc, char *argv[])
 			case 'i':
 				interactive = true;
 				break;
+			case 'k': {
+				key_config = xrealloc_nofail(key_config,
+						++key_config_size,
+						sizeof(key_config[0]));
+				char *arg = optarg;
+				char *key = strsep(&arg, ",");
+				char *text = strsep(&arg, ",");
+				char *action = strsep(&arg, ",");
+				char *return_to_ui = strsep(&arg, ",");
+				if (!key || !text || !action) {
+					fprintf(stderr, "on key config does not have at least 3 components\n");
+					exit(2);
+				}
+
+				struct on_key *k = &key_config[key_config_size - 1];
+
+				k->key = xstrdup(key);
+				size_t len = strlen(key);
+				for (size_t i = 0; i < len; ++i)
+					k->key[i] = toupper(k->key[i]);
+				k->text = xstrdup_nofail(text);
+				k->action = xstrdup_nofail(action);
+				k->return_to_ui = return_to_ui && strcmp(return_to_ui, "return") == 0;
+
+				break;
+			}
 			case 'H':
 				print_header = false;
 				break;
@@ -302,6 +334,16 @@ main(int argc, char *argv[])
 		exit(2);
 	}
 
+	if (interactive && key_config_size == 0) {
+		key_config = xrealloc_nofail(key_config,
+				++key_config_size,
+				sizeof(key_config[0]));
+		key_config->key = xstrdup_nofail("ENTER");
+		key_config->action = xstrdup_nofail("stdout");
+		key_config->text = xstrdup_nofail("select");
+		key_config->return_to_ui = false;
+	}
+
 	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
 
 	csv_read_header_nofail(s);
@@ -335,7 +377,8 @@ main(int argc, char *argv[])
 #ifdef NCURSESW_ENABLED
 		curses_ui(&params, headers, nheaders, print_header,
 				print_types, spacing, alignments, set_colorpair,
-				set_colorpair_num, use_color_columns, interactive);
+				set_colorpair_num, use_color_columns,
+				interactive, key_config, key_config_size);
 #endif
 	} else {
 		static_ui(ui == LESS, &params, headers, nheaders, print_header,
@@ -345,6 +388,14 @@ main(int argc, char *argv[])
 	for (size_t i = 0; i < set_colorpair_num; ++i)
 		free(set_colorpair[i]);
 	free(set_colorpair);
+
+	for (size_t i = 0; i < key_config_size; ++i) {
+		free(key_config[i].key);
+		free(key_config[i].text);
+		free(key_config[i].action);
+	}
+	free(key_config);
+
 	free(alignments);
 	free(params.lines);
 	free(params.max_lengths);
