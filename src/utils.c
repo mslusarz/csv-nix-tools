@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -947,30 +947,32 @@ static const char *output_types_str[] = {
 };
 
 static void
-print_header_with_prefix(const struct column_info *column, const char *prefix, char sep)
+print_header_with_prefix(const struct column_info *column, const char *prefix, char sep, bool types)
 {
 	if (column->type == TYPE_STRING) {
 		printf("%s%s%c", prefix, column->name, sep);
-	} else {
+	} else if (types) {
 		const char *type = output_types_str[column->type];
 		printf("%s%s:%s%c", prefix, column->name, type, sep);
+	} else {
+		printf("%s%s%c", prefix, column->name, sep);
 	}
 }
 
 void
 csvci_print_header_with_prefix(struct column_info *columns,
-		size_t ncolumns, const char *prefix)
+		size_t ncolumns, const char *prefix, bool types)
 {
 	for (size_t i = 0; i < ncolumns - 1; ++i)
-		print_header_with_prefix(&columns[i], prefix, ',');
+		print_header_with_prefix(&columns[i], prefix, ',', types);
 
-	print_header_with_prefix(&columns[ncolumns - 1], prefix, '\n');
+	print_header_with_prefix(&columns[ncolumns - 1], prefix, '\n', types);
 }
 
 void
-csvci_print_header(struct column_info *columns, size_t ncolumns)
+csvci_print_header(struct column_info *columns, size_t ncolumns, bool types)
 {
-	csvci_print_header_with_prefix(columns, ncolumns, "");
+	csvci_print_header_with_prefix(columns, ncolumns, "", types);
 }
 
 void
@@ -1041,6 +1043,18 @@ void
 describe_version(FILE *out)
 {
 	fprintf(out, "      --version              output version information and exit\n");
+}
+
+void
+describe_no_types_in(FILE *out)
+{
+	fprintf(out, "  -X, --no-types             disable parsing of type names in column names\n");
+}
+
+void
+describe_no_types_out(FILE *out)
+{
+	fprintf(out, "  -X, --no-types             disable printing of type names in column names\n");
 }
 
 void

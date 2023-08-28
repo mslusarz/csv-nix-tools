@@ -18,5 +18,6 @@ Options:
   -x, --unix                 print information only about UNIX sockets
   -4, --inet4                print information only about IPv4 sockets
   -6, --inet6                print information only about IPv6 sockets
+  -X, --no-types             disable printing of type names in column names
       --help                 display this help and exit
       --version              output version information and exit

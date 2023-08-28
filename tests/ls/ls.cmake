@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 test_with_cwd("csv-ls -c name"
@@ -37,6 +37,16 @@ test_with_cwd("csv-ls | csv-count -c"
 test_with_cwd("csv-ls -l | csv-count -c"
 	data/empty.txt ls/l-count-columns.csv data/empty.txt 0
 	ls-l-count-columns
+	${CMAKE_SOURCE_DIR}/tests/ls/files)
+
+test_with_cwd("csv-ls -l | csv-head -n 0"
+	data/empty.txt ls/header.csv data/empty.txt 0
+	ls-l-header
+	${CMAKE_SOURCE_DIR}/tests/ls/files)
+
+test_with_cwd("csv-ls -lX | csv-head -n 0"
+	data/empty.txt ls/header-no-types.csv data/empty.txt 0
+	ls-l-header-no-types
 	${CMAKE_SOURCE_DIR}/tests/ls/files)
 
 test_with_cwd("csv-ls -ll | csv-count -c"

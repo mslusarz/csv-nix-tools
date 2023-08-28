@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -23,6 +23,7 @@ static const struct option opts[] = {
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{"path-with-table",	required_argument,	NULL, 'P'},
+	{"no-types",		no_argument,		NULL, 'X'},
 	{NULL,			0,			NULL, 0},
 };
 
@@ -63,6 +64,7 @@ usage(FILE *out)
 "  -P, --path-with-table FILE\n"
 "                             read CSV stream with table from FILE;\n"
 "                             '-' means standard input\n");
+	describe_no_types_in(out);
 	describe_help(out);
 	describe_version(out);
 }
@@ -102,11 +104,11 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 }
 
 static void
-add_nameless_input(const char *table, FILE *f)
+add_nameless_input(const char *table, FILE *f, bool types)
 {
 	const struct col_header *headers_cur;
 	size_t tsize = strlen(table);
-	struct csv_ctx *ctx = csv_create_ctx_nofail(f, stderr);
+	struct csv_ctx *ctx = csv_create_ctx_nofail(f, stderr, types);
 
 	csv_read_header_nofail(ctx);
 
@@ -146,10 +148,10 @@ add_nameless_input(const char *table, FILE *f)
 }
 
 static void
-add_input(FILE *f)
+add_input(FILE *f, bool types)
 {
 	const struct col_header *headers_cur;
-	struct csv_ctx *ctx = csv_create_ctx_nofail(f, stderr);
+	struct csv_ctx *ctx = csv_create_ctx_nofail(f, stderr, types);
 
 	csv_read_header_nofail(ctx);
 
@@ -231,8 +233,9 @@ main(int argc, char *argv[])
 	unsigned show_flags = SHOW_DISABLED;
 	bool stdin_used = false;
 	char *table = NULL;
+	bool types = true;
 
-	while ((opt = getopt_long(argc, argv, "N:p:P:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "N:p:P:sSX", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'N':
 				free(table);
@@ -245,12 +248,12 @@ main(int argc, char *argv[])
 					exit(2);
 				}
 				FILE *f = get_file(optarg, &stdin_used);
-				add_nameless_input(table, f);
+				add_nameless_input(table, f, types);
 				break;
 			}
 			case 'P': {
 				FILE *f = get_file(optarg, &stdin_used);
-				add_input(f);
+				add_input(f, types);
 				break;
 			}
 			case 's':
@@ -262,6 +265,9 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
+			case 'X':
+				types = false;
+				break;
 			case 'h':
 			default:
 				usage(stdout);

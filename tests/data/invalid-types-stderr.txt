@@ -1,0 +1,2 @@
+Unrecognized type 'abcdef'. Assuming it's part of column name and column is a string. Disable type parsing with -X / --no-types
+Unrecognized type 'x'. Assuming it's part of column name and column is a string. Disable type parsing with -X / --no-types

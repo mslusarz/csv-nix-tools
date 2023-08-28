@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: BSD-3-Clause
-Copyright 2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+Copyright 2021-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
 -->
 
 ---
@@ -22,6 +22,9 @@ Read CSV stream from standard input, write it to stdout and its copy to stderr.
 
 -s, \--show
 :   print to stderr in table format
+
+-X, \--no-types
+:   disable parsing of type names in column names
 
 \--help
 :   display this help and exit

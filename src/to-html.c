@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2020-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2020-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <getopt.h>
@@ -40,6 +40,7 @@ static const struct option opts[] = {
 	{"set-color",		required_argument,	NULL, 'c' },
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
+	{"no-types",		no_argument,		NULL, 'X'},
 	{NULL,			0,			NULL, 0},
 };
 
@@ -59,6 +60,7 @@ usage(FILE *out)
 	fprintf(out, "                             set COLOR1 as foreground and COLOR2 as\n");
 	fprintf(out, "                             background of column COLNAME\n");
 	fprintf(out, "      --with-types           print types in column headers\n");
+	describe_no_types_in(out);
 	describe_help(out);
 	describe_version(out);
 }
@@ -174,6 +176,7 @@ main(int argc, char *argv[])
 		DATATABLES,
 		TABULATOR,
 	} mode = BASIC;
+	bool types = true;
 
 	params.split_results = NULL;
 	params.split_results_max_size = 0;
@@ -185,7 +188,7 @@ main(int argc, char *argv[])
 	size_t set_colorpair_num = 0;
 	params.use_color_columns = false;
 
-	while ((opt = getopt_long(argc, argv, "C", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "CX", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'D':
 				mode = DATATABLES;
@@ -212,6 +215,9 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
+			case 'X':
+				types = false;
+				break;
 			case 'h':
 			default:
 				usage(stdout);
@@ -219,7 +225,7 @@ main(int argc, char *argv[])
 		}
 	}
 
-	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
+	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr, types);
 
 	csv_read_header_nofail(s);
 

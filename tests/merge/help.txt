@@ -14,5 +14,6 @@ Options:
   -P, --path-with-table FILE
                              read CSV stream with table from FILE;
                              '-' means standard input
+  -X, --no-types             disable parsing of type names in column names
       --help                 display this help and exit
       --version              output version information and exit

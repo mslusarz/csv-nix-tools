@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <getopt.h>
@@ -23,6 +23,7 @@ static const struct option opts[] = {
 	{"show",	no_argument,		NULL, 's'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
+	{"no-types",	no_argument,		NULL, 'X'},
 	{NULL,		0,			NULL, 0},
 };
 
@@ -51,6 +52,7 @@ usage(FILE *out)
 "  -n, --rename NAME,NEW-NAME rename column NAME to NEW-NAME\n");
 	describe_Show(out);
 	describe_Show_full(out);
+	describe_no_types_in(out);
 	describe_help(out);
 	describe_version(out);
 }
@@ -105,6 +107,7 @@ main(int argc, char *argv[])
 	bool print_types = true;
 	unsigned show_flags = SHOW_DISABLED;
 	char *header = NULL;
+	bool types = true;
 
 	struct column_change {
 		char *name;
@@ -118,7 +121,7 @@ main(int argc, char *argv[])
 
 	lines_init(&params.lines);
 
-	while ((opt = getopt_long(argc, argv, "a:e:GmMn:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "a:e:GmMn:sSX", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'a': {
 				size_t len = strlen(optarg);
@@ -208,6 +211,9 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
+			case 'X':
+				types = false;
+				break;
 			case 'h':
 			default:
 				usage(stdout);
@@ -235,7 +241,7 @@ main(int argc, char *argv[])
 
 	csv_show(show_flags);
 
-	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
+	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr, types);
 
 	if (header) {
 		csv_insert_header(s, header);

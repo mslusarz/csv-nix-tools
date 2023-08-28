@@ -2,5 +2,6 @@ Usage: csv-to-json [OPTION]...
 Convert CSV file from standard input to JSON.
 
 Options:
+  -X, --no-types             disable parsing of type names in column names
       --help                 display this help and exit
       --version              output version information and exit

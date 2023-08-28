@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #ifndef CSV_PARSE_H
@@ -19,8 +19,8 @@ struct col_header {
 	bool had_type;
 };
 
-struct csv_ctx *csv_create_ctx(FILE *in, FILE *err);
-struct csv_ctx *csv_create_ctx_nofail(FILE *in, FILE *err);
+struct csv_ctx *csv_create_ctx(FILE *in, FILE *err, bool types);
+struct csv_ctx *csv_create_ctx_nofail(FILE *in, FILE *err, bool types);
 
 int csv_read_header(struct csv_ctx *ctx);
 void csv_read_header_nofail(struct csv_ctx *ctx);

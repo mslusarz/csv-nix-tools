@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: BSD-3-Clause
-Copyright 2021-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
+Copyright 2021-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
 -->
 
 ---
@@ -44,6 +44,9 @@ back data with hierarchical information.
 
 -S, \--show-full
 :   print output in table format with pager
+
+-X, \--no-types
+:   disable parsing of type names in column names
 
 \--help
 :   display this help and exit

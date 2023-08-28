@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #ifndef CSV_UTILS_H
@@ -219,9 +219,9 @@ void csvci_parse_cols_nofail(char *cols, struct column_info *columns,
 		size_t *ncolumns);
 void csvci_set_columns_order(struct column_info *columns, size_t *ncolumns);
 
-void csvci_print_header(struct column_info *columns, size_t ncolumns);
+void csvci_print_header(struct column_info *columns, size_t ncolumns, bool types);
 void csvci_print_header_with_prefix(struct column_info *columns,
-		size_t ncolumns, const char *prefix);
+		size_t ncolumns, const char *prefix, bool types);
 void csvci_print_row(const void *row, const struct column_info *columns,
 		size_t ncolumns);
 void csv_check_space(char **buf, size_t *buflen, size_t used, size_t len);
@@ -239,6 +239,8 @@ void describe_version(FILE *out);
 void describe_Show(FILE *out);
 void describe_Show_full(FILE *out);
 void describe_Table(FILE *out);
+void describe_no_types_in(FILE *out);
+void describe_no_types_out(FILE *out);
 
 int csv_asprintf(char **strp, const char *fmt, ...);
 char *csv_strcasestr(const char *haystack, const char *needle);

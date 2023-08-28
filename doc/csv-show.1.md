@@ -88,6 +88,9 @@ By default backend is guessed based on whether standard output is a terminal.
 \--with-types
 :   print types in column headers
 
+-X, \--no-types
+:   disable parsing of type names in column names
+
 \--help
 :   display this help and exit
 

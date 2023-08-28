@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -42,9 +42,9 @@ next_row(const char *buf, const size_t *col_offs, size_t ncols, void *arg)
 
 static size_t
 csvmu_add_columns_to_stdin(const char *prefix, struct column_info *columns,
-		size_t ncolumns)
+		size_t ncolumns, bool types)
 {
-	struct csv_ctx *ctx = csv_create_ctx_nofail(stdin, stderr);
+	struct csv_ctx *ctx = csv_create_ctx_nofail(stdin, stderr, types);
 
 	csv_read_header_nofail(ctx);
 
@@ -70,7 +70,7 @@ csvmu_add_columns_to_stdin(const char *prefix, struct column_info *columns,
 
 		csv_print_header(stdout, &input_headers[i], ',');
 	}
-	csvci_print_header_with_prefix(columns, ncolumns, prefix);
+	csvci_print_header_with_prefix(columns, ncolumns, prefix, types);
 
 	csv_read_all_nofail(ctx, &next_row, &cfg);
 
@@ -94,12 +94,12 @@ csvmu_print_header(struct csvmu_ctx *ctx, struct column_info *columns,
 
 	if (ctx->merge) {
 		ctx->input_ncolumns =
-			csvmu_add_columns_to_stdin(prefix, columns, ncolumns);
+			csvmu_add_columns_to_stdin(prefix, columns, ncolumns, ctx->types);
 	} else {
 		if (prefix)
-			csvci_print_header_with_prefix(columns, ncolumns, prefix);
+			csvci_print_header_with_prefix(columns, ncolumns, prefix, ctx->types);
 		else
-			csvci_print_header(columns, ncolumns);
+			csvci_print_header(columns, ncolumns, ctx->types);
 	}
 
 	free(prefix);

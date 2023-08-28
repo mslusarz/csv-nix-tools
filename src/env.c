@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <getopt.h>
@@ -22,7 +22,8 @@ static const struct option opts[] = {
 	{"as-table",		no_argument,		NULL, 'T'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
-	{NULL,		0,			NULL, 0},
+	{"no-types",		no_argument,		NULL, 'X'},
+	{NULL,			0,			NULL, 0},
 };
 
 static void
@@ -38,6 +39,7 @@ usage(FILE *out)
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_as_Table(out, "env");
+	describe_no_types_out(out);
 	describe_help(out);
 	describe_version(out);
 }
@@ -66,6 +68,7 @@ main(int argc, char *argv[], char *envp[])
 	unsigned show_flags = SHOW_DISABLED;
 	bool merge = false;
 	char *table = NULL;
+	bool types = true;
 
 	struct column_info columns[] = {
 			{ true, 0, 0, "name",  TYPE_STRING, print_name, 0 },
@@ -73,7 +76,7 @@ main(int argc, char *argv[], char *envp[])
 	};
 	size_t ncolumns = ARRAY_SIZE(columns);
 
-	while ((opt = getopt_long(argc, argv, "c:MN:sST", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "c:MN:sSTX", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'c':
 				cols = xstrdup_nofail(optarg);
@@ -100,6 +103,9 @@ main(int argc, char *argv[], char *envp[])
 			case 'V':
 				printf("git\n");
 				return 0;
+			case 'X':
+				types = false;
+				break;
 			case 'h':
 			default:
 				usage(stdout);
@@ -120,6 +126,7 @@ main(int argc, char *argv[], char *envp[])
 	struct csvmu_ctx ctx;
 	ctx.table = table;
 	ctx.merge = merge;
+	ctx.types = types;
 
 	csvmu_print_header(&ctx, columns, ncolumns);
 

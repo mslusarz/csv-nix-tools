@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <errno.h>
@@ -22,24 +22,27 @@ struct csv_ctx {
 
 	struct col_header *headers;
 	size_t nheaders;
+
+	bool types;
 };
 
 struct csv_ctx *
-csv_create_ctx(FILE *in, FILE *err)
+csv_create_ctx(FILE *in, FILE *err, bool types)
 {
 	struct csv_ctx *s = xcalloc(1, sizeof(*s));
 	if (!s)
 		return NULL;
 	s->in = in;
 	s->err = err;
+	s->types = types;
 
 	return s;
 }
 
 struct csv_ctx *
-csv_create_ctx_nofail(FILE *in, FILE *err)
+csv_create_ctx_nofail(FILE *in, FILE *err, bool types)
 {
-	struct csv_ctx *s = csv_create_ctx(in, err);
+	struct csv_ctx *s = csv_create_ctx(in, err, types);
 	if (!s)
 		exit(2);
 	return s;
@@ -57,8 +60,40 @@ csv_destroy_ctx(struct csv_ctx *ctx)
 static int
 add_header(struct csv_ctx *ctx, char *start)
 {
-	char *type = strchr(start, ':');
-	bool had_type = type != NULL;
+	char *type = NULL;
+	bool had_type = false;
+
+	if (ctx->types) {
+		type = strchr(start, ':');
+		had_type = type != NULL;
+	}
+
+	if (had_type) {
+		static const char *types[] = {
+				"int",
+				"int[]",
+				"string",
+				"string[]",
+				"float",
+				"float[]",
+		};
+
+		bool found = false;
+
+		for (size_t i = 0; i < ARRAY_SIZE(types); ++i) {
+			if (strcmp(type + 1, types[i]) == 0) {
+				found = true;
+				break;
+			}
+		}
+
+		if (!found) {
+			had_type = false;
+			fprintf(ctx->err, "Unrecognized type '%s'. Assuming it's part of column name and column is a string. Disable type parsing with -X / --no-types\n", type + 1);
+		}
+
+	}
+
 	if (had_type)
 		*type++ = 0;
 	else
@@ -71,16 +106,6 @@ add_header(struct csv_ctx *ctx, char *start)
 		return -1;
 	}
 	ctx->headers = headers;
-
-	if (strcmp(type, "int") != 0 &&
-			strcmp(type, "int[]") != 0 &&
-			strcmp(type, "string") != 0 &&
-			strcmp(type, "string[]") != 0 &&
-			strcmp(type, "float") != 0 &&
-			strcmp(type, "float[]") != 0) {
-		fprintf(ctx->err, "unsupported type '%s'\n", type);
-		return -1;
-	}
 
 	ctx->headers[ctx->nheaders].name = start;
 	ctx->headers[ctx->nheaders].type = type;

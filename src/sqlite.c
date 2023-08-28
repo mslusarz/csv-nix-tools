@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -22,6 +22,7 @@ static const struct option opts[] = {
 	{"use-tables",	no_argument,		NULL, 'T'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
+	{"no-types",	no_argument,		NULL, 'X'},
 	{NULL,		0,			NULL, 0},
 };
 
@@ -44,6 +45,7 @@ usage(FILE *out)
 "  -T, --use-tables           interpret input as \"table\" stream (as _table\n"
 "                             column and columns with \"table.\" prefixes) and\n"
 "                             import each csv table into its own sql table\n");
+	describe_no_types_in(out);
 	describe_help(out);
 	describe_version(out);
 }
@@ -279,9 +281,9 @@ sqlite_type_to_csv_name(int t)
 
 static void
 add_file(FILE *f, size_t num, sqlite3 *db, bool load_tables,
-		bool *any_str_column_had_type)
+		bool *any_str_column_had_type, bool types)
 {
-	struct csv_ctx *s = csv_create_ctx_nofail(f, stderr);
+	struct csv_ctx *s = csv_create_ctx_nofail(f, stderr, types);
 
 	csv_read_header_nofail(s);
 
@@ -504,8 +506,9 @@ main(int argc, char *argv[])
 	bool tables = false;
 	char **inputs = NULL;
 	size_t ninputs = 0;
+	bool types = true;
 
-	while ((opt = getopt_long(argc, argv, "i:sST", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "i:sSTX", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'i':
 				inputs = xrealloc_nofail(inputs,
@@ -525,6 +528,9 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
+			case 'X':
+				types = false;
+				break;
 			case 'h':
 			default:
 				usage(stdout);
@@ -548,7 +554,7 @@ main(int argc, char *argv[])
 	bool any_str_column_had_type = false;
 
 	if (ninputs == 0) {
-		add_file(stdin, SIZE_MAX, db, tables, &any_str_column_had_type);
+		add_file(stdin, SIZE_MAX, db, tables, &any_str_column_had_type, types);
 	} else {
 		bool stdin_used = false;
 		for (size_t i = 0; i < ninputs; ++i) {
@@ -572,7 +578,7 @@ main(int argc, char *argv[])
 				exit(2);
 			}
 
-			add_file(f, i + 1, db, tables, &any_str_column_had_type);
+			add_file(f, i + 1, db, tables, &any_str_column_had_type, types);
 
 			if (strcmp(path, "-") != 0)
 				fclose(f);

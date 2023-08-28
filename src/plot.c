@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2020-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2020-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <errno.h>
@@ -22,6 +22,7 @@ static const struct option opts[] = {
 	{"terminal",	required_argument,	NULL, 't'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
+	{"no-types",	no_argument,		NULL, 'X'},
 	{NULL,		0,			NULL, 0},
 };
 
@@ -47,6 +48,7 @@ usage(FILE *out)
 	fprintf(out,
 "  -z COLNAME                 use COLNAME as z axis\n");
 	describe_Table(out);
+	describe_no_types_in(out);
 	describe_help(out);
 	describe_version(out);
 }
@@ -157,13 +159,14 @@ main(int argc, char *argv[])
 	bool run_gnuplot = false;
 	char *terminal = NULL;
 	bool grid = false;
+	bool types = true;
 
 	params.cols = NULL;
 	params.ncols = 0;
 	params.table = NULL;
 	params.table_column = SIZE_MAX;
 
-	while ((opt = getopt_long(argc, argv, "gGt:T:x:y:z:", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "gGt:T:x:y:z:X", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'g':
 				run_gnuplot = true;
@@ -192,6 +195,9 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
+			case 'X':
+				types = false;
+				break;
 			case 'h':
 			default:
 				usage(stdout);
@@ -199,7 +205,7 @@ main(int argc, char *argv[])
 		}
 	}
 
-	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
+	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr, types);
 
 	csv_read_header_nofail(s);
 

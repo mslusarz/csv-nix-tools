@@ -12,5 +12,6 @@ Options:
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
   -T, --as-table             produce output as table 'proc'
+  -X, --no-types             disable printing of type names in column names
       --help                 display this help and exit
       --version              output version information and exit

@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 test("csv-users | csv-count -c -R"
@@ -11,6 +11,14 @@ test("csv-users | csv-count -c -R"
 test("csv-users -l | csv-count -c -R"
 	data/empty.txt users/columns-l.csv data/empty.txt 0
 	users_-l_count)
+
+test("csv-users -l | csv-head -n 0"
+	data/empty.txt users/header.csv data/empty.txt 0
+	users_-l_header)
+
+test("csv-users -lX | csv-head -n 0"
+	data/empty.txt users/header-no-types.csv data/empty.txt 0
+	users_-l_header_no_types)
 
 test("csv-users -ll | csv-count -c -R"
 	data/empty.txt users/columns-ll.csv data/empty.txt 0
