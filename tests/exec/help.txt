@@ -2,5 +2,6 @@ Usage: csv-exec [OPTION]...
 Read CSV stream from standard input and execute an external command for each row.
 
 Options:
+  -X, --no-types             disable parsing of type names in column names
       --help                 display this help and exit
       --version              output version information and exit

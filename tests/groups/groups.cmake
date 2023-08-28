@@ -1,11 +1,17 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 test("csv-groups | csv-count -c -R" data/empty.txt groups/count-columns.csv data/empty.txt 0
 	groups_count)
+
+test("csv-groups | csv-head -n 0" data/empty.txt groups/header.csv data/empty.txt 0
+	groups_header)
+
+test("csv-groups -X | csv-head -n 0" data/empty.txt groups/header-no-types.csv data/empty.txt 0
+	groups_header_no_types)
 
 test("csv-groups -l | csv-count -c -R" data/empty.txt groups/count-columns-l.csv data/empty.txt 0
 	groups_-l_count)

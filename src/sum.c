@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -25,6 +25,7 @@ static const struct option opts[] = {
 	{"table",	required_argument,	NULL, 'T'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
+	{"no-types",	no_argument,		NULL, 'X'},
 	{NULL,		0,			NULL, 0},
 };
 
@@ -48,6 +49,7 @@ usage(FILE *out)
 	describe_Show(out);
 	describe_Show_full(out);
 	describe_Table(out);
+	describe_no_types_in(out);
 	describe_help(out);
 	describe_version(out);
 }
@@ -170,6 +172,7 @@ main(int argc, char *argv[])
 	unsigned show_flags = SHOW_DISABLED;
 	char *sep = NULL;
 	size_t table_len = 0;
+	bool types = true;
 
 // TODO unicode/locale
 //	setlocale(LC_ALL, "");
@@ -182,7 +185,7 @@ main(int argc, char *argv[])
 	params.table = NULL;
 	params.table_column = SIZE_MAX;
 
-	while ((opt = getopt_long(argc, argv, "c:e:n:sST:", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "c:e:n:sST:X", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'c':
 				cols = xstrdup_nofail(optarg);
@@ -206,6 +209,9 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
+			case 'X':
+				types = false;
+				break;
 			case 'h':
 			default:
 				usage(stdout);
@@ -220,7 +226,7 @@ main(int argc, char *argv[])
 
 	csv_show(show_flags);
 
-	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
+	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr, types);
 
 	csv_read_header_nofail(s);
 

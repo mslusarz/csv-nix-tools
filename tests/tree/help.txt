@@ -17,5 +17,6 @@ Options:
   -p, --parent=NAME          use column NAME as a pointer to parent row
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
+  -X, --no-types             disable parsing of type names in column names
       --help                 display this help and exit
       --version              output version information and exit

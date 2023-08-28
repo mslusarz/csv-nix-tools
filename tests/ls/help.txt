@@ -18,5 +18,6 @@ Options:
   -U                         do not sort; list entries in directory order
       --colors               add color columns
       --no-colors            don't add color columns
+  -X, --no-types             disable printing of type names in column names
       --help                 display this help and exit
       --version              output version information and exit

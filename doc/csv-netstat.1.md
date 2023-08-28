@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: BSD-3-Clause
-Copyright 2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+Copyright 2020-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
 -->
 
 ---
@@ -61,6 +61,9 @@ Print to standard output the list of network sockets in the CSV format.
 
 -6, \--inet6
 :   print information only about IPv6 sockets
+
+-X, \--no-types
+:   disable printing of type names in column names
 
 \--help
 :   display this help and exit

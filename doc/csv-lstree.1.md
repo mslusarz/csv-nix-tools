@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: BSD-3-Clause
-Copyright 2021-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
+Copyright 2021-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
 -->
 
 ---
@@ -34,6 +34,9 @@ Recursively list FILEs (starting from current directory by default).
 
 -S
 :   print output in table format with pager
+
+-X
+:   disable printing of type names in column names
 
 # EXAMPLES #
 

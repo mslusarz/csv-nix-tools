@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: BSD-3-Clause
-Copyright 2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+Copyright 2020-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
 -->
 
 ---
@@ -33,6 +33,9 @@ execute an SQL query and print back to standard output its result.
 -T, \--use-tables
 :   interpret input as "table" stream (as _table column and columns with
 "table." prefixes) and import each csv table into its own sql table
+
+-X, \--no-types
+:   disable parsing of type names in column names
 
 \--help
 :   display this help and exit

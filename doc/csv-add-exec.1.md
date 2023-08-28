@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: BSD-3-Clause
-Copyright 2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+Copyright 2020-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
 -->
 
 ---
@@ -36,6 +36,9 @@ standard input is fed with input column.
 
 -T, \--table=*NAME*
 :   apply to rows only with _table column equal *NAME*
+
+-X, \--no-types
+:   disable parsing of type names in column names
 
 \--help
 :   display this help and exit

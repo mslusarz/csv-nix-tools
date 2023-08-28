@@ -10,5 +10,6 @@ Options:
   -y COLNAME                 use COLNAME as y axis
   -z COLNAME                 use COLNAME as z axis
   -T, --table=NAME           apply to rows only with _table column equal NAME
+  -X, --no-types             disable parsing of type names in column names
       --help                 display this help and exit
       --version              output version information and exit

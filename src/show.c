@@ -37,6 +37,7 @@ static const struct option opts[] = {
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
 	{"debug",		required_argument,	NULL, 'D'},
+	{"no-types",	no_argument,		NULL, 'X'},
 	{NULL,			0,			NULL, 0},
 };
 
@@ -62,6 +63,7 @@ usage(FILE *out)
 	fprintf(out, "                             set COLOR1 as foreground and COLOR2 as\n");
 	fprintf(out, "                             background of column COLNAME\n");
 	fprintf(out, "      --with-types           print types in column headers\n");
+	describe_no_types_in(out);
 	describe_help(out);
 	describe_version(out);
 }
@@ -196,6 +198,7 @@ main(int argc, char *argv[])
 	} ui = GUESS;
 
 	size_t spacing = DEFAULT_SPACING;
+	bool types = true;
 
 	params.lines = NULL;
 	params.allocated_lines = 0;
@@ -219,7 +222,7 @@ main(int argc, char *argv[])
 	struct on_key *key_config = NULL;
 	size_t key_config_size = 0;
 
-	while ((opt = getopt_long(argc, argv, "Cik:u:p:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "Cik:u:p:sSX", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'D':
 				params.logfd = open(optarg,
@@ -305,6 +308,9 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
+			case 'X':
+				types = false;
+				break;
 			case 'h':
 			default:
 				usage(stdout);
@@ -344,7 +350,7 @@ main(int argc, char *argv[])
 		key_config->return_to_ui = false;
 	}
 
-	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
+	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr, types);
 
 	csv_read_header_nofail(s);
 

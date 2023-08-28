@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: BSD-3-Clause
-Copyright 2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+Copyright 2021-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
 -->
 
 ---
@@ -19,6 +19,9 @@ csv-printf - formats data using printf
 # DESCRIPTION #
 
 Read CSV stream from standard input and print back data using **printf**(3).
+
+-X, \--no-types
+:   disable parsing of type names in column names
 
 \--help
 :   display this help and exit

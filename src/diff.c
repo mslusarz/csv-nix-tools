@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2020-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2020-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -26,6 +26,7 @@ static const struct option Opts[] = {
 	{"show-full",		no_argument,		NULL, 'S'},
 	{"help",		no_argument,		NULL, 'h'},
 	{"version",		no_argument,		NULL, 'V'},
+	{"no-types",		no_argument,		NULL, 'X'},
 	{NULL,			0,			NULL, 0},
 };
 
@@ -51,6 +52,7 @@ usage(FILE *out)
 	describe_Show_full(out);
 	fprintf(out,
 "      --all-rows             show all rows\n");
+	describe_no_types_in(out);
 	describe_help(out);
 	describe_version(out);
 }
@@ -75,9 +77,9 @@ static const struct col_header *Headers;
 
 static void
 add_input(FILE *f, struct input *in, size_t file_idx, size_t num_user_headers,
-		struct col_header *user_headers)
+		struct col_header *user_headers, bool types)
 {
-	struct csv_ctx *s = csv_create_ctx_nofail(f, stderr);
+	struct csv_ctx *s = csv_create_ctx_nofail(f, stderr, types);
 
 	csv_read_header_nofail(s);
 
@@ -320,8 +322,9 @@ main(int argc, char *argv[])
 	int diffs = -1;
 	bool brief = false;
 	bool all_rows = false;
+	bool types = true;
 
-	while ((opt = getopt_long(argc, argv, "c:C:d:qsS", Opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "c:C:d:qsSX", Opts, NULL)) != -1) {
 		switch (opt) {
 			case 'c':
 				cols = xstrdup_nofail(optarg);
@@ -347,6 +350,9 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
+			case 'X':
+				types = false;
+				break;
 			case 'h':
 			default:
 				usage(stdout);
@@ -428,7 +434,7 @@ main(int argc, char *argv[])
 			}
 		}
 
-		add_input(f, &inputs[i], i + 1, num_user_headers, user_headers);
+		add_input(f, &inputs[i], i + 1, num_user_headers, user_headers, types);
 
 		optind++;
 		i++;

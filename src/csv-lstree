@@ -1,7 +1,7 @@
 #!/bin/bash -e
 
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2021-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2021-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
 
 set -o pipefail
 
@@ -35,7 +35,7 @@ function append_column() {
 
 customcolumns=0
 
-while getopts "c:fLsS" opt; do
+while getopts "c:fLsSX" opt; do
     case "$opt" in
     c)  full_path_exists=0
         parent_exists=0
@@ -77,6 +77,8 @@ while getopts "c:fLsS" opt; do
         ;;
     S)  cutopts=-S
         ;;
+    X)  headeropts=--remove-types
+        ;;
     esac
 done
 
@@ -89,4 +91,5 @@ fi
 csv-ls -a -c $incolumns -R "$@" | \
 	csv-grep -v -c name -x -F . -c name -x -F .. | \
 	csv-tree --key full_path --parent parent --indent $indentcol $treesumopts $treeopts | \
-	csv-cut -c $outcolumns $cutopts
+	csv-cut -c $outcolumns $cutopts | \
+	csv-header $headeropts

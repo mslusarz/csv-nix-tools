@@ -1,13 +1,19 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 if (LIBMNL_FOUND)
 
 test("csv-netstat | csv-count -c -R" data/empty.txt netstat/count-columns.csv data/empty.txt 0
 	netstat_count_columns)
+
+test("csv-netstat | csv-head -n 0" data/empty.txt netstat/header.csv data/empty.txt 0
+	netstat_header)
+
+test("csv-netstat -X | csv-head -n 0" data/empty.txt netstat/header-no-types.csv data/empty.txt 0
+	netstat_header_no_types)
 
 test("csv-netstat -l | csv-count -c -R" data/empty.txt netstat/l-count-columns.csv data/empty.txt 0
 	netstat_l_count_columns)

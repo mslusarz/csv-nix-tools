@@ -1,13 +1,19 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 if (LIBPROCPS_FOUND)
 
 test("csv-ps | csv-count -c -R" data/empty.txt ps/columns.csv data/empty.txt 0
 	ps_columns)
+
+test("csv-ps | csv-head -n 0" data/empty.txt ps/header.csv data/empty.txt 0
+	ps_header)
+
+test("csv-ps -X | csv-head -n 0" data/empty.txt ps/header-no-types.csv data/empty.txt 0
+	ps_header_no_types)
 
 test("csv-ps -l | csv-count -c -R" data/empty.txt ps/columns-l.csv data/empty.txt 0
 	ps_-l_columns)

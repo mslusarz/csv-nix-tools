@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 /*
@@ -659,6 +659,7 @@ static const struct option opts[] = {
 	{"as-table",		no_argument,		NULL, 'T'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
+	{"no-types",		no_argument,		NULL, 'X'},
 	{NULL,			0,			NULL, 0},
 };
 
@@ -684,6 +685,7 @@ usage(FILE *out)
 	fprintf(out, "  -U                         do not sort; list entries in directory order\n");
 	fprintf(out, "      --colors               add color columns\n");
 	fprintf(out, "      --no-colors            don't add color columns\n");
+	describe_no_types_out(out);
 	describe_help(out);
 	describe_version(out);
 }
@@ -697,6 +699,7 @@ main(int argc, char *argv[])
 	unsigned show_flags = SHOW_DISABLED;
 	bool merge = false;
 	char *table = NULL;
+	bool types = true;
 
 	struct column_info columns[] = {
 		{ false, 0, 1, "type_mode",     TYPE_STRING, print_type_mode, 0 },
@@ -764,7 +767,7 @@ main(int argc, char *argv[])
 	size_t level = 0;
 	int colors = -1;
 
-	while ((opt = getopt_long(argc, argv, "adc:CDlMN:RsSTU", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "adc:CDlMN:RsSTUX", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'a':
 				all = 1;
@@ -820,6 +823,9 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
+			case 'X':
+				types = false;
+				break;
 			case 'h':
 			default:
 				usage(stdout);
@@ -874,6 +880,7 @@ main(int argc, char *argv[])
 	struct csvmu_ctx ctx;
 	ctx.table = table;
 	ctx.merge = merge;
+	ctx.types = types;
 
 	csvmu_print_header(&ctx, columns, ncolumns);
 

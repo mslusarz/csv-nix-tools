@@ -11,5 +11,6 @@ Options:
   -T, --use-tables           interpret input as "table" stream (as _table
                              column and columns with "table." prefixes) and
                              import each csv table into its own sql table
+  -X, --no-types             disable parsing of type names in column names
       --help                 display this help and exit
       --version              output version information and exit

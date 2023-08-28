@@ -3,5 +3,6 @@ Read CSV stream from standard input, write it to stdout and its copy to stderr.
 
 Options:
   -s, --show                 print output in table format
+  -X, --no-types             disable parsing of type names in column names
       --help                 display this help and exit
       --version              output version information and exit

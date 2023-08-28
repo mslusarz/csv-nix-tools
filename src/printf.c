@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2021-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -18,6 +18,7 @@
 static const struct option opts[] = {
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
+	{"no-types",	no_argument,		NULL, 'X'},
 	{NULL,		0,			NULL, 0},
 };
 
@@ -31,6 +32,7 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	describe_Show(out);
 	describe_Show_full(out);
+	describe_no_types_in(out);
 	describe_help(out);
 	describe_version(out);
 }
@@ -362,12 +364,16 @@ main(int argc, char *argv[])
 {
 	int opt;
 	struct cb_params params;
+	bool types = true;
 
-	while ((opt = getopt_long(argc, argv, "", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "X", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'V':
 				printf("git\n");
 				return 0;
+			case 'X':
+				types = false;
+				break;
 			case 'h':
 			default:
 				usage(stdout);
@@ -392,7 +398,7 @@ main(int argc, char *argv[])
 	if (params.nargs)
 		params.args = xmalloc_nofail(params.nargs, sizeof(params.args[0]));
 
-	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
+	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr, types);
 
 	csv_read_header_nofail(s);
 

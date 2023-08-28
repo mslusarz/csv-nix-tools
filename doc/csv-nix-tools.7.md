@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: BSD-3-Clause
-Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
 -->
 
 ---
@@ -125,6 +125,9 @@ one example.
 :   apply to rows only with _table column equal *NAME*
 
 # COMMON OPTIONS FOR ALL TOOLS #
+
+-X, \--no-types
+:   disable parsing (in processing and sink tools) or printing (in source tools) of type names in column names
 
 \--help
 :   display this help and exit

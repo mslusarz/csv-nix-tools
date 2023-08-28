@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 /* see sock_diag(7) for explanation of what printed columns mean */
@@ -91,6 +91,7 @@ static const struct option opts[] = {
 	{"help",		no_argument,		NULL, 'h'},
 	{"inet4",		no_argument,		NULL, '4'},
 	{"inet6",		no_argument,		NULL, '6'},
+	{"no-types",		no_argument,		NULL, 'X'},
 	{NULL,			0,			NULL, 0},
 };
 
@@ -117,6 +118,7 @@ usage(FILE *out)
 	fprintf(out, "  -x, --unix                 print information only about UNIX sockets\n");
 	fprintf(out, "  -4, --inet4                print information only about IPv4 sockets\n");
 	fprintf(out, "  -6, --inet6                print information only about IPv6 sockets\n");
+	describe_no_types_out(out);
 	describe_help(out);
 	describe_version(out);
 }
@@ -1535,6 +1537,7 @@ main(int argc, char *argv[])
 	unsigned protocols = 0;
 	bool merge = false;
 	char *table = NULL;
+	bool types = true;
 
 	struct column_info columns[] = {
 		{ true,  0, 0, "family",          TYPE_STRING, print_family,         ALL },
@@ -1615,7 +1618,7 @@ main(int argc, char *argv[])
 	size_t ncolumns = ARRAY_SIZE(columns);
 	size_t level = 0;
 
-	while ((opt = getopt_long(argc, argv, "c:lMN:prSsTtUuwx46", opts,
+	while ((opt = getopt_long(argc, argv, "c:lMN:prSsTtUuwx46X", opts,
 			NULL)) != -1) {
 		switch (opt) {
 			case 'c':
@@ -1683,6 +1686,9 @@ main(int argc, char *argv[])
 			case '6':
 				protocols |= INET6;
 				break;
+			case 'X':
+				types = false;
+				break;
 			case 'h':
 			default:
 				usage(stdout);
@@ -1710,6 +1716,7 @@ main(int argc, char *argv[])
 	struct csvmu_ctx ctx;
 	ctx.table = table;
 	ctx.merge = merge;
+	ctx.types = types;
 
 	csvmu_print_header(&ctx, columns, ncolumns);
 

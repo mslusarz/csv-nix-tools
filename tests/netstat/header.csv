@@ -1,0 +1,1 @@
+family,protocol,src_ip,src_port:int,dst_ip,dst_port:int,state,name,inode:int,peer_inode:int,type,uid:int,interface:int

@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2019-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <errno.h>
@@ -20,6 +20,7 @@ static const struct option opts[] = {
 	{"show-full",	no_argument,		NULL, 'S'},
 	{"version",	no_argument,		NULL, 'V'},
 	{"help",	no_argument,		NULL, 'h'},
+	{"no-types",	no_argument,		NULL, 'X'},
 	{NULL,		0,			NULL, 0},
 };
 
@@ -35,6 +36,7 @@ usage(FILE *out)
 "                             NUM must be >= 0\n");
 	describe_Show(out);
 	describe_Show_full(out);
+	describe_no_types_in(out);
 	describe_help(out);
 	describe_version(out);
 }
@@ -93,11 +95,12 @@ main(int argc, char *argv[])
 	int opt;
 	struct cb_params params;
 	unsigned show_flags = SHOW_DISABLED;
+	bool types = true;
 
 	params.count = 0;
 	params.nlines = 10;
 
-	while ((opt = getopt_long(argc, argv, "n:sS", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "n:sSX", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'n':
 				if (strtoul_safe(optarg, &params.nlines, 0))
@@ -112,6 +115,9 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
+			case 'X':
+				types = false;
+				break;
 			case 'h':
 			default:
 				usage(stdout);
@@ -125,7 +131,7 @@ main(int argc, char *argv[])
 
 	csv_show(show_flags);
 
-	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
+	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr, types);
 
 	csv_read_header_nofail(s);
 

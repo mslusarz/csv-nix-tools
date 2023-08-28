@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: BSD-3-Clause
  *
- * Copyright 2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+ * Copyright 2020-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
  */
 
 #include <assert.h>
@@ -28,6 +28,7 @@ static const struct option opts[] = {
 	{"no-header",		no_argument,		NULL, 'H'},
 	{"version",		no_argument,		NULL, 'V'},
 	{"help",		no_argument,		NULL, 'h'},
+	{"no-types",		no_argument,		NULL, 'X'},
 	{NULL,			0,			NULL, 0},
 };
 
@@ -41,6 +42,7 @@ usage(FILE *out)
 	fprintf(out, "Options:\n");
 	fprintf(out, "      --generic-names        don't use column names for nodes\n");
 	fprintf(out, "      --no-header            remove column headers\n");
+	describe_no_types_in(out);
 	describe_help(out);
 	describe_version(out);
 }
@@ -107,6 +109,7 @@ main(int argc, char *argv[])
 	int opt;
 	bool print_header = true;
 	struct cb_params params;
+	bool types = true;
 
 	const char *locret = setlocale(LC_ALL, "");
 	/* setlocale value is valid only until next call */
@@ -118,7 +121,7 @@ main(int argc, char *argv[])
 
 	params.generic_names = false;
 
-	while ((opt = getopt_long(argc, argv, "", opts, NULL)) != -1) {
+	while ((opt = getopt_long(argc, argv, "X", opts, NULL)) != -1) {
 		switch (opt) {
 			case 'G':
 				params.generic_names = true;
@@ -129,6 +132,9 @@ main(int argc, char *argv[])
 			case 'V':
 				printf("git\n");
 				return 0;
+			case 'X':
+				types = false;
+				break;
 			case 'h':
 			default:
 				usage(stdout);
@@ -136,7 +142,7 @@ main(int argc, char *argv[])
 		}
 	}
 
-	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr);
+	struct csv_ctx *s = csv_create_ctx_nofail(stdin, stderr, types);
 
 	csv_read_header_nofail(s);
 

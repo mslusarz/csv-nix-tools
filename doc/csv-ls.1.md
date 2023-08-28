@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: BSD-3-Clause
-Copyright 2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+Copyright 2020-2023, Marcin Ślusarz <marcin.slusarz@gmail.com>
 -->
 
 ---
@@ -59,6 +59,9 @@ Sort entries alphabetically if -U is not specified.
 
 \--no-colors
 :   don't add color columns
+
+-X, \--no-types
+:   disable printing of type names in column names
 
 \--help
 :   display this help and exit
