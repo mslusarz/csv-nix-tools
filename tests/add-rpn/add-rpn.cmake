@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2026, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 test("csv-add-rpn -n 'num_mul_2' -e '%num 2 *'"
@@ -182,6 +182,28 @@ test("csv-add-rpn -n 'num_mul_2' -e '%num
 test("csv-add-rpn -n col2tripled -e '%col2 3 *'"
 	data/floats.csv add-rpn/floats.csv data/empty.txt 0
 	add-rpn_floats)
+
+test("csv-add-rpn -n lt -e \"%name 'not all that is gold' <\"\
+		  -n le -e \"%name 'not all that is gold' <=\"\
+		  -n gt -e \"%name 'not all that is gold' >\"\
+		  -n ge -e \"%name 'not all that is gold' >=\"\
+		  -n eq -e \"%name 'not all that is gold' ==\"\
+		  -n ne -e \"%name 'not all that is gold' !=\""
+	data/3-columns-3-rows.csv add-rpn/string-comparisons.csv data/empty.txt 0
+	add-rpn_string_comparisons)
+
+test("csv-add-rpn -n binary -e '%value 2 int2strb'\
+		  -n round_trip -e '%value 2 int2strb 2 strb2int'"
+	add-rpn/binary-input.csv add-rpn/binary-output.csv data/empty.txt 0
+	add-rpn_binary_round_trip)
+
+test("csv-add-rpn -n replacement -e \"%name '(lorem) (ipsum)' '%2 %% %1 (%0)' 1 replace_ere\""
+	data/one-column-one-row.csv add-rpn/replacement-template.csv data/empty.txt 0
+	add-rpn_replacement_template)
+
+test("csv-add-rpn -n first -e \"'a' next\" -n other -e \"'b' next\" -n second -e \"'a' next\""
+	data/id-column-3-rows.csv add-rpn/sequences.csv data/empty.txt 0
+	add-rpn_independent_sequences)
 
 test("csv-add-rpn --help" data/empty.csv add-rpn/help.txt data/empty.txt 2
 	add-rpn_help)
