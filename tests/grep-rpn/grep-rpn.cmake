@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2026, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 test("csv-grep-rpn" data/empty.csv data/empty.txt grep-rpn/help.txt 2
@@ -552,3 +552,77 @@ test("csv-grep-rpn -e \"%name tostring 'not all that is gold' ==\"" data/3-colum
 
 test("csv-grep-rpn -e 'tostring \"1000.000000\" =='" data/floats.csv grep-rpn/float-no-rows.csv grep-rpn/stack-low.txt 2
 	grep-rpn_tostring_stack_low)
+
+function(grep_rpn_eval_error name expression stderr)
+	test("csv-grep-rpn -e \"${expression}\""
+		data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv grep-rpn/${stderr}.txt 2
+		grep-rpn_${name})
+endfunction()
+
+grep_rpn_eval_error(float_div_zero "%id -0.0 / 0 ==" division-by-zero-float)
+grep_rpn_eval_error(int_mod_zero "%id 0 % 0 ==" modulo-zero-int)
+grep_rpn_eval_error(float_mod_zero "%id 0.0 % 0 ==" modulo-zero-float)
+
+grep_rpn_eval_error(int2strb_non_integer_base "%id 2.5 int2strb %name ==" typeerr-int2strb-base)
+grep_rpn_eval_error(int2strb_unsupported_base "%id 3 int2strb %name ==" valueerr-int2strb-base)
+grep_rpn_eval_error(strb2int_non_integer_base "'10' 2.5 strb2int" typeerr-strb2int-base)
+grep_rpn_eval_error(strb2int_base_too_high "'10' 37 strb2int" valueerr-strb2int)
+
+foreach(conversion toint str2int)
+	grep_rpn_eval_error(${conversion}_invalid_string "'invalid' ${conversion}" invalid-integer)
+endforeach()
+grep_rpn_eval_error(strb2int_invalid_digit "'invalid' 2 strb2int" invalid-integer)
+
+foreach(conversion tofloat str2flt)
+	grep_rpn_eval_error(${conversion}_invalid_string "'invalid' ${conversion} 0 ==" invalid-float)
+endforeach()
+
+foreach(operator replace replace_bre replace_ere)
+	grep_rpn_eval_error(${operator}_stack_low "%name 'pattern' 'replacement' ${operator} %name ==" stack-low)
+	grep_rpn_eval_error(${operator}_invalid_flag "%name 'pattern' 'replacement' 'yes' ${operator} %name =="
+		typeerr-${operator})
+endforeach()
+
+foreach(operator matches_bre matches_ere)
+	grep_rpn_eval_error(${operator}_stack_low "%name 'pattern' ${operator}" stack-low)
+	grep_rpn_eval_error(${operator}_invalid_flag "%name 'pattern' 'yes' ${operator}" typeerr-${operator})
+	grep_rpn_eval_error(${operator}_invalid_regex "%name '[' 1 ${operator}" invalid-regex)
+endforeach()
+
+grep_rpn_eval_error(replace_ere_invalid_regex "%name '[' 'replacement' 1 replace_ere %name ==" invalid-regex)
+grep_rpn_eval_error(replacement_dangling_percent "%name '.*' '%' 1 replace_ere %name ==" replacement-dangling-percent)
+grep_rpn_eval_error(replacement_invalid_escape "%name '.*' '%x' 1 replace_ere %name ==" replacement-invalid-escape)
+grep_rpn_eval_error(replacement_missing_group "%name '(lorem).*' '%3' 1 replace_ere %name ==" replacement-missing-group)
+
+grep_rpn_eval_error(next_stack_low "next" stack-low)
+grep_rpn_eval_error(next_invalid_type "%id next" typeerr-next)
+grep_rpn_eval_error(stack_extra_entries "%id 1" stack-extra)
+
+test("csv-grep-rpn -e '%whole 0 >'"
+	grep-rpn/invalid-numeric-input.csv grep-rpn/valid-numeric-row.csv grep-rpn/invalid-integer.txt 2
+	grep-rpn_invalid_integer_column)
+
+test("csv-grep-rpn -e '%fraction 0 >'"
+	grep-rpn/invalid-numeric-input.csv grep-rpn/valid-numeric-row.csv grep-rpn/invalid-float.txt 2
+	grep-rpn_invalid_float_column)
+
+if (FAULT_INJECTION AND NOT TEST_UNDER_MEMCHECK)
+	set(concat_left "abcdefghijklmnop")
+	set(concat_right "qrstuvwxyz")
+	string(LENGTH "${concat_left}${concat_right}" concat_length)
+	math(EXPR concat_size "${concat_length} + 1")
+	test("csv-grep-rpn -e \"'${concat_left}' '${concat_right}' concat %name ==\""
+		data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv data/malloc-enomem.txt 2
+		grep-rpn_concat_alloc_failure)
+	append_envs(grep-rpn_concat_alloc_failure
+		"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/fi/;CSVNIXTOOLS_XMALLOC_FAIL_ON_SIZE=${concat_size}")
+
+	set(like_pattern "abcdefghijklmno%p")
+	string(LENGTH "${like_pattern}" like_length)
+	math(EXPR like_size "${like_length} * 3")
+	test("csv-grep-rpn -e \"%name '${like_pattern}' like\""
+		data/3-columns-3-rows.csv data/rpn-filter-no-rows.csv data/malloc-enomem.txt 2
+		grep-rpn_like_alloc_failure)
+	append_envs(grep-rpn_like_alloc_failure
+		"LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/fi/;CSVNIXTOOLS_XMALLOC_FAIL_ON_SIZE=${like_size}")
+endif()
