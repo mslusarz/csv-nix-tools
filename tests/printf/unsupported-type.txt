@@ -1,0 +1,1 @@
+Type 'int[]', used by column 'numbers', is not supported by csv-printf.

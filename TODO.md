@@ -13,7 +13,6 @@
 - tree: add more tests
 - lstree: add tests
 - pstree: add tests
-- printf: add more tests
 - sum,count,min,max,avg: --group-by=col1,col2
 - show: fix column width calc when input is in utf
 - source-tools: add option to add and remove columns

@@ -1,0 +1,1 @@
+printing string as pointer is not supported

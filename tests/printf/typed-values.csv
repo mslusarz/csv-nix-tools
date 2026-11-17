@@ -1,0 +1,2 @@
+number:int,fraction:float,bad_int:int,bad_float:float,numbers:int[]
+65,66.75,invalid,invalid,65
