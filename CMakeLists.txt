@@ -4,7 +4,7 @@
 # Copyright 2019-2021, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 project(csv-nix-tools C)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)

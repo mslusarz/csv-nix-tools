@@ -32,7 +32,7 @@ If you discover any issue in the project or a missing feature, don't hesitate
 to file an issue. Any feedback is welcomed.
 
 # Dependencies
-- **cmake** >= 3.3
+- **cmake** >= 3.10
 - **glibc-devel**
 - **pkg-config**
 - **pandoc** (optional, required to generate man pages)
