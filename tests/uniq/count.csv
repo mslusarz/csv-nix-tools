@@ -1,0 +1,7 @@
+count:int,col1:string
+1,abc
+1,def
+2,ghi
+2,abc
+2,ccc
+1,ddd

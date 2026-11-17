@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019-2022, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2026, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 test("csv-uniq -c col1" uniq/input1.csv uniq/output1.csv data/empty.txt 0 uniq-1)
@@ -17,6 +17,16 @@ test("csv-uniq -c _table,t1.str,t1.int,t2.string,t2.integer" uniq/input3.csv uni
 test("csv-uniq -c str -T t1" uniq/input3.csv uniq/output4b.csv data/empty.txt 0 uniq-table1)
 
 test("csv-uniq -c string -T t2" uniq/input3.csv uniq/output4c.csv data/empty.txt 0 uniq-table2)
+
+test("csv-uniq -c col1 --count" uniq/input1.csv uniq/count.csv data/empty.txt 0 uniq-count)
+
+test("csv-uniq -c col3,col2,col1 --count" uniq/input2.csv uniq/count-multicolumn.csv data/empty.txt 0 uniq-count-multicolumn)
+
+test("csv-uniq -c str -T t1 --count" uniq/input3.csv uniq/count-table.csv data/empty.txt 0 uniq-count-table)
+
+test("csv-uniq -c key --count" uniq/count-header.csv uniq/count-header.csv data/empty.txt 0 uniq-count-header-only)
+
+test("csv-uniq -c count --count" uniq/count-header.csv data/empty.txt uniq/count-collision.txt 2 uniq-count-collision)
 
 test("csv-uniq" uniq/input1.csv data/empty.txt uniq/no-columns.txt 2 uniq-no-columns)
 

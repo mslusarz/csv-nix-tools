@@ -6,6 +6,7 @@ print back to standard output the remaining rows.
 Options:
   -c, --columns=NAME1[,NAME2...]
                              use these columns
+      --count                print the number of rows in each run
   -s, --show                 print output in table format
   -S, --show-full            print output in table format with pager
   -T, --table=NAME           apply to rows only with _table column equal NAME

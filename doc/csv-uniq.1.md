@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: BSD-3-Clause
-Copyright 2020, Marcin Ślusarz <marcin.slusarz@gmail.com>
+Copyright 2020-2026, Marcin Ślusarz <marcin.slusarz@gmail.com>
 -->
 
 ---
@@ -23,6 +23,9 @@ print back to standard output the remaining rows.
 
 -c, \--columns=*NAME1*[,*NAME2*...]
 :   use these columns
+
+\--count
+:   prefix lines by the number of occurrences, as count:int column, rows from other tables end the current run and have an empty count field
 
 -s, \--show
 :   print output in table format
