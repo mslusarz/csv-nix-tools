@@ -1,0 +1,15 @@
+parent,name,full_path
+tree,.,tree/.
+tree,..,tree/..
+tree,.dot,tree/.dot
+tree,.hidden,tree/.hidden
+tree,Alpha,tree/Alpha
+tree,beta,tree/beta
+tree,link,tree/link
+tree,"quoted,dir","tree/quoted,dir"
+tree/.hidden,.,tree/.hidden/.
+tree/.hidden,..,tree/.hidden/..
+tree/.hidden,child,tree/.hidden/child
+"tree/quoted,dir",.,"tree/quoted,dir/."
+"tree/quoted,dir",..,"tree/quoted,dir/.."
+"tree/quoted,dir","file""quoted","tree/quoted,dir/file""quoted"

@@ -1,0 +1,3 @@
+_table,file.name,file.full_path,file.type_name
+file,directory,directory,dir
+file,"file,with,commas","file,with,commas",reg

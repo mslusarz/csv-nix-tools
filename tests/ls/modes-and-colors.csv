@@ -1,0 +1,8 @@
+name,type_name,type_mode,mode:int,symlink,symlink_color,name_color
+broken,slnk,lrwxrwxrwx ,0777,missing,fg=red,fg=cyan
+directory,dir,drwxr-xr-x ,0755,,,fg=blue
+executable,reg,-rwsr-sr-t ,07755,,,fg=green
+no-execute,reg,-rwS--S--T ,07600,,,
+pipe,fifo,prw-r----- ,0640,,,fg=yellow
+plain,reg,---------- ,0,,,
+valid,slnk,lrwxrwxrwx ,0777,plain,,fg=cyan
