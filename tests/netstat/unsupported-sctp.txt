@@ -1,0 +1,1 @@
+SCTP not supported yet (patches welcomed)

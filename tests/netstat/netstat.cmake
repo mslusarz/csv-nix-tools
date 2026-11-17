@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
-# Copyright 2019, Marcin Ślusarz <marcin.slusarz@gmail.com>
+# Copyright 2019-2026, Marcin Ślusarz <marcin.slusarz@gmail.com>
 #
 
 if (LIBMNL_FOUND)
@@ -104,5 +104,28 @@ test("csv-netstat --help" data/empty.csv netstat/help.txt data/empty.txt 2
 
 test("csv-netstat --version" data/empty.csv data/git-version.txt data/empty.txt 0
 	netstat_version)
+
+test("csv-netstat -p" data/empty.csv data/empty.txt netstat/unsupported-sctp.txt 2
+	netstat_unsupported_sctp)
+
+test("csv-netstat -U" data/empty.csv data/empty.txt netstat/unsupported-udplite.txt 2
+	netstat_unsupported_udplite)
+
+test("csv-netstat --show --show-full" data/empty.csv data/empty.txt netstat/conflicting-show.txt 2
+	netstat_conflicting_show)
+
+find_program(NETSTAT_TEST_PYTHON python3)
+if (NETSTAT_TEST_PYTHON)
+	add_library(netstat-test-resolver MODULE netstat/resolver.c)
+
+	foreach(case unix resolve)
+		add_test(NAME netstat_socket_${case}
+			COMMAND "${NETSTAT_TEST_PYTHON}" -E "${CMAKE_CURRENT_SOURCE_DIR}/netstat/sockets.py"
+				"${case}" "$<TARGET_FILE:csv-netstat>" "$<TARGET_FILE:netstat-test-resolver>")
+		set_tests_properties(netstat_socket_${case} PROPERTIES
+			ENVIRONMENT "LC_ALL=C"
+			TIMEOUT 30)
+	endforeach()
+endif()
 
 endif(LIBMNL_FOUND)
