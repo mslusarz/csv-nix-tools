@@ -31,7 +31,7 @@ jobs:
       run: sudo apt update
 
     - name: install dependencies
-      run: sudo apt install build-essential cmake pkg-config flex bison libsqlite3-dev libprocps-dev libncursesw5-dev libmnl-dev
+      run: sudo apt install build-essential cmake pkg-config flex bison libsqlite3-dev libncursesw5-dev libmnl-dev
 
     # If this run was triggered by a pull request event, then checkout
     # the head of the pull request instead of the merge commit.
