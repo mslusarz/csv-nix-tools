@@ -1,0 +1,5 @@
+name:string,name_color:string,id:int,detail:string,detail_color:string
+alpha,"fg=green,bg=black",7,first,"fg=10AB2F,bg=4"
+beta,,42,second,"fg=cyan,bg=white"
+gamma,magenta,9,third,"fg=default,bg=red"
+delta,red,90,fourth,"fg=yellow,bg=blue"
